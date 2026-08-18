@@ -1,5 +1,5 @@
-"""Middleware and hooks for agent pipelines.
+"""Agent middleware."""
 
-This package is a placeholder for future middleware components such as
-logging interceptors, rate limiters, authentication hooks, etc.
-"""
+from middleware.retry import retry_on_failure
+
+__all__ = ["retry_on_failure"]
