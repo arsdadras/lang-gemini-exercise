@@ -1,8 +1,8 @@
-"""Web search tool for the research agent."""
+"""Web search tool for the research agent, built on langchain-tavily."""
 
-from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_tavily import TavilySearch
 
-web_search = TavilySearchResults(
+web_search = TavilySearch(
     max_results=5,
     name="web_search",
     description=(
