@@ -8,11 +8,13 @@ from tools.file_ops import (
     write_json,
     write_text,
 )
+from tools.search import web_search
 
 __all__ = [
     "FileData",
     "create_file",
     "run_db_query",
+    "web_search",
     "write_bytes",
     "write_json",
     "write_text",
