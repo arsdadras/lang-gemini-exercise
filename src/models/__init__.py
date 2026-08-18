@@ -2,16 +2,16 @@
 
 from models.llm import (
     flash_model,
-    haiku_model,
     lite_model,
+    luna_model,
     pro_model,
-    sonnet_model,
+    terra_model,
 )
 
 __all__ = [
     "flash_model",
-    "haiku_model",
     "lite_model",
+    "luna_model",
     "pro_model",
-    "sonnet_model",
+    "terra_model",
 ]
