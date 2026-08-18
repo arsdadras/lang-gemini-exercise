@@ -1,5 +1,5 @@
-"""Sub-agent definitions.
+"""Delegated subagents for the research pipeline."""
 
-This package is a placeholder for specialised sub-agents that the
-main agent can delegate tasks to.
-"""
+from subagents.researcher import ResearchFindings, researcher_subagent
+
+__all__ = ["ResearchFindings", "researcher_subagent"]
