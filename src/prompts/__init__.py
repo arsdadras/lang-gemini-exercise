@@ -1,13 +1,5 @@
-"""System prompt templates and builders."""
+"""System prompts for agents."""
 
-from prompts.builder import build_system_prompt
-from prompts.presets import Prompts, fib_prompts
-from prompts.template import DEFAULTS, SYSTEM_PROMPT_TEMPLATE
+from prompts.research import RESEARCH_SYSTEM_PROMPT
 
-__all__ = [
-    "DEFAULTS",
-    "SYSTEM_PROMPT_TEMPLATE",
-    "Prompts",
-    "build_system_prompt",
-    "fib_prompts",
-]
+__all__ = ["RESEARCH_SYSTEM_PROMPT"]
