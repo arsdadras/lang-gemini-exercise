@@ -9,17 +9,17 @@ from middleware import retry_on_failure, search_approval
 from models import flash_model
 from prompts import RESEARCH_SYSTEM_PROMPT
 from schemas import ResearchReport
-from tools import web_search
+from subagents import researcher_subagent
 
 load_dotenv()
 
 
 def main() -> None:
-    """Build and launch the P1 research agent (Phase B: full stack)."""
+    """Build and launch the P1 research agent (Phase C: subagent delegation)."""
     agent = create_deep_agent(
         model=flash_model,
         system_prompt=RESEARCH_SYSTEM_PROMPT,
-        tools=[web_search],
+        subagents=[researcher_subagent],
         response_format=ResearchReport,
         middleware=[retry_on_failure, search_approval],
         checkpointer=InMemorySaver(),
