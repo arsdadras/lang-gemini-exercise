@@ -3,27 +3,30 @@
 from deepagents import create_deep_agent
 from dotenv import load_dotenv
 
+from middleware import retry_on_failure
 from models import flash_model
 from prompts import build_research_prompt
+from schemas import ResearchReport
 from tools import web_search
 
 load_dotenv()
 
 
 def main() -> None:
-    """Build and launch the P1 research agent."""
+    """Build and launch the P1 research agent (Phase B: structured output + retry)."""
     agent = create_deep_agent(
         model=flash_model,
         system_prompt=build_research_prompt(),
         tools=[web_search],
+        response_format=ResearchReport,
+        middleware=[retry_on_failure],
     )
 
     topic = input("Research topic: ")
-    for chunk in agent.stream(
-        {"messages": [{"role": "user", "content": topic}]},
-        stream_mode="values",
-    ):
-        chunk["messages"][-1].pretty_print()
+    result = agent.invoke({"messages": [{"role": "user", "content": topic}]})
+
+    report: ResearchReport = result["structured_response"]
+    print(report.model_dump_json(indent=2))
 
 
 if __name__ == "__main__":
