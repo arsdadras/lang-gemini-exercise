@@ -12,9 +12,9 @@ class Source(BaseModel):
 
 class ResearchReport(BaseModel):
     topic: str = Field(description="The topic being researched")
-    summary: str = Field(description="A comprehensive summary of the research")
-    sources: list[Source] = Field(description="A list of cited sources across findings")
     key_findings: list[str] = Field(
         description="Bullet-point findings from the research"
     )
+    summary: str = Field(description="A comprehensive summary of the research")
+    sources: list[Source] = Field(description="A list of cited sources across findings")
     confidence: float = Field(le=1, ge=0, description="Confidence score of the report")
