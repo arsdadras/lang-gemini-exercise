@@ -36,14 +36,14 @@ pro_model = ChatGoogleGenerativeAI(
 
 luna_model = ChatOpenAI(
     model="gpt-5.6-luna",
-    base_url=os.getenv("GAPGPT_BASE_URL"),
+    base_url="https://api.gapgpt.app/v1",
     api_key=os.getenv("GAPGPT_API_KEY"),
     temperature=0,
 )
 
 terra_model = ChatOpenAI(
-    model="gpt-5.6-luna",
-    base_url=os.getenv("GAPGPT_BASE_URL"),
+    model="gpt-5.6-terra",
+    base_url="https://api.gapgpt.app/v1",
     api_key=os.getenv("GAPGPT_API_KEY"),
     temperature=0,
 )
