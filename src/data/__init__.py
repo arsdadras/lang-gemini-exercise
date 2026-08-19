@@ -1,5 +1,5 @@
-"""Static data and content assets."""
+"""Static data and content assets.
 
-from data.guidelines import GUIDELINES
-
-__all__ = ["GUIDELINES"]
+Placeholder for future project-specific static content
+(reference docs, few-shot examples, lookup tables).
+"""

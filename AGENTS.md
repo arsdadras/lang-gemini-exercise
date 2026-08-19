@@ -20,12 +20,15 @@ src/
 ├── models/         # LLM instances
 ├── prompts/        # System prompt templates & builder
 ├── tools/          # Agent-callable tools
-├── state/          # State schemas & thread management
 ├── middleware/     # Pipeline middleware / hooks
 ├── subagents/      # Sub-agent definitions
-├── data/           # Static content
+├── schemas/        # Pydantic structured-output schemas
+├── data/           # Static content (placeholder)
 └── utils/          # Shared helpers
 ```
+
+`state/`, `tools/db_ops.py`, `tools/file_ops.py` are P4-scope (Sandbox/Interpreter Agent) and do not
+exist yet — do not reintroduce them until that project starts (see `ROADMAP.md`).
 
 ## Coding Standards
 
@@ -36,8 +39,10 @@ src/
 
 ## LangGraph / Agent-Specific
 
-- State schema lives in `src/state/schemas.py` — read it before
-  adding new state keys.
+- P1 uses `deepagents.create_deep_agent`'s built-in state + `InMemorySaver`
+  checkpointer — no custom state schema yet. When a project needs one
+  (P2+), put it in `src/state/schemas.py` and read it before adding new
+  state keys.
 - Node functions return partial-state updates; do not mutate the incoming
   state dict in place unless the reducer is explicitly designed for it.
 - Prompts live in `src/prompts/` — keep prompt text out of

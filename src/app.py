@@ -1,13 +1,10 @@
 """Application entry point — assembles and runs the P1 research agent."""
 
-from subagents.research import topic_researcher
-from anthropic.types import anthropic_beta_param
+from subagents import researcher_subagent
 from langgraph.types import Command
-import os
-from models import luna_model
 from langchain_core.messages import HumanMessage
 from tools.search import web_search
-from models.llm import lite_model, flash_model
+from models.llm import lite_model
 from prompts.research import build_research_prompt
 from deepagents import create_deep_agent
 from dotenv import load_dotenv
@@ -28,7 +25,7 @@ def main() -> None:
         checkpointer=InMemorySaver(),
         response_format=ResearchReport,
         middleware=[retry_on_failure, search_approval],
-        subagents=[topic_researcher],
+        subagents=[researcher_subagent],
     )
 
     config = {"configurable": {"thread_id": "research_1b3"}}

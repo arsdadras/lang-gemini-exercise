@@ -42,24 +42,27 @@ These features are not forced into every project on day one. They are mapped bel
 
 ## P1 — Research Agent
 
+**Status (2026-08-19): Phase A ✅ · Phase B ✅ · Phase C 🔶 in progress.**
+See `MENTOR_HANDOFF.md` for the detailed session-by-session state and open items — read that file first before resuming work here.
+
 **Problem:** User gives a topic → agent searches the web → returns a structured, cited report.
 
-### Phase A — Baseline
+### Phase A — Baseline ✅
 - DeepAgents `create_deep_agent` as orchestrator
 - LangChain `TavilySearchResults` tool
 - Streaming output to terminal
 
-### Phase B — Growth
-- Structured Pydantic schema for report sections
-- Middleware: retries, fallback model, output guardrails
-- HITL approval before expensive or sensitive search queries
-- Memory for recurring research preferences and past topics
+### Phase B — Growth ✅
+- Structured Pydantic schema for report sections (`schemas.research.ResearchReport`)
+- Middleware: retries + fallback model (`middleware.retry`), HITL approval (`middleware.hitl`)
+- HITL approval before web_search calls, via `HumanInTheLoopMiddleware` + `InMemorySaver` checkpointer
+- Memory for recurring research preferences and past topics — **not started, deferred**
 
-### Phase C — Professional
-- Research subagents per topic scope
-- LangSmith traces and evaluation datasets
-- SDK-exposed multi-session service
-- Optional RAG overlay for local notes or saved corpus
+### Phase C — Professional 🔶
+- ✅ Research subagent per sub-question (`subagents.researcher.researcher_subagent`, structured `ResearchFindings` output) — wired into `app.py`
+- ⬜ LangSmith traces and evaluation datasets — `.env` already has `LANGSMITH_*` vars provisioned, just needs wiring + a first traced run
+- ⬜ SDK-exposed multi-session service
+- ⬜ Optional RAG overlay for local notes or saved corpus
 
 **Frameworks:** DeepAgents + LangChain → LangGraph SDK at Phase C
 
