@@ -1,5 +1,7 @@
 """Application entry point — assembles and runs the P1 research agent."""
 
+from subagents.research import topic_researcher
+from anthropic.types import anthropic_beta_param
 from langgraph.types import Command
 import os
 from models import luna_model
@@ -23,12 +25,13 @@ def main() -> None:
         model=lite_model,
         system_prompt=build_research_prompt(),
         tools=[web_search],
+        checkpointer=InMemorySaver(),
         response_format=ResearchReport,
         middleware=[retry_on_failure, search_approval],
-        checkpointer=InMemorySaver(),
+        subagents=[topic_researcher],
     )
 
-    config = {"configurable": {"thread_id": "research_1b2"}}
+    config = {"configurable": {"thread_id": "research_1b3"}}
 
     topic = input("what is the topic u want to research? ")
 
@@ -38,8 +41,8 @@ def main() -> None:
         interrupt = result["__interrupt__"][0]
         for request in interrupt.value["action_requests"]:
             print(f"\n{request['description']}")
-            print(f"Tool: {request['tool_call']['name']}")
-            print(f"Args: {request['tool_call']['args']}")
+            print(f"Tool: {request['name']}")
+            print(f"Args: {request['args']}")
 
         decision = input("Approve this web_search call? [y/n]: ").strip().lower()
         resume = {"decisions": [{"type": "approve" if decision == "y" else "reject"}]}
