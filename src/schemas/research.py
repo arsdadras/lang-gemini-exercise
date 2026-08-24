@@ -22,3 +22,11 @@ class ResearchReport(BaseModel):
         le=1,
         description="0 to 1, based on how much sources agree",
     )
+
+
+class ResearchFindings(BaseModel):
+    """Structured findings returned by the researcher subagent."""
+
+    sub_question: str = Field(description="The specific sub-question researched")
+    answer: str = Field(description="Concise answer to the sub-question")
+    sources: list[Source] = Field(description="Sources backing the answer")

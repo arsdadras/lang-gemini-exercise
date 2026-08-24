@@ -2,4 +2,4 @@
 
 from subagents.researcher import ResearchFindings, researcher_subagent
 
-__all__ = ["ResearchFindings", "researcher_subagent"]
+__all__ = ["researcher_subagent"]
