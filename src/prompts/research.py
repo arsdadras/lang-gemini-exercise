@@ -1,6 +1,6 @@
 """Research agent system prompt, built on the shared prompt template."""
 
-from prompts.builder import build_system_prompt
+from prompts.template.builder import build_system_prompt
 
 
 def build_research_prompt() -> str:

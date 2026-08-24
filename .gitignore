@@ -36,3 +36,4 @@ out/
 gen/
 *.log
 last_threads.txt
+.chroma_index/

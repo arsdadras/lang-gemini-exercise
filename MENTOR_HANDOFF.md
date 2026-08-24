@@ -18,6 +18,35 @@ and code the mentee could defend in a review — not scaffolding for its own sak
 
 ### How to mentor here
 
+- **The exact workflow for new lesson code, pinned down on 2026-08-19 after two failed attempts:**
+  1. Break the work into small stages.
+  2. At the start of each stage, send the real working code for that stage as **code blocks in the
+     chat message — never write/edit it directly into the mentee's repo files.** They apply it
+     themselves.
+  3. Calibrate explanation depth: brief for ordinary/simple parts; fuller and clearer for important
+     or complex parts; deeper and more precise for general/strategic matters — architecture, design
+     decisions, why-this-not-that (not limited to just those two, but that's the shape).
+  4. One stage at a time — don't send the next stage until this one has landed.
+
+  What this replaced: first attempt was writing a complete feature end-to-end myself with no pause
+  point (repo's own git history already had multiple `revert: remove AI-authored X` commits from an
+  earlier mentor session doing exactly that — the signal was there and got missed). Second attempt
+  overcorrected into bare skeletons with blanks for the mentee to fill in solo, which also isn't
+  right — the mentee wants to see real code, just delivered in small stages via chat, not silently
+  placed in their repo. If future drift happens either direction, re-read this and the exchange it
+  came from.
+- **Session 0, pinned down 2026-08-20:** before Phase A of any *new* project (P3, P4, P5, P6 when
+  their turn comes), give a short briefing first — problem statement, what each phase (A/B/C) adds,
+  what frameworks/patterns come in, how it feeds P6 — no code, just orientation, same depth as the
+  P2 walkthrough that opened the "P2 — RAG Agent" section below. Purpose is purely so the
+  mentee knows the road ahead before stage-by-stage work starts.
+- **Check repo-wide impact, 2026-08-23:** before presenting any stage's code, grep the whole repo (not just the file being changed) for stale references to the old behavior and other code that now needs to adapt — fix/update both, don't scope the check to only the new/edited code. Exception: `alireza/` is the mentee's own separate scratch/practice area (e.g. `alireza/P2_RAG/` — a parallel, independently-named exploration of the same concepts) — out of scope for this check, not something to keep in sync with `src/`.
+- **Delivery ordering flipped, 2026-08-23:** the workflow above (break into stages, code as chat blocks) still stands, but two things changed: (1) verify each stage's code yourself before sending it — temporarily apply it to the real files, run it, then revert those files back before sending the chat-block version, so what lands in chat is already known to work; (2) send the explanation *first*, in its own message with no code, then send the code only after the mentee has either asked their questions (answer those first) or shown no questions and understood. After the code, suggest test scenarios framed as the mentee's own exploration, not mentor-side verification — you already verified it. Any note that follows the code must be Python syntax/mechanics only (e.g. a stdlib quirk); architecture/design reasoning belongs solely in the pre-code explanation, never repeated after.
+- **Architecture vs. polish, clarified 2026-08-20:** the deferred-scope decision below (LangSmith/
+  eval/tests/deploy) is about *production hardening*, not about *architecture*. System-design growth
+  (checkpointing, time-travel, subgraphs, `CompiledSubAgent` composition, hybrid retrieval, guardrails)
+  is the roadmap's actual point and is NOT deferred — it's taught every phase, per `ROADMAP.md`'s
+  Advanced Features Map. Don't undersell architecture teaching thinking it's in the deferred bucket.
 - Move step by step, phase by phase — don't dump an entire phase in one message. Send one
   meaningful chunk of code at a time with explanation of *why*, not just what.
 - Explain the non-obvious parts: framework API shape, why a middleware/interrupt/checkpoint
@@ -29,12 +58,19 @@ and code the mentee could defend in a review — not scaffolding for its own sak
   under `.venv/Lib/site-packages/` when unsure of an API shape — don't guess from training data.
   This project's history includes real bugs from guessed API shapes; see "Known issues" below.
 
+**Explicit scope decision (2026-08-19):** the mentee wants to prioritize code/syntax/technique/
+strategy/design/architecture across projects for now. **LangSmith, evaluation datasets, formal
+test-writing, and SDK/deploy exposure are deliberately deferred** to a dedicated session later —
+don't proactively push those in during regular project work; wait until the mentee asks for that
+dedicated round. Manually running/demoing an agent end-to-end to see the architecture work live is
+fine and encouraged — that's different from writing a formal test suite.
+
 ## Current status snapshot — 2026-08-19
 
 | Project | Status |
 |---|---|
-| **P1 — Research Agent** | Phase A ✅, Phase B ✅, Phase C 🔶 in progress (see below) |
-| P2 — RAG Agent | Not started |
+| **P1 — Research Agent** | Phase A ✅, Phase B ✅, Phase C ✅ for current scope (see below) |
+| **P2 — RAG Agent** | ✅ Phase A complete (4/4 stages, verified end-to-end 2026-08-20) — Phase B next (see below) |
 | P3 — Code Review & Test Gen Agent | Not started |
 | P4 — Sandbox/Interpreter Agent | Not started (`tools/db_ops.py`, `tools/file_ops.py` were scaffolded early then intentionally deleted — rebuild them here, not before) |
 | P5 — Memory-Rich Personal Assistant | Not started |
@@ -53,21 +89,117 @@ and code the mentee could defend in a review — not scaffolding for its own sak
 This is Phase A + Phase B complete, and the "research subagents per topic scope" bullet of Phase C
 is now wired in.
 
-**Phase C remaining (pick up here next session):**
+**Phase C remaining — deliberately deferred, not forgotten:**
 1. **LangSmith tracing** — `.env` already has `LANGSMITH_API_KEY`, `LANGSMITH_ENDPOINT`,
-   `LANGSMITH_PROJECT`, `LANGSMITH_TRACING` provisioned. This is likely just enabling tracing and
-   doing a first traced run + look at the trace together — a good next lesson, low setup cost.
-2. **Evaluation datasets** — not started.
-3. **SDK-exposed multi-session service** — not started.
-4. **Optional RAG overlay** — not started, explicitly optional per roadmap.
-5. Memory for recurring research preferences (a Phase B item) was also explicitly deferred — still open, lower priority than the Phase C items above.
+   `LANGSMITH_PROJECT`, `LANGSMITH_TRACING` provisioned, ready to wire in whenever the
+   observability/eval/deploy session happens.
+2. **Evaluation datasets** — deferred, same session as above.
+3. **SDK-exposed multi-session service** — deferred, same session as above (deploy-scoped).
+4. **Optional RAG overlay** — explicitly optional per roadmap; likely superseded by P2 anyway.
+5. Memory for recurring research preferences (a Phase B item) — still open, low priority.
 
-**Not yet done, worth doing before the next feature:** the mentee has never confirmed a full
-end-to-end run of the current agent (with real API calls) since the subagent rewiring landed — the
-`while "__interrupt__" in result` loop in `app.py` has only been exercised for import/compile
-correctness in this session, not a live run. Good first move next session: run it together, watch
-the HITL prompt actually appear, approve it, and see a `ResearchReport` come back with the
-researcher subagent's findings folded in.
+**Verified 2026-08-19:** the mentee ran P1 end-to-end live (own initiative, before this note) —
+HITL interrupt fires, approval loop works, `ResearchReport` comes back with the researcher
+subagent's findings folded in. P1 is done for current scope; **now moving to P2.**
+
+### P2 — RAG Agent — detailed state (2026-08-20, updated same day after Phase A finished)
+
+**4-stage Phase A plan — all done, verified end-to-end:**
+1. `state/rag.py` — `RAGState` TypedDict (`question`, `documents`, `generation`) — ✅ mentee applied it
+2. `retrieval/index.py` + `retrieval/__init__.py` — offline ingest (chunk+embed+persist to Chroma) and
+   `get_retriever()` for query-time — ✅ mentee applied it, one self-authored bug found+fixed
+   (see below), `.chroma_index/` builds cleanly
+3. `graphs/rag/` — retrieve → grade_documents → conditional-edge → generate/no_relevant_docs graph
+   (`build_rag_graph()`) — ✅ mentee applied it (own initiative: split node prompts out into
+   `prompts/rag.py` rather than keeping them inline in the graph file — fine, matches the project's
+   existing pattern of `prompts/research.py` holding P1's prompt). Originally landed as a single flat
+   `graphs/rag.py`; restructured into a `graphs/rag/` package on 2026-08-23 — see the Phase B note below,
+   this path is stale in any older note that still says `graphs/rag.py`.
+4. `src/rag_app.py` — entry point (mentee named it `rag_app.py`, not `app_rag.py` as originally
+   drafted — no functional difference, just note the actual filename) — ✅ mentee applied it
+
+**Verified live 2026-08-20:** ran `uv run python src/rag_app.py` twice — a corpus-relevant question
+returned a grounded, source-cited answer; an irrelevant question (`"what is the capital of France?"`)
+correctly fell through `route_after_grading` to the `no_relevant_docs` fallback instead of hallucinating.
+**Phase A is done.**
+
+**Phase B, Stage 1 — corrective-RAG loop — done, verified 2026-08-23.** `RAGState` gained `search_query`
+(mutable, defaults to `question` via `state.get("search_query", state["question"])`) and `retries`
+(counter, absent from state until first increment — always read via `state.get("retries", 0)`).
+`route_after_grading` now three-ways: docs survived → `generate`; empty & `retries < MAX_RETRIES` (2) →
+`query_rewrite` (LLM reformulates the query, increments `retries`) → loops back to `retrieve`; retries
+exhausted → `no_relevant_docs`. Verified: a corpus-relevant question skips the loop entirely; a fully
+unrelated question exhausts both retries and correctly falls to the fallback; note that a *partially*
+relevant one can exit the loop after just 1 retry via `generate` answering "I don't know" instead of
+reaching `no_relevant_docs` — both are legitimate anti-hallucination paths (one code-level, one
+prompt-level honesty), not a bug, and which one fires depends on the (deliberately lenient) grader.
+
+**Standing architecture convention set 2026-08-23 — nodes vs. graph-wiring split, for every raw
+`StateGraph`-based module (not DeepAgents-based ones like P1, which has no direct analog):** node
+functions live in `graphs/<name>/nodes.py`, graph assembly (`add_node`/`add_edge`/routing functions/
+`build_*_graph()`) lives in `graphs/<name>/graph.py`, package `__init__.py` re-exports the builder.
+`graphs/rag.py` was restructured into `graphs/rag/{nodes.py, graph.py, __init__.py}` under this
+convention. **Rationale, worth remembering because the mentor initially got this wrong:** the mentor's
+first instinct was to reject the split using the same "only split when there's actual reuse" reasoning
+used earlier for the retrieval/embedding file question — the mentee correctly pushed back: (1) that
+reuse-only lens doesn't fit here, this split is about separating business logic from orchestration/
+wiring, a legitimate scale-independent boundary, not a reuse-driven one; (2) one of the project's
+explicit goals is practicing production-grade structuring habits, so "our current scale doesn't need
+it" is the wrong criterion to reject a convention on; (3) this repo is one system spanning P1–P6, not N
+independent toy projects, so a structural convention should be decided once, consistently, while it's
+still cheap — not per-project by size. The mentor was convinced and did the refactor directly (mentee
+had explicitly authorized "do the cleanup if convinced" for this one). **Apply this convention forward
+to every new raw-StateGraph graph without re-litigating it** — P2 Phase B/C's later nodes, P3's review
+graph, etc. Don't retrofit P1 — different framework, no nodes/wiring duality to split.
+
+**Phase B remaining (per `ROADMAP.md`):** checkpointing (`InMemorySaver`, resumable multi-turn),
+streaming node-by-node, time-travel/replay, LangSmith tracing per node — next, whenever the mentee is
+ready.
+
+**Architecture already taught for this stage:** raw LangGraph `StateGraph` chosen over DeepAgents for
+P2 because RAG's control flow (retrieve→grade→generate) is deterministic and bounded — it shouldn't
+be LLM-decided the way P1's open-ended research delegation is. Vector store: `langchain-chroma` over
+`langchain_community`'s FAISS wrapper — the latter emits a `DeprecationWarning` on import
+("being sunset and no longer actively maintained"); Chroma is standalone, actively maintained, and
+auto-persists via `chromadb.PersistentClient` (no manual `.persist()` needed). Embeddings:
+`GoogleGenerativeAIEmbeddings(model="gemini-embedding-2-preview")`. Grading is N separate LLM calls
+(one per retrieved doc, each via `lite_model.with_structured_output(GradeDocument)`), not one batched
+call — trades latency/cost for per-doc grading precision; Phase B's corrective-RAG loop is the planned
+place to revisit this trade-off.
+
+**Bug found+fixed 2026-08-20 in the mentee's own `retrieval/index.py`:** `_embeddings()` called
+`GoogleGenerativeAIEmbeddings(model_name=EMBEDDING_MODEL)` — the pydantic field is `model`, not
+`model_name`; the unrecognized kwarg was silently dropped, then the required `model` field failed
+validation. Root-caused by running the script directly (`uv run python -c "..."`) to surface the
+traceback the mentee's PowerShell session wasn't showing. Fixed by the mentee to `model=EMBEDDING_MODEL`.
+If embeddings-related `ValidationError: Field required` shows up again anywhere, check for this same
+kwarg-name mistake first.
+
+**Bug found+fixed 2026-08-20 in `src/graphs/rag.py`'s `generate` node:** `response.content` on
+Gemini-3.x models can come back as a list of content blocks (text + a `signature` block for
+thought-signing), not a plain string — printing it raw showed the Python list repr instead of clean
+text. Fixed by routing through the project's own `utils.text.get_text(message)` helper (handles both
+the plain-`str` and list-of-content-blocks cases) instead of reading `.content` directly. **Use
+`get_text()` any time an `AIMessage.content` needs to be read as plain text, project-wide — this
+isn't Gemini-specific, other providers/models can return structured content too.**
+
+**Repo-wide bug found+fixed 2026-08-20, unrelated to P2 (mentee's own mid-session refactor of `prompts/`):**
+the mentee split `prompts/builder.py` + `prompts/template.py` into a `prompts/template/` package
+(`template.py` + `builder.py` inside it) and added `prompts/rag.py` for P2's node prompts, but
+`prompts/__init__.py` still pointed at the old flat module paths (`prompts.builder`, `prompts.template`),
+which broke every import of the `prompts` package repo-wide (`ModuleNotFoundError: No module named
+'prompts.builder'`). The mentee fixed `prompts/__init__.py` themselves once it was pointed out — now
+correctly imports from `prompts.template.builder` and `prompts.template.template`.
+
+**Standing instruction from the mentee (2026-08-20):** going forward, reuse the system-prompt-template
+builder (`prompts/template/builder.py`'s `build_system_prompt()` + `prompts/template/template.py`'s
+`SYSTEM_PROMPT_TEMPLATE`/`DEFAULTS`) for new prompts **where it's actually applicable and fits** —
+don't force it. It's built for a full agent-persona system prompt (identity/mission/style/policy
+sections), which is what P1's `build_research_prompt()` uses it for. P2's `grade`/`generate` node
+prompts in `prompts/rag.py` are small, single-purpose task instructions via `ChatPromptTemplate` —
+not a persona — so they correctly do *not* use the builder; don't retrofit them just for consistency.
+It becomes relevant again if/when a project phase wraps a graph as a persona-bearing agent (e.g. P2
+Phase C's `CompiledSubAgent` wrapping, or any DeepAgents-based system prompt in P3+).
 
 ## Known issues fixed this session (2026-08-19) — read before assuming these are still broken
 

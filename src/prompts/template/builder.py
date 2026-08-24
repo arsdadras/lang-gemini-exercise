@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 from typing import Final
 
-from prompts.template import DEFAULTS, SYSTEM_PROMPT_TEMPLATE
+from .template import DEFAULTS, SYSTEM_PROMPT_TEMPLATE
 
 _EMPTY_SECTION: Final[re.Pattern[str]] = re.compile(r"<(\w+)>\s*</\1>\n*")
 

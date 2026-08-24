@@ -18,6 +18,7 @@ dependencies = [
     "ipykernel>=7.3.0",
     "langchain-community>=0.4.2",
     "langchain-openai>=1.5.2",
+    "langchain-chroma>=1.1.0",
 ]
 
 [build-system]
@@ -26,12 +27,11 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.package-dir]
 "" = "src"
-src = "src"
-notebooks = "notebooks"
 
 [tool.setuptools.packages.find]
-where = ["src", "."]
-include = ["src*", "models*", "tools*", "prompts*", "state*", "middleware*", "utils*", "schemas*", "subagents*", "data*", "notebooks*"]
+where = ["src", "alireza"]
+include = ["*"]
+exclude = ["tests*", "notebooks*"]
 
 
 
@@ -43,4 +43,7 @@ dev = [
 
 [tool.pytest.ini_options]
 pythonpath = ["src", "."]
+
+[tool.pyrefly]
+search-path = ["src", "alireza"]
 
