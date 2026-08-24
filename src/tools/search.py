@@ -6,13 +6,6 @@ from langchain.tools import tool
 from langchain_tavily import TavilySearch
 from dotenv import load_dotenv
 
-
-"""Web search tool for the research agent."""
-
-
-import os
-from langchain_community.tools.tavily_search import TavilySearchResults
-
 load_dotenv()
 
 web_search = TavilySearch(

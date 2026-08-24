@@ -41,6 +41,15 @@ and code the mentee could defend in a review — not scaffolding for its own sak
   P2 walkthrough that opened the "P2 — RAG Agent" section below. Purpose is purely so the
   mentee knows the road ahead before stage-by-stage work starts.
 - **Check repo-wide impact, 2026-08-23:** before presenting any stage's code, grep the whole repo (not just the file being changed) for stale references to the old behavior and other code that now needs to adapt — fix/update both, don't scope the check to only the new/edited code. Exception: `alireza/` is the mentee's own separate scratch/practice area (e.g. `alireza/P2_RAG/` — a parallel, independently-named exploration of the same concepts) — out of scope for this check, not something to keep in sync with `src/`.
+- **Phase/project bookends, 2026-08-24 (refined same day):** short intro before each phase (A/B/C)
+  starts — the phase's **overall goal**, roughly what stages, and **explicit in/out-of-scope
+  boundaries** (what this phase covers vs. what's deferred to a later stage or out of the course
+  entirely) — not just a bare stage-name list, that left the mentee unsure mid-phase and caused the
+  very scope-clarifying questions the intro should've prevented. Not too long either — land between
+  "just names" and a long essay. Short summary after each phase ends — what got built, what was
+  learned, what's carried forward. Same at project level (P1, P2, ...) but higher-altitude: the
+  project's overall problem/shape, not stage detail — project-start intro is essentially "Session 0"
+  (see below); project-end summary is the same altitude in reverse.
 - **Delivery ordering flipped, 2026-08-23:** the workflow above (break into stages, code as chat blocks) still stands, but two things changed: (1) verify each stage's code yourself before sending it — temporarily apply it to the real files, run it, then revert those files back before sending the chat-block version, so what lands in chat is already known to work; (2) send the explanation *first*, in its own message with no code, then send the code only after the mentee has either asked their questions (answer those first) or shown no questions and understood. After the code, suggest test scenarios framed as the mentee's own exploration, not mentor-side verification — you already verified it. Any note that follows the code must be Python syntax/mechanics only (e.g. a stdlib quirk); architecture/design reasoning belongs solely in the pre-code explanation, never repeated after.
 - **Architecture vs. polish, clarified 2026-08-20:** the deferred-scope decision below (LangSmith/
   eval/tests/deploy) is about *production hardening*, not about *architecture*. System-design growth
@@ -70,7 +79,7 @@ fine and encouraged — that's different from writing a formal test suite.
 | Project | Status |
 |---|---|
 | **P1 — Research Agent** | Phase A ✅, Phase B ✅, Phase C ✅ for current scope (see below) |
-| **P2 — RAG Agent** | ✅ Phase A complete (4/4 stages, verified end-to-end 2026-08-20) — Phase B next (see below) |
+| **P2 — RAG Agent** | ✅ Phase A ✅ Phase B (4/4 stages, verified 2026-08-24; Stage 5/LangSmith deliberately deferred) — Phase C next (see below) |
 | P3 — Code Review & Test Gen Agent | Not started |
 | P4 — Sandbox/Interpreter Agent | Not started (`tools/db_ops.py`, `tools/file_ops.py` were scaffolded early then intentionally deleted — rebuild them here, not before) |
 | P5 — Memory-Rich Personal Assistant | Not started |
@@ -115,8 +124,12 @@ subagent's findings folded in. P1 is done for current scope; **now moving to P2.
    existing pattern of `prompts/research.py` holding P1's prompt). Originally landed as a single flat
    `graphs/rag.py`; restructured into a `graphs/rag/` package on 2026-08-23 — see the Phase B note below,
    this path is stale in any older note that still says `graphs/rag.py`.
-4. `src/rag_app.py` — entry point (mentee named it `rag_app.py`, not `app_rag.py` as originally
-   drafted — no functional difference, just note the actual filename) — ✅ mentee applied it
+4. `apps/rag.py` — entry point, originally `src/rag_app.py`, moved to a root-level `apps/`
+   directory (sibling of `src/`) on 2026-08-24 and renamed to match the repo's dir=kind/file=project
+   convention (`apps/rag.py`, `apps/research.py` — same shape as `state/rag.py`, `schemas/rag.py`).
+   `src/research_app.py` moved to `apps/research.py` at the same time. See the "Entry points moved
+   to `apps/`" note below — this path is stale in any older note that still says `src/rag_app.py` or
+   `src/research_app.py`. — ✅ mentee applied it
 
 **Verified live 2026-08-20:** ran `uv run python src/rag_app.py` twice — a corpus-relevant question
 returned a grounded, source-cited answer; an irrelevant question (`"what is the capital of France?"`)
@@ -152,9 +165,115 @@ had explicitly authorized "do the cleanup if convinced" for this one). **Apply t
 to every new raw-StateGraph graph without re-litigating it** — P2 Phase B/C's later nodes, P3's review
 graph, etc. Don't retrofit P1 — different framework, no nodes/wiring duality to split.
 
-**Phase B remaining (per `ROADMAP.md`):** checkpointing (`InMemorySaver`, resumable multi-turn),
-streaming node-by-node, time-travel/replay, LangSmith tracing per node — next, whenever the mentee is
-ready.
+**Phase B, Stage 2 — checkpointing — done, verified 2026-08-24.** `build_rag_graph()` compiles with
+`checkpointer=InMemorySaver()` (matches P1's `middleware/hitl.py` pattern). `apps/rag.py` now loops
+on a fixed `thread_id`, one `invoke()` per question. Because `RAGState`'s `search_query`/`retries`
+have no reducer, every `invoke()` call explicitly resets them (`{"question": q, "search_query": q,
+"retries": 0}`) — otherwise they leak across turns on the same thread (verified with a manual
+`update_state` seed test: a stale `search_query` from a prior turn silently overrode the new turn's
+real question). Discussed with the mentee why a reducer doesn't fix this: a reducer only defines how
+two values *merge*, it can't distinguish "new conversational turn" from "mid-turn retry loop" —
+that distinction only exists in what the caller passes at `invoke()` time. Reducers are the right tool
+for genuinely cross-turn *accumulating* state (e.g. a `messages` list with `add_messages`), not for
+per-turn scratch fields like these — `RAGState` doesn't have cross-turn state yet, so no reducer is
+needed for now.
+
+**Entry points moved to `apps/`, 2026-08-24.** `src/rag_app.py` → `apps/rag.py`, `src/research_app.py`
+→ `apps/research.py` — a new root-level `apps/` directory, sibling of `src/`, one file per project
+(matches the existing dir=kind/file=project convention). This exposed a real, previously-latent gotcha:
+the project resolves `from graphs...`/`from nodes...`-style absolute imports two ways — (1) when an
+entry script sits directly inside `src/`, Python puts the script's own directory on `sys.path[0]`,
+which happens to equal `src/`, so it resolves by accident; (2) the editable-installed `agent` package
+(`pyproject.toml`'s `package-dir = {"" = "src"}`), which resolves regardless of the script's location
+but only if its `top_level.txt` is current. Found that `top_level.txt` was **stale** — missing `nodes/`
+and `configs/` (dirs the mentee had just added) — because `uv sync` doesn't always rebuild the editable
+finder on its own. Fixed with `uv sync --reinstall-package agent`, then verified an entry file *outside*
+`src/` entirely (`apps/rag.py`) imports and runs correctly end-to-end (multi-turn, no state leakage).
+**Standing gotcha to remember:** any time a new top-level package directory is added under `src/`
+(like `nodes/`, `configs/` were), run `uv sync --reinstall-package agent` (or equivalent) before
+relying on imports from outside `src/` — otherwise the editable install silently doesn't know about it.
+
+**`nodes/`, `configs/` restructure, 2026-08-24 (mentee's own follow-up on the nodes/graph split):**
+mentee replaced the mentor's originally-delivered `graphs/rag/{nodes.py, graph.py, __init__.py}`
+nested-package shape with `nodes/rag.py` + flat `graphs/rag.py` — i.e. applied the repo's
+*pre-existing* dir=kind/file=project convention (already used by `state/`, `schemas/`, `prompts/`)
+to the nodes/graph split instead of introducing a new dir=project/file=role shape. **Mentor agrees
+this is the better call** — it's more consistent with a convention the repo already had before this
+whole split discussion started, not a competing second convention. This supersedes the
+`graphs/rag/` package-shape convention recorded below (still shown for history/rationale, but the
+concrete shape is now dir=kind/file=project, applied to `nodes/`+`graphs/`+`configs/` alike).
+Also added `configs/rag.py` (`MAX_RETRIES = 2`) as a separate module-level-constant file, imported by
+`graphs/rag.py` — reasonable, same "hardcoded but isolated for easy tuning" pattern. The dead duplicate
+`MAX_RETRIES` in `nodes/rag.py` has since been removed by the mentee — confirmed gone.
+
+**`configs/` briefly moved outside `src/`, then reverted, 2026-08-24.** Mentee tried moving `configs/`
+to a root-level dir (sibling of `src/`, like `apps/`) reasoning "separate from business logic" the same
+way `apps/` was separated. Different from `apps/`: `configs/rag.py` is *imported by* other `src/`
+modules (`graphs/rag.py`), not an executed entry point — moving it outside `src/` breaks packaging, not
+just dev convenience. Proved concretely with `uv build --wheel`: the built wheel contains `nodes/` and
+`graphs/rag.py` but not `configs/` when `configs/` sits outside `src/` (`packages.find` only scans
+`src/`+`alireza/`) — installing this package for real (non-editable) would `ModuleNotFoundError` on
+`from configs.rag import MAX_RETRIES`. Reverted back to `src/configs/`. **Rule for future structure
+calls:** anything *executed directly* (entry scripts) can live outside `src/` (`apps/`); anything
+*imported by* code inside `src/` must live inside `src/` — the package must be self-contained for a
+real (non-editable) install to work. Also hit a red-squiggle-only false alarm in VS Code/Pylance after
+the back-and-forth moves (runtime resolution was fine both times, verified via `uv run python` — the
+editor's own index was just stale; `Developer: Reload Window` / `Python: Restart Language Server`
+clears it). Not a PyCharm issue — mentee confirmed PyCharm wasn't even open, this repo runs in VS Code.
+
+**Phase B, Stage 3 — streaming — done, verified 2026-08-24.** `apps/rag.py` uses
+`graph.stream(..., stream_mode="updates")` instead of `graph.invoke()` — prints each node's own
+returned delta live as it fires (doc counts, rewritten query, final generation). Control flow
+unchanged, just visibility.
+
+**Phase B, Stage 4 — time-travel/replay — done, verified 2026-08-24.** `apps/rag.py` gained two REPL
+commands: `history` (lists `graph.get_state_history(config)` snapshots, index 0 = most recent) and
+`replay <index>` (`graph.invoke(None, config=snap.config)` — resumes from that exact checkpoint,
+re-running only what's left per `snap.next`). Verified: replaying from the checkpoint right before
+`generate` re-ran only `generate`, not `retrieve`/`grade_documents`. One real bug caught in the
+mentee's own `except` clause — `except ValueError, IndexError:` (Python 2 syntax) — surprisingly this
+*parses* on the project's actual interpreter (Python 3.14.6, confirmed via `ast.parse`: it becomes
+`except (ValueError, IndexError):` under the hood), but `pyproject.toml` declares
+`requires-python = ">=3.12"` and it's unconfirmed whether 3.12/3.13 accept the same comma form —
+fixed to the unambiguous `except (ValueError, IndexError):` for portability. Worth remembering as a
+"verify on the actual interpreter, don't assume from training data" case that cut the other way this
+time (looked like a Python 2 bug, actually ran fine on 3.14 — still fixed for portability, not because
+it was currently broken).
+
+**Phase B, Stage 5 — LangSmith tracing per node — deliberately skipped, 2026-08-24, mentee's call.**
+Asked the mentee to decide given the scope conflict noted above; their reasoning (confirmed correct):
+unlike checkpointing/streaming/time-travel, LangSmith tracing doesn't teach a new graph-execution
+pattern — it's env-var + run-metadata plumbing, squarely observability/MLOps, no distinct architecture
+lesson at this stage. Staying deferred to the dedicated observability session, and naturally folds into
+`P6`'s own Phase B ("Full LangSmith observability across all agents and subgraphs" per `ROADMAP.md`) —
+not lost, just deferred to where it fits system-wide. **P2 Phase B is done as of this note: Stage 1
+(corrective-RAG loop), Stage 2 (checkpointing), Stage 3 (streaming), Stage 4 (time-travel/replay) —
+all done and verified. Next up: P2 Phase C** (`ROADMAP.md`: hybrid retrieval with web fallback, wrap
+compiled graph as `CompiledSubAgent`, domain-specific retrieval skills, middleware guardrails/response
+validation) — whenever the mentee is ready.
+
+**Phase C, Stage 1 — hybrid retrieval (web fallback) — done, verified 2026-08-24.** `no_relevant_docs`
+replaced by `web_search_fallback`: when the corrective-RAG loop exhausts retries with zero relevant
+local docs, falls back to a live Tavily `web_search` call (same tool P1 uses) + a dedicated
+`_generate_from_web_prompt` (`prompts/rag.py`) that explicitly labels the answer as web-sourced, not
+from the local corpus. `route_after_grading`'s exhausted-retries branch now returns
+`"web_search_fallback"` instead of `"no_relevant_docs"` — full replace, not a toggle (dead code avoided
+on purpose, consistent with the `MAX_RETRIES` duplicate cleanup earlier this session; old behavior
+still recoverable from git history if ever needed). Deliberately does **not** re-grade/filter web
+results yet, and does **not** guard against out-of-scope/nonsensical questions (e.g. "what's my dad's
+name?" — tested, the LLM currently answers honestly via prompt-level instruction rather than
+hallucinating, but this isn't an architectural guarantee) — both explicitly deferred to Phase C Stage 4
+(middleware guardrails/response validation), not solved here. One bug found+fixed in the mentee's own
+code: `response.get("results, []")` — comma inside the string literal (should be
+`response.get("results", [])`) — meant `.get()` always missed and returned `None`, so the fallback
+silently never used real web results, always emitting the canned "couldn't find anything" message
+regardless of what Tavily returned. Verified end-to-end (`who is the current president of iran` —
+exhausted 2 retries, correctly fell to `web_search_fallback`, got a real cited web answer).
+Considered and rejected `langgraph.prebuilt.ToolNode` for this: it's built for `messages`-based,
+LLM-decided tool-calling (ReAct-style), and `RAGState` has no `messages` key — our control flow is
+code-deterministic (always call `web_search` here, no LLM decision), so a plain function calling
+`web_search.invoke(...)` directly is the right fit, same reasoning as the original raw-`StateGraph`-
+over-DeepAgents choice for P2.
 
 **Architecture already taught for this stage:** raw LangGraph `StateGraph` chosen over DeepAgents for
 P2 because RAG's control flow (retrieve→grade→generate) is deterministic and bounded — it shouldn't

@@ -49,3 +49,19 @@ _rewrite_prompt = ChatPromptTemplate.from_messages(
         ),
     ]
 )
+
+
+_generate_from_web_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "Answer the question using only the provided web search results. The "
+            "local document corpus had nothing relevant, so mention that this answer "
+            "comes from the web instead. Cite the source URL for each claim.",
+        ),
+        (
+            "human",
+            "Question: {question}\n\nWeb results:\n{context}",
+        ),
+    ]
+)

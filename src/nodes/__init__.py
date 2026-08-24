@@ -1,7 +1,7 @@
 from .rag import (
     generate,
     grade_documents,
-    no_relevant_docs,
+    web_search_fallback,
     query_rewrite,
     retrieve,
 )
@@ -10,7 +10,7 @@ from .rag import (
 __all__ = [
     "generate",
     "grade_documents",
-    "no_relevant_docs",
+    "web_search_fallback",
     "query_rewrite",
     "retrieve",
 ]
