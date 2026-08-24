@@ -6,7 +6,7 @@ windows instead of one long, cluttered conversation.
 """
 
 from prompts import researcher_subagent_prompt
-from schemas import ResearchFindings
+from output_schemas import ResearchFindings
 from tools import web_search
 
 researcher_subagent = {

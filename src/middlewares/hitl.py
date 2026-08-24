@@ -1,4 +1,4 @@
-"""Human-in-the-loop approval middleware.
+"""Human-in-the-loop approval middlewares.
 
 Requires a checkpointer on the agent (see app.py) since interrupts
 pause the graph and must resume from persisted state.

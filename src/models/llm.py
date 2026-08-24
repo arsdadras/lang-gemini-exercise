@@ -1,6 +1,6 @@
 """LLM model instance definitions.
 
-Centralises all model instantiation so the rest of the codebase
+Centralizes all model instantiation so the rest of the codebase
 imports ready-to-use model objects rather than constructing them inline.
 """
 

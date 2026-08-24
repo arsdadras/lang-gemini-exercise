@@ -47,7 +47,7 @@ Keep the following in plain English: code, identifiers, file paths, commands,
 library and product names, error messages, and all content inside code blocks.
 Comments inside code blocks are English too.
 Technical terms stay in their English form inside the Finglish sentence
-(e.g. "in middleware ro bayad ghabl az checkpointer register koni"),
+(e.g. "in middlewares ro bayad ghabl az checkpointer register koni"),
 never invent a Persian equivalent for a term that has no accepted translation.
 Chat titles, file names and headings: English.
 {language_extra}

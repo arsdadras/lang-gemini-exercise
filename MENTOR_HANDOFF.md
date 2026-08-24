@@ -275,6 +275,72 @@ code-deterministic (always call `web_search` here, no LLM decision), so a plain 
 `web_search.invoke(...)` directly is the right fit, same reasoning as the original raw-`StateGraph`-
 over-DeepAgents choice for P2.
 
+**`schemas/` renamed to `output_schemas/`, 2026-08-24 — real name collision, not a style choice.**
+`chromadb` (a P2 dependency via `langchain-chroma`) ships its own `site-packages/schemas/` directory
+(embedding-function JSON files — unrelated to this repo). Since that name exactly matched our own
+top-level `src/schemas/` package, Python merged them as a PEP 420 namespace package the moment
+resolution happened purely via the editable install (no `src` on `sys.path`) — and namespace packages
+never execute `__init__.py`, so `from schemas import ResearchFindings` (top-level re-export style)
+silently broke while `from schemas.rag import GradeDocument` (submodule-direct style) kept working by
+luck, since the real file was still reachable through the merged namespace's contributed portion.
+Confirmed for real: `apps/research.py` actually crashed (`ImportError: cannot import name
+'ResearchFindings' from 'schemas' (unknown location)` — the `(unknown location)` was the tell: a
+namespace package has no `__file__`). Fixed by renaming the package to `output_schemas` (checked
+against `site-packages` first — no collision) and updating every importer (`nodes/rag.py`,
+`subagents/research.py`, `apps/research.py`, `output_schemas/__init__.py` itself) plus
+`uv sync --reinstall-package agent` to refresh the editable install's `top_level.txt`. Verified via
+pure editable-install resolution (no `sys.path` tricks): `output_schemas` top-level import, `pytest`,
+`apps/research.py` import, and `apps/rag.py` full run all pass. **Lesson for future top-level package
+names in this repo:** before naming a new `src/` top-level directory, check it doesn't collide with an
+already-installed dependency's own package/data directory in `site-packages` — generic single-word
+names (`schemas`, `config`, `utils`, `types`) are the highest-risk ones; this collision existed
+silently since P2 Phase A (whenever `chromadb` was first installed) and only surfaced now because it
+took an import path that bypassed the `src`-on-path convenience trick.
+
+**Phase C, Stage 2 — CompiledSubAgent wrap — done, verified 2026-08-24.** `subagents/rag.py`:
+`rag_subagent` (a `CompiledSubAgent` dict) wraps the compiled P2 graph behind a `RunnableLambda`
+adapter (`_run_rag_subagent`) that extracts the question from `state["messages"][-1]`, invokes the
+existing graph with a fresh `uuid4()` thread_id per call (each delegation is a one-shot query — no
+reason to persist a subagent-level thread across calls), and returns `{"messages": [AIMessage(...)]}`.
+`RAGState`/`build_rag_graph()` themselves untouched — the `messages`-key requirement `CompiledSubAgent`
+imposes (confirmed from `deepagents` source: raises `ValueError` without it) is purely an
+integration-boundary concern, kept out of the graph's own task-shaped state. Considered and rejected
+`ToolNode` (built for LLM-decided tool-calling on `messages` state; our control flow is
+code-deterministic) and `RunnableGenerator` (only matters if the caller streams; `deepagents`' `task`
+tool always calls `.invoke()`, never `.stream()`). Verified end-to-end: direct `runnable.invoke()`, and
+a real `create_deep_agent(subagents=[rag_subagent])` call that delegates through the `task` tool and
+gets a correct grounded answer back.
+
+**Real finding, not a code bug: delegation reliability depends heavily on system-prompt structure.**
+Reproduced empirically (3+ runs): a one-line system prompt ("delegate corpus questions to rag_subagent
+via the task tool.") produces **flaky** orchestrator behavior — sometimes delegates cleanly, sometimes
+wanders through its own built-in `glob`/`ls` filesystem tools first (which compete with `rag_subagent`
+for the same kind of question) and occasionally gives up entirely ("no repository present..." — the
+mentee hit this exact failure live). `rag_subagent` itself never failed when actually invoked — the
+unreliability is entirely in the parent's tool-choice policy. Fix verified reliable (1 clean `task`
+call, no wasted exploration): a structured system prompt via the existing `build_system_prompt()`
+template (same one `prompts/research.py`'s `build_research_prompt()` already uses for P1), with an
+explicit `tools` section stating the decision heuristic — not a rigid "always delegate" rule, but
+*why*: `rag_subagent` for questions about corpus **content/meaning**, filesystem tools for a **specific
+known file's** exact structure/content. **General principle, not model-strength-specific:** explicit
+tool-choice structuring is standard production practice regardless of model capability — a stronger
+model reduces failure *frequency* but doesn't remove the need (variance + wasted-tool-call cost exist
+regardless of model tier).
+
+**Follow-up strategic question, resolved:** for a large document where the goal is holistic
+understanding (not a single targeted fact) and context-window/efficiency is a real constraint, the
+right approach is neither pure RAG nor pure full-file-read alone — it's RAG-as-coarse-filter (find the
+relevant section cheaply) followed by full-context reading of just that narrowed section
+("retrieve then read"). Teaching an agent this decision policy generically (not hardcoded per-scenario)
+is exactly what `ROADMAP.md`'s P5 "Skills library" is for — **out of scope for P2**, correctly deferred;
+for now, a well-reasoned `tools` section in the system prompt (heuristic, not rigid rule) is the right
+altitude of investment. Note: P2 Phase C's own Stage 3 bullet is "Skills for domain-specific retrieval
+behavior" — worth clarifying with the mentee before starting it whether that's a lighter, RAG-scoped
+customization or expected to reuse P5's actual `/skills/` DeepAgents mechanism; the Advanced Features
+Map table and the P5 section text also disagree slightly on whether Skills is P5-A or P5-B (table says
+A, P5's own Phase B bullet list has it) — minor drift, same class as the earlier HITL table/section
+mismatch, not urgent to fix but note it if it causes confusion.
+
 **Architecture already taught for this stage:** raw LangGraph `StateGraph` chosen over DeepAgents for
 P2 because RAG's control flow (retrieve→grade→generate) is deterministic and bounded — it shouldn't
 be LLM-decided the way P1's open-ended research delegation is. Vector store: `langchain-chroma` over

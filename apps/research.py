@@ -8,16 +8,16 @@ from models.llm import lite_model
 from prompts.research import build_research_prompt
 from deepagents import create_deep_agent
 from dotenv import load_dotenv
-from schemas.research import ResearchReport
-from middleware.retry import retry_on_failure
-from middleware.hitl import search_approval
+from output_schemas.research import ResearchReport
+from middlewares.retry import retry_on_failure
+from middlewares.hitl import search_approval
 from langgraph.checkpoint.memory import InMemorySaver
 
 load_dotenv()
 
 
 def main() -> None:
-    """build and luch the p1 research agent"""
+    """build and launch the p1 research agent"""
     agent = create_deep_agent(
         model=lite_model,
         system_prompt=build_research_prompt(),

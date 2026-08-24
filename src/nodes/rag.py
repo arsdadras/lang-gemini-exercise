@@ -10,7 +10,7 @@ from prompts.rag import (
     _generate_from_web_prompt,
 )
 from retrieval.index import get_retriever
-from schemas.rag import GradeDocument
+from output_schemas.rag import GradeDocument
 from state import RAGState
 from tools.search import web_search
 from utils.text import get_text
