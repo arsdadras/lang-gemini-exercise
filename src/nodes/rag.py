@@ -9,8 +9,6 @@ from schemas.rag import GradeDocument
 from state import RAGState
 from utils.text import get_text
 
-MAX_RETRIES = 2
-
 
 def retrieve(state: RAGState) -> dict:
     """Fetch candidate documents for the search query from the persisted index."""

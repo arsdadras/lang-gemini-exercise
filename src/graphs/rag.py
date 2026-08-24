@@ -2,16 +2,18 @@
 
 from typing import Literal, cast
 
+from langgraph.checkpoint.memory import InMemorySaver
+
 from langgraph.graph import END, START, StateGraph
 
-from nodes.rag import (
-    MAX_RETRIES,
+from nodes import (
     generate,
     grade_documents,
     no_relevant_docs,
     query_rewrite,
     retrieve,
 )
+from configs.rag import MAX_RETRIES
 from state import RAGState
 
 
@@ -41,4 +43,4 @@ def build_rag_graph():
     graph.add_edge("generate", END)
     graph.add_edge("no_relevant_docs", END)
 
-    return graph.compile()
+    return graph.compile(checkpointer=InMemorySaver())
