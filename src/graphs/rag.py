@@ -12,6 +12,7 @@ from nodes import (
     web_search_fallback,
     query_rewrite,
     retrieve,
+    check_hallucination,
 )
 from configs.rag import MAX_RETRIES
 from state import RAGState
@@ -35,12 +36,13 @@ def build_rag_graph():
     graph.add_node("query_rewrite", query_rewrite)
     graph.add_node("generate", generate)
     graph.add_node("web_search_fallback", web_search_fallback)
+    graph.add_node("check_hallucination", check_hallucination)
 
     graph.add_edge(START, "retrieve")
     graph.add_edge("retrieve", "grade_documents")
     graph.add_conditional_edges("grade_documents", route_after_grading)
     graph.add_edge("query_rewrite", "retrieve")
-    graph.add_edge("generate", END)
+    graph.add_edge("generate", "check_hallucination")
     graph.add_edge("web_search_fallback", END)
-
+    graph.add_edge("check_hallucination", END)
     return graph.compile(checkpointer=InMemorySaver())

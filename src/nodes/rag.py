@@ -2,18 +2,20 @@
 
 from typing import cast
 
-from models.llm import lite_model
+from models import flash_model, lite_model
 from prompts.rag import (
     _generate_prompt,
     _grade_prompt,
+    _hallucination_prompt,
     _rewrite_prompt,
     _generate_from_web_prompt,
 )
 from retrieval.index import get_retriever
-from output_schemas.rag import GradeDocument
+from output_schemas.rag import GradeDocument, GradeHallucination
 from state import RAGState
 from tools.search import web_search
-from utils.text import get_text
+from utils.get_text import get_text
+from utils.get_docs_context import get_docs_context
 
 
 def retrieve(state: RAGState) -> dict:
@@ -50,12 +52,25 @@ def query_rewrite(state: RAGState) -> dict:
 
 def generate(state: RAGState) -> dict:
     """Answer the question grounded in the surviving documents."""
-    context = "\n\n".join(
-        f"[{doc.metadata['source']}]\n{doc.page_content}" for doc in state["documents"]
-    )
-    chain = _generate_prompt | lite_model
+    context = get_docs_context(state["documents"])
+    chain = _generate_prompt | flash_model
     response = chain.invoke({"question": state["question"], "context": context})
     return {"generation": get_text(response)}
+
+
+def check_hallucination(state: RAGState) -> dict:
+    context = get_docs_context(state["documents"])
+    grader = lite_model.with_structured_output(GradeHallucination)
+    chain = _hallucination_prompt | grader
+    verdict = cast(
+        GradeHallucination,
+        chain.invoke({"context": context, "generation": state["generation"]}),
+    )
+    if verdict.binary_score == "yes":
+        return {}
+    return {
+        "generation": "I found a possible answer, but couldn't verify it's fully supported by the indexed corpus, so I'm not confident enough to state it."
+    }
 
 
 def web_search_fallback(state: RAGState) -> dict:

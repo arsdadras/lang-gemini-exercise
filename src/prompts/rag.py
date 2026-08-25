@@ -51,6 +51,22 @@ _rewrite_prompt = ChatPromptTemplate.from_messages(
 )
 
 
+_hallucination_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "You check whether a generated answer is fully grounded in the provided "
+            "context — every claim in the answer must be supported by the context. "
+            "Give a binary score 'yes' or 'no'. Be strict.",
+        ),
+        (
+            "human",
+            "Context:\n{context}\n\nGenerated answer:\n{generation}",
+        ),
+    ]
+)
+
+
 _generate_from_web_prompt = ChatPromptTemplate.from_messages(
     [
         (

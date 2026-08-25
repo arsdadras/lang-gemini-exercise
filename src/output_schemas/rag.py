@@ -8,3 +8,17 @@ class GradeDocument(BaseModel):
     binary_score: Literal["yes", "no"] = Field(
         description="'yes' if the document is relevant to the question, else 'no'."
     )
+
+
+class GradeHallucination(BaseModel):
+    """Binary hallucination grade for a generated answer."""
+
+    binary_score: Literal["yes", "no"] = Field(
+        description="'yes' if the answer is fully grounded in the provided context, else 'no'."
+    )
+
+
+class _GroundednessVerdict(BaseModel):
+    binary_score: Literal["yes", "no"] = Field(
+        description="'yes' if the answer is fully grounded in the tool context, else 'no'."
+    )

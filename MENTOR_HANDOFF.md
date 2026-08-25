@@ -85,6 +85,89 @@ fine and encouraged — that's different from writing a formal test suite.
 | P5 — Memory-Rich Personal Assistant | Not started |
 | P6 — Capstone | Not started |
 
+## Future Extensions Backlog (beyond `ROADMAP.md`), started 2026-08-25
+
+Two distinct triggers populate this list, both required — passive logging alone isn't enough:
+
+1. **As they come up in conversation.** Any idea for a feature/function/extension/tool that
+   surfaces while working a project — whether it's genuinely outside the formal `ROADMAP.md`
+   curriculum, or is an official roadmap bullet that ends up left undone — gets logged here
+   immediately, tagged Essential or Nice-to-have.
+2. **Proactively, at the end of a project's last working session.** Don't wait passively for
+   items to come up on their own — actively review what the project *could* still use (real
+   production gaps, natural extensions of what was just built, official roadmap bullets left
+   incomplete) and log them here before moving to the next project.
+
+**If a real need for a logged item surfaces mid-course** (while building something else in the
+same or a later project), pull it in and build it then — don't force it to wait for a dedicated
+round. Otherwise, this whole backlog is the punch list for an eventual **advanced/enrichment
+round** after finishing P1–P6: revisit each project, prioritize Essential items first, then work
+down the Nice-to-have list.
+
+**Priority tags:**
+- **Essential** — meaningfully closes a real production gap; worth prioritizing first in a
+  do-it-later round.
+- **Nice-to-have** — a genuine improvement, but the current implementation already handles the
+  core need adequately; polish, not a gap.
+
+### P1 — Research Agent (retrospective logged 2026-08-25 — Phase A/B/C done for current scope)
+
+**Essential** (official roadmap bullets, left undone — already tracked in more detail in the
+"P1 — Research Agent — detailed state" section below; cross-referenced here, not duplicated):
+- Memory for recurring research preferences and past topics (Phase B item).
+- LangSmith tracing + evaluation datasets (Phase C item).
+- SDK-exposed multi-session service (Phase C item).
+
+**Nice-to-have:**
+- **Wire P1 to P2's `rag_subagent`.** `ROADMAP.md` lists an "Optional RAG overlay for local
+  notes or saved corpus" for P1 Phase C, noting it's "likely superseded by P2 anyway" — now that
+  P2 Phase C actually built `rag_subagent` (a real `CompiledSubAgent`), adding it to P1's
+  `subagents=[...]` list is a cheap, concrete way to realize that bullet using work already done,
+  not a from-scratch build.
+- **Citation/groundedness validation on `ResearchReport`.** Mirror P2 Phase C Stage 4's
+  `check_hallucination` pattern: verify each cited source in the final report actually appears in
+  what `web_search` returned, before returning the report to the user — catches a fabricated
+  citation the same way P2 now catches an ungrounded generation.
+- **Broader model-fallback chain in `retry_on_failure`.** Currently one fallback hop
+  (`luna_model` only) — could chain further (e.g. `luna_model` → `terra_model`) for more
+  resilience against a single fallback also being unavailable.
+
+### P2 — RAG Agent (mid-course — Phase A/B done, Phase C in progress)
+
+**Nice-to-have:**
+- **Hallucination-triggered retry/reroute.** `check_hallucination` (Phase C Stage 4) currently
+  just swaps in a safe disclaimer when the generation isn't grounded — it doesn't route anywhere
+  else. A Self-RAG/CRAG-style extension would instead route the ungrounded case back to
+  `query_rewrite` (retry retrieval with a better query) or `web_search_fallback` (try the web
+  instead) rather than giving up with a disclaimer. Not essential: the disclaimer already fully
+  closes the hallucination-prevention need (no false answers reach the user) — this would only
+  make the agent *more likely to actually answer* instead of declining.
+- **Extend `check_hallucination` to the `web_search_fallback` path.** Stage 4 only validates the
+  local-corpus `generate` path; the web-fallback answer isn't groundedness-checked. Deliberately
+  scoped out of Stage 4 to keep that stage small — a natural, cheap follow-up (same node pattern,
+  different input path).
+- **Batch document grading.** `grade_documents` makes one LLM call per retrieved document
+  (`lite_model.with_structured_output(GradeDocument)` per doc) rather than one batched call for
+  all of them — trades latency/cost for per-doc grading precision, noted as a known trade-off
+  back in Phase A. Batching would cut LLM calls significantly per query; worth it once query
+  volume/cost actually matters, not before.
+
+### P3 — Code Review & Test Generation Agent
+
+*(none logged yet — not started)*
+
+### P4 — Sandbox / Interpreter Agent
+
+*(none logged yet — not started)*
+
+### P5 — Memory-Rich Personal Assistant
+
+*(none logged yet — not started)*
+
+### P6 — Capstone
+
+*(none logged yet — not started)*
+
 ### P1 — Research Agent — detailed state
 
 **Working today:** `src/app.py` builds a `deepagents.create_deep_agent` with:

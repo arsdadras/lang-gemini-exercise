@@ -4,6 +4,7 @@ from .rag import (
     web_search_fallback,
     query_rewrite,
     retrieve,
+    check_hallucination,
 )
 
 
@@ -13,4 +14,5 @@ __all__ = [
     "web_search_fallback",
     "query_rewrite",
     "retrieve",
+    "check_hallucination",
 ]
