@@ -43,6 +43,8 @@ def main() -> None:
         ):
             for node_name, delta in update.items():
                 # print(f"{node_name} running: ...")
+                if not delta:
+                    continue
                 if "documents" in delta:
                     print(f'-> Retrieved {len(delta["documents"])} documents.')
                 if "search_query" in delta:

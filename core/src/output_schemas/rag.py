@@ -16,9 +16,3 @@ class GradeHallucination(BaseModel):
     binary_score: Literal["yes", "no"] = Field(
         description="'yes' if the answer is fully grounded in the provided context, else 'no'."
     )
-
-
-class _GroundednessVerdict(BaseModel):
-    binary_score: Literal["yes", "no"] = Field(
-        description="'yes' if the answer is fully grounded in the tool context, else 'no'."
-    )

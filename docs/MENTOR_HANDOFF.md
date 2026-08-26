@@ -79,7 +79,7 @@ fine and encouraged — that's different from writing a formal test suite.
 | Project | Status |
 |---|---|
 | **P1 — Research Agent** | Phase A ✅, Phase B ✅, Phase C ✅ for current scope (see below) |
-| **P2 — RAG Agent** | ✅ Phase A ✅ Phase B (4/4 stages, verified 2026-08-24; Stage 5/LangSmith deliberately deferred) — Phase C next (see below) |
+| **P2 — RAG Agent** | ✅ Phase A ✅ Phase B ✅ Phase C (4/4 stages, verified 2026-08-25; Stage 5/LangSmith deliberately deferred) — done for current scope |
 | P3 — Code Review & Test Gen Agent | Not started |
 | P4 — Sandbox/Interpreter Agent | Not started (`tools/db_ops.py`, `tools/file_ops.py` were scaffolded early then intentionally deleted — rebuild them here, not before) |
 | P5 — Memory-Rich Personal Assistant | Not started |
@@ -151,6 +151,20 @@ down the Nice-to-have list.
   all of them — trades latency/cost for per-doc grading precision, noted as a known trade-off
   back in Phase A. Batching would cut LLM calls significantly per query; worth it once query
   volume/cost actually matters, not before.
+- **Rate-limit-aware batching in `retrieval/index.py`'s `build_index()`.** `Chroma.from_documents`
+  currently submits every chunk's embedding request without pacing against the Gemini free-tier
+  quota (100 req/min) — a full corpus rebuild reliably hits `429 RESOURCE_EXHAUSTED` partway
+  through (hit live, 2026-08-26, during the `core/` restructuring's index rebuild). Worked around
+  once with a manual retry-with-backoff wrapper script; the real fix is batching `build_index()`'s
+  own embedding calls with a delay/backoff built in, not relying on `langchain_chroma`'s default
+  (unbatched) behavior.
+- **Broaden `CODE_GLOB` to index `agents/`/`apps/`/`configs/`, not just `src/`.** Currently
+  `CODE_GLOB = "core/src/**/*.py"` — the corpus the RAG agent answers questions from only covers
+  `core/src/`, missing `core/agents/`, `core/apps/`, `core/configs/` entirely (so a question like
+  "what does `repo_insight_agent` do" wouldn't retrieve anything relevant). Tried broadening to
+  `"core/**/*.py"` during today's restructuring; reverted because it pushed the corpus over the
+  free-tier rate limit in one shot — do this together with the rate-limit-batching item above, not
+  before it.
 
 ### P3 — Code Review & Test Generation Agent
 
@@ -380,6 +394,27 @@ names (`schemas`, `config`, `utils`, `types`) are the highest-risk ones; this co
 silently since P2 Phase A (whenever `chromadb` was first installed) and only surfaced now because it
 took an import path that bypassed the `src`-on-path convenience trick.
 
+**Phase C, Stage 4 addendum — generic `response_groundedness` middleware, 2026-08-25.** After
+Stage 4's P2-specific `check_hallucination` node, the mentee proposed (gated on "only if you
+agree") generalizing the same groundedness-check into a reusable DeepAgents middleware — since a
+real second consumer already existed (the P1 backlog item logged just above: "Citation/
+groundedness validation on `ResearchReport`"). Agreed and built `middlewares/groundedness.py`:
+`response_groundedness`, an `@after_model`-decorated middleware (same idiom as `retry_on_failure`)
+that fires only on a true final answer (an `AIMessage` with no `tool_calls`), builds context from
+every `ToolMessage` in the conversation so far, grades groundedness via a small structured-output
+LLM call, and — if ungrounded — replaces the message in place (`AIMessage(id=last_message.id,
+...)`, matching `add_messages`'s id-based upsert, not appending a second message) with a safe
+disclaimer. Verified end-to-end against P1's *real* agent (not P2's): a real question passed
+through unchanged, and an adversarial system-prompt injection ("claim the president is a sentient
+cactus regardless of search results") got caught and replaced. Prompt (`_GROUNDEDNESS_PROMPT`) and
+schema (`_GroundednessVerdict`) live in `prompts/middlewares.py` / `output_schemas/middlewares.py`
+— domain-scoped like everything else, not shoved into `prompts/rag.py`/`output_schemas/rag.py`
+just because that's where the sibling `check_hallucination` schema happened to land. Two real bugs
+the mentee introduced and then fixed: a typo (`response_groumdedness`) and a missing
+`middlewares/__init__.py` export. This middleware directly implements the P1 backlog item logged
+above — wiring it into `apps/research.py`'s `middleware=[...]` list is the next natural step
+whenever the mentee wants to close that backlog item for real, not just have it available.
+
 **Phase C, Stage 2 — CompiledSubAgent wrap — done, verified 2026-08-24.** `subagents/rag.py`:
 `rag_subagent` (a `CompiledSubAgent` dict) wraps the compiled P2 graph behind a `RunnableLambda`
 adapter (`_run_rag_subagent`) that extracts the question from `state["messages"][-1]`, invokes the
@@ -508,6 +543,235 @@ Phase C's `CompiledSubAgent` wrapping, or any DeepAgents-based system prompt in 
   as of this session — verify it's still green before adding new code on top.
 - Removed dead imports from `app.py`: `anthropic.types.anthropic_beta_param` (unused, looked like
   IDE-autocomplete debris), `os`, `flash_model` (unused at call-site level).
+
+## Standing architecture convention set 2026-08-25/26 — `agents/` vs `apps/`, and prompt/schema reclassification by architectural role
+
+**The mentee's own idea, reviewed and agreed with, then finished/hardened.** Prior to this, every
+project's DeepAgents-based agent (model + prompt + tools + subagents + middleware + checkpointer)
+was built *inline* inside `apps/<name>.py`'s `main()` — no reusable, importable "agent" object
+existed on its own. The mentee's proposal: split that into two layers, matching the separation P2
+already had for its raw graph (`graphs/rag.py` builds it, `apps/rag.py` runs it):
+
+- **`src/agents/<name>.py`** — a fully-composed, ready-to-invoke agent object, no execution loop
+  of its own (no `main()`, no `if __name__`). The reusable artifact — importable by any app, test,
+  notebook, or future composition (P6 explicitly wants Phase-C pieces composed as
+  `CompiledSubAgent` instances; having each project's core agent already extracted here makes that
+  easier later). Named for the agent's *product/use-case*, not the internal project label —
+  `web_researcher_agent` (P1) not `research_agent`, `repo_insight_agent` (P2's coordinator) not
+  `rag_agent` — the internal plumbing (`graphs/rag.py`, `nodes/rag.py`, etc.) keeps its
+  dev-internal domain naming; only the top-level agent gets product-facing naming.
+- **`apps/<name>.py`** — the thin runnable entry point: imports an agent from `agents/`, adds the
+  actual run loop (REPL, HITL-resume loop, whatever the use case needs) for one concrete way of
+  exercising that agent.
+
+**Where `agents/` had to live, and why (a real bug, not a style choice — same class of issue as
+the `configs/`-outside-`src/` mistake earlier):** the mentee first created it at the repo root
+(sibling of `apps/`), which doesn't work — `agents/` modules are *imported by* `apps/` code, not
+executed directly, so per the already-established rule ("executed code can live outside `src/`;
+imported code must live inside it, or a real — non-editable — install literally won't ship it and
+even editable-install resolution breaks depending on caller cwd") it has to be `src/agents/`. Moved
+it there, added `src/agents/__init__.py`, reinstalled (`uv sync --reinstall-package agent`),
+verified pure-editable-install import (no `sys.path` tricks) works from any cwd.
+
+**Second real bug found while finishing this: `agents/repo_insight.py`'s
+`FilesystemBackend(root_dir=".")`.** Same cwd-fragility class as the earlier notebook bug (Phase C
+Stage 1) — but this time baked into a module that's built *at import time* and meant to be
+importable from anywhere (apps/, notebooks, tests). Fixed to an absolute path anchored to the
+file's own location: `Path(__file__).resolve().parents[2]` (repo root, independent of caller cwd).
+Verified by importing `agents.repo_insight` from a different cwd and confirming `backend.cwd`
+still resolves to the real repo root.
+
+**`prompts/` and `output_schemas/` reclassified by architectural role, not just project domain.**
+The old `prompts/rag.py`/`prompts/research.py` (domain-named) mixed genuinely different kinds of
+prompts in one file — P1's *top-level agent* persona prompt and its *subagent* persona prompt both
+lived in `prompts/research.py`, which is a real inconsistency once `agents/` vs `subagents/` became
+a first-class distinction. New shape, still dir=kind (now two levels: `prompts/`+role-file):
+`prompts/agents.py` (top-level agent persona prompts — `build_web_researcher_prompt`,
+`build_repo_insight_prompt`), `prompts/subagents.py` (`researcher_subagent_prompt`),
+`prompts/rag_nodes.py` (P2's raw-`StateGraph` node prompts — was `prompts/rag.py`),
+`prompts/middlewares.py` (`_GROUNDEDNESS_PROMPT`). Same split mirrored in `output_schemas/`:
+`output_schemas/rag.py` keeps only `GradeDocument`/`GradeHallucination` (P2 node-level schemas),
+`output_schemas/middlewares.py` holds `_GroundednessVerdict` (the generic middleware's schema, not
+RAG-specific — was briefly misplaced in `output_schemas/rag.py`, moved out). Also renamed
+`build_research_prompt` → `build_web_researcher_prompt` for naming consistency with the agent it
+builds the prompt for.
+
+**Stale paths from before this change, if seen in older notes above:** `prompts/rag.py` →
+`prompts/rag_nodes.py`; `prompts/research.py` → split into `prompts/agents.py` (top-level prompt)
++ `prompts/subagents.py` (subagent prompt); `subagents/researcher.py` → `subagents/research.py`
+(renamed earlier, 2026-08-24, already noted then).
+
+**New files from this pass:** `apps/repo_insight.py` — a new entry point (didn't exist before)
+that actually exercises the full P2 coordinator (`repo_insight_agent`: `rag_subagent` +
+`retrieval-strategy` skill + filesystem backend) end-to-end via a REPL, distinct from `apps/rag.py`
+which exercises the raw graph directly one layer below. Both are legitimate, kept side by side —
+graph-level debugging vs. product-level agent, same pedagogical value as everything else this
+session.
+
+**Verified, all live (not just import-level):** `pytest` green; `apps/rag.py` unaffected;
+`apps/research.py` (now importing `web_researcher_agent` from `agents/`) ran a full live
+HITL-approval round-trip and produced a correct cited `ResearchReport`; `apps/repo_insight.py` ran
+live, skill loaded, delegated to `rag_subagent`, correct grounded answer.
+
+## Standing architecture convention set 2026-08-26 — `core/{src,apps,agents,configs}` as siblings
+
+**Superseded the "just move `agents/` into `src/`" fix from the note above.** The mentee reviewed
+that fix, disagreed with keeping `agents/` nested inside `src/` (wanted `agents`, `apps`, `configs`,
+and `src` all as direct siblings, one level, with zero import problems), and after hearing the
+mentor's counter-argument (that standard `src`-layout semantics already achieve the same
+build-vs-run separation without an extra wrapper) explicitly overrode it: **do it anyway, using
+whatever concrete mechanism makes it actually work, and design the "right" production structure
+for this repo's own nature — don't just implement literally what I said if you know better, and
+don't treat the repo as staying simple forever.** Mentor's honest final judgment, once required to
+implement it for real rather than just discuss it: the mentee's core complaint was legitimate
+(`agents/` sitting at the repo root, outside `src/`, was a genuine mistake that broke imports) —
+disagreement was only about the *fix's shape*, not the underlying problem, and a working
+peer-siblings layout is a real, defensible structure for a repo this size, not a regression.
+
+**Final structure:**
+
+```
+core/
+├── src/       # library code: graphs/ nodes/ prompts/ output_schemas/ subagents/
+│              # middlewares/ models/ tools/ retrieval/ state/ data/ utils/
+├── configs/   # plain config constants (was src/configs/)
+├── agents/    # composed, ready-to-invoke agent objects (was repo-root agents/, then src/agents/)
+└── apps/      # runnable entry points (was repo-root apps/)
+```
+
+**How the import mechanics actually work (verified, not guessed — this is the load-bearing part):**
+`pyproject.toml`'s `[tool.setuptools.packages.find]` now has `where = ["core/src", "core", "alireza"]`
+with `exclude = [..., "src*"]`, and `[tool.setuptools.package-dir]` keeps `"" = "core/src"`. Two
+independent scans happen: `where=["core/src"]` discovers `core/src/`'s own children (`graphs`,
+`nodes`, etc.) as bare top-level packages, exactly like the old `where=["src"]` did before this
+change — nothing about `core/src/*` imports changed at all (`from graphs.rag import ...` still
+works verbatim). Separately, `where=["core"]` discovers `core/configs`, `core/agents`, `core/apps`
+as bare top-level packages too (each is a direct child of `core/` with its own `__init__.py`) — the
+`exclude=["src*"]` stops that second scan from *also* picking up `core/src` itself as a colliding
+package named "src". Verified via `top_level.txt` after `uv sync --reinstall-package agent`:
+`agents`, `apps`, `configs`, `data`, `graphs`, ... all present as bare names, no `src` entry, no
+duplicates. **This is the general recipe for "N sibling directories, all independently importable,
+one of which (`src/`) itself contains many more importable children"** — remember it if a similar
+multi-root layout need comes up again (P3+).
+
+**Real bugs found and fixed while executing this move (all from files whose depth-from-repo-root
+changed, i.e. `Path(__file__).resolve().parents[N]`-style anchoring didn't get updated to match):**
+- `core/src/retrieval/index.py`'s `REPO_ROOT = Path(__file__).resolve().parents[2]` — was correct
+  when the file was at `src/retrieval/index.py` (2 levels up = repo root); now one level deeper
+  (`core/src/retrieval/index.py`), needs `parents[3]`. Fixed, verified via direct `Path` arithmetic
+  before touching the real module.
+- `core/agents/repo_insight.py`'s `parents[2]` did **not** need to change — `agents/` stayed a
+  direct child of its container (`src/` before, `core/` now), same depth. Verified this explicitly
+  rather than assuming a blanket "add 1 to everything" — the two files needed different fixes.
+- `core/apps/rag.py`: a pre-existing, unrelated bug this surfaced (not caused by the move) —
+  `stream_mode="updates"` reports a node's `{}` (no-op) return as `None` in the yielded update dict,
+  and the REPL's `for node_name, delta in update.items(): if "documents" in delta` didn't guard
+  against `delta` being `None`. Only surfaced now because this was apparently the first time
+  `apps/rag.py`'s actual CLI ran with `check_hallucination` (which returns `{}` when grounded)
+  wired into the graph — all earlier Stage 4 testing went through `graph.invoke()`/`graph.stream()`
+  directly in throwaway scripts, never through this exact REPL loop. Fixed with `if not delta:
+  continue` before the membership checks.
+- `core/src/retrieval/index.py`'s `DOC_FILES`/`CODE_GLOB` — `ROADMAP.md`/`MENTOR_HANDOFF.md` moved
+  to `docs/` (see below) so `DOC_FILES` needed `"docs/ROADMAP.md"`/`"docs/MENTOR_HANDOFF.md"`;
+  `CODE_GLOB` was `"src/**/*.py"`, now `"core/src/**/*.py"` — both silently pointed at nothing once
+  those directories moved (a glob that matches zero files fails silently, no error, just an
+  incomplete/empty corpus — worth remembering as a class of bug: **path-string bugs from directory
+  moves don't crash, they silently under-index**, unlike import-path bugs which crash loudly).
+
+**`docs/` created.** `ROADMAP.md` and `MENTOR_HANDOFF.md` (this file) moved to `docs/ROADMAP.md` /
+`docs/MENTOR_HANDOFF.md`. `README.md`, `LICENSE`, and `AGENTS.md` stay at repo root — not moved,
+deliberately: `README.md`/`LICENSE` are root-discovery conventions (GitHub renders `README.md` from
+root), and `AGENTS.md` is a cross-tool root-discovery convention too (Codex and other agent CLIs
+scan for it at repo root specifically — this repo has a `.codex/` directory, meaning it's actually
+in use, not just present) — moving either would silently break tool auto-discovery, not just human
+convenience. Both `README.md` and `AGENTS.md` were also rewritten in this pass — they'd drifted far
+out of date (still describing `src/app.py`, `middleware/` singular, `schemas/`, no mention of
+`apps/`/`agents/`/`configs/`/`nodes/`/`graphs/` at all) — now reflect the real current structure.
+
+**Index rebuild note:** `.chroma_index` had to be rebuilt after the `DOC_FILES`/`CODE_GLOB` fix
+(old index was built from the pre-move paths). Rebuilding the full corpus in one shot hit the
+Gemini embedding free-tier rate limit (100 req/min) — not caused by this move, an existing fragility
+in `build_index()` (`Chroma.from_documents` sends all embedding requests without batching/backoff
+against the free-tier ceiling); worked around this once with a manual retry-with-backoff wrapper,
+logged the real fix (rate-limit-aware batching in `build_index()`) as a P2 backlog item below.
+
+**Verified, all live, after every fix above:** `pytest` green; `uv sync --reinstall-package agent`
+clean install with the exact expected `top_level.txt`; `core/apps/rag.py`, `core/apps/research.py`
+(full HITL round-trip), and `core/apps/repo_insight.py` (skill load + delegation) all ran live,
+end-to-end, from repo root, with no `sys.path` tricks.
+
+## Standing architecture convention set 2026-08-26 (2) — generic LLM registry, retry, HITL
+
+**The mentee's idea, reviewed and agreed with (this one straightforwardly — no disagreement to
+resolve), then designed against real standards rather than implemented literally.** Ask was: stop
+importing named model instances (`flash_model`, `lite_model`, ...) directly; make model selection
+config-driven behind one generic handle; make `retry_on_failure` and the HITL middleware/loop
+reusable across every project instead of P1-specific; route through `get_text()` consistently.
+
+**`configs/models.py` + `models/registry.py`.** `MODEL_REGISTRY` (role → `init_chat_model(...)`
+kwargs) and `FALLBACK_CHAIN` (ordered list of fallback model kwargs, GapGPT-routed) live in
+`configs/models.py`. `models/registry.py`'s `LLMRegistry` class wraps them:
+- `.get(role)` — plain cached `BaseChatModel`, for `create_deep_agent(model=...)` (needs a real
+  `BaseChatModel` for `.bind_tools()` etc. — confirmed via source, `RunnableWithFallbacks` doesn't
+  have that method, so a fallback-wrapped model can't be used here).
+- `.chain(role, structured=...)` — fallback-wrapped `Runnable`, correctly composed with
+  `.with_structured_output()` when needed (structured output must be bound to *each* model, primary
+  and fallbacks, before `.with_fallbacks()` wraps them — verified empirically, `RunnableWithFallbacks`
+  doesn't inherit `with_structured_output` either).
+`llm_model = LLMRegistry()` is the one importable handle (`from models import llm_model`) —
+replaces `flash_model`/`lite_model`/`pro_model`/`luna_model`/`terra_model` everywhere. Migrated every
+consumer: `nodes/rag.py` (all 4 model call sites), `agents/web_researcher.py`, `agents/repo_insight.py`
+(also gained `retry_on_failure` middleware — didn't have it before), `middlewares/groundedness.py`.
+Deleted the old `models/llm.py`.
+
+**Real, load-bearing verification: `.with_fallbacks()` genuinely triggers on `429
+RESOURCE_EXHAUSTED`** (both the embedding quota hit earlier today and the separate
+`gemini-3.7-flash` daily-quota exhaustion) — confirmed with 3 independent isolated reproductions,
+including the literal real `_generate_prompt | llm_model.chain("flash")` composition `generate()`
+uses. **One genuinely confusing finding, worth remembering:** `RunnableWithFallbacks.invoke()`
+re-raises `first_error` (the *primary's* exception) when every fallback also fails — verified via
+its source (`langchain_core/runnables/fallbacks.py`). This means a traceback showing only the
+primary's error message does **not** prove fallback was never attempted — it could mean the whole
+chain (primary + every fallback) failed and you're only seeing the first one. Hit exactly this
+while verifying: a full `core/apps/rag.py` live run still failed with only the `gemini-3.7-flash`
+error visible, even though the fallback mechanism was independently proven correct — almost
+certainly cascading quota exhaustion across *both* Gemini and GapGPT from a full day of heavy live
+testing (grading calls earlier in the same graph run likely already spent GapGPT's own budget
+before `generate()` needed it), not a code defect. Recommend re-running `core/apps/rag.py` live
+once quota resets to see a real end-to-end confirmation; the isolated composition tests + `pytest`
+stand as current verification evidence in the meantime — didn't keep burning quota chasing it.
+
+**`middlewares/retry.py` generalized.** No longer hardcodes `luna_model` — reads
+`llm_model.fallback_models()` and tries each in order, so it's identical config to `llm_model.chain()`'s
+fallback behavior, just at the agent-middleware layer (needed separately: DeepAgents needs a real
+`BaseChatModel` for its internal `.bind_tools()`, so agent-level fallback can't reuse the
+`.with_fallbacks()`-wrapped `Runnable` from `.chain()` — same constraint as `.get()` vs `.chain()`
+above). Reusable as-is in any project's `middleware=[...]` list.
+
+**`middlewares/hitl.py` generalized.** `hitl_for(tool_names, *, allowed_decisions=..., description_prefix=...)`
+builds a `HumanInTheLoopMiddleware` for any tool(s), not just `web_search` — `search_approval =
+hitl_for("web_search")` is now just the P1-specific instance built from the generic factory.
+
+**`utils/run_with_hitl.py` extracted.** The interrupt/resume `while "__interrupt__" in result: ...`
+loop that lived inline in `apps/research.py` is now `run_with_hitl(agent, initial_input, config,
+prompt=...)` — any app needing HITL resume-over-CLI calls this one function instead of
+reimplementing the loop. `apps/research.py` rewritten to use it (functionally identical, less code).
+
+**`get_text()` widened and applied consistently.** Type hint was narrowly `AIMessage` (from
+`langchain.messages`) — widened to `BaseMessage` (from `langchain_core.messages`), since the
+function's own body already worked generically (any message with `.content`) and
+`middlewares/groundedness.py` needed it for `ToolMessage` content too, not just `AIMessage`. Applied
+at every raw `.content` access found: `apps/repo_insight.py` (removed a duplicate hand-rolled
+version of exactly what `get_text()` already does), `middlewares/groundedness.py` (two call sites —
+one of these was a real bug: `str(last_message.content)` on Gemini's list-of-blocks format would
+have produced Python's list-repr string, not the actual answer text, silently corrupting the
+groundedness grader's input), `subagents/rag.py`.
+
+**Verified:** `pytest` green; full import sweep of every new/changed module; isolated verification
+of the fallback mechanism (3 reproductions, see above) including through the exact real prompt
+composition `generate()` uses; agent-level `retry_on_failure` change is a direct generalization of
+already-working code (same `request.override(model=...)` mechanism, just reading a list instead of
+one hardcoded model) — reviewed by inspection rather than re-verified live, given quota pressure.
 
 ## Environment / secrets present in `.env`
 

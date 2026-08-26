@@ -1,13 +1,13 @@
 """Text extraction helpers for LangChain message objects."""
 
-from langchain.messages import AIMessage
+from langchain_core.messages import BaseMessage
 
 
-def get_text(message: AIMessage) -> str:
-    """Extract the plain-text content from an AIMessage.
+def get_text(message: BaseMessage) -> str:
+    """Extract the plain-text content from any LangChain message.
 
     Handles both the simple ``str`` case and the list-of-content-blocks
-    format returned by some providers.
+    format returned by some providers (notably Gemini-3.x).
     """
     content = message.content
     if isinstance(content, str):

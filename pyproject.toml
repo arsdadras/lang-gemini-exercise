@@ -26,12 +26,12 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.package-dir]
-"" = "src"
+"" = "core/src"
 
 [tool.setuptools.packages.find]
-where = ["src", "alireza"]
+where = ["core/src", "core", "alireza"]
 include = ["*"]
-exclude = ["tests*", "notebooks*"]
+exclude = ["tests*", "notebooks*", "src*"]
 
 
 
@@ -42,8 +42,8 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-pythonpath = ["src", "."]
+pythonpath = ["core/src", "core/configs", "core/agents", "core/apps", "."]
 
 [tool.pyrefly]
-search-path = ["src", "alireza"]
+search-path = ["core/src", "core", "alireza"]
 

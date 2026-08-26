@@ -6,29 +6,30 @@
 
 - **Project name**: Deep Agents Template — an agentic AI system scaffold
 - **Language / framework**: Python 3.14, DeepAgents, LangChain, LangGraph
-- **Package manager**: uv (application project, `package = false` — no installed
-  distribution; `src/` is added to `sys.path` via `pythonpath` in pytest and via
-  running scripts directly from `src/`)
+- **Package manager**: uv. This IS an installed distribution (editable install,
+  `uv sync`) — `core/{src,apps,agents,configs}` are each independently discoverable
+  top-level packages (see `pyproject.toml`'s `[tool.setuptools.packages.find]`).
+  Whenever a new top-level package directory is added under any of them, run
+  `uv sync --reinstall-package agent` to refresh the editable install before
+  relying on imports from outside `core/` — the editable install doesn't
+  auto-detect new packages otherwise.
 - **Test runner**: pytest (`uv run pytest`)
 - **Lint/format tools**: ruff
 
 ## Package Layout
 
 ```
-src/
-├── app.py          # Entry point
-├── models/         # LLM instances
-├── prompts/        # System prompt templates & builder
-├── tools/          # Agent-callable tools
-├── middleware/     # Pipeline middleware / hooks
-├── subagents/      # Sub-agent definitions
-├── schemas/        # Pydantic structured-output schemas
-├── data/           # Static content (placeholder)
-└── utils/          # Shared helpers
+core/
+├── src/               # library code — model/prompt/tool/graph/node building blocks
+│   ├── graphs/ nodes/ prompts/ output_schemas/ subagents/ middlewares/
+│   └── models/ tools/ retrieval/ state/ data/ utils/
+├── configs/           # plain config constants (e.g. MAX_RETRIES)
+├── agents/            # composed, ready-to-invoke agent objects (no run loop)
+└── apps/              # runnable entry points (import from agents/ or src/graphs/)
 ```
 
 `state/`, `tools/db_ops.py`, `tools/file_ops.py` are P4-scope (Sandbox/Interpreter Agent) and do not
-exist yet — do not reintroduce them until that project starts (see `ROADMAP.md`).
+exist yet — do not reintroduce them until that project starts (see `docs/ROADMAP.md`).
 
 ## Coding Standards
 
@@ -40,13 +41,14 @@ exist yet — do not reintroduce them until that project starts (see `ROADMAP.md
 ## LangGraph / Agent-Specific
 
 - P1 uses `deepagents.create_deep_agent`'s built-in state + `InMemorySaver`
-  checkpointer — no custom state schema yet. When a project needs one
-  (P2+), put it in `src/state/schemas.py` and read it before adding new
+  checkpointer. Custom raw-`StateGraph` state schemas (P2+) live in
+  `core/src/state/<project>.py` — read the existing one before adding new
   state keys.
 - Node functions return partial-state updates; do not mutate the incoming
   state dict in place unless the reducer is explicitly designed for it.
-- Prompts live in `src/prompts/` — keep prompt text out of
-  node/orchestration code.
+- Prompts live in `core/src/prompts/`, split by architectural role
+  (`agents.py`/`subagents.py`/`<project>_nodes.py`/`middlewares.py`) — keep
+  prompt text out of node/orchestration/middleware code itself.
 - Before adding/changing a LangGraph/LangChain call, confirm the current
   signature via the `docs-langchain` MCP server — do not assume an older
   API shape from training data.

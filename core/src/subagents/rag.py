@@ -7,11 +7,12 @@ from langchain_core.messages import AIMessage
 from langchain_core.runnables import RunnableLambda
 
 from graphs.rag import build_rag_graph
+from utils.get_text import get_text
 
 _rag_graph = build_rag_graph()
 
 def _run_rag_subagent(state: dict) -> dict:
-    question = state["messages"][-1].content
+    question = get_text(state["messages"][-1])
     config = {"configurable": {"thread_id": str(uuid.uuid4())}}
     result = _rag_graph.invoke({"question": question}, config=config)
     return {"messages": [AIMessage(content=result["generation"])]}
@@ -20,8 +21,8 @@ def _run_rag_subagent(state: dict) -> dict:
 rag_subagent = {
     "name": "rag_subagent",
     "description": (
-        """Answers questions using the indexed document corpus, 
-        falling back to a live web search when nothing relevant is found locally."""
+        "Answers questions using the indexed document corpus, falling back "
+        "to a live web search when nothing relevant is found locally."
     ),
     "runnable": RunnableLambda(_run_rag_subagent)
 }

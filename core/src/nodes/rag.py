@@ -2,8 +2,8 @@
 
 from typing import cast
 
-from models import flash_model, lite_model
-from prompts.rag import (
+from models import llm_model
+from prompts.rag_nodes import (
     _generate_prompt,
     _grade_prompt,
     _hallucination_prompt,
@@ -28,8 +28,8 @@ def retrieve(state: RAGState) -> dict:
 
 def grade_documents(state: RAGState) -> dict:
     """Keep only documents an LLM judges relevant to the question."""
-    _grader = lite_model.with_structured_output(GradeDocument)
-    chain = _grade_prompt | _grader
+    grader = llm_model.chain("lite", structured=GradeDocument)
+    chain = _grade_prompt | grader
     relevant = [
         doc
         for doc in state["documents"]
@@ -44,7 +44,7 @@ def grade_documents(state: RAGState) -> dict:
 
 def query_rewrite(state: RAGState) -> dict:
     """Rewrite the search query when grading found nothing relevant, and retry."""
-    chain = _rewrite_prompt | lite_model
+    chain = _rewrite_prompt | llm_model.chain("lite")
     query = state.get("search_query", state["question"])
     response = chain.invoke({"question": state["question"], "search_query": query})
     return {"search_query": get_text(response), "retries": state.get("retries", 0) + 1}
@@ -53,14 +53,14 @@ def query_rewrite(state: RAGState) -> dict:
 def generate(state: RAGState) -> dict:
     """Answer the question grounded in the surviving documents."""
     context = get_docs_context(state["documents"])
-    chain = _generate_prompt | flash_model
+    chain = _generate_prompt | llm_model.chain("flash")
     response = chain.invoke({"question": state["question"], "context": context})
     return {"generation": get_text(response)}
 
 
 def check_hallucination(state: RAGState) -> dict:
     context = get_docs_context(state["documents"])
-    grader = lite_model.with_structured_output(GradeHallucination)
+    grader = llm_model.chain("lite", structured=GradeHallucination)
     chain = _hallucination_prompt | grader
     verdict = cast(
         GradeHallucination,
@@ -83,6 +83,6 @@ def web_search_fallback(state: RAGState) -> dict:
         }
 
     context = "\n\n".join(f"[{r['url']}]\n{r['content']}" for r in results)
-    chain = _generate_from_web_prompt | lite_model
+    chain = _generate_from_web_prompt | llm_model.chain("lite")
     answer = chain.invoke({"question": state["question"], "context": context})
     return {"generation": get_text(answer)}

@@ -3,8 +3,8 @@
 from prompts.template.builder import build_system_prompt
 
 
-def build_research_prompt() -> str:
-    """Build the P1 research agent's system prompt."""
+def build_web_researcher_prompt() -> str:
+    """Build the P1 web-researcher agent's system prompt."""
     return build_system_prompt(
         assistant_name="Research Agent",
         role="a focused web research assistant",
@@ -30,8 +30,18 @@ def build_research_prompt() -> str:
     )
 
 
-researcher_subagent_prompt = (
-    "You are a focused researcher. Use web_search to answer the "
-    "exact sub-question you were given. Do not go off-topic. "
-    "Return your findings with real source URLs."
-)
+def build_repo_insight_prompt() -> str:
+    """Build the P2 repo-insight coordinator agent's system prompt."""
+    return build_system_prompt(
+        assistant_name="Coordinator",
+        role="a coordinator that delegates to specialized subagents",
+        domain="this codebase and its indexed document corpus",
+        mission="Answer questions about the project by delegating to the right subagent.",
+        tools=(
+            "Use rag_subagent (via the task tool) for ANY question about content in the "
+            "indexed document corpus (code, docs, notes about this project). Do not use "
+            "filesystem tools (glob/ls/grep) to answer such questions — always delegate first."
+        ),
+        output_format="Return the subagent's answer directly.",
+        constraints="- Always delegate corpus-content questions to rag_subagent first.",
+    )
