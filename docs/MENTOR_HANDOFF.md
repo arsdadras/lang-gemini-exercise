@@ -165,6 +165,12 @@ down the Nice-to-have list.
   `"core/**/*.py"` during today's restructuring; reverted because it pushed the corpus over the
   free-tier rate limit in one shot — do this together with the rate-limit-batching item above, not
   before it.
+- **Dual-collection embedding fallback (GapGPT).** Confirmed GapGPT supports OpenAI-compatible
+  embeddings and works live, but its output dimensionality (1536) doesn't match Gemini's (3072) —
+  Chroma collections are dimension-locked, so a naive try/except fallback isn't safe. Real fix: build
+  and persist a second Chroma collection with the GapGPT embedding model, fall back to that whole
+  collection (not per-call) if the primary provider/collection is unavailable. Doubles indexing
+  cost/complexity — worth it once embedding-provider outages actually happen in practice, not before.
 
 ### P3 — Code Review & Test Generation Agent
 
@@ -772,6 +778,130 @@ of the fallback mechanism (3 reproductions, see above) including through the exa
 composition `generate()` uses; agent-level `retry_on_failure` change is a direct generalization of
 already-working code (same `request.override(model=...)` mechanism, just reading a list instead of
 one hardcoded model) — reviewed by inspection rather than re-verified live, given quota pressure.
+
+## Standing architecture convention set 2026-08-26 (3) — tier × provider LLM registry
+
+**Further refinement of the registry above, mentee's idea, agreed with.** Old shape was
+role → one specific model (`"lite"` meant "`gemini-3.5-flash-lite`", tying a role name to one
+provider). New shape: **capability tier × provider**. `configs/models.py`'s `MODEL_TIERS` is
+`{tier: {provider: init_chat_model kwargs}}` for `"low"`/`"medium"`/`"high"`; `TIER_PROVIDER_ORDER`
+lists each tier's providers with the first as primary/default. `LLMRegistry.fallback_models(tier)`
+now returns only *that tier's* other providers — fixes a real gap in the previous flat
+`FALLBACK_CHAIN`: a "lite" (low-capability) call could previously fall back to "terra" even if terra
+were a different (higher) capability tier, silently changing capability, not just provider, on
+failure. Role names migrated: `"lite"`→`"low"`, `"flash"`→`"medium"`, `"pro"`→`"high"` — updated at
+every call site (`nodes/rag.py`, `agents/web_researcher.py`, `agents/repo_insight.py`,
+`middlewares/groundedness.py`).
+
+**Only verified model names are configured — no placeholders.** `"high"` tier currently has only
+`gemini-3.1-pro` (Gemini), no GapGPT fallback — there's no confirmed GapGPT model name for that tier
+(the mentee's example mentioned a `gpt-5.6-sol`-style high-tier GapGPT model, but only
+`gpt-5.6-luna`/`gpt-5.6-terra` are actually provisioned/tested against the real API right now).
+**Don't add a GapGPT high-tier entry without confirming the actual model name works first** — same
+verify-before-trusting discipline as everywhere else this session. A 4th "free"/OpenRouter tier was
+also discussed and intentionally **not** built — no OpenRouter API key exists in `.env` yet, can't
+wire and test something without real credentials; ask the mentee for a key first if this comes up
+again, don't fabricate one.
+
+**`middlewares/retry.py` became a factory, not a fixed instance** — `retry_on_failure(tier)` builds
+middleware scoped to one tier (matching the tier that agent's `model=` was constructed with), since
+fallback is now tier-locked. Both `web_researcher_agent` and `repo_insight_agent` now use
+`middleware=[retry_on_failure("low"), ...]` (call sites updated from the old bare
+`middleware=[retry_on_failure]` reference).
+
+**Embedding fallback — checked, found a real structural blocker, did not build cross-provider
+fallback.** Confirmed GapGPT *does* support OpenAI-compatible embeddings (`text-embedding-3-small`
+via `OpenAIEmbeddings(base_url=GAPGPT_BASE_URL, ...)`, verified live). But: Gemini's
+`gemini-embedding-2-preview` produces **3072-dim** vectors, GapGPT's `text-embedding-3-small`
+produces **1536-dim** — Chroma collections are dimension-locked. A naive try/except fallback would
+either error outright (dimension mismatch) or, worse, silently corrupt the collection if it happened
+to succeed at write time — not a safe drop-in the way chat-model fallback is. Also, `Embeddings`
+(the base class) isn't a `Runnable`, so `.with_fallbacks()` doesn't apply to it directly anyway — any
+real fallback would need hand-rolled try/except logic in a custom wrapper. The only architecturally
+sound version is a **second, fully separate Chroma collection built with the fallback embedding
+model**, used wholesale if the primary collection/provider is unavailable — real work (double the
+indexing cost/complexity), not a config tweak. Left as-is (single Gemini embedding provider,
+already has the retry+backoff added earlier this session for transient rate limits) and logged the
+dual-collection approach as a P2 backlog item below, rather than building something that would
+silently misbehave the first time it actually triggered.
+
+**Verified:** `pytest` green; full import sweep; tier/provider wiring confirmed correct by direct
+inspection (`low`/`medium` → `[gemini, gapgpt]`, `high` → `[gemini]` only, as configured); the
+underlying `.with_fallbacks()` mechanism itself was already proven correct 3x earlier this session
+against the *same* provider models now addressed via tier names instead of role names — didn't
+re-run a live end-to-end reproduction a 4th time given how strained today's quota already was (one
+attempt during this pass appears to have hung inside Gemini's own internal retry backoff rather than
+reaching the fallback layer at all — a process-level timeout, not a code failure).
+
+## Standing architecture convention set 2026-08-26 (4) — OpenAI/Anthropic via GapGPT, `free` tier
+
+**Found GapGPT's real model catalog by querying its own `/v1/models` endpoint directly** (with
+`GAPGPT_API_KEY`) rather than guessing or trusting web search (which found nothing public about
+GapGPT — it's not a widely-documented service). Confirmed 120 real models, including exactly the
+ones needed: `gpt-5.6-sol` (mentee named this one), plus real Anthropic models
+(`claude-opus-5`, `claude-sonnet-5`, and older opus/sonnet variants — no Haiku-tier model in the
+catalog). **Key mechanism, worth remembering:** GapGPT is one OpenAI-compatible gateway that proxies
+*multiple* underlying model brands (OpenAI, Anthropic, Gemini, GLM, DeepSeek, Qwen, Grok, ... — 120
+total) through the same `base_url`/`api_key` — so reaching a Claude model through it still means
+`model_provider="openai"` in `init_chat_model(...)` (that names the *wire protocol*, not the brand),
+with `model="claude-opus-5"` as the string GapGPT itself dispatches on internally. Live-invoked all 3
+new models individually before adding them to config — all responded correctly.
+
+**`configs/models.py`: provider keys renamed to name the underlying model *brand*, not the router.**
+Was `"gemini"`/`"gapgpt"` (router-named); now `"gemini"`/`"openai"`/`"anthropic"` — `"openai"` and
+`"anthropic"` both physically route through GapGPT's `base_url`/`api_key`, but the config key now
+tells you *which model family* a given tier's fallback actually is, which matters more to a reader
+than which gateway it went through. `high` and `medium` tiers now have 3 providers each
+(gemini/openai/anthropic); `low` stays at 2 (`gemini`/`openai` — no confirmed GapGPT Claude model at
+that capability level, so no `anthropic` entry there rather than a guessed one).
+
+**New `"free"` tier — OpenRouter, `glm` + `nvidia` providers.** Mentee has `OPENROUTER_API_KEY`
+already in `.env`. Same discovery approach: queried OpenRouter's own `/v1/models` endpoint, filtered
+to `:free`-suffixed IDs (17 total) rather than guessing slugs — real ones are
+`z-ai/glm-5.2:free` and `nvidia/nemotron-3-ultra-550b-a55b:free` (OpenRouter's flagship free
+Nemotron — 55B active/550B total MoE, 1M context); picked these two over the other 15 free options
+(smaller/more niche models — LiquidAI, Poolside, Thinking Machines, etc.) as the clearest matches
+for "GLM and Nvidia." Both live-invoked successfully, including through the full
+`llm_model.chain("free")` path (fallback + composition machinery unchanged, just a new tier value).
+**`"free"` is deliberately not `DEFAULT_TIER`** and never appears in another tier's
+`fallback_models()` — it's opt-in only (`.chain("free")`/`.get("free")` explicitly), since free-tier
+model quality/latency shouldn't silently substitute into a paid tier's fallback chain without being
+asked for.
+
+**Verified:** `pytest` green; full tier/provider wiring inspected (`low`→`[gemini, openai]`,
+`medium`/`high`→`[gemini, openai, anthropic]`, `free`→`[glm, nvidia]`); every newly-added model
+individually live-invoked before being trusted in config, plus one additional live round-trip
+through the actual `llm_model.chain("free")` composition path.
+
+## Standing architecture convention set 2026-08-26 (5) — `LLM_TEST_MODE`, cross-tier cascade
+
+**Two more additions to the registry, both opt-in, both off by default — neither changes existing
+call-site behavior unless explicitly turned on.**
+
+**`LLM_TEST_MODE` env var.** When `.env` has `LLM_TEST_MODE=true`, `LLMRegistry._resolve_tier()`
+substitutes *every* tier request (`"low"`, `"medium"`, `"high"`, whatever's asked for) with the
+`free` tier's models instead — lets the mentee iterate on routing/prompt/fallback logic without
+spending paid-tier quota (exactly the kind of heavy iterative testing that exhausted real quota
+multiple times earlier this session). Unset (or any non-`true` value) = normal behavior, tiers
+resolve as configured. Verified both states directly: unset → `_test_mode` is `False`; env var set →
+requesting `"high"` actually constructs `z-ai/glm-5.2:free`, confirmed via the constructed model's
+own `model_name`.
+
+**Cross-tier cascade, opt-in via `cascade=True`.** `.chain(tier, cascade=True)` and
+`retry_on_failure(tier, cascade=True)` extend the fallback chain past `tier`'s own providers into
+every lower tier's *full* provider list, in `TIER_CASCADE_ORDER` (`high → medium → low → free`) —
+"a degraded answer beats no answer," for call sites that explicitly want that behavior. Deliberately
+**not** the default: `fallback_models()` (used by every existing call site) stays same-tier-only, so
+this doesn't reintroduce the "silently downgrades capability on failure" bug tier-locking fixed
+earlier this session — cascade is a distinct, separately-named method
+(`cascade_fallback_models()`) callers opt into per call, not something that changes what
+`fallback_models()` itself returns. Verified the actual chain order for `cascade_fallback_models("high")`:
+both `high` providers first (`gpt-5.6-sol`, `claude-opus-5`), then all of `medium`'s, then all of
+`low`'s, then both of `free`'s — 9 total fallback models, exact expected order.
+
+**Not yet wired into any real call site** — built and verified as available capabilities; the
+mentee hasn't asked to actually turn `cascade=True` on anywhere yet, and `LLM_TEST_MODE` is an
+env-var toggle to flip when wanted, not something baked into any code path.
 
 ## Environment / secrets present in `.env`
 

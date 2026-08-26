@@ -21,7 +21,7 @@ def response_groundedness(state, runtime):
     if not tool_context:
         return None
 
-    grader = llm_model.chain("lite", structured=_GroundednessVerdict)
+    grader = llm_model.chain("low", structured=_GroundednessVerdict)
     chain = _GROUNDEDNESS_PROMPT | grader
 
     verdict = cast(

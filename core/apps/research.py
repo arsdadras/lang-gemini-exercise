@@ -21,7 +21,7 @@ def main() -> None:
         agent,
         {"messages": [HumanMessage(content=topic)]},
         config,
-        prompt="Approve this web_search call? [y/n]: ",
+        assistant_prompt="Approve this web_search call? [y/n]: ",
     )
 
     report: ResearchReport = result["structured_response"]

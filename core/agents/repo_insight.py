@@ -18,10 +18,10 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 backend = FilesystemBackend(root_dir=_REPO_ROOT)
 
 repo_insight_agent = create_deep_agent(
-    model=llm_model.get("lite"),
+    model=llm_model.get("low"),
     system_prompt=build_repo_insight_prompt(),
     checkpointer=InMemorySaver(),
-    middleware=[retry_on_failure],
+    middleware=[retry_on_failure("low")],
     subagents=[rag_subagent],
     skills=["/skills/"],
     backend=backend,

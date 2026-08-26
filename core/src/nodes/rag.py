@@ -28,7 +28,7 @@ def retrieve(state: RAGState) -> dict:
 
 def grade_documents(state: RAGState) -> dict:
     """Keep only documents an LLM judges relevant to the question."""
-    grader = llm_model.chain("lite", structured=GradeDocument)
+    grader = llm_model.chain("low", structured=GradeDocument)
     chain = _grade_prompt | grader
     relevant = [
         doc
@@ -44,7 +44,7 @@ def grade_documents(state: RAGState) -> dict:
 
 def query_rewrite(state: RAGState) -> dict:
     """Rewrite the search query when grading found nothing relevant, and retry."""
-    chain = _rewrite_prompt | llm_model.chain("lite")
+    chain = _rewrite_prompt | llm_model.chain("low")
     query = state.get("search_query", state["question"])
     response = chain.invoke({"question": state["question"], "search_query": query})
     return {"search_query": get_text(response), "retries": state.get("retries", 0) + 1}
@@ -53,14 +53,14 @@ def query_rewrite(state: RAGState) -> dict:
 def generate(state: RAGState) -> dict:
     """Answer the question grounded in the surviving documents."""
     context = get_docs_context(state["documents"])
-    chain = _generate_prompt | llm_model.chain("flash")
+    chain = _generate_prompt | llm_model.chain("medium")
     response = chain.invoke({"question": state["question"], "context": context})
     return {"generation": get_text(response)}
 
 
 def check_hallucination(state: RAGState) -> dict:
     context = get_docs_context(state["documents"])
-    grader = llm_model.chain("lite", structured=GradeHallucination)
+    grader = llm_model.chain("low", structured=GradeHallucination)
     chain = _hallucination_prompt | grader
     verdict = cast(
         GradeHallucination,
@@ -83,6 +83,6 @@ def web_search_fallback(state: RAGState) -> dict:
         }
 
     context = "\n\n".join(f"[{r['url']}]\n{r['content']}" for r in results)
-    chain = _generate_from_web_prompt | llm_model.chain("lite")
+    chain = _generate_from_web_prompt | llm_model.chain("low")
     answer = chain.invoke({"question": state["question"], "context": context})
     return {"generation": get_text(answer)}

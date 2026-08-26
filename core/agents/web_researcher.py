@@ -13,11 +13,11 @@ from middlewares.hitl import search_approval
 from tools.search import web_search
 
 web_researcher_agent = create_deep_agent(
-    model=llm_model.get("lite"),
+    model=llm_model.get("low"),
     system_prompt=build_web_researcher_prompt(),
     tools=[web_search],
     checkpointer=InMemorySaver(),
     response_format=ResearchReport,
-    middleware=[retry_on_failure, search_approval],
+    middleware=[retry_on_failure("low"), search_approval],
     subagents=[researcher_subagent],
 )

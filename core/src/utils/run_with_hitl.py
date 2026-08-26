@@ -15,7 +15,7 @@ def run_with_hitl(
     initial_input: Any,
     config: dict,
     *,
-    prompt: str = "Approve this action? [y/n]: ",
+    assistant_prompt: str = "Approve this action? [y/n]: ",
 ) -> dict:
     """Invoke `agent`, resolving any HITL interrupts via CLI y/n prompts.
 
@@ -30,7 +30,7 @@ def run_with_hitl(
             print(f"Tool: {request['name']}")
             print(f"Args: {request['args']}")
 
-        decision = input(prompt).strip().lower()
+        decision = input(assistant_prompt).strip().lower()
         resume = {"decisions": [{"type": "approve" if decision == "y" else "reject"}]}
         result = agent.invoke(Command(resume=resume), config)
 
