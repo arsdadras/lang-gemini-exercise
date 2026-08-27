@@ -35,6 +35,8 @@ exclude = ["tests*", "notebooks*", "src*"]
 
 
 
+
+
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
@@ -42,8 +44,9 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-pythonpath = ["core/src", "core/configs", "core/agents", "core/apps", "."]
+pythonpath = ["core/src", "core/configs", "core/agents", "core/apps", "alireza", "alireza/py_files", "."]
 
 [tool.pyrefly]
-search-path = ["core/src", "core", "alireza"]
+search-path = ["core/src", "core", "alireza", "alireza/py_files"]
+
 

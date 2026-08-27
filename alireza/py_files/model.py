@@ -7,14 +7,14 @@ load_dotenv()
 
 gapgpt_base_url = os.getenv("GAPGPT_BASE_URL")
 gapgpt_api_key = os.getenv("GAPGPT_API_KEY")
-gemini_api_key = os.getenv("GEMINI_API_KEY")
+google_api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
 
 gpt_luna = ChatOpenAI(
     model="gpt-5.6-luna", base_url=gapgpt_base_url, api_key=gapgpt_api_key
 )
 
 gpt_terra = ChatOpenAI(
-    model="gpt-5.6-terrance", base_url=gapgpt_base_url, api_key=gapgpt_api_key
+    model="gpt-5.6-terra", base_url=gapgpt_base_url, api_key=gapgpt_api_key
 )
 
 claude_sonnet = ChatOpenAI(
@@ -26,9 +26,9 @@ claude_opus = ChatOpenAI(
 )
 
 gemini_flashlite = ChatGoogleGenerativeAI(
-    model="gemini-flash-lite-latest", api_key=gemini_api_key
+    model="gemini-3.5-flash-lite", api_key=google_api_key
 )
 
 gemini_flash = ChatGoogleGenerativeAI(
-    model="gemini-flash-latest", api_key=gemini_api_key
+    model="gemini-3.7-flash", api_key=google_api_key
 )
