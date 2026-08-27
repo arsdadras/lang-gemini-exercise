@@ -15,8 +15,12 @@ from .middlewares import _GROUNDEDNESS_PROMPT
 from .template.builder import build_system_prompt
 from .template.template import DEFAULTS
 
+from .code_review_nodes import REVIEW_PROMPT, TEST_GEN_PROMPT
+
 __all__ = [
     "DEFAULTS",
+    "REVIEW_PROMPT",
+    "TEST_GEN_PROMPT",
     "build_web_researcher_prompt",
     "build_repo_insight_prompt",
     "build_system_prompt",
@@ -27,3 +31,4 @@ __all__ = [
     "_grade_prompt",
     "_rewrite_prompt",
 ]
+

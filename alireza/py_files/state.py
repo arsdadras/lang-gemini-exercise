@@ -1,3 +1,4 @@
+from op_schema import TestExecutionResult
 from langchain_core.documents import Document
 from typing import TypedDict
 from .op_schema import ReviewResult, TestSuite
@@ -15,4 +16,5 @@ class CodeReviewState(TypedDict):
     file_path: str | None
     review: ReviewResult | None
     tests: TestSuite | None
+    test_execution: TestExecutionResult | None
     error: str | None

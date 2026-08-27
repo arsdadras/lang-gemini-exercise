@@ -98,3 +98,12 @@ class TestSuite(BaseModel):
         default_factory=list,
         description="List of test cases included in the suite.",
     )
+
+
+class TestExecutionResult(BaseModel):
+    """Execution results from running the test suite in the sandbox."""
+
+    status: Literal["passed", "failed", "error", "timed_out"]
+    passed: bool
+    exit_code: int
+    output: str

@@ -61,6 +61,7 @@ and code the mentee could defend in a review — not scaffolding for its own sak
 - Explain the non-obvious parts: framework API shape, why a middleware/interrupt/checkpoint
   works the way it does, what would break without it. Skip explaining things a course grad
   already knows.
+- **Boilerplate vs. Agentic Core explicit flagging, 2026-08-28:** whenever introducing setup, infrastructure, or OS-level utility code (e.g. `subprocess`, `tempfile`, low-level regex, file wrappers), explicitly flag it upfront as an "Infrastructure / Boilerplate Pattern" with a 2-3 line conceptual summary of what it does as a black box. Explicitly instruct the mentee NOT to get bogged down memorizing non-agentic stdlib/utility syntax, keeping 100% of their learning focus on Agentic Architecture, LangGraph state/nodes/edges, and feedback loops.
 - Point out real repo issues when you find them (stale docs, broken tests, dead imports) —
   don't silently fix things that affect the mentee's own in-progress work without saying so.
 - Verify claims: run the tests, run `py_compile`/import checks, actually read library source
@@ -80,7 +81,7 @@ fine and encouraged — that's different from writing a formal test suite.
 |---|---|
 | **P1 — Research Agent** | Phase A ✅, Phase B ✅, Phase C ✅ for current scope (see below) |
 | **P2 — RAG Agent** | ✅ Phase A ✅ Phase B ✅ Phase C (4/4 stages, verified 2026-08-25; Stage 5/LangSmith deliberately deferred) — done for current scope |
-| P3 — Code Review & Test Gen Agent | Not started |
+| **P3 — Code Review & Test Gen Agent** | ✅ Phase A complete · Phase B Stage 1 (Sandbox runner + unit tests) wired & passing |
 | P4 — Sandbox/Interpreter Agent | Not started (`tools/db_ops.py`, `tools/file_ops.py` were scaffolded early then intentionally deleted — rebuild them here, not before) |
 | P5 — Memory-Rich Personal Assistant | Not started |
 | P6 — Capstone | Not started |
