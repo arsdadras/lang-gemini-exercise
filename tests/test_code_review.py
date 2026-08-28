@@ -61,9 +61,9 @@ def test_sandbox_execution():
     """Verify local subprocess sandbox execution for passing and failing test code."""
     source_code = "def is_even(n: int) -> bool:\n    return n % 2 == 0\n"
 
-    # 1. Passing test
+    # 1. Passing test (default sandbox_type="local")
     pass_test = "from tested_module import is_even\ndef test_even():\n    assert is_even(4) is True\n"
-    res_pass = run_tests_in_sandbox(code=source_code, test_code=pass_test)
+    res_pass = run_tests_in_sandbox(code=source_code, test_code=pass_test, sandbox_type="local")
     assert res_pass.passed is True
     assert res_pass.status == "passed"
     assert res_pass.exit_code == 0
@@ -74,3 +74,9 @@ def test_sandbox_execution():
     assert res_fail.passed is False
     assert res_fail.status == "failed"
     assert res_fail.exit_code != 0
+
+    # 3. Deferred / Unimplemented backend test
+    res_cloud = run_tests_in_sandbox(code=source_code, test_code=pass_test, sandbox_type="cloud")
+    assert res_cloud.status == "error"
+    assert "P4" in res_cloud.output
+

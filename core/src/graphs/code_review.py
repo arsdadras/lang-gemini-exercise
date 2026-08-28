@@ -1,9 +1,10 @@
 """LangGraph StateGraph assembly for P3 Code Review & Test Generation."""
 
+from typing import cast
+
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
-
 from nodes.code_review import execute_tests, generate_tests, review_code
 from state.code_review import CodeReviewState
 
@@ -26,7 +27,7 @@ def build_code_review_graph(
     checkpointer: BaseCheckpointSaver | None = None,
 ):
     """Build and compile the Code Review and Test Generation StateGraph."""
-    workflow = StateGraph(CodeReviewState)
+    workflow = StateGraph(CodeReviewState)  # type: ignore[call-arg]
 
     # 1. Register nodes
     workflow.add_node("review_code", review_code)

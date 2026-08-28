@@ -1,35 +1,22 @@
-"""Sandbox execution utilities for safe local test running."""
+"""Sandbox execution utilities for safe test running across execution backends."""
 
+from typing import Literal
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
 from output_schemas.code_review import TestExecutionResult
 
+SandboxType = Literal["local", "container", "cloud"]
 
-def run_tests_in_sandbox(
+
+def _run_local_sandbox(
     code: str,
     test_code: str,
-    timeout_seconds: int = 15,
+    timeout_seconds: int,
 ) -> TestExecutionResult:
-    """Execute target code and generated pytest tests in an isolated temporary directory.
-
-    Args:
-        code: The Python source code under test.
-        test_code: The Python test code to execute.
-        timeout_seconds: Maximum allowed seconds for test execution.
-
-    Returns:
-        TestExecutionResult with status, pass/fail boolean, exit code, and captured output.
-    """
-    if not test_code.strip():
-        return TestExecutionResult(
-            status="error",
-            passed=False,
-            exit_code=-1,
-            output="No test code provided to execute.",
-        )
-
+    """Execute tests locally in an isolated temporary directory via subprocess."""
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_path = Path(tmpdir)
 
@@ -73,5 +60,48 @@ def run_tests_in_sandbox(
                 status="error",
                 passed=False,
                 exit_code=-1,
-                output=f"Sandbox execution failed: {e}",
+                output=f"Local sandbox execution failed: {e}",
             )
+
+
+def run_tests_in_sandbox(
+    code: str,
+    test_code: str,
+    sandbox_type: SandboxType = "local",
+    timeout_seconds: int = 15,
+) -> TestExecutionResult:
+    """Execute target code and test suite in a specified sandbox backend.
+
+    Args:
+        code: The Python source code under test.
+        test_code: The Python test code to execute.
+        sandbox_type: Execution backend ("local" | "container" | "cloud").
+        timeout_seconds: Maximum allowed seconds for test execution.
+
+    Returns:
+        TestExecutionResult with status, pass/fail boolean, exit code, and captured output.
+    """
+    if not test_code.strip():
+        return TestExecutionResult(
+            status="error",
+            passed=False,
+            exit_code=-1,
+            output="No test code provided to execute.",
+        )
+
+    if sandbox_type == "local":
+        return _run_local_sandbox(code, test_code, timeout_seconds)
+    elif sandbox_type in ("container", "cloud"):
+        return TestExecutionResult(
+            status="error",
+            passed=False,
+            exit_code=-1,
+            output=f"Sandbox backend '{sandbox_type}' is planned for P4 (Sandbox / Interpreter Agent).",
+        )
+    else:
+        return TestExecutionResult(
+            status="error",
+            passed=False,
+            exit_code=-1,
+            output=f"Unsupported sandbox type: '{sandbox_type}'. Expected 'local', 'container', or 'cloud'.",
+        )
