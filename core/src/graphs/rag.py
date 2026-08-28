@@ -2,19 +2,17 @@
 
 from typing import Literal, cast
 
-from langgraph.checkpoint.memory import InMemorySaver
-
-from langgraph.graph import END, START, StateGraph
-
-from nodes import (
-    generate,
-    grade_documents,
-    web_search_fallback,
-    query_rewrite,
-    retrieve,
-    check_hallucination,
-)
 from configs.rag import MAX_RETRIES
+from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.graph import END, START, StateGraph
+from nodes import (
+    check_hallucination_node,
+    generate_node,
+    grade_documents_node,
+    query_rewrite_node,
+    retrieve_node,
+    web_search_fallback_node,
+)
 from state import RAGState
 
 
@@ -31,12 +29,12 @@ def route_after_grading(
 
 def build_rag_graph():
     graph = StateGraph(cast(type, RAGState))
-    graph.add_node("retrieve", retrieve)
-    graph.add_node("grade_documents", grade_documents)
-    graph.add_node("query_rewrite", query_rewrite)
-    graph.add_node("generate", generate)
-    graph.add_node("web_search_fallback", web_search_fallback)
-    graph.add_node("check_hallucination", check_hallucination)
+    graph.add_node("retrieve", retrieve_node)
+    graph.add_node("grade_documents", grade_documents_node)
+    graph.add_node("query_rewrite", query_rewrite_node)
+    graph.add_node("generate", generate_node)
+    graph.add_node("web_search_fallback", web_search_fallback_node)
+    graph.add_node("check_hallucination", check_hallucination_node)
 
     graph.add_edge(START, "retrieve")
     graph.add_edge("retrieve", "grade_documents")

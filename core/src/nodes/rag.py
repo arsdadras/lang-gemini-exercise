@@ -3,22 +3,22 @@
 from typing import cast
 
 from models import llm_model
-from prompts.rag_nodes import (
+from output_schemas.rag import GradeDocument, GradeHallucination
+from prompts.nodes.rag_nodes import (
+    _generate_from_web_prompt,
     _generate_prompt,
     _grade_prompt,
     _hallucination_prompt,
     _rewrite_prompt,
-    _generate_from_web_prompt,
 )
 from retrieval.index import get_retriever
-from output_schemas.rag import GradeDocument, GradeHallucination
 from state import RAGState
 from tools.search import web_search
-from utils.get_text import get_text
 from utils.get_docs_context import get_docs_context
+from utils.get_text import get_text
 
 
-def retrieve(state: RAGState) -> dict:
+def retrieve_node(state: RAGState) -> dict:
     """Fetch candidate documents for the search query from the persisted index."""
     retriever = get_retriever()
     query = state.get("search_query", state["question"])
@@ -26,7 +26,7 @@ def retrieve(state: RAGState) -> dict:
     return {"documents": documents}
 
 
-def grade_documents(state: RAGState) -> dict:
+def grade_documents_node(state: RAGState) -> dict:
     """Keep only documents an LLM judges relevant to the question."""
     grader = llm_model.chain("low", structured=GradeDocument)
     chain = _grade_prompt | grader
@@ -42,7 +42,7 @@ def grade_documents(state: RAGState) -> dict:
     return {"documents": relevant}
 
 
-def query_rewrite(state: RAGState) -> dict:
+def query_rewrite_node(state: RAGState) -> dict:
     """Rewrite the search query when grading found nothing relevant, and retry."""
     chain = _rewrite_prompt | llm_model.chain("low")
     query = state.get("search_query", state["question"])
@@ -50,7 +50,7 @@ def query_rewrite(state: RAGState) -> dict:
     return {"search_query": get_text(response), "retries": state.get("retries", 0) + 1}
 
 
-def generate(state: RAGState) -> dict:
+def generate_node(state: RAGState) -> dict:
     """Answer the question grounded in the surviving documents."""
     context = get_docs_context(state["documents"])
     chain = _generate_prompt | llm_model.chain("medium")
@@ -58,7 +58,7 @@ def generate(state: RAGState) -> dict:
     return {"generation": get_text(response)}
 
 
-def check_hallucination(state: RAGState) -> dict:
+def check_hallucination_node(state: RAGState) -> dict:
     context = get_docs_context(state["documents"])
     grader = llm_model.chain("low", structured=GradeHallucination)
     chain = _hallucination_prompt | grader
@@ -73,7 +73,7 @@ def check_hallucination(state: RAGState) -> dict:
     }
 
 
-def web_search_fallback(state: RAGState) -> dict:
+def web_search_fallback_node(state: RAGState) -> dict:
     """Fall back to a live web search when the local corpus has nothing relevant."""
     response = web_search.invoke({"query": state["question"]})
     results = response.get("results", [])

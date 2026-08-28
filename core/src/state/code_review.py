@@ -1,4 +1,4 @@
-"""State definition for P3 Code Review & Test Generation."""
+"""LangGraph state schema for the Code Review agent workflow."""
 
 from typing import TypedDict
 from output_schemas.code_review import (
@@ -17,4 +17,5 @@ class CodeReviewState(TypedDict):
     review: ReviewResult | None
     tests: TestSuite | None
     test_execution: TestExecutionResult | None
+    test_retries: int
     error: str | None

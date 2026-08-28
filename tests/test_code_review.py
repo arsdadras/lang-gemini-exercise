@@ -8,7 +8,13 @@ from output_schemas.code_review import (
     TestExecutionResult,
 )
 from state.code_review import CodeReviewState
-from graphs.code_review import route_after_review, route_after_test_gen, build_code_review_graph
+from graphs.code_review import (
+    route_after_review,
+    route_after_test_gen,
+    route_after_execution,
+    build_code_review_graph,
+)
+
 from utils.sandbox import run_tests_in_sandbox
 
 
@@ -55,6 +61,23 @@ def test_graph_routing():
     assert route_after_test_gen({"error": "Failed test gen", "tests": None}) == "__end__"
     assert route_after_test_gen({"error": None, "tests": None}) == "__end__"
     assert route_after_test_gen({"error": None, "tests": TestSuite(test_code="pass", test_cases=[])}) == "execute_tests"
+
+    # Execution routing (Self-Correction loop)
+    pass_exec = TestExecutionResult(status="passed", passed=True, exit_code=0, output="OK")
+    fail_exec = TestExecutionResult(status="failed", passed=False, exit_code=1, output="Error")
+
+    # 1. Passed -> End
+    assert route_after_execution({"test_execution": pass_exec, "test_retries": 0}) == "__end__"
+    # 2. Failed with retries remaining -> fix_tests
+    assert route_after_execution({"test_execution": fail_exec, "test_retries": 0}) == "fix_tests"
+    assert route_after_execution({"test_execution": fail_exec, "test_retries": 1}) == "fix_tests"
+    # 3. Failed with retries exhausted (default MAX_TEST_RETRIES = 2) -> End
+    assert route_after_execution({"test_execution": fail_exec, "test_retries": 2}) == "__end__"
+    # 4. Runtime override via configurable (e.g. max_test_retries=5)
+    config_5 = {"configurable": {"max_test_retries": 5}}
+    assert route_after_execution({"test_execution": fail_exec, "test_retries": 2}, config=config_5) == "fix_tests"
+    assert route_after_execution({"test_execution": fail_exec, "test_retries": 5}, config=config_5) == "__end__"
+
 
 
 def test_sandbox_execution():

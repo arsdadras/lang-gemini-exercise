@@ -55,3 +55,31 @@ TEST_GEN_PROMPT = ChatPromptTemplate.from_messages(
         ),
     ]
 )
+
+
+_TEST_FIX_SYSTEM_PROMPT = """You are a Senior QA Automation Engineer debugging and fixing automated tests.
+    The previous test suite failed when executed in the sandbox.
+    Your task is to analyze the source code, the failing test code, and the pytest error traceback, then produce a corrected, complete, runnable test
+  suite that fixes the issues.
+
+    Rules:
+    1. Read the pytest error output carefully to identify import errors, syntax bugs, or invalid assertions.
+    2. Ensure the returned `test_code` imports from `tested_module` (where the source code lives during sandbox execution).
+    3. Keep all necessary test cases while fixing the failures.
+    4. The `test_code` must be complete, valid Python ready to run directly.
+    """
+
+
+TEST_FIX_PROMPT = ChatPromptTemplate.from_messages(
+    [
+        ("system", _TEST_FIX_SYSTEM_PROMPT),
+        (
+            "human",
+            "The previous {framework} test suite for the following {language} code failed during execution.\n\n"
+            "Source Code:\n```\n{code}\n```\n\n"
+            "Failing Test Code:\n```\n{failing_test_code}\n```\n\n"
+            "Execution Error Output (Pytest traceback):\n```\n{error_output}\n```\n\n"
+            "Please provide a fully corrected and complete test suite.",
+        ),
+    ]
+)

@@ -4,7 +4,11 @@ from typing import cast
 
 from models import llm_model
 from output_schemas.code_review import ReviewResult, TestSuite
-from prompts.code_review_nodes import REVIEW_PROMPT, TEST_GEN_PROMPT
+from prompts.nodes.code_review_nodes import (
+    REVIEW_PROMPT,
+    TEST_GEN_PROMPT,
+    TEST_FIX_PROMPT,
+)
 from state.code_review import CodeReviewState
 from utils.sandbox import run_tests_in_sandbox
 
@@ -23,7 +27,9 @@ def _format_review_summary(review: ReviewResult | None) -> str:
         lines.append("\nIdentified Issues:")
         for issue in review.issues:
             loc = f"Line {issue.line_number}: " if issue.line_number is not None else ""
-            lines.append(f"- [{issue.severity.upper()}] ({issue.category}) {loc}{issue.description}")
+            lines.append(
+                f"- [{issue.severity.upper()}] ({issue.category}) {loc}{issue.description}"
+            )
             lines.append(f"  Suggestion: {issue.suggestion}")
 
     if review.refactored_code:
@@ -32,7 +38,7 @@ def _format_review_summary(review: ReviewResult | None) -> str:
     return "\n".join(lines)
 
 
-def review_code(state: CodeReviewState) -> dict:
+def review_code_node(state: CodeReviewState) -> dict:
     """Analyze source code and produce structured review findings."""
     try:
         chain = REVIEW_PROMPT | llm_model.chain("medium", structured=ReviewResult)
@@ -48,7 +54,7 @@ def review_code(state: CodeReviewState) -> dict:
         return {"error": f"Review node failed: {e}"}
 
 
-def generate_tests(state: CodeReviewState) -> dict:
+def generate_tests_node(state: CodeReviewState) -> dict:
     """Generate executable test suite covering code and regression for identified issues."""
     try:
         review_summary = _format_review_summary(state.get("review"))
@@ -70,7 +76,7 @@ def generate_tests(state: CodeReviewState) -> dict:
         return {"error": f"Test generation node failed: {e}"}
 
 
-def execute_tests(state: CodeReviewState) -> dict:
+def execute_tests_node(state: CodeReviewState) -> dict:
     """Execute generated test suite in an isolated sandbox environment."""
     if not state.get("tests") or not state["tests"].test_code:
         return {"test_execution": None}
@@ -80,3 +86,37 @@ def execute_tests(state: CodeReviewState) -> dict:
         test_code=state["tests"].test_code,
     )
     return {"test_execution": result}
+
+
+def fix_tests_node(state: CodeReviewState) -> dict:
+    """Analyze pytest execution failure and generate corrected test suite."""
+    try:
+        language = state.get("language", "python")
+        framework = "pytest" if language.lower() == "python" else "standard test runner"
+        failing_test_code = state.get("tests").test_code if state.get("tests") else ""
+        error_output = (
+            state.get("test_execution").output
+            if state.get("test_execution")
+            else "Unknown execution failure."
+        )
+
+        chain = TEST_FIX_PROMPT | llm_model.chain("medium", structured=TestSuite)
+        result = chain.invoke(
+            {
+                "framework": framework,
+                "language": language,
+                "code": state["code"],
+                "failing_test_code": failing_test_code,
+                "error_output": error_output,
+            }
+        )
+        test_retries = state.get("test_retries", 0) + 1
+
+        return {
+            "tests": cast(TestSuite, result),
+            "test_retries": test_retries,
+            "error": None,
+        }
+
+    except Exception as e:
+        return {"error": f"Test fix node failed: {e}"}

@@ -81,7 +81,7 @@ fine and encouraged — that's different from writing a formal test suite.
 |---|---|
 | **P1 — Research Agent** | Phase A ✅, Phase B ✅, Phase C ✅ for current scope (see below) |
 | **P2 — RAG Agent** | ✅ Phase A ✅ Phase B ✅ Phase C (4/4 stages, verified 2026-08-25; Stage 5/LangSmith deliberately deferred) — done for current scope |
-| **P3 — Code Review & Test Gen Agent** | ✅ Phase A complete · Phase B Stage 1 (Sandbox runner + unit tests) wired & passing |
+| **P3 — Code Review & Test Gen Agent** | ✅ Phase A complete · Phase B Stage 1 (Sandbox runner) & Stage 2 (Self-correction loop) wired & passing |
 | P4 — Sandbox/Interpreter Agent | Not started (`tools/db_ops.py`, `tools/file_ops.py` were scaffolded early then intentionally deleted — rebuild them here, not before) |
 | P5 — Memory-Rich Personal Assistant | Not started |
 | P6 — Capstone | Not started |

@@ -115,6 +115,15 @@ def run_code_review(
                     status_text = "PASSED" if execution.passed else "FAILED"
                     print(f"  ✓ Sandbox execution finished — Status: {status_text}")
 
+            elif node_name == "fix_tests":
+                if delta.get("error"):
+                    print(f"\n❌ Test fixing failed: {delta['error']}")
+                    return
+                tests = delta.get("tests")
+                retries = delta.get("test_retries", 1)
+                print(f"  🔄 Self-correction triggered (Attempt {retries}): Refactored failing test suite.")
+
+
     # Print final structured reports
     if review:
         _print_review_report(review)
