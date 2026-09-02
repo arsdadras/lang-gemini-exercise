@@ -3,10 +3,9 @@ DeepAgents systems."""
 
 import uuid
 
+from graphs.rag import build_rag_graph
 from langchain_core.messages import AIMessage
 from langchain_core.runnables import RunnableLambda
-
-from graphs.rag import build_rag_graph
 from utils.get_text import get_text
 
 _rag_graph = build_rag_graph()

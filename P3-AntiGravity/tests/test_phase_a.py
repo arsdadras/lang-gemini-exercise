@@ -1,6 +1,13 @@
 """Unit tests for P3 Phase A reference components."""
-from P3_AntiGravity.reference.output_schemas import CodeIssue, ReviewResult, TestCase, TestSuite
-from P3_AntiGravity.reference.graph import route_after_review
+import sys
+from pathlib import Path
+
+ref_path = str(Path(__file__).resolve().parents[1] / "reference")
+if ref_path not in sys.path:
+    sys.path.append(ref_path)
+
+from output_schemas import CodeIssue, ReviewResult, TestCase, TestSuite
+from graph import route_after_review
 
 def test_p3_schema_creation():
     issue = CodeIssue(severity="warning", category="style", description="missing type hints", suggestion="add types")

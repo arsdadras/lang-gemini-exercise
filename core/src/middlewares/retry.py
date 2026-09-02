@@ -8,11 +8,15 @@ retry-on-failure behavior applies whether a model is used inside an agent
 built with, e.g. `middleware=[retry_on_failure("low")]`.
 """
 
-from typing import Callable
-
-from langchain.agents.middleware import AgentMiddleware, ModelRequest, ModelResponse, wrap_model_call
+from collections.abc import Callable
 
 from configs.models import DEFAULT_TIER
+from langchain.agents.middleware import (
+    AgentMiddleware,
+    ModelRequest,
+    ModelResponse,
+    wrap_model_call,
+)
 from models import llm_model
 
 

@@ -1,6 +1,7 @@
 """State schema for the P2 RAG agent's graph."""
 
 from typing import TypedDict
+
 from langchain_core.documents import Document
 
 

@@ -1,6 +1,7 @@
 """Structured output schemas for P3 Code Review & Test Generation."""
 
 from typing import Literal
+
 from pydantic import BaseModel, Field
 
 

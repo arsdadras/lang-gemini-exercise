@@ -1,89 +1,64 @@
-"""LangGraph StateGraph assembly for P3 Code Review & Test Generation."""
+"""Parent Graph Assembly for P3 Code Review & Test Generation using Pure Subgraphs."""
 
-from langchain_core.runnables import RunnableConfig
-from nodes.code_review import fix_tests_node
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
-
-from configs import MAX_TEST_RETRIES
-from nodes.code_review import execute_tests_node, generate_tests_node, review_code_node
 from state.code_review import CodeReviewState
 
+from graphs.refactor_subgraph import build_refactor_subgraph
+from graphs.reviewer_subgraph import build_reviewer_subgraph
+from graphs.test_gen_subgraph import build_test_gen_subgraph
 
-def route_after_review(state: CodeReviewState) -> str:
-    """Determine next step after code review: proceed to test generation or fail-fast to END."""
+
+def route_after_reviewer(state: CodeReviewState) -> str:
+    """Conditional edge after Reviewer: proceed to test generation if no fatal error."""
     if state.get("error"):
         return "__end__"
-    return "generate_tests"
+    return "test_generator"
 
 
 def route_after_test_gen(state: CodeReviewState) -> str:
-    """Determine next step after test generation: proceed to sandbox execution or END."""
-    if state.get("error") or not state.get("tests"):
-        return "__end__"
-    return "execute_tests"
-
-
-def route_after_execution(state: CodeReviewState, config: RunnableConfig | None = None) -> str:
-    """Determine next step after sandbox run: finish if passed or retries exhausted, else fix tests."""
-    execution = state.get("test_execution")
-    if not execution or execution.passed:
+    """Conditional edge after TestGen: proceed to refactor gate if refactored code exists."""
+    if state.get("error"):
         return "__end__"
 
-    configurable = config.get("configurable", {}) if config else {}
-    max_retries = configurable.get("max_test_retries", MAX_TEST_RETRIES)
-
-    current_retries = state.get("test_retries", 0)
-    if current_retries < max_retries:
-        return "fix_tests"
+    review = state.get("review")
+    if review and review.refactored_code:
+        return "refactor_gate"
 
     return "__end__"
-
 
 
 def build_code_review_graph(
     checkpointer: BaseCheckpointSaver | None = None,
 ):
-    """Build and compile the Code Review and Test Generation StateGraph."""
+    """Build and compile the top-level Code Review pipeline by composing 3 pure subgraphs."""
     workflow = StateGraph(CodeReviewState)  # type: ignore[call-arg]
 
-    # 1. Register nodes
-    workflow.add_node("review_code", review_code_node)
-    workflow.add_node("generate_tests", generate_tests_node)
-    workflow.add_node("execute_tests", execute_tests_node)
-    workflow.add_node("fix_tests", fix_tests_node)
+    # 1. Register 3 Pure Subgraphs
+    workflow.add_node("reviewer", build_reviewer_subgraph())
+    workflow.add_node("test_generator", build_test_gen_subgraph())
+    workflow.add_node("refactor_gate", build_refactor_subgraph())
 
-    # 2. Add edges and conditional routing
-    workflow.add_edge(START, "review_code")
+    # 2. Add edges between Subgraphs
+    workflow.add_edge(START, "reviewer")
     workflow.add_conditional_edges(
-        "review_code",
-        route_after_review,
+        "reviewer",
+        route_after_reviewer,
         {
-            "generate_tests": "generate_tests",
+            "test_generator": "test_generator",
             "__end__": END,
         },
     )
     workflow.add_conditional_edges(
-        "generate_tests",
+        "test_generator",
         route_after_test_gen,
         {
-            "execute_tests": "execute_tests",
+            "refactor_gate": "refactor_gate",
             "__end__": END,
         },
     )
-    # Self-Correction Loop:
-    workflow.add_conditional_edges(
-        "execute_tests",
-        route_after_execution,
-        {
-            "fix_tests": "fix_tests",
-            "__end__": END,
-        },
-    )
-
-    # After fixing, go back to execute tests
-    workflow.add_edge("fix_tests", "execute_tests")
+    workflow.add_edge("refactor_gate", END)
 
     # 3. Compile with checkpointer
     saver = checkpointer if checkpointer is not None else InMemorySaver()

@@ -1,9 +1,9 @@
 """Application entry point — runs the P1 web-researcher agent."""
 
-from langchain_core.messages import HumanMessage
-from dotenv import load_dotenv
-from output_schemas.research import ResearchReport
 from agents.web_researcher import web_researcher_agent
+from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage
+from output_schemas.research import ResearchReport
 from utils.run_with_hitl import run_with_hitl
 
 load_dotenv()

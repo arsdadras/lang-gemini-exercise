@@ -1,10 +1,11 @@
 from .code_review import (
+    apply_refactor_node,
+    approved_refactor_node,
     execute_tests_node,
     fix_tests_node,
     generate_tests_node,
     review_code_node,
 )
-
 from .rag import (
     check_hallucination_node,
     generate_node,
@@ -15,6 +16,8 @@ from .rag import (
 )
 
 __all__ = [
+    "apply_refactor_node",
+    "approved_refactor_node",
     "check_hallucination_node",
     "execute_tests_node",
     "fix_tests_node",
@@ -24,6 +27,6 @@ __all__ = [
     "query_rewrite_node",
     "retrieve_node",
     "review_code_node",
-    "web_search_fallback_node",
+    "web_search_fallback_node"
 ]
 

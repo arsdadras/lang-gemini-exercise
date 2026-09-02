@@ -10,11 +10,6 @@ silently downgrading to a cheaper tier (fallback stays within the same tier by
 default, only the provider changes — cross-tier cascade is opt-in, see `chain`).
 """
 
-from langchain.chat_models import init_chat_model
-from langchain_core.language_models import BaseChatModel
-from langchain_core.runnables import Runnable
-from pydantic import BaseModel
-
 from configs.models import (
     DEFAULT_TIER,
     MODEL_TIERS,
@@ -23,6 +18,10 @@ from configs.models import (
     TIER_CASCADE_ORDER,
     TIER_PROVIDER_ORDER,
 )
+from langchain.chat_models import init_chat_model
+from langchain_core.language_models import BaseChatModel
+from langchain_core.runnables import Runnable
+from pydantic import BaseModel
 
 
 class LLMRegistry:
@@ -51,8 +50,14 @@ class LLMRegistry:
 
     def _resolve_tier(self, tier: str | None) -> str:
         """Apply the default-tier and test-mode substitution rules."""
-        tier = tier or self._default_tier
-        return self._test_tier if self._test_mode else tier
+        import os
+
+        from configs.models import TEST_TIER
+        is_test_mode = os.getenv("LLM_TEST_MODE", "false").strip().lower() in {"1", "true", "yes"}
+        if is_test_mode:
+            return TEST_TIER
+        return tier or self._default_tier
+
 
     def _providers_for(self, tier: str) -> list[str]:
         return self._provider_order[tier]

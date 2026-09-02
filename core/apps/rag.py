@@ -1,5 +1,5 @@
-from graphs.rag import build_rag_graph
 from dotenv import load_dotenv
+from graphs.rag import build_rag_graph
 
 load_dotenv()
 
@@ -41,8 +41,7 @@ def main() -> None:
             config=config,
             stream_mode="updates",
         ):
-            for node_name, delta in update.items():
-                # print(f"{node_name} running: ...")
+            for delta in update.values():
                 if not delta:
                     continue
                 if "documents" in delta:

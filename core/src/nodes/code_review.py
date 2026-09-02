@@ -2,12 +2,13 @@
 
 from typing import cast
 
+from langgraph.types import interrupt
 from models import llm_model
 from output_schemas.code_review import ReviewResult, TestSuite
 from prompts.nodes.code_review_nodes import (
     REVIEW_PROMPT,
-    TEST_GEN_PROMPT,
     TEST_FIX_PROMPT,
+    TEST_GEN_PROMPT,
 )
 from state.code_review import CodeReviewState
 from utils.sandbox import run_tests_in_sandbox
@@ -41,7 +42,7 @@ def _format_review_summary(review: ReviewResult | None) -> str:
 def review_code_node(state: CodeReviewState) -> dict:
     """Analyze source code and produce structured review findings."""
     try:
-        chain = REVIEW_PROMPT | llm_model.chain("medium", structured=ReviewResult)
+        chain = REVIEW_PROMPT | llm_model.chain("medium", structured=ReviewResult, cascade=True)
         result = chain.invoke(
             {
                 "language": state.get("language", "python"),
@@ -50,7 +51,7 @@ def review_code_node(state: CodeReviewState) -> dict:
             }
         )
         return {"review": cast(ReviewResult, result), "error": None}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         return {"error": f"Review node failed: {e}"}
 
 
@@ -61,7 +62,7 @@ def generate_tests_node(state: CodeReviewState) -> dict:
         language = state.get("language", "python")
         framework = "pytest" if language.lower() == "python" else "standard test runner"
 
-        chain = TEST_GEN_PROMPT | llm_model.chain("medium", structured=TestSuite)
+        chain = TEST_GEN_PROMPT | llm_model.chain("medium", structured=TestSuite, cascade=True)
         result = chain.invoke(
             {
                 "framework": framework,
@@ -72,7 +73,7 @@ def generate_tests_node(state: CodeReviewState) -> dict:
             }
         )
         return {"tests": cast(TestSuite, result), "error": None}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         return {"error": f"Test generation node failed: {e}"}
 
 
@@ -100,7 +101,7 @@ def fix_tests_node(state: CodeReviewState) -> dict:
             else "Unknown execution failure."
         )
 
-        chain = TEST_FIX_PROMPT | llm_model.chain("medium", structured=TestSuite)
+        chain = TEST_FIX_PROMPT | llm_model.chain("medium", structured=TestSuite, cascade=True)
         result = chain.invoke(
             {
                 "framework": framework,
@@ -118,5 +119,32 @@ def fix_tests_node(state: CodeReviewState) -> dict:
             "error": None,
         }
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         return {"error": f"Test fix node failed: {e}"}
+
+
+def approved_refactor_node(state: CodeReviewState) -> dict:
+    """Pause graph execution via interrupt() to ask human developer for refactor approval."""
+    review = state.get("review")
+    if not review or not review.refactored_code:
+        return {"refactor_decision": "skip"}
+
+    human_response = interrupt(
+        {
+            "action_required": "Refactor Approval",
+            "summary": review.summary,
+            "refactored_code": review.refactored_code,
+        }
+    )
+
+    decision = str(human_response).lower().strip()
+    return {"refactor_decision": decision}
+
+
+def apply_refactor_node(state: CodeReviewState) -> dict:
+    """Apply the approved refactored code as the final output."""
+    review = state.get("review")
+    if not review or not review.refactored_code:
+        return {"applied_code": state["code"]}
+
+    return {"applied_code": review.refactored_code}

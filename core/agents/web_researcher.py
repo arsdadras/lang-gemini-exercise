@@ -2,14 +2,14 @@
 `ResearchReport`, delegating narrow sub-questions to `researcher_subagent`.
 """
 
-from langgraph.checkpoint.memory import InMemorySaver
 from deepagents import create_deep_agent
-from models import llm_model
-from subagents import researcher_subagent
-from prompts.agents import build_web_researcher_prompt
-from output_schemas.research import ResearchReport
-from middlewares.retry import retry_on_failure
+from langgraph.checkpoint.memory import InMemorySaver
 from middlewares.hitl import search_approval
+from middlewares.retry import retry_on_failure
+from models import llm_model
+from output_schemas.research import ResearchReport
+from prompts.agents import build_web_researcher_prompt
+from subagents import researcher_subagent
 from tools.search import web_search
 
 web_researcher_agent = create_deep_agent(

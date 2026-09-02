@@ -96,24 +96,28 @@ See `MENTOR_HANDOFF.md` for the detailed session-by-session state and open items
 
 ## P3 — Code Review & Test Generation Agent
 
+**Status (2026-09-02): Phase A ✅ · Phase B ✅ · Phase C ✅ COMPLETE.**
+See `MENTOR_HANDOFF.md` for full implementation details, architectural patterns, and verified test suite.
+
 **Problem:** User gives a file or PR diff → agent reviews code, suggests refactors, and generates tests.
 
-### Phase A — Baseline
+### Phase A — Baseline ✅
 - LangGraph orchestration across review stages
-- LangChain file tools (existing `file_ops.py`)
+- LangChain file tools (`file_ops.py`)
 - Structured `ReviewResult` and `TestSuite` Pydantic output
 
-### Phase B — Growth
-- HITL interrupt before writing file changes
-- Sandbox execution for running generated tests
+### Phase B — Growth ✅
+- HITL interrupt before writing file changes (`interrupt()` + `Command(resume=...)`)
+- Sandbox execution for running generated tests (`run_tests_in_sandbox`)
+- Self-correction feedback loop (`fix_tests_node`)
 - Middleware: model fallback and tool retry
-- `InMemorySaver` → SQLite checkpointer
+- Persistent SQLite checkpointer (`SqliteSaver` in `core/src/data/sqlite_db.py`)
 
-### Phase C — Professional
-- Reviewer and test-writer as separate compiled LangGraph subgraphs
-- Time-travel / replay for debugging bad review decisions
-- GitHub MCP tool integration
-- Optional DeepAgents coordinator for parallel multi-file delegation
+### Phase C — Professional ✅
+- Reviewer, test-writer, and refactor-gate as separate compiled LangGraph subgraphs
+- DeepAgents adapter wrapping parent graph as `CompiledSubAgent` (`code_review_subagent`)
+- Time-travel and state history inspection (`inspect_state_history`, `fork_from_checkpoint`)
+- High-speed model routing (`gemini-3.5-flash-lite` under 10s runtime)
 
 **Frameworks:** LangGraph + LangChain → DeepAgents + CompiledSubAgent at Phase C
 

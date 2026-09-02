@@ -1,10 +1,10 @@
 """Sandbox execution utilities for safe test running across execution backends."""
 
-from typing import Literal
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from typing import Literal
 
 from output_schemas.code_review import TestExecutionResult
 
@@ -35,6 +35,7 @@ def _run_local_sandbox(
                 capture_output=True,
                 text=True,
                 timeout=timeout_seconds,
+                check=False,
             )
 
             is_passed = res.returncode == 0
@@ -55,7 +56,7 @@ def _run_local_sandbox(
                 exit_code=-1,
                 output=f"Test execution timed out after {timeout_seconds} seconds.",
             )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             return TestExecutionResult(
                 status="error",
                 passed=False,

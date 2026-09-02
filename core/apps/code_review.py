@@ -1,11 +1,13 @@
-"""CLI entry point for the P3 Code Review & Test Generation agent."""
+"""CLI entry point for the P3 Code Review & Test Generation agent with Human-In-The-Loop (HITL)."""
 
 import sys
 from pathlib import Path
-from dotenv import load_dotenv
 
+from data.sqlite_db import get_sqlite_checkpointer
+from dotenv import load_dotenv
 from graphs.code_review import build_code_review_graph
-from output_schemas.code_review import ReviewResult, TestSuite, TestExecutionResult
+from langgraph.types import Command
+from output_schemas.code_review import ReviewResult, TestExecutionResult, TestSuite
 
 load_dotenv()
 
@@ -22,7 +24,7 @@ def calculate_discount(price: float, discount_percent: float) -> float:
 def _print_review_report(review: ReviewResult) -> None:
     """Format and print structured review findings."""
     print("\n" + "=" * 60)
-    print(f"📋 CODE REVIEW REPORT  (Score: {review.score}/10)")
+    print(f"📋 CODE REVIEW REPORT  (Quality Score: {review.score}/10)")
     print("=" * 60)
     print(f"\nSummary:\n{review.summary}\n")
 
@@ -64,13 +66,26 @@ def _print_test_report(tests: TestSuite, execution: TestExecutionResult | None) 
     print("=" * 60 + "\n")
 
 
+def _print_applied_code_report(applied_code: str | None, refactor_approved: bool) -> None:
+    """Format and print the final applied code output."""
+    print("\n" + "=" * 60)
+    decision_text = "APPROVED (Refactored Version)" if refactor_approved else "ORIGINAL (Refactor Rejected / Skipped)"
+    print(f"📦 FINAL APPLIED CODE  [{decision_text}]")
+    print("=" * 60)
+    if applied_code:
+        print(applied_code)
+    print("=" * 60 + "\n")
+
+
 def run_code_review(
     code: str,
     language: str = "python",
     file_path: str | None = None,
 ) -> None:
-    """Execute the Code Review graph with live streaming node updates."""
-    graph = build_code_review_graph()
+    """Execute the Code Review graph with live streaming and Human-In-The-Loop approval."""
+
+    checkpointer = get_sqlite_checkpointer()
+    graph = build_code_review_graph(checkpointer=checkpointer)
     config = {"configurable": {"thread_id": "cli_review_session"}}
 
     target_display = file_path if file_path else "<inline_code>"
@@ -80,6 +95,7 @@ def run_code_review(
     tests: TestSuite | None = None
     execution: TestExecutionResult | None = None
 
+    # Step 1: Initial graph stream execution
     for update in graph.stream(
         {
             "code": code,
@@ -119,16 +135,56 @@ def run_code_review(
                 if delta.get("error"):
                     print(f"\n❌ Test fixing failed: {delta['error']}")
                     return
-                tests = delta.get("tests")
                 retries = delta.get("test_retries", 1)
                 print(f"  🔄 Self-correction triggered (Attempt {retries}): Refactored failing test suite.")
 
+    # Step 2: Human-In-The-Loop Check (Inspect if graph is paused on an interrupt)
+    state_snapshot = graph.get_state(config)
+    refactor_approved = False
 
-    # Print final structured reports
+    if state_snapshot.next:
+        # Extract the exact payload sent by interrupt()
+        interrupt_payload = state_snapshot.tasks[0].interrupts[0].value
+        action_name = interrupt_payload.get("action_required", "Approval Required")
+        summary_text = interrupt_payload.get("summary", "")
+        refactored_code = interrupt_payload.get("refactored_code", "")
+
+        print("\n" + "!" * 60)
+        print(f"⏸️  HUMAN APPROVAL REQUIRED: {action_name.upper()}")
+        print("!" * 60)
+        if summary_text:
+            print(f"\nReview Summary:\n{summary_text}")
+        if refactored_code:
+            print(f"\nSuggested Refactored Code:\n{refactored_code}\n")
+        print("-" * 60)
+
+        # Interactive human prompt
+        user_input = input("\nDo you want to approve and apply this refactored code? [y/N]: ").strip().lower()
+        decision = "approve" if user_input in ("y", "yes") else "reject"
+        refactor_approved = (decision == "approve")
+
+        print(f"  ➡️ Resuming graph with decision: '{decision.upper()}' ...\n")
+
+        # Step 3: Resume graph with Command(resume=decision)
+        for update in graph.stream(
+            Command(resume=decision),
+            config=config,
+            stream_mode="updates",
+        ):
+            for node_name, delta in update.items():
+                if node_name == "apply_refactor":
+                    print("  ✓ Refactored code successfully applied to final state.")
+
+    # Step 4: Final State Inspection & Presentation
+    final_state = graph.get_state(config).values
+    final_applied_code = final_state.get("applied_code") or code
+
     if review:
         _print_review_report(review)
     if tests:
         _print_test_report(tests, execution)
+
+    _print_applied_code_report(final_applied_code, refactor_approved)
 
 
 def main() -> None:

@@ -23,9 +23,11 @@ REVIEW_PROMPT = ChatPromptTemplate.from_messages(
         ("system", _REVIEW_SYSTEM_PROMPT),
         (
             "human",
-            "Please review the following {language} code:\n"
-            "File path: {file_path}\n\n"
-            "```\n{code}\n```",
+            (
+                "Please review the following {language} code:\n"
+                "File path: {file_path}\n\n"
+                "```\n{code}\n```"
+            ),
         ),
     ]
 )
@@ -48,10 +50,12 @@ TEST_GEN_PROMPT = ChatPromptTemplate.from_messages(
         ("system", _TEST_GEN_SYSTEM_PROMPT),
         (
             "human",
-            "Generate a complete {framework} test suite for the following {language} code.\n"
-            "File path: {file_path}\n\n"
-            "Source Code:\n```\n{code}\n```\n\n"
-            "Review Summary & Findings:\n{review_summary}",
+            (
+                "Generate a complete {framework} test suite for the following {language} code.\n"
+                "File path: {file_path}\n\n"
+                "Source Code:\n```\n{code}\n```\n\n"
+                "Review Summary & Findings:\n{review_summary}"
+            ),
         ),
     ]
 )
@@ -75,11 +79,13 @@ TEST_FIX_PROMPT = ChatPromptTemplate.from_messages(
         ("system", _TEST_FIX_SYSTEM_PROMPT),
         (
             "human",
-            "The previous {framework} test suite for the following {language} code failed during execution.\n\n"
-            "Source Code:\n```\n{code}\n```\n\n"
-            "Failing Test Code:\n```\n{failing_test_code}\n```\n\n"
-            "Execution Error Output (Pytest traceback):\n```\n{error_output}\n```\n\n"
-            "Please provide a fully corrected and complete test suite.",
+            (
+                "The previous {framework} test suite for the following {language} code failed during execution.\n\n"
+                "Source Code:\n```\n{code}\n```\n\n"
+                "Failing Test Code:\n```\n{failing_test_code}\n```\n\n"
+                "Execution Error Output (Pytest traceback):\n```\n{error_output}\n```\n\n"
+                "Please provide a fully corrected and complete test suite."
+            ),
         ),
     ]
 )

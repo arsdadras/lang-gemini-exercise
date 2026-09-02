@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from langchain.tools import tool
-from langchain_tavily import TavilySearch
 from dotenv import load_dotenv
+from langchain_tavily import TavilySearch
 
 load_dotenv()
 

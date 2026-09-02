@@ -5,7 +5,7 @@ from pathlib import Path
 # Add reference folder to sys.path for direct import
 ref_path = str(Path(__file__).resolve().parents[1] / "reference")
 if ref_path not in sys.path:
-    sys.path.insert(0, ref_path)
+    sys.path.append(ref_path)
 
 from output_schemas import TestSuite, TestCase, TestExecutionResult
 from state import CodeReviewState

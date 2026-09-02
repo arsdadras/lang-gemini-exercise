@@ -40,6 +40,7 @@ _OPENROUTER_BASE = {
 
 _GEMINI_BASE = {
     "model_provider": "google_genai",
+    "api_key": os.getenv("GOOGLE_API_KEY"),
     "temperature": 0,
     "top_p": 0.95,
 }
@@ -52,15 +53,13 @@ MODEL_TIERS = {
         "anthropic": {"model": "claude-opus-5", **_GAPGPT_BASE},
     },
     "medium": {
-        "gemini": {"model": "gemini-3.7-flash", **_GEMINI_BASE},
+        "gemini": {"model": "gemini-3.8-flash", **_GEMINI_BASE},
         "openai": {"model": "gpt-5.6-terra", **_GAPGPT_BASE},
         "anthropic": {"model": "claude-sonnet-5", **_GAPGPT_BASE},
     },
     "low": {
         "gemini": {"model": "gemini-3.5-flash-lite", **_GEMINI_BASE},
         "openai": {"model": "gpt-5.6-luna", **_GAPGPT_BASE},
-        # No confirmed GapGPT Claude model at this capability (no Haiku in
-        # GapGPT's catalog as of 2026-08-26) — two providers, not three, here.
     },
     "free": {
         "glm": {"model": "z-ai/glm-5.2:free", **_OPENROUTER_BASE},
@@ -83,10 +82,11 @@ DEFAULT_TIER = "low"
 # down rather than failing outright. Off by default everywhere — same-tier-only
 # fallback (`fallback_models()`) is still what every call site uses unless it
 # explicitly asks for cascade.
-TIER_CASCADE_ORDER = ["high", "medium", "low", "free"]
+TIER_CASCADE_ORDER = ["high", "medium", "low"]
 
 # Route every tier through TEST_TIER's models instead — flip via `.env`
 # (`LLM_TEST_MODE=true`) to iterate on routing/prompt/fallback logic cheaply
 # without spending paid-tier quota; leave unset (default off) for real runs.
 TEST_MODE = os.getenv("LLM_TEST_MODE", "false").strip().lower() in {"1", "true", "yes"}
-TEST_TIER = "free"
+TEST_TIER = "low"
+

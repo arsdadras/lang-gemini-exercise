@@ -6,8 +6,8 @@ import sys
 from pathlib import Path
 from dotenv import load_dotenv
 
-from .graph import build_code_review_graph
-from .op_schema import ReviewResult, TestSuite
+from Course_Files.graph import build_code_review_graph
+from Course_Files.op_schema import ReviewResult, TestSuite
 
 load_dotenv()
 

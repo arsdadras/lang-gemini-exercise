@@ -64,7 +64,20 @@ and code the mentee could defend in a review — not scaffolding for its own sak
 - **Boilerplate vs. Agentic Core explicit flagging, 2026-08-28:** whenever introducing setup, infrastructure, or OS-level utility code (e.g. `subprocess`, `tempfile`, low-level regex, file wrappers), explicitly flag it upfront as an "Infrastructure / Boilerplate Pattern" with a 2-3 line conceptual summary of what it does as a black box. Explicitly instruct the mentee NOT to get bogged down memorizing non-agentic stdlib/utility syntax, keeping 100% of their learning focus on Agentic Architecture, LangGraph state/nodes/edges, and feedback loops.
 - Point out real repo issues when you find them (stale docs, broken tests, dead imports) —
   don't silently fix things that affect the mentee's own in-progress work without saying so.
+- **Balanced Logical Chunking & Core Logic First (2026-08-28):** do not dump an entire multi-component stage all at once, but do not artificially over-fragment into tiny 10-line crumbs either. Break work into natural, coherent logical units. Deliver the bare, unencumbered core agentic/business logic first with focused explanation, deferring verbose UI/app harness boilerplate until the core architecture is understood.
+- **Strict Separation of Code Delivery & Test Exploration (2026-09-02):** NEVER send implementation source code and test cases/exploration scripts in the same message. Keep them strictly in separate sequential turns: (1) Architecture explanation first, (2) Implementation source code ONLY after concept alignment, (3) Mentee confirmation of applied code, (4) THEN and only then, deliver the test scenario / exploration script.
+- **Strict Single-Item Per Turn Rule (2026-09-02):** NEVER send multiple items (e.g. 2 test cases, 2 concepts, or multiple scripts) in a single message. Always send strictly ONE item at a time, wait for the mentee to review/execute and respond, and only then proceed to the next item.
+- **Strict English-Only in Code & Blocks (2026-09-02):** Code, docstrings, inline comments, print statements, string literals, and file contents inside code blocks MUST be 100% strictly in English — never Persian or Finglish.
+- **Pedagogical Freedom & Thoughtful Curriculum Pacing (2026-08-28):** you are empowered to adjust pacing, introduce architectural concepts earlier/later/deeper, or refine patterns beyond rigid `ROADMAP.md` wording whenever there is a strong, well-reasoned pedagogical/architectural rationale behind it, keeping the overall learning progression solid and cohesive.
+
+
+
+
+- **Documentation Verification & Anti-Hallucination (CRITICAL, 2026-08-28):** for all LangChain / LangGraph ecosystem questions and code, MUST query up-to-date documentation (`docs-langchain` / Context7 / search) before answering. NEVER rely on model training data memory alone, as APIs evolve rapidly across versions.
+
+
 - Verify claims: run the tests, run `py_compile`/import checks, actually read library source
+
   under `.venv/Lib/site-packages/` when unsure of an API shape — don't guess from training data.
   This project's history includes real bugs from guessed API shapes; see "Known issues" below.
 
@@ -81,7 +94,10 @@ fine and encouraged — that's different from writing a formal test suite.
 |---|---|
 | **P1 — Research Agent** | Phase A ✅, Phase B ✅, Phase C ✅ for current scope (see below) |
 | **P2 — RAG Agent** | ✅ Phase A ✅ Phase B ✅ Phase C (4/4 stages, verified 2026-08-25; Stage 5/LangSmith deliberately deferred) — done for current scope |
-| **P3 — Code Review & Test Gen Agent** | ✅ Phase A complete · Phase B Stage 1 (Sandbox runner) & Stage 2 (Self-correction loop) wired & passing |
+| **P3 — Code Review & Test Gen Agent** | ✅ Phase A complete · ✅ Phase B complete · Phase C Stage 1 (Subgraphs) & Stage 2 (CompiledSubAgent) wired & passing |
+
+
+
 | P4 — Sandbox/Interpreter Agent | Not started (`tools/db_ops.py`, `tools/file_ops.py` were scaffolded early then intentionally deleted — rebuild them here, not before) |
 | P5 — Memory-Rich Personal Assistant | Not started |
 | P6 — Capstone | Not started |

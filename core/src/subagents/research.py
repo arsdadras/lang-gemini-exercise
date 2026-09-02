@@ -5,8 +5,8 @@ multiple angles of a topic can be researched with isolated context
 windows instead of one long, cluttered conversation.
 """
 
-from prompts import researcher_subagent_prompt
 from output_schemas import ResearchFindings
+from prompts import researcher_subagent_prompt
 from tools import web_search
 
 researcher_subagent = {
