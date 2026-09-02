@@ -23,11 +23,9 @@ REVIEW_PROMPT = ChatPromptTemplate.from_messages(
         ("system", _REVIEW_SYSTEM_PROMPT),
         (
             "human",
-            (
-                "Please review the following {language} code:\n"
-                "File path: {file_path}\n\n"
-                "```\n{code}\n```"
-            ),
+            "Please review the following {language} code:\n"
+            "File path: {file_path}\n\n"
+            "```\n{code}\n```",
         ),
     ]
 )
@@ -50,12 +48,10 @@ TEST_GEN_PROMPT = ChatPromptTemplate.from_messages(
         ("system", _TEST_GEN_SYSTEM_PROMPT),
         (
             "human",
-            (
-                "Generate a complete {framework} test suite for the following {language} code.\n"
-                "File path: {file_path}\n\n"
-                "Source Code:\n```\n{code}\n```\n\n"
-                "Review Summary & Findings:\n{review_summary}"
-            ),
+            "Generate a complete {framework} test suite for the following {language} code.\n"
+            "File path: {file_path}\n\n"
+            "Source Code:\n```\n{code}\n```\n\n"
+            "Review Summary & Findings:\n{review_summary}",
         ),
     ]
 )
@@ -79,13 +75,39 @@ TEST_FIX_PROMPT = ChatPromptTemplate.from_messages(
         ("system", _TEST_FIX_SYSTEM_PROMPT),
         (
             "human",
-            (
-                "The previous {framework} test suite for the following {language} code failed during execution.\n\n"
-                "Source Code:\n```\n{code}\n```\n\n"
-                "Failing Test Code:\n```\n{failing_test_code}\n```\n\n"
-                "Execution Error Output (Pytest traceback):\n```\n{error_output}\n```\n\n"
-                "Please provide a fully corrected and complete test suite."
-            ),
+            "The previous {framework} test suite for the following {language} code failed during execution.\n\n"
+            "Source Code:\n```\n{code}\n```\n\n"
+            "Failing Test Code:\n```\n{failing_test_code}\n```\n\n"
+            "Execution Error Output (Pytest traceback):\n```\n{error_output}\n```\n\n"
+            "Please provide a fully corrected and complete test suite.",
         ),
     ]
 )
+
+
+# _EVALUATE_TESTS_SYSTEM_PROMPT = """You are a Senior QA Automation Engineer evaluating the quality of generated test code.
+# Your task is to assess whether the test code is comprehensive, robust, and follows best practices.
+
+# Evaluation Criteria:
+# 1. Coverage: Does the test suite cover happy paths, edge cases, boundary values, invalid inputs, and error/exception handling?
+# 2. Structure: Does the test suite follow {framework} conventions with clear test names (`test_<scenario>_<expected_behavior>`)?
+# 3. Isolation & Independence: Are the tests deterministic and runnable without external side effects (mock network/disk if needed)?
+# 4. Completeness: Is the `test_code` field contain a complete, syntactically valid, ready-to-run test file including all necessary imports.
+# 5. Regression Testing: If code review findings are provided, does the test suite cover the identified issues?
+
+# If test evaluation fails, provide a detailed explanation of the issues and suggestions for improvement.
+# """
+
+
+# EVALUATE_TESTS_PROMPT = ChatPromptTemplate.from_messages(
+#     [
+#         ("system", _EVALUATE_TESTS_SYSTEM_PROMPT),
+#         (
+#             "human",
+#             "Please evaluate the following {framework} test suite for the {language} code.\n\n"
+#             "Source Code:\n```\n{code}\n```\n\n"
+#             "Test Code:\n```\n{test_code}\n```\n\n"
+#             "Review Summary & Findings:\n{review_summary}",
+#         ),
+#     ]
+# )
