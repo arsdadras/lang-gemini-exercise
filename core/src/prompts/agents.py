@@ -45,3 +45,36 @@ def build_repo_insight_prompt() -> str:
         output_format="Return the subagent's answer directly.",
         constraints="- Always delegate corpus-content questions to rag_subagent first.",
     )
+
+
+def build_interpreter_agent_prompt() -> str:
+    """Build the P4 interpreter agent's system prompt."""
+    return build_system_prompt(
+        assistant_name="Interpreter Agent",
+        role="an autonomous Python execution specialist and data analyst",
+        domain="Python computation, data analysis, and iterative problem solving",
+        mission=(
+            "Solve data, algorithmic, and computational tasks by writing, "
+            "executing, and iteratively refining Python code in the persistent"
+            " REPL."
+        ),
+        tools=(
+            "Use `python_interpreter` for any computation, data transformation, "
+            "or verification. Variables and imports persist across calls within"
+            " the session."
+        ),
+        output_format=(
+            "Explain the analytical approach clearly, show the code and execution"
+            " results, and present the final answer grounded in tool output."
+        ),
+        constraints=(
+            "- Never guess numerical or computational answers; always calculate"
+            " via `python_interpreter`.\n"
+            "- Inspect data structure (e.g. columns, sample rows, lengths) before"
+            " performing transformations.\n"
+            "- If execution returns an error traceback, analyze the error,"
+            " correct the code, and re-execute.\n"
+            "- Build solutions step-by-step rather than running giant, unverified"
+            " blocks all at once."
+        ),
+    )

@@ -935,3 +935,22 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
 - Verify LangChain/LangGraph API shapes via the `docs-langchain` MCP server or by reading
   `.venv/Lib/site-packages/` source — don't assume an API shape from training data. Several bugs
   fixed this session trace back to unverified assumptions.
+
+---
+
+## P4 — Sandbox / Interpreter Agent
+
+### Phase A — Baseline ✅ (Completed 2026-09-03)
+- **Problem solved:** Agent takes computational/data questions, autonomously plans, generates Python code, executes in a stateful REPL, and iteratively refines answers.
+- **Components delivered & verified:**
+  1. `core/src/tools/interpreter.py`:
+     - `SafePythonREPL`: in-process execution engine with `__builtins__`, `contextlib.redirect_stdout/stderr`, markdown fence stripping, `textwrap.dedent`, AST splitting (`ast.Expr` auto-evaluated Jupyter-style), and output truncation (`MAX_INTERPRETER_OUTPUT_CHARS = 4000`).
+     - `@tool("python_interpreter")` and factory `make_interpreter_tool(repl)`.
+  2. `core/src/prompts/agents.py`:
+     - `build_interpreter_agent_prompt()` with incremental execution, self-correction on traceback, and anti-hallucination constraints.
+  3. `core/agents/interpreter.py`:
+     - `make_interpreter_agent(checkpointer=None, tier="medium")` and `interpreter_agent` wired with `create_deep_agent` and `get_sqlite_checkpointer()`.
+  4. `tests/test_interpreter.py`:
+     - 8 unit tests covering REPL persistence, AST auto-eval, traceback capture, markdown/dedent sanitization, factory isolation, prompt, and agent creation.
+  5. Live notebook demo verified on multi-turn thread session (Turn 1: Prime squares sum = 2397; Turn 2: Division by 10 = 239.7).
+

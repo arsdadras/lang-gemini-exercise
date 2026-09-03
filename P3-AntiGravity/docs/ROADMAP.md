@@ -127,10 +127,12 @@ See `MENTOR_HANDOFF.md` for full implementation details, architectural patterns,
 
 **Problem:** User gives a data or coding task → agent writes and runs code, inspects output, iterates, returns artifacts.
 
-### Phase A — Baseline
-- DeepAgents `create_deep_agent` with **Interpreter** backend
-- LangChain file and DB tools (existing `file_ops.py`, `db_ops.py`)
-- Agent loop: plan → write code → execute → inspect → refine
+### Phase A — Baseline ✅
+- DeepAgents `create_deep_agent` with **Interpreter** tool (`tools.interpreter.python_interpreter`)
+- Persistent stateful REPL execution engine (`SafePythonREPL`) with Jupyter-style AST expression evaluation, IO redirection, and output truncation
+- System prompt for iterative problem solving and error self-correction (`prompts.agents.build_interpreter_agent_prompt`)
+- Factory architecture with SQLite checkpointer (`agents.interpreter.make_interpreter_agent`, `interpreter_agent`)
+- Verified multi-turn math and data exploration loop in notebook
 
 ### Phase B — Growth
 - **Sandbox** backend for isolated shell execution and artifact generation
