@@ -142,9 +142,9 @@ See `MENTOR_HANDOFF.md` for full implementation details, architectural patterns,
 ### Phase C — Professional & Subagent Composition
 - Streaming execution events in real time
 - LangSmith tracing and run observability
-- Wrapping the Sandbox/Interpreter Agent as a `CompiledSubAgent` for delegation by the P6 Capstone Coordinator
+- Wrapping the Sandbox/Interpreter Agent as a `CompiledSubAgent` for modular multi-agent reuse
 
-**Frameworks:** DeepAgents (`LocalShellBackend`, `FilesystemPermission`) + LangGraph (Checkpoints, HITL) → CompiledSubAgent for P6
+**Frameworks:** DeepAgents (`LocalShellBackend`, `FilesystemPermission`) + LangGraph (Checkpoints, HITL)
 
 
 ---

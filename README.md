@@ -13,7 +13,7 @@ This repository demonstrates the progressive evolution of agentic architectures 
 | **P1** | **Web Research Agent** | DeepAgents orchestrator, structured citations, multi-tier fallback cascade, streaming output | ✅ **Complete** |
 | **P2** | **RAG Coordinator Agent** | LangGraph StateGraph, vector indexing, document grading, corrective retrieval, subagent delegation | ✅ **Complete** |
 | **P3** | **Code Review & Test Gen** | 3-subgraph parent graph, process-isolated sandbox runner, cyclic test fixer loop, modern HITL (`interrupt()` + `Command(resume=...)`), SQLite checkpointing, time-travel history replay | ✅ **Complete** |
-| **P4** | **Sandbox / Interpreter Agent** | DeepAgents native `LocalShellBackend`, anchored filesystem confinement (`out/sandbox`), execution safety, shell HITL governance, `CompiledSubAgent` composition | 🚀 **In Progress** |
+| **P4** | **Sandbox / Interpreter Agent** | DeepAgents native `LocalShellBackend`, anchored filesystem confinement (`out/sandbox`), execution safety, shell HITL governance | 🎯 **Current Focus** |
 | **P5** | **Memory-Rich Assistant** | `CompositeBackend` (`StateBackend` + `StoreBackend`), persistent cross-session facts, dynamic skill loading | 📋 *Planned* |
 | **P6** | **Autonomous Capstone** | Hierarchical multi-agent coordinator, LangGraph SDK deployment, inter-agent delegation | 📋 *Planned* |
 
