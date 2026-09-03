@@ -98,7 +98,7 @@ fine and encouraged — that's different from writing a formal test suite.
 
 
 
-| P4 — Sandbox/Interpreter Agent | In progress: Phase A Stage 1 ✅ (`core/configs/interpreter.py` anchored sandbox config) |
+| P4 — Sandbox/Interpreter Agent | In progress: Phase A Stage 1 ✅ Stage 2 ✅ (`make_interpreter_agent`, `build_interpreter_agent_prompt`, `LocalShellBackend`) |
 | P5 — Memory-Rich Personal Assistant | Not started |
 | P6 — Capstone | Not started |
 
@@ -996,3 +996,15 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
   - `LocalShellBackend` default on Windows has `inherit_env=False`, which completely strips the system `PATH` and causes subshell execution of `python` to fail with `'python' is not recognized`. Setting `inherit_env=True` was verified live in terminal and is mandatory.
   - `virtual_mode=True` enforces virtual root confinement, mirroring the pure-Python `resolve_safe_path()` boundary from `archive/` by raising `ValueError: Path traversal not allowed` on any `..` escaping attempt.
 - **Verification:** `ruff check core/configs` passed cleanly; `uv run pytest` passed 12/12.
+ 
+#### Phase A, Stage 2 — System Prompt & Agent Factory Architecture (2026-09-04) ✅
+- **Files Created/Modified:**
+  - `core/src/prompts/agents.py`: Added `build_interpreter_agent_prompt()`, structuring the agent's mission around file-driven execution (`write_file` -> `execute` -> verify/self-correct) using the standard `build_system_prompt()` builder.
+  - `core/agents/interpreter.py`: Created `make_interpreter_agent()` factory with sensible defaults (`tier="medium"`, `checkpointer=InMemorySaver()`, `LocalShellBackend` with `DEFAULT_SANDBOX_DIR`) and exported singleton `interpreter_agent`.
+  - `core/agents/__init__.py`: Re-exported `interpreter_agent` and `make_interpreter_agent`.
+- **Architectural Insights & Lessons Learned:**
+  - Avoided the `kwargs = {}` anti-pattern for `response_format`; passed `response_format=response_format` directly since `create_deep_agent` natively supports optional `response_format`.
+  - Avoided mutable default argument trap for `checkpointer` and `backend` by using `None` sentinel pattern in the factory signature.
+  - DeepAgents' `FilesystemMiddleware` automatically mounts all standard tools (`ls`, `read_file`, `write_file`, `edit_file`, `delete`, `glob`, `grep`, `execute`, `task`) when `backend=LocalShellBackend(...)` is provided.
+  - Identified why `agent.nodes['tools'].bound.tools_by_name` is an anti-pattern (brittle private Pregel internals). Standard inspection/testing is black-box via `.invoke()`, or testing `backend` methods directly with `tmp_path`, or `agent.get_graph().nodes`.
+- **Verification:** Live invocation confirmed end-to-end tool execution (`write_file`) and physical disk verification under `DEFAULT_SANDBOX_DIR / "workspace"`. Full test suite `uv run pytest` 12/12 green.

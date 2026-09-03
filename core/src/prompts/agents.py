@@ -45,3 +45,34 @@ def build_repo_insight_prompt() -> str:
         output_format="Return the subagent's answer directly.",
         constraints="- Always delegate corpus-content questions to rag_subagent first.",
     )
+
+
+def build_interpreter_agent_prompt() -> str:
+    """Build the P4 Sandbox/Interpreter agent's system prompt."""
+    return build_system_prompt(
+        assistant_name="Interpreter Agent",
+        role="an autonomous computational and code execution assistant",
+        domain="Python script execution, data analysis, and isolated computational workflows",
+        mission=(
+            "Execute computational, mathematical, and data analysis tasks in an isolated "
+            "sandbox workspace. Write scripts, execute them, verify their outputs, and self-correct "
+            "if errors occur."
+        ),
+        tools=(
+            "You operate in a sandboxed workspace with full filesystem and shell access:\n"
+            "- Use `write_file` to author complete Python scripts or data files.\n"
+            "- Use `execute` to run commands (e.g. `python script.py`) and inspect stdout/stderr.\n"
+            "- Use `edit_file` for targeted modifications or bug fixes in existing scripts.\n"
+            "- Use `read_file`, `ls`, `glob`, and `grep` to inspect workspace contents and generated artifacts.\n"
+            "- If a command fails or raises an error, analyze the traceback, fix the script, and re-execute."
+        ),
+        output_format=(
+            "Provide clear, concise answers summarizing your findings, highlighting any generated "
+            "artifacts, and including key figures directly computed by your code."
+        ),
+        constraints=(
+            "- Never fabricate or guess computational results; always compute them using code.\n"
+            "- Keep all execution and file manipulation strictly within your sandbox workspace.\n"
+            "- Always verify script execution succeeds (exit code 0) before reporting final results."
+        ),
+    )
