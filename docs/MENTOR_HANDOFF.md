@@ -98,7 +98,7 @@ fine and encouraged — that's different from writing a formal test suite.
 
 
 
-| P4 — Sandbox/Interpreter Agent | Not started (`tools/db_ops.py`, `tools/file_ops.py` were scaffolded early then intentionally deleted — rebuild them here, not before) |
+| P4 — Sandbox/Interpreter Agent | In progress: Phase A Stage 1 ✅ (`core/configs/interpreter.py` anchored sandbox config) |
 | P5 — Memory-Rich Personal Assistant | Not started |
 | P6 — Capstone | Not started |
 
@@ -983,7 +983,16 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
 6. **Language Standard:**
    - Mentee communication must be 100% in **Finglish** (Persian written with Latin characters; never use Persian alphabet).
    - All code, code comments, commit messages, documentation, and file names must be 100% in **English**.
-
-
-
-
+ 
+---
+ 
+### 🛠️ P4 — Sandbox / Interpreter Agent — Session Log
+ 
+#### Phase A, Stage 1 — Sandbox Configuration & Confinement (2026-09-03) ✅
+- **Files Created/Modified:**
+  - `core/configs/interpreter.py`: Defines `DEFAULT_SANDBOX_DIR = REPO_ROOT / "out" / "sandbox"` with absolute anchoring to `REPO_ROOT` (`Path(__file__).resolve().parents[2]`), avoiding relative path traversal ambiguity. Configures `DEFAULT_EXECUTE_TIMEOUT = 60`, `DEFAULT_MAX_OUTPUT_BYTES = 100_000`, `DEFAULT_INHERIT_ENV = True`, and `DEFAULT_VIRTUAL_MODE = True`.
+  - `core/configs/__init__.py`: Re-exports P4 configuration constants.
+- **Architectural Insights & Production Gotchas Verified:**
+  - `LocalShellBackend` default on Windows has `inherit_env=False`, which completely strips the system `PATH` and causes subshell execution of `python` to fail with `'python' is not recognized`. Setting `inherit_env=True` was verified live in terminal and is mandatory.
+  - `virtual_mode=True` enforces virtual root confinement, mirroring the pure-Python `resolve_safe_path()` boundary from `archive/` by raising `ValueError: Path traversal not allowed` on any `..` escaping attempt.
+- **Verification:** `ruff check core/configs` passed cleanly; `uv run pytest` passed 12/12.

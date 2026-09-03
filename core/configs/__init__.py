@@ -1,4 +1,11 @@
 from .code_review import MAX_TEST_RETRIES
+from .interpreter import (
+    DEFAULT_EXECUTE_TIMEOUT,
+    DEFAULT_INHERIT_ENV,
+    DEFAULT_MAX_OUTPUT_BYTES,
+    DEFAULT_SANDBOX_DIR,
+    DEFAULT_VIRTUAL_MODE,
+)
 from .models import (
     DEFAULT_TIER,
     MODEL_TIERS,
@@ -10,7 +17,12 @@ from .models import (
 from .rag import MAX_RETRIES
 
 __all__ = [
+    "DEFAULT_EXECUTE_TIMEOUT",
+    "DEFAULT_INHERIT_ENV",
+    "DEFAULT_MAX_OUTPUT_BYTES",
+    "DEFAULT_SANDBOX_DIR",
     "DEFAULT_TIER",
+    "DEFAULT_VIRTUAL_MODE",
     "MAX_RETRIES",
     "MAX_TEST_RETRIES",
     "MODEL_TIERS",
