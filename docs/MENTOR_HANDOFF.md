@@ -953,7 +953,7 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
 - **P1 (Web Research Agent):** Complete & verified.
 - **P2 (RAG Coordinator Agent):** Complete & verified.
 - **P3 (Code Review & Test Generation Agent):** Complete & verified. All 3 subgraphs, AST parsing, process sandboxing, cyclic self-correction loops with retry budgets, modern HITL (`interrupt()` + `Command(resume=...)`), SQLite checkpointing, and time-travel replay are 100% functional and tested.
-- **Recent Commits Context:** In recent commits, some code was explored at a low level to gain a deeper conceptual understanding of runtime mechanics by temporarily setting the high-level framework aside.
+- **Recent Commits Context:** In recent commits, some code was explored at a low level to gain a deeper conceptual understanding of runtime mechanics by temporarily setting the high-level framework aside. All of that exploratory code has been preserved in `archive/p4_initial_exploration/` with its full directory structure (`core/agents/`, `core/configs/`, `core/src/output_schemas/`, `core/src/tools/`, `core/src/utils/`, `tests/`), while the active codebase has been cleanly reset to the verified end-of-P3 state.
 - **Next Target:** The project is now ready to start **P4 (Sandbox / Interpreter Agent)** completely fresh from the beginning.
 
 ---

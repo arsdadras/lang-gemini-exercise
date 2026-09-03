@@ -5,16 +5,26 @@ import contextlib
 import io
 import textwrap
 import traceback
+from pathlib import Path
 from typing import Any
 
 from langchain_core.tools import tool
+from utils.resolve_safe_path import DEFAULT_SANDBOX_DIR
 
 
 class SafePythonREPL:
     """Stateful, in-process Python execution environment."""
 
-    def __init__(self, max_output_chars: int = 4000) -> None:
+    def __init__(
+        self,
+        max_output_chars: int = 4000,
+        workspace_dir: Path | str | None = None,
+    ) -> None:
         self.max_output_chars = max_output_chars
+        self.workspace_dir = (
+            Path(workspace_dir).resolve() if workspace_dir else DEFAULT_SANDBOX_DIR.resolve()
+        )
+        self.workspace_dir.mkdir(parents=True, exist_ok=True)
         self.globals: dict[str, Any] = {"__builtins__": __builtins__}
 
     def reset(self) -> None:
@@ -49,7 +59,11 @@ class SafePythonREPL:
 
             exec_code = compile(tree, filename="<repl>", mode="exec") if tree.body else None
 
-            with contextlib.redirect_stdout(buffer), contextlib.redirect_stderr(buffer):
+            with (
+                contextlib.redirect_stdout(buffer),
+                contextlib.redirect_stderr(buffer),
+                contextlib.chdir(self.workspace_dir),
+            ):
                 if exec_code:
                     exec(exec_code, self.globals)  # noqa: S102
                 if eval_node:
