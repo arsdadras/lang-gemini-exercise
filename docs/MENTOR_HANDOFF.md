@@ -1008,3 +1008,17 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
   - DeepAgents' `FilesystemMiddleware` automatically mounts all standard tools (`ls`, `read_file`, `write_file`, `edit_file`, `delete`, `glob`, `grep`, `execute`, `task`) when `backend=LocalShellBackend(...)` is provided.
   - Identified why `agent.nodes['tools'].bound.tools_by_name` is an anti-pattern (brittle private Pregel internals). Standard inspection/testing is black-box via `.invoke()`, or testing `backend` methods directly with `tmp_path`, or `agent.get_graph().nodes`.
 - **Verification:** Live invocation confirmed end-to-end tool execution (`write_file`) and physical disk verification under `DEFAULT_SANDBOX_DIR / "workspace"`. Full test suite `uv run pytest` 12/12 green.
+
+#### Phase A, Stage 3 — Application Entry Point & Interactive REPL Loop (2026-09-04) ✅
+- **Files Created/Modified:**
+  - `core/apps/interpreter.py`: Interactive REPL runner featuring session thread continuity (`config={"configurable": {"thread_id": "..."}}`), input handling for multi-turn tasks, graceful `(KeyboardInterrupt, EOFError)` termination, and unified output extraction via `get_text(result['messages'][-1])`.
+  - `skills/legacy-docs/SKILL.md`: Comprehensive workspace-level skill synthesizing curriculum architecture, standing agreements, deferred testing/eval scope, 5-turn interaction model, and the 3 mandatory habits (subagents, MCPs, legacy-docs).
+- **Architectural Insights & Lessons Learned:**
+  - **Import-Time Model Initialization Gotcha:** `load_dotenv()` must be invoked before importing `agents.interpreter`. Since `interpreter_agent` is initialized at module import time, failing to load `.env` first causes `ChatGoogleGenerativeAI` to fail with a `ValidationError` due to missing `GOOGLE_API_KEY`.
+  - **Deferred Testing vs. Live Exploration Verification:** Reinforced standing agreement from 2026-08-19: formal unit tests in `tests/test_*.py` are deferred. Verification is conducted via runnable apps (`core/apps/interpreter.py`) and live hands-on exploration scenarios.
+  - **Workflow Calibration:** Updated rule: Mentor writes and applies official `.py` implementation code directly into `core/` under mentee guidance (pre-verified with `ruff` and `pytest`), while mentee focuses on notebook exploration.
+- **Verification:**
+  - Full pre-verification with `uv run ruff check core/` and `uv run pytest` (12/12 passing).
+  - Mentee live exploration verified in notebook: Agent wrote `primes.py`, executed it in sandbox via shell, generated `primes_list.txt` containing all 15 primes up to 50, and reported the largest prime (47) with exact disk confinement in `out/sandbox/`.
+- **Milestone:** **Phase A (Native Workspace & Execution Engine) is 100% COMPLETE!**
+
