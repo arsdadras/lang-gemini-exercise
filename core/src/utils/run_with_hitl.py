@@ -20,18 +20,31 @@ def run_with_hitl(
     """Invoke `agent`, resolving any HITL interrupts via CLI y/n prompts.
 
     Loops until the agent produces a result with no pending interrupt.
+    When an action is rejected, prompts for an optional reason and forwards
+    it to the agent as actionable feedback for self-correction.
     """
     result = agent.invoke(initial_input, config)
 
     while "__interrupt__" in result:
         interrupt = result["__interrupt__"][0]
+        decisions: list[dict[str, Any]] = []
+
         for request in interrupt.value["action_requests"]:
             print(f"\n{request['description']}")
             print(f"Tool: {request['name']}")
             print(f"Args: {request['args']}")
 
-        decision = input(assistant_prompt).strip().lower()
-        resume = {"decisions": [{"type": "approve" if decision == "y" else "reject"}]}
+            decision = input(assistant_prompt).strip().lower()
+            if decision in ("y", "yes"):
+                decisions.append({"type": "approve"})
+            else:
+                reason = input("Reason for rejection (optional, press Enter to skip): ").strip()
+                reject_payload: dict[str, Any] = {"type": "reject"}
+                if reason:
+                    reject_payload["message"] = reason
+                decisions.append(reject_payload)
+
+        resume = {"decisions": decisions}
         result = agent.invoke(Command(resume=resume), config)
 
     return result

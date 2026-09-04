@@ -67,9 +67,19 @@ exist yet — do not reintroduce them until that project starts (see `docs/ROADM
 - Any change to production config, secrets, or deployment files.
 - Deleting or truncating data.
 
+## Operational Governance & Mentorship Rules
+
+- **Strict Single-Item Focus (Asl-e Tamarkoz):** Strictly ONE task, one improvement, or one architectural concept per turn. Never bundle multiple tasks or ideas together.
+- **No Path of Least Resistance (Zero Toy Shortcuts):** Never implement the easy/minimal shortcut just because "it runs." Always implement the planned, production-grade, best-practice design (e.g. actionable feedback loops, proper error semantics, robust guards) as committed in architectural discussions.
+- **Continuous Rulebook Maintenance:** Whenever the mentee gives a critique, instruction, or scheduled commitment, immediately update `AGENTS.md` and `skills/legacy-docs/SKILL.md` so the guidance remains permanent and active.
+- **Mentee Workflow:** The mentee explores and experiments in Jupyter notebooks (`alireza/notebooks/`); the mentor writes, tests, and verifies production `.py` code directly in `core/` under the mentee's direction.
+- **Deferred Hardening Scope (2026-08-19 Agreement):** Formal unit test suites in `tests/test_*.py`, eval datasets, LangSmith tracing, and deployment are deferred across all projects to a dedicated post-build hardening round. Active work focuses on System Design, architecture, runnable apps in `core/apps/`, and live hands-on exploration.
+- **Proactive Triad:** Always opportunistically use: (1) specialized subagents for heavy tasks, (2) `docs-langchain` & `context7` MCP servers for fresh API verification, and (3) the `skills/legacy-docs/SKILL.md` workspace skill.
+
 ## Do Not
 
 - Do not hardcode API keys/tokens/secrets in source files — use environment
   variables (`.env`, gitignored) or the project's existing secrets mechanism.
 - Do not invent library functions/parameters you haven't verified.
 - Do not silently change public function signatures other code depends on.
+- Do not rush ahead to the next stage before the current stage's planned improvements are completed and confirmed.

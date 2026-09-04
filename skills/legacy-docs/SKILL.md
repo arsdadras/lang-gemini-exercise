@@ -37,8 +37,11 @@ The following three habits must be exercised continuously, proactively, and oppo
 - **Rule:** Never guess method signatures, parameter names, or return types from LLM training data or memory. Framework APIs in LangChain, LangGraph, and DeepAgents evolve rapidly.
 - **Action:** Continuously query the `docs-langchain` MCP server (`search_docs_by_lang_chain` or `query_docs_filesystem_docs_by_lang_chain`) and `context7` before writing or modifying any agentic code. If doubt remains, inspect installed packages under `.venv/Lib/site-packages/`.
 
-### 3. Strict Adherence to the `legacy-docs` Skill
+### 3. Strict Adherence to the `legacy-docs` Skill & `AGENTS.md`
 - **Rule:** Consult this skill before initiating any stage, designing architectures, choosing abstractions, or responding to scope questions.
+- **Continuous Maintenance:** Whenever the mentee gives a critique, instruction, or scheduled commitment, immediately update `AGENTS.md` and this skill so rules remain front-and-center.
+- **No Path of Least Resistance (Zero Toy Shortcuts):** Never settle for the easy/minimal shortcut just because "it runs." Always implement the planned, production-grade design (e.g. actionable feedback loops, proper error semantics, robust guards) as committed in architectural discussions.
+- **Strict Single-Item Focus (Asl-e Tamarkoz):** Strictly ONE task, one improvement, or one architectural concept per turn. Never bundle multiple ideas together.
 
 ---
 
