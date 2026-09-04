@@ -1149,6 +1149,24 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
   - `uv run pytest` ➔ 20/20 passing green in 3.25s (12 existing + 8 new session tests).
   - Verified live CLI session listing on all apps: `interpreter_app.py list`, `code_review_app.py list`, `repo_insight_app.py list`, `research_app.py list`, `rag_app.py list` (all 100% functional).
 
+#### Phase B, Stage 2 (Addendum 2) — Sandbox Path Normalization & HITL Transparency (2026-09-05) ✅
+- **Root Cause Analysis:**
+  - When running `write_file(file_path='/workspace/hello.py')` under `LocalShellBackend(virtual_mode=True)`, the path resolved to `out/sandbox/workspace/hello.py`.
+  - Conversely, `execute(command='python hello.py')` executed with `cwd=DEFAULT_SANDBOX_DIR` (`out/sandbox/`).
+  - An older stale `out/sandbox/hello.py` printed `"Hello"`, causing the model to observe output mismatch with `"Hello Production"`, repeatedly rewrite `/workspace/hello.py`, and re-trigger execution interrupts in an infinite approval loop.
+  - Furthermore, `run_with_hitl_util.py` had no live output streaming between interrupts, hiding intermediate tool outputs from the user.
+- **Files Created/Modified:**
+  - `core/src/utils/sandbox_util.py`: Implemented `SandboxBackend(LocalShellBackend)` which normalizes paths (strips `/workspace/` and `workspace/` in `_resolve_path` and `execute`), anchoring all filesystem operations to sandbox root.
+  - `core/agents/interpreter_agent.py`: Wired `SandboxBackend` into `make_interpreter_agent()`.
+  - `core/src/prompts/agents_prompt.py`: Updated interpreter agent constraints to instruct the model to operate directly in sandbox root using plain relative paths.
+  - `core/src/utils/run_with_hitl_util.py`: Added live execution feedback, approval confirmation (`✓ Approved. Executing ...`), and automatic printing of tool outputs (`[Tool Execution Output — <tool_name>]`).
+  - `tests/test_sandbox.py`: Added unit tests verifying `SandboxBackend` path normalization.
+- **Verification (Ghanoon-e Pishmarg):**
+  - `uv run ruff check core/ tests/` ➔ All checks passed! (0 errors).
+  - `uv run pytest` ➔ 21/21 passing green in 4.43s.
+  - Verified live execution and resume on pending session `test_hitl`: approved command, captured stdout `Hello Production`, and verified clean exit.
+
+
 
 
 

@@ -60,7 +60,7 @@ def build_interpreter_agent_prompt() -> str:
         ),
         tools=(
             "You operate in a sandboxed workspace with full filesystem and shell access:\n"
-            "- Use `write_file` to author complete Python scripts or data files.\n"
+            "- Use `write_file` to author complete Python scripts or data files directly in sandbox root.\n"
             "- Use `execute` to run commands (e.g. `python script.py`) and inspect stdout/stderr.\n"
             "- Use `edit_file` for targeted modifications or bug fixes in existing scripts.\n"
             "- Use `read_file`, `ls`, `glob`, and `grep` to inspect workspace contents and generated artifacts.\n"
@@ -73,7 +73,9 @@ def build_interpreter_agent_prompt() -> str:
         constraints=(
             "- Never fabricate or guess computational results; always compute them using code.\n"
             "- Keep all execution and file manipulation strictly within your sandbox workspace.\n"
-            "- Run Python scripts using `python <script>.py` with relative paths (never `python3` or unix paths like `/workspace/`).\n"
+            "- All tools operate directly in the sandbox root directory. Always use plain relative file paths without "
+            "any directory prefix (e.g. `write_file(file_path='script.py', ...)`, `execute(command='python script.py')`; "
+            "never use `/workspace/` or `workspace/`).\n"
             "- Always verify script execution succeeds (exit code 0) before reporting final results."
         ),
     )

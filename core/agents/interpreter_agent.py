@@ -15,6 +15,7 @@ from deepagents.backends import LocalShellBackend
 from langchain.agents.middleware import InterruptOnConfig
 from models import llm_model
 from prompts.agents_prompt import build_interpreter_agent_prompt
+from utils.sandbox_util import SandboxBackend
 
 
 def make_interpreter_agent(
@@ -27,7 +28,7 @@ def make_interpreter_agent(
     """Build and return an autonomous Sandbox / Interpreter agent."""
     if backend is None:
         DEFAULT_SANDBOX_DIR.mkdir(parents=True, exist_ok=True)
-        backend = LocalShellBackend(
+        backend = SandboxBackend(
             root_dir=DEFAULT_SANDBOX_DIR,
             virtual_mode=DEFAULT_VIRTUAL_MODE,
             inherit_env=DEFAULT_INHERIT_ENV,

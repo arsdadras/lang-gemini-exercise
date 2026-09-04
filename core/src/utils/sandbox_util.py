@@ -6,9 +6,35 @@ import tempfile
 from pathlib import Path
 from typing import Literal
 
+from deepagents.backends import LocalShellBackend
+from deepagents.backends.protocol import ExecuteResponse
 from output_schemas.code_review_output_schema import TestExecutionResult
 
 SandboxType = Literal["local", "container", "cloud"]
+
+
+class SandboxBackend(LocalShellBackend):
+    """LocalShellBackend with automatic virtual path normalization.
+
+    Prevents path fragmentation (e.g. LLM writing to `/workspace/script.py`
+    while executing `python script.py` in the root sandbox directory).
+    All `/workspace/` and `workspace/` prefixes are transparently mapped
+    to the root sandbox directory.
+    """
+
+    def _resolve_path(self, key: str) -> Path:
+        normalized = key.replace("\\", "/")
+        if normalized.startswith("/workspace/"):
+            normalized = normalized[len("/workspace/") :]
+        elif normalized.startswith("workspace/"):
+            normalized = normalized[len("workspace/") :]
+        elif normalized in {"/workspace", "workspace"}:
+            normalized = "."
+        return super()._resolve_path(normalized)
+
+    def execute(self, command: str, *, timeout: int | None = None) -> ExecuteResponse:
+        normalized_command = command.replace("/workspace/", "").replace("workspace/", "")
+        return super().execute(normalized_command, timeout=timeout)
 
 
 def _run_local_sandbox(
