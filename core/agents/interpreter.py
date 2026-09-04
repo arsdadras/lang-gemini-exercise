@@ -9,9 +9,10 @@ from configs.interpreter import (
     DEFAULT_SANDBOX_DIR,
     DEFAULT_VIRTUAL_MODE,
 )
+from data.sqlite_db import get_sqlite_checkpointer
 from deepagents import create_deep_agent
 from deepagents.backends import LocalShellBackend
-from langgraph.checkpoint.memory import InMemorySaver
+from langchain.agents.middleware import InterruptOnConfig
 from models import llm_model
 from prompts.agents import build_interpreter_agent_prompt
 
@@ -34,13 +35,18 @@ def make_interpreter_agent(
             max_output_bytes=DEFAULT_MAX_OUTPUT_BYTES,
         )
 
-    interrupt_on = {"execute": True} if hitl else None
+    interrupt_on: dict[str, bool | InterruptOnConfig] | None = (
+        {"execute": True} if hitl else None
+    )
+
+    if checkpointer is None:
+        checkpointer = get_sqlite_checkpointer()
 
     return create_deep_agent(
         model=llm_model.get(tier),
         system_prompt=build_interpreter_agent_prompt(),
         backend=backend,
-        checkpointer=checkpointer or InMemorySaver(),
+        checkpointer=checkpointer,
         response_format=response_format,
         interrupt_on=interrupt_on,
     )

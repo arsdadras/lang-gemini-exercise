@@ -73,6 +73,7 @@ def build_interpreter_agent_prompt() -> str:
         constraints=(
             "- Never fabricate or guess computational results; always compute them using code.\n"
             "- Keep all execution and file manipulation strictly within your sandbox workspace.\n"
+            "- Run Python scripts using `python <script>.py` with relative paths (never `python3` or unix paths like `/workspace/`).\n"
             "- Always verify script execution succeeds (exit code 0) before reporting final results."
         ),
     )

@@ -4,6 +4,7 @@ from .interpreter import (
     DEFAULT_INHERIT_ENV,
     DEFAULT_MAX_OUTPUT_BYTES,
     DEFAULT_SANDBOX_DIR,
+    DEFAULT_THREAD_ID,
     DEFAULT_VIRTUAL_MODE,
 )
 from .models import (
@@ -21,6 +22,7 @@ __all__ = [
     "DEFAULT_INHERIT_ENV",
     "DEFAULT_MAX_OUTPUT_BYTES",
     "DEFAULT_SANDBOX_DIR",
+    "DEFAULT_THREAD_ID",
     "DEFAULT_TIER",
     "DEFAULT_VIRTUAL_MODE",
     "MAX_RETRIES",

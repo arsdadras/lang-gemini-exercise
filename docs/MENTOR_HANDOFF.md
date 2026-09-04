@@ -98,7 +98,7 @@ fine and encouraged — that's different from writing a formal test suite.
 
 
 
-| P4 — Sandbox/Interpreter Agent | In progress: Phase A Stage 1 ✅ Stage 2 ✅ (`make_interpreter_agent`, `build_interpreter_agent_prompt`, `LocalShellBackend`) |
+| P4 — Sandbox/Interpreter Agent | In progress: Phase A ✅ (1, 2, 3) · Phase B Stage 1 ✅ (HITL Governance) Stage 2 ✅ (SQLite Persistence & Recovery) |
 | P5 — Memory-Rich Personal Assistant | Not started |
 | P6 — Capstone | Not started |
 
@@ -195,7 +195,10 @@ down the Nice-to-have list.
 
 ### P4 — Sandbox / Interpreter Agent
 
-*(none logged yet — not started)*
+**Nice-to-have / Deferred Extensions (logged 2026-09-04):**
+- **HITL Command Inline Editing (`allowed_decisions=["approve", "edit", "reject"]`).** Allow the human in `run_with_hitl` to interactively edit shell command arguments before execution (e.g. altering target file paths or modifying flags) rather than only approving or rejecting. Deferred during Phase B Stage 1 to maintain single-item focus; to be revisited during enrichment/hardening rounds.
+- **HITL CLI Visual Formatting & Boxed Presentation.** Upgrade the plain-text CLI interrupt prompt in `run_with_hitl` with distinct boxed borders, color highlights, and clear tool parameter demarcation for high visual impact and command safety.
+- **Dual-State Synchronization (Filesystem Snapshotting / Rollback on Time-Travel).** LangGraph's checkpointer snapshots graph state (messages, interrupts, execution state), but does not snapshot the physical OS sandbox directory (`out/sandbox/`). A production-grade extension would synchronize checkpoint IDs with git commits or CoW directory snapshots in the sandbox so time-travel rewinds both agent memory and disk state in lockstep.
 
 ### P5 — Memory-Rich Personal Assistant
 
@@ -1033,5 +1036,18 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
   - Verified live interrupt trigger on shell command execution (`dir`/`ls`), capturing `action_requests` for tool `execute`.
   - Verified successful unfreezing and state transition upon approval using `Command(resume={"decisions": [{"type": "approve"}]})`.
   - Full test suite `uv run pytest` (12/12 passing) and `uv run ruff check core/` clean.
+
+#### Phase B, Stage 2 — Durable Persistence & Startup Interrupt Recovery (2026-09-04) ✅
+- **Files Created/Modified:**
+  - `core/agents/interpreter.py`: Connected `make_interpreter_agent()` to `get_sqlite_checkpointer()` by default (`core/src/data/dbs/checkpoints.db`), ensuring conversation state and pending interrupts persist across application process restarts.
+  - `core/src/utils/run_with_hitl.py`: Extended `run_with_hitl()` to accept `initial_input=None`, inspecting `agent.get_state(config)` for pending interrupts in `state.tasks[0].interrupts` and resuming them via `Command(resume=...)` without injecting redundant user messages.
+  - `core/apps/interpreter.py`: Added startup recovery check on `state.next` to intercept unhandled interrupts from previous sessions and prompt the user before starting the interactive REPL loop.
+- **Architectural Insights & Lessons Learned:**
+  - **Interrupted State Isolation:** When a graph is halted on an interrupt, sending a fresh `HumanMessage` violates the state machine contract and causes runtime errors. The pending interrupt must be resolved via `Command(resume=...)` first.
+  - **The Dual-State Duality Problem:** LangGraph checkpointer persists execution memory (messages, tool calls, interrupts), but does not snapshot the physical OS sandbox filesystem (`out/sandbox/`). File modifications persist independently on disk.
+- **Verification:**
+  - Verified live process crash/exit during HITL shell interrupt via `Ctrl + C`.
+  - Re-launched application and confirmed startup recovery detected pending interrupt, prompted for approval, and cleanly completed execution.
+  - `uv run ruff check core/` clean; `uv run pytest` 12/12 passing.
 
 

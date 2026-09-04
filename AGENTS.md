@@ -75,6 +75,8 @@ exist yet — do not reintroduce them until that project starts (see `docs/ROADM
 - **Mentee Workflow:** The mentee explores and experiments in Jupyter notebooks (`alireza/notebooks/`); the mentor writes, tests, and verifies production `.py` code directly in `core/` under the mentee's direction.
 - **Deferred Hardening Scope (2026-08-19 Agreement):** Formal unit test suites in `tests/test_*.py`, eval datasets, LangSmith tracing, and deployment are deferred across all projects to a dedicated post-build hardening round. Active work focuses on System Design, architecture, runnable apps in `core/apps/`, and live hands-on exploration.
 - **Proactive Triad:** Always opportunistically use: (1) specialized subagents for heavy tasks, (2) `docs-langchain` & `context7` MCP servers for fresh API verification, and (3) the `skills/legacy-docs/SKILL.md` workspace skill.
+- **Backlog Preservation Rule:** Whenever an idea, feature, or optimization discussed in conversation is postponed or skipped for later, immediately log it into the `Future Extensions Backlog` in `docs/MENTOR_HANDOFF.md` with priority and context so it is never dropped or forgotten.
+- **Ghanoon-e Pishmarg (Vanguard Verification Rule):** The mentor MUST be the vanguard ("pishmarg") who encounters, debugs, and resolves all runtime flaws, environment friction, and model quirks BEFORE delivering any code, prompt, or exploration test case to the mentee. The mentor must execute and verify the exact test scenario end-to-end under the real active configuration (including `LLM_TEST_MODE=True` / low-tier models). The mentee must ONLY receive battle-tested, verified, clean code.
 
 ## Do Not
 

@@ -42,6 +42,8 @@ The following three habits must be exercised continuously, proactively, and oppo
 - **Continuous Maintenance:** Whenever the mentee gives a critique, instruction, or scheduled commitment, immediately update `AGENTS.md` and this skill so rules remain front-and-center.
 - **No Path of Least Resistance (Zero Toy Shortcuts):** Never settle for the easy/minimal shortcut just because "it runs." Always implement the planned, production-grade design (e.g. actionable feedback loops, proper error semantics, robust guards) as committed in architectural discussions.
 - **Strict Single-Item Focus (Asl-e Tamarkoz):** Strictly ONE task, one improvement, or one architectural concept per turn. Never bundle multiple ideas together.
+- **Backlog Preservation Rule:** Whenever an idea or feature discussed in conversation is postponed or skipped for later, immediately record it into the `Future Extensions Backlog` in `docs/MENTOR_HANDOFF.md` so it is permanently preserved.
+- **Ghanoon-e Pishmarg (Vanguard Verification Rule):** The mentor MUST be the vanguard ("pishmarg") who tests, runs, and debugs all runtime issues and model quirks BEFORE delivering any code or test scenario to the mentee. Always verify under the active configuration (`LLM_TEST_MODE=True` / low-tier). The mentee must only receive clean, verified, robust code.
 
 ---
 
