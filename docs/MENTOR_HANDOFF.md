@@ -1045,9 +1045,42 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
 - **Architectural Insights & Lessons Learned:**
   - **Interrupted State Isolation:** When a graph is halted on an interrupt, sending a fresh `HumanMessage` violates the state machine contract and causes runtime errors. The pending interrupt must be resolved via `Command(resume=...)` first.
   - **The Dual-State Duality Problem:** LangGraph checkpointer persists execution memory (messages, tool calls, interrupts), but does not snapshot the physical OS sandbox filesystem (`out/sandbox/`). File modifications persist independently on disk.
-- **Verification:**
+- Verification:
   - Verified live process crash/exit during HITL shell interrupt via `Ctrl + C`.
   - Re-launched application and confirmed startup recovery detected pending interrupt, prompted for approval, and cleanly completed execution.
   - `uv run ruff check core/` clean; `uv run pytest` 12/12 passing.
+
+#### Phase B, Stage 2 (Addendum) — Multi-Mode Session Resolver (2026-09-04) ✅
+- **Files Created/Modified:**
+  - `core/configs/interpreter_config.py`: Added `DEFAULT_THREAD_ID = "interpreter_session_001"`.
+  - `core/src/data/sqlite_db.py`: Added `get_recent_threads(db_path=...)` query helper to inspect active threads from SQLite `checkpoints` table.
+  - `core/apps/interpreter_app.py`: Implemented 6 distinct session modes: `default` (no args), `new` (unique hash), `custom` (`<name>`), `resume` (latest recorded thread), `step[int]` (0-indexed reverse history), and `secret` (ephemeral `InMemorySaver`, bypassing DB). Added `list` command for session inspection.
+- **Verification:**
+  - Live CLI verification of all 6 modes + `list`.
+  - Zero DB residue verified in `secret` mode.
+  - `uv run ruff check core/` clean; `uv run pytest` 12/12 passing.
+
+#### Repo-Wide File Naming Refactor — Project/Role Namespace Architecture (2026-09-05) ✅
+- **Objective:** Eliminate module name collisions across packages (`rag.py`, `interpreter.py`, `code_review.py`) by applying the universal naming formula: `refactored_name = f"{project}_{role}.py"` where `role` is the singular form of the parent directory.
+- **Renamed Modules (23 files across 8 packages via `git mv`):**
+  - `core/apps/` (5 files): `code_review_app.py`, `interpreter_app.py`, `rag_app.py`, `repo_insight_app.py`, `research_app.py`
+  - `core/agents/` (3 files): `interpreter_agent.py`, `repo_insight_agent.py`, `web_researcher_agent.py`
+  - `core/configs/` (3 files): `code_review_config.py`, `interpreter_config.py`, `rag_config.py` (`models.py` preserved as generic)
+  - `core/src/graphs/` (2 files): `code_review_graph.py`, `rag_graph.py`
+  - `core/src/nodes/` (2 files): `code_review_node.py`, `rag_node.py` (avoiding collision with `prompts/nodes/rag_nodes.py`)
+  - `core/src/output_schemas/` (3 files): `code_review_output_schema.py`, `rag_output_schema.py`, `research_output_schema.py` (`middlewares.py` preserved as generic)
+  - `core/src/state/` (2 files): `code_review_state.py`, `rag_state.py`
+  - `core/src/subagents/` (3 files): `code_review_subagent.py`, `rag_subagent.py`, `research_subagent.py`
+- **Updated Call Sites & Infrastructure:**
+  - Synchronized all 8 package `__init__.py` files with the new module paths.
+  - Updated all 18 direct submodule imports across `core/`, `tests/`, and `alireza/`.
+  - Refreshed editable install via `uv sync --reinstall-package agent`.
+  - Documented naming standards in `AGENTS.md`.
+- **Verification (Ghanoon-e Pishmarg):**
+  - `uv run ruff check core/ tests/` ➔ All checks passed! (0 errors)
+  - `uv run pytest` ➔ 12/12 passing green in 3.31s.
+  - Live module import test of all 23 renamed modules ➔ 100% [OK].
+  - Live execution of `uv run python core/apps/interpreter_app.py list` ➔ 100% functional.
+
 
 

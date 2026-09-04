@@ -1,6 +1,6 @@
 """Application entry point — runs the P2 repo-insight coordinator agent."""
 
-from agents.repo_insight import repo_insight_agent
+from agents.repo_insight_agent import repo_insight_agent
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 from utils.get_text import get_text

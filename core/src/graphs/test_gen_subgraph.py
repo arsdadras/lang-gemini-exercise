@@ -5,12 +5,12 @@ execution, and self-correction."""
 from configs import MAX_TEST_RETRIES
 from langchain_core.runnables import RunnableConfig
 from langgraph.graph import END, START, StateGraph
-from nodes.code_review import (
+from nodes.code_review_node import (
     execute_tests_node,
     fix_tests_node,
     generate_tests_node,
 )
-from state.code_review import CodeReviewState
+from state.code_review_state import CodeReviewState
 
 
 def route_after_test_gen(state: CodeReviewState) -> str:

@@ -1,6 +1,6 @@
 """Unit tests for P4 Interpreter Agent components and execution tools."""
 
-from agents.interpreter import make_interpreter_agent
+from agents.interpreter_agent import make_interpreter_agent
 from output_schemas.interpreter import AnalysisReport
 from prompts.agents import build_interpreter_agent_prompt
 from tools.file_ops import make_file_tools

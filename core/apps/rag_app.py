@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from graphs.rag import build_rag_graph
+from graphs.rag_graph import build_rag_graph
 
 load_dotenv()
 

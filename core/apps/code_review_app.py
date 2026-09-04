@@ -5,9 +5,13 @@ from pathlib import Path
 
 from data.sqlite_db import get_sqlite_checkpointer
 from dotenv import load_dotenv
-from graphs.code_review import build_code_review_graph
+from graphs.code_review_graph import build_code_review_graph
 from langgraph.types import Command
-from output_schemas.code_review import ReviewResult, TestExecutionResult, TestSuite
+from output_schemas.code_review_output_schema import (
+    ReviewResult,
+    TestExecutionResult,
+    TestSuite,
+)
 
 load_dotenv()
 

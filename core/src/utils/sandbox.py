@@ -6,7 +6,7 @@ import tempfile
 from pathlib import Path
 from typing import Literal
 
-from output_schemas.code_review import TestExecutionResult
+from output_schemas.code_review_output_schema import TestExecutionResult
 
 SandboxType = Literal["local", "container", "cloud"]
 

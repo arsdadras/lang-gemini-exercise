@@ -3,7 +3,7 @@
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
-from state.code_review import CodeReviewState
+from state.code_review_state import CodeReviewState
 
 from graphs.refactor_subgraph import build_refactor_subgraph
 from graphs.reviewer_subgraph import build_reviewer_subgraph

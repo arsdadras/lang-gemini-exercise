@@ -4,7 +4,7 @@ coordinators."""
 import uuid
 
 from data.sqlite_db import get_sqlite_checkpointer
-from graphs.code_review_parentgraph import build_code_review_graph
+from graphs.code_review_graph import build_code_review_graph
 from langchain_core.messages import AIMessage
 from langchain_core.runnables import RunnableLambda
 from utils.get_text import get_text

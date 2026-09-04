@@ -2,8 +2,8 @@
 refactored code."""
 
 from langgraph.graph import END, START, StateGraph
-from nodes.code_review import apply_refactor_node, approved_refactor_node
-from state.code_review import CodeReviewState
+from nodes.code_review_node import apply_refactor_node, approved_refactor_node
+from state.code_review_state import CodeReviewState
 
 
 def route_after_approval(state: CodeReviewState) -> str:

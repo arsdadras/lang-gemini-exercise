@@ -7,7 +7,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from middlewares.hitl import search_approval
 from middlewares.retry import retry_on_failure
 from models import llm_model
-from output_schemas.research import ResearchReport
+from output_schemas.research_output_schema import ResearchReport
 from prompts.agents import build_web_researcher_prompt
 from subagents import researcher_subagent
 from tools.search import web_search

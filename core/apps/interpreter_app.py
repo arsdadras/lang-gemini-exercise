@@ -11,8 +11,8 @@ import sys
 import uuid
 from typing import Any
 
-from agents.interpreter import interpreter_agent, make_interpreter_agent
-from configs.interpreter import DEFAULT_THREAD_ID
+from agents.interpreter_agent import interpreter_agent, make_interpreter_agent
+from configs.interpreter_config import DEFAULT_THREAD_ID
 from data.sqlite_db import get_recent_threads
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.memory import InMemorySaver
@@ -47,7 +47,7 @@ def resolve_session(raw_arg: str | None) -> tuple[Any, str, str, bool]:
                 tag = " (latest)" if i == 0 else ""
                 print(f"  step[{i}]: {tid}{tag}")
             print("=" * 60)
-            print("To resume: python core/apps/interpreter.py step[<index>]")
+            print("To resume: python core/apps/interpreter_app.py step[<index>]")
         sys.exit(0)
 
     if arg.lower() == "resume":

@@ -2,7 +2,7 @@
 
 from typing import Literal, cast
 
-from configs.rag import MAX_RETRIES
+from configs.rag_config import MAX_RETRIES
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
 from nodes import (

@@ -1,8 +1,8 @@
 """Reviewer Subgraph: standalone compiled graph for code analysis and review generation."""
 
 from langgraph.graph import END, START, StateGraph
-from nodes.code_review import review_code_node
-from state.code_review import CodeReviewState
+from nodes.code_review_node import review_code_node
+from state.code_review_state import CodeReviewState
 
 
 def build_reviewer_subgraph():

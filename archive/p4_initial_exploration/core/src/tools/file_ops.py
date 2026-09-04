@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from configs.interpreter import DEFAULT_SANDBOX_DIR
+from configs.interpreter_config import DEFAULT_SANDBOX_DIR
 from langchain_core.tools import tool
 from utils.resolve_safe_path import resolve_safe_path
 

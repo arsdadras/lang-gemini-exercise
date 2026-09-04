@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from configs.interpreter import (
+from configs.interpreter_config import (
     DEFAULT_EXECUTE_TIMEOUT,
     DEFAULT_INHERIT_ENV,
     DEFAULT_MAX_OUTPUT_BYTES,

@@ -2,7 +2,7 @@
 
 from typing import TypedDict
 
-from output_schemas.code_review import (
+from output_schemas.code_review_output_schema import (
     ReviewResult,
     TestExecutionResult,
     TestSuite,

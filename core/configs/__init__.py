@@ -1,5 +1,5 @@
-from .code_review import MAX_TEST_RETRIES
-from .interpreter import (
+from .code_review_config import MAX_TEST_RETRIES
+from .interpreter_config import (
     DEFAULT_EXECUTE_TIMEOUT,
     DEFAULT_INHERIT_ENV,
     DEFAULT_MAX_OUTPUT_BYTES,
@@ -15,7 +15,7 @@ from .models import (
     TIER_CASCADE_ORDER,
     TIER_PROVIDER_ORDER,
 )
-from .rag import MAX_RETRIES
+from .rag_config import MAX_RETRIES
 
 __all__ = [
     "DEFAULT_EXECUTE_TIMEOUT",

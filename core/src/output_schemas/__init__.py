@@ -1,6 +1,6 @@
 """Structured output schemas."""
 
-from output_schemas.code_review import (
+from output_schemas.code_review_output_schema import (
     CodeIssue,
     ReviewResult,
     TestCase,
@@ -8,8 +8,12 @@ from output_schemas.code_review import (
     TestSuite,
 )
 from output_schemas.middlewares import _GroundednessVerdict
-from output_schemas.rag import GradeDocument, GradeHallucination
-from output_schemas.research import ResearchFindings, ResearchReport, Source
+from output_schemas.rag_output_schema import GradeDocument, GradeHallucination
+from output_schemas.research_output_schema import (
+    ResearchFindings,
+    ResearchReport,
+    Source,
+)
 
 __all__ = [
     "CodeIssue",

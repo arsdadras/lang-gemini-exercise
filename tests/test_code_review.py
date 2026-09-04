@@ -1,6 +1,6 @@
 """Unit tests for P3 Code Review & Test Generation components and Subgraphs."""
 
-from graphs.code_review import (
+from graphs.code_review_graph import (
     build_code_review_graph,
     route_after_reviewer,
     route_after_test_gen,
@@ -8,7 +8,7 @@ from graphs.code_review import (
 from graphs.refactor_subgraph import build_refactor_subgraph, route_after_approval
 from graphs.reviewer_subgraph import build_reviewer_subgraph
 from graphs.test_gen_subgraph import build_test_gen_subgraph, route_after_execution
-from output_schemas.code_review import (
+from output_schemas.code_review_output_schema import (
     CodeIssue,
     ReviewResult,
     TestCase,

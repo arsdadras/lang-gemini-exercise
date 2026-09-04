@@ -4,13 +4,13 @@ from typing import cast
 
 from langgraph.types import interrupt
 from models import llm_model
-from output_schemas.code_review import ReviewResult, TestSuite
+from output_schemas.code_review_output_schema import ReviewResult, TestSuite
 from prompts.nodes.code_review_nodes import (
     REVIEW_PROMPT,
     TEST_FIX_PROMPT,
     TEST_GEN_PROMPT,
 )
-from state.code_review import CodeReviewState
+from state.code_review_state import CodeReviewState
 from utils.sandbox import run_tests_in_sandbox
 
 
