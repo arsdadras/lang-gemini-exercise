@@ -11,3 +11,6 @@ DEFAULT_MAX_OUTPUT_BYTES: int = 100_000
 DEFAULT_INHERIT_ENV: bool = True
 DEFAULT_VIRTUAL_MODE: bool = True
 DEFAULT_THREAD_ID: str = "interpreter_session_001"
+
+# Default tools requiring human approval when HITL is active
+DEFAULT_INTERRUPT_TOOLS: tuple[str, ...] = ("execute",)

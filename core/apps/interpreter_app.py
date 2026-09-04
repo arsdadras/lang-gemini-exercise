@@ -40,7 +40,12 @@ def main() -> None:
     print("=" * 60)
     print("[Interpreter] P4 Sandbox / Interpreter Agent (DeepAgents)")
     print("Isolated workspace: out/sandbox/")
-    print("Governance: HITL approval required for shell execution")
+    interrupt_tools = getattr(agent, "interrupt_tools", [])
+    if interrupt_tools:
+        tools_str = ", ".join(interrupt_tools)
+        print(f"Governance: HITL approval required for: {tools_str}")
+    else:
+        print("Governance: Autonomous (No HITL approval required)")
     if is_secret:
         print("Persistence: Secret Mode (In-Memory only — NOT saved to DB)")
     else:
@@ -59,13 +64,12 @@ def main() -> None:
             )
             if pending_interrupts:
                 print(
-                    "\n[Notice] Resuming pending interrupted shell execution from previous session..."
+                    "\n[Notice] Resuming pending interrupted action from previous session..."
                 )
                 result = run_with_hitl(
                     agent,
                     None,
                     config=config,
-                    assistant_prompt="\nApprove shell command execution? [y/n]: ",
                 )
                 if result.get("messages"):
                     print(f"\n{get_text(result['messages'][-1])}")
@@ -88,7 +92,6 @@ def main() -> None:
             agent,
             {"messages": [HumanMessage(content=user_prompt)]},
             config=config,
-            assistant_prompt="\nApprove shell command execution? [y/n]: ",
         )
         print(f"\n{get_text(result['messages'][-1])}")
 

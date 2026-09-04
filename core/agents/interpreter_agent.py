@@ -1,10 +1,12 @@
 """P4 Sandbox / Interpreter agent — executes and verifies Python scripts in an isolated workspace."""
 
+from collections.abc import Sequence
 from typing import Any
 
 from configs.interpreter_config import (
     DEFAULT_EXECUTE_TIMEOUT,
     DEFAULT_INHERIT_ENV,
+    DEFAULT_INTERRUPT_TOOLS,
     DEFAULT_MAX_OUTPUT_BYTES,
     DEFAULT_SANDBOX_DIR,
     DEFAULT_VIRTUAL_MODE,
@@ -24,6 +26,7 @@ def make_interpreter_agent(
     tier: str = "medium",
     response_format: type | None = None,
     hitl: bool = True,
+    interrupt_tools: Sequence[str] | dict[str, bool | InterruptOnConfig] | None = None,
 ):
     """Build and return an autonomous Sandbox / Interpreter agent."""
     if backend is None:
@@ -36,14 +39,19 @@ def make_interpreter_agent(
             max_output_bytes=DEFAULT_MAX_OUTPUT_BYTES,
         )
 
-    interrupt_on: dict[str, bool | InterruptOnConfig] | None = (
-        {"execute": True} if hitl else None
-    )
+    interrupt_on: dict[str, bool | InterruptOnConfig] | None = None
+    if hitl:
+        if interrupt_tools is None:
+            interrupt_on = {tool: True for tool in DEFAULT_INTERRUPT_TOOLS}
+        elif isinstance(interrupt_tools, dict):
+            interrupt_on = interrupt_tools
+        else:
+            interrupt_on = {tool: True for tool in interrupt_tools}
 
     if checkpointer is None:
         checkpointer = get_sqlite_checkpointer()
 
-    return create_deep_agent(
+    agent = create_deep_agent(
         model=llm_model.get(tier),
         system_prompt=build_interpreter_agent_prompt(),
         backend=backend,
@@ -51,6 +59,9 @@ def make_interpreter_agent(
         response_format=response_format,
         interrupt_on=interrupt_on,
     )
+    # Expose configured interrupt tool names for introspection by callers/apps
+    agent.interrupt_tools = list(interrupt_on.keys()) if interrupt_on else []
+    return agent
 
 
 # Ready-to-invoke default agent instance

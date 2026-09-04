@@ -1166,6 +1166,24 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
   - `uv run pytest` ➔ 21/21 passing green in 4.43s.
   - Verified live execution and resume on pending session `test_hitl`: approved command, captured stdout `Hello Production`, and verified clean exit.
 
+#### Phase B, Stage 1/2 — Universal HITL Action Governance & Dynamic Tool Configuration (2026-09-05) ✅
+- **Objective:** Generalize Human-In-The-Loop approval beyond hardcoded shell commands to govern arbitrary tools (`execute`, `delete`, `write_file`, etc.) with dynamic prompts, ASCII terminal compatibility (cp1252/Windows safe), and runtime tool introspection.
+- **Files Created/Modified:**
+  - `core/configs/interpreter_config.py`: Added `DEFAULT_INTERRUPT_TOOLS: tuple[str, ...] = ("execute",)`.
+  - `core/agents/interpreter_agent.py`: Upgraded `make_interpreter_agent()` to accept `interrupt_tools: Sequence[str] | dict[str, bool | InterruptOnConfig] | None = None`. Attaches `agent.interrupt_tools` list for introspection.
+  - `core/src/utils/run_with_hitl_util.py`:
+    - Generalized `run_with_hitl()` to resolve any tool action dynamically via `_format_prompt()` (supports dynamic default `\nApprove {action_name} action? [y/n]: `, template strings with `{name}`, plain strings, or callables).
+    - Unified interrupt decision loops via `_handle_interrupt_decisions()` (DRY implementation across initial recovery and execution stream).
+    - Hardened terminal output against Windows `charmap` `UnicodeEncodeError` by using resilient ASCII tags (`[Approved]`, `[Rejected]`, `[Tool Execution Output - <name>]`).
+  - `core/apps/interpreter_app.py`: Updated governance banner and recovery notices to dynamically report active interrupt tools (`Governance: HITL approval required for: <tool1>, <tool2>...`). Removed hardcoded shell prompts.
+  - `tests/test_run_with_hitl.py`: Added 6 unit tests covering dynamic prompt formatting, mock approvals, rejections with/without reasons, direct execution without interrupts, and multi-turn resume commands.
+- **Verification (Ghanoon-e Pishmarg):**
+  - `uv run ruff check core/ tests/` ➔ All checks passed! (0 errors).
+  - `uv run pytest` ➔ 27/27 passing green in 7.05s (6 new HITL tests).
+  - Caught and resolved Windows cp1252 `UnicodeEncodeError` on unicode checkmarks before delivering code.
+  - Live end-to-end execution verified: agent requested `execute`, approved dynamically with `[Approved] Executing execute...`, produced output `180`, and finished with exit code 0.
+
+
 
 
 
