@@ -1022,3 +1022,16 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
   - Mentee live exploration verified in notebook: Agent wrote `primes.py`, executed it in sandbox via shell, generated `primes_list.txt` containing all 15 primes up to 50, and reported the largest prime (47) with exact disk confinement in `out/sandbox/`.
 - **Milestone:** **Phase A (Native Workspace & Execution Engine) is 100% COMPLETE!**
 
+#### Phase B, Stage 1 — Command Governance & HITL Approval on Shell Execution (2026-09-04) ✅
+- **Files Created/Modified:**
+  - `core/agents/interpreter.py`: Added `hitl: bool = True` parameter to `make_interpreter_agent()`, wiring `interrupt_on={"execute": True}` into `create_deep_agent` to halt before arbitrary shell execution.
+  - `core/apps/interpreter.py`: Integrated `run_with_hitl` helper from `core/src/utils/run_with_hitl.py` to intercept execution pauses, present exact command arguments, request interactive approval (`[y/n]`), and resume via `Command(resume=...)`.
+- **Architectural Insights & Lessons Learned:**
+  - **Filesystem Permissions vs. Execution Backends:** DeepAgents' `FilesystemMiddleware` raises `NotImplementedError` if `permissions=[FilesystemPermission(...)]` is passed with execution-capable backends (`LocalShellBackend`). This is by design: filesystem-level path restrictions are trivially bypassed by arbitrary subshell commands (`cat`, `rm`, `powershell`). The primary and recommended safeguard is Human-in-the-Loop approval gating before any shell command runs.
+  - **HITL Continuity Across Curriculum:** Reused the generic `run_with_hitl` primitive established in P1, proving cross-project modularity and eliminating duplicate interrupt-handling boilerplate.
+- **Verification:**
+  - Verified live interrupt trigger on shell command execution (`dir`/`ls`), capturing `action_requests` for tool `execute`.
+  - Verified successful unfreezing and state transition upon approval using `Command(resume={"decisions": [{"type": "approve"}]})`.
+  - Full test suite `uv run pytest` (12/12 passing) and `uv run ruff check core/` clean.
+
+

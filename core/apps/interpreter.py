@@ -7,6 +7,7 @@ load_dotenv()
 from agents.interpreter import interpreter_agent
 from langchain_core.messages import HumanMessage
 from utils.get_text import get_text
+from utils.run_with_hitl import run_with_hitl
 
 
 def main() -> None:
@@ -17,6 +18,7 @@ def main() -> None:
     print("=" * 60)
     print("💻 P4 Sandbox / Interpreter Agent (DeepAgents)")
     print("Isolated workspace: out/sandbox/")
+    print("Governance: HITL approval required for shell execution")
     print("Type 'quit', 'exit' or 'q' to end session.")
     print("=" * 60)
 
@@ -34,9 +36,11 @@ def main() -> None:
             print("Session ended.")
             break
 
-        result = agent.invoke(
+        result = run_with_hitl(
+            agent,
             {"messages": [HumanMessage(content=user_prompt)]},
             config=config,
+            assistant_prompt="\n⚠️ Approve shell command execution? [y/n]: ",
         )
         print(f"\n{get_text(result['messages'][-1])}")
 

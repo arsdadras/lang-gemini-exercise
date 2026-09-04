@@ -21,6 +21,7 @@ def make_interpreter_agent(
     checkpointer: Any | None = None,
     tier: str = "medium",
     response_format: type | None = None,
+    hitl: bool = True,
 ):
     """Build and return an autonomous Sandbox / Interpreter agent."""
     if backend is None:
@@ -33,12 +34,15 @@ def make_interpreter_agent(
             max_output_bytes=DEFAULT_MAX_OUTPUT_BYTES,
         )
 
+    interrupt_on = {"execute": True} if hitl else None
+
     return create_deep_agent(
         model=llm_model.get(tier),
         system_prompt=build_interpreter_agent_prompt(),
         backend=backend,
         checkpointer=checkpointer or InMemorySaver(),
         response_format=response_format,
+        interrupt_on=interrupt_on,
     )
 
 
