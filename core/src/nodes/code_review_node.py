@@ -5,7 +5,7 @@ from typing import cast
 from langgraph.types import interrupt
 from models import llm_model
 from output_schemas.code_review_output_schema import ReviewResult, TestSuite
-from prompts.nodes.code_review_nodes import (
+from prompts.nodes.code_review_prompt import (
     REVIEW_PROMPT,
     TEST_FIX_PROMPT,
     TEST_GEN_PROMPT,

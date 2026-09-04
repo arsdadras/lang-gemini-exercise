@@ -2,8 +2,8 @@
 
 from .agents import build_repo_insight_prompt, build_web_researcher_prompt
 from .middlewares import _GROUNDEDNESS_PROMPT
-from .nodes.code_review_nodes import REVIEW_PROMPT, TEST_FIX_PROMPT, TEST_GEN_PROMPT
-from .nodes.rag_nodes import (
+from .nodes.code_review_prompt import REVIEW_PROMPT, TEST_FIX_PROMPT, TEST_GEN_PROMPT
+from .nodes.rag_prompt import (
     _generate_from_web_prompt,
     _generate_prompt,
     _grade_prompt,

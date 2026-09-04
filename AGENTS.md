@@ -34,7 +34,7 @@ exist yet — do not reintroduce them until that project starts (see `docs/ROADM
 ## Coding Standards
 
 - Type hints required on all public functions.
-- Follow the standard project/role file naming formula: `f"{project}_{role}.py"` where `role` is the singular form of the parent directory (e.g. `rag_app.py`, `rag_agent.py`, `rag_graph.py`, `rag_node.py`, `rag_config.py`, `rag_state.py`, `rag_subagent.py`, `rag_output_schema.py`). Generic files (e.g. `models.py`, `registry.py`, `sqlite_db.py`, `search.py`) remain un-suffixed.
+- Follow the standard project/role file naming formula: `f"{project}_{role}.py"` where `role` is the singular form of the parent directory (e.g. `rag_app.py`, `rag_agent.py`, `rag_graph.py`, `rag_node.py`, `rag_config.py`, `rag_state.py`, `rag_subagent.py`, `rag_output_schema.py`). Generic files (e.g. `models.py`, `registry.py`, `sqlite_db.py`, `search.py`) remain un-suffixed. Exception: files inside `prompts/nodes/` use the `_prompt` suffix (e.g. `rag_prompt.py`, `code_review_prompt.py`) because their architectural role is prompts, with `nodes/` acting only as category organization.
 - Follow the existing module layout — don't introduce a new top-level package
   without asking first.
 - Match the existing docstring style already used in the codebase.

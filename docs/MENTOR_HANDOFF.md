@@ -1082,5 +1082,22 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
   - Live module import test of all 23 renamed modules ➔ 100% [OK].
   - Live execution of `uv run python core/apps/interpreter_app.py list` ➔ 100% functional.
 
+#### Prompts Nodes Namespace Alignment (`_prompt` Exception) (2026-09-05) ✅
+- **Objective:** Align `core/src/prompts/nodes/` files with their actual semantic role (`prompt`) rather than their organizational directory (`nodes/`).
+- **Renamed Modules (2 files via `git mv`):**
+  - `core/src/prompts/nodes/rag_nodes.py` ➔ `core/src/prompts/nodes/rag_prompt.py`
+  - `core/src/prompts/nodes/code_review_nodes.py` ➔ `core/src/prompts/nodes/code_review_prompt.py`
+- **Updated Call Sites:**
+  - `core/src/prompts/__init__.py`: updated relative imports from `.nodes.code_review_nodes` and `.nodes.rag_nodes` to `.nodes.code_review_prompt` and `.nodes.rag_prompt`.
+  - `core/src/nodes/rag_node.py`: updated import from `prompts.nodes.rag_prompt`.
+  - `core/src/nodes/code_review_node.py`: updated import from `prompts.nodes.code_review_prompt`.
+- **Standards & Rules:**
+  - Updated `AGENTS.md` coding standards to explicitly record the `prompts/nodes/*_prompt.py` naming convention.
+- **Verification (Ghanoon-e Pishmarg):**
+  - `uv run ruff check core/ tests/` ➔ All checks passed! (0 errors)
+  - `uv run pytest` ➔ 12/12 passing green in 3.27s.
+  - Live module import test of prompts and nodes ➔ 100% functional.
+
+
 
 

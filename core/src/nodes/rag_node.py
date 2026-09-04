@@ -4,7 +4,7 @@ from typing import cast
 
 from models import llm_model
 from output_schemas.rag_output_schema import GradeDocument, GradeHallucination
-from prompts.nodes.rag_nodes import (
+from prompts.nodes.rag_prompt import (
     _generate_from_web_prompt,
     _generate_prompt,
     _grade_prompt,
