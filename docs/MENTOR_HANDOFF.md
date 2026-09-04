@@ -1130,6 +1130,26 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
   - Root package import verification across all 9 packages ➔ 100% OK.
   - Live execution of `uv run python core/apps/interpreter_app.py list` ➔ 100% functional.
 
+#### Extraction of Universal Session Resolution Utility (`session_util.py`) (2026-09-05) ✅
+- **Objective:** Promote the 6-mode session resolution and thread management logic from a single app leaf (`core/apps/interpreter_app.py`) to a universal architectural utility in `core/src/utils/session_util.py`, enabling any agentic application across the codebase to leverage standard session modes.
+- **Created Modules:**
+  - `core/src/utils/session_util.py`: Implements `ResolvedSession` dataclass (with `.config` property), `resolve_session(...)`, and `format_session_list(...)`.
+    - Modes: `default`, `new`, `secret` (in-memory ephemeral), `resume` (latest thread), `step[N]` (0-based reverse index), `custom`, and `list`/`history`.
+  - `tests/test_session_util.py`: Comprehensive test suite with 8 unit tests covering all modes, error branches, and edge cases.
+- **Adopted Across All 5 Apps:**
+  - `core/apps/interpreter_app.py`: Delegated all session resolution logic to `session_util.py`.
+  - `core/apps/code_review_app.py`: Integrated `resolve_session` into CLI and `run_code_review(...)`.
+  - `core/apps/repo_insight_app.py`: Integrated `resolve_session` and ensured top-level `load_dotenv()`.
+  - `core/apps/research_app.py`: Integrated `resolve_session` and ensured top-level `load_dotenv()`.
+  - `core/apps/rag_app.py`: Integrated `resolve_session` for RAG graph interactive queries.
+- **Re-exports:**
+  - `core/src/utils/__init__.py`: Exposed `ResolvedSession`, `format_session_list`, `resolve_session`.
+- **Verification (Ghanoon-e Pishmarg):**
+  - `uv run ruff check core/ tests/` ➔ All checks passed! (0 errors)
+  - `uv run pytest` ➔ 20/20 passing green in 3.25s (12 existing + 8 new session tests).
+  - Verified live CLI session listing on all apps: `interpreter_app.py list`, `code_review_app.py list`, `repo_insight_app.py list`, `research_app.py list`, `rag_app.py list` (all 100% functional).
+
+
 
 
 

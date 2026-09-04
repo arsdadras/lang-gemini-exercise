@@ -12,6 +12,7 @@ from output_schemas.code_review_output_schema import (
     TestExecutionResult,
     TestSuite,
 )
+from utils.session_util import resolve_session
 
 load_dotenv()
 
@@ -85,12 +86,19 @@ def run_code_review(
     code: str,
     language: str = "python",
     file_path: str | None = None,
+    session_arg: str | None = None,
 ) -> None:
     """Execute the Code Review graph with live streaming and Human-In-The-Loop approval."""
 
-    checkpointer = get_sqlite_checkpointer()
-    graph = build_code_review_graph(checkpointer=checkpointer)
-    config = {"configurable": {"thread_id": "cli_review_session"}}
+    session = resolve_session(
+        session_arg,
+        default_thread_id="cli_review_session",
+        agent_factory=lambda saver: build_code_review_graph(checkpointer=saver or get_sqlite_checkpointer()),
+        app_name="code_review",
+        cli_command_hint="python core/apps/code_review_app.py [file] step[<index>]",
+    )
+    graph = session.agent
+    config = session.config
 
     target_display = file_path if file_path else "<inline_code>"
     print(f"\n🔍 Starting code review pipeline for: {target_display}")
@@ -193,16 +201,27 @@ def run_code_review(
 
 def main() -> None:
     """CLI handler."""
-    if len(sys.argv) > 1:
-        target_file = Path(sys.argv[1])
-        if not target_file.exists():
-            print(f"Error: Target file does not exist: {target_file}")
-            sys.exit(1)
-        code = target_file.read_text(encoding="utf-8")
-        run_code_review(code=code, language="python", file_path=str(target_file))
+    args = sys.argv[1:]
+    if args and args[0].lower() in {"list", "history"}:
+        resolve_session("list", default_thread_id="cli_review_session", app_name="code_review")
+        return
+
+    session_arg = None
+    target_path = None
+    for arg in args:
+        if arg.lower() in {"new", "secret", "resume", "default"} or arg.lower().startswith("step"):
+            session_arg = arg
+        elif not target_path and Path(arg).exists():
+            target_path = Path(arg)
+        elif not session_arg:
+            session_arg = arg
+
+    if target_path:
+        code = target_path.read_text(encoding="utf-8")
+        run_code_review(code=code, language="python", file_path=str(target_path), session_arg=session_arg)
     else:
         print("No file argument provided. Running demo sample...")
-        run_code_review(code=_SAMPLE_CODE, language="python", file_path="demo_calc.py")
+        run_code_review(code=_SAMPLE_CODE, language="python", file_path="demo_calc.py", session_arg=session_arg)
 
 
 if __name__ == "__main__":

@@ -1,12 +1,22 @@
+import sys
+
 from dotenv import load_dotenv
 from graphs.rag_graph import build_rag_graph
+from utils.session_util import resolve_session
 
 load_dotenv()
 
 
 def main() -> None:
-    graph = build_rag_graph()
-    config = {"configurable": {"thread_id": "rag_session_001"}}
+    raw_arg = sys.argv[1] if len(sys.argv) > 1 else None
+    session = resolve_session(
+        raw_arg,
+        default_thread_id="rag_session_001",
+        agent_factory=lambda _saver: build_rag_graph(),
+        app_name="rag",
+    )
+    graph = session.agent
+    config = session.config
 
     print("Ask questions about the indexed corpus. Type 'quit' to exit.")
 
