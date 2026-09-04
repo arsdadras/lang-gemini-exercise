@@ -4,7 +4,7 @@ from agents.web_researcher_agent import web_researcher_agent
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 from output_schemas.research_output_schema import ResearchReport
-from utils.run_with_hitl import run_with_hitl
+from utils.run_with_hitl_util import run_with_hitl
 
 load_dotenv()
 

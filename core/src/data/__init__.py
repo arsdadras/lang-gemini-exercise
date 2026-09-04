@@ -1,5 +1,10 @@
-"""Static data and content assets.
+"""Data and database assets."""
 
-Placeholder for future project-specific static content
-(reference docs, few-shot examples, lookup tables).
-"""
+from .sqlite_db_data import DB_DIR, DB_PATH, get_recent_threads, get_sqlite_checkpointer
+
+__all__ = [
+    "DB_DIR",
+    "DB_PATH",
+    "get_recent_threads",
+    "get_sqlite_checkpointer",
+]

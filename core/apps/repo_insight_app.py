@@ -3,7 +3,7 @@
 from agents.repo_insight_agent import repo_insight_agent
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
-from utils.get_text import get_text
+from utils.get_text_util import get_text
 
 load_dotenv()
 

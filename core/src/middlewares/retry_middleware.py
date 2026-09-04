@@ -10,7 +10,7 @@ built with, e.g. `middleware=[retry_on_failure("low")]`.
 
 from collections.abc import Callable
 
-from configs.models import DEFAULT_TIER
+from configs.models_config import DEFAULT_TIER
 from langchain.agents.middleware import (
     AgentMiddleware,
     ModelRequest,

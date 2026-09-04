@@ -7,7 +7,7 @@ from output_schemas.code_review_output_schema import (
     TestExecutionResult,
     TestSuite,
 )
-from output_schemas.middlewares import _GroundednessVerdict
+from output_schemas.middlewares_output_schema import _GroundednessVerdict
 from output_schemas.rag_output_schema import GradeDocument, GradeHallucination
 from output_schemas.research_output_schema import (
     ResearchFindings,

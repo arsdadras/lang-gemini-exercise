@@ -5,7 +5,7 @@ from langchain_core.messages import AIMessage, ToolMessage
 from models import llm_model
 from output_schemas import _GroundednessVerdict
 from prompts import _GROUNDEDNESS_PROMPT
-from utils.get_text import get_text
+from utils.get_text_util import get_text
 
 
 @after_model

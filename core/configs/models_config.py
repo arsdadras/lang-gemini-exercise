@@ -4,7 +4,7 @@ Each tier ("low"/"medium"/"high"/"free") maps provider name -> `init_chat_model(
 kwargs. A tier's providers are tried in the order listed — the first is the
 default/primary for that tier, the rest are the fallback chain *within the
 same capability tier* (so a rate-limited call retries at the same capability
-level, not silently downgraded to a cheaper tier). See `models.registry`.
+level, not silently downgraded to a cheaper tier). See `models.registry_model`.
 
 Provider keys name the underlying model *brand* ("gemini"/"openai"/"anthropic"),
 not the router used to reach it — GapGPT is a single OpenAI-compatible gateway

@@ -8,7 +8,7 @@ from pathlib import Path
 from deepagents import create_deep_agent
 from deepagents.backends.filesystem import FilesystemBackend
 from langgraph.checkpoint.memory import InMemorySaver
-from middlewares.retry import retry_on_failure
+from middlewares.retry_middleware import retry_on_failure
 from models import llm_model
 from prompts import build_repo_insight_prompt
 from subagents import rag_subagent

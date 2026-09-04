@@ -13,12 +13,12 @@ from configs.interpreter_config import (
 )
 from typing import Any
 from deepagents.backends import LocalShellBackend
-from prompts.agents import build_interpreter_agent_prompt
-from models.registry import llm_model
+from prompts.agents_prompt import build_interpreter_agent_prompt
+from models.registry_model import llm_model
 from langchain_core.messages import HumanMessage
 from utils import get_text
 from deepagents import create_deep_agent
-from utils.run_with_hitl import run_with_hitl
+from utils.run_with_hitl_util import run_with_hitl
 
 
 # def make_interpreter_agent(

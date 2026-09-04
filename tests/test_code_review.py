@@ -15,7 +15,7 @@ from output_schemas.code_review_output_schema import (
     TestExecutionResult,
     TestSuite,
 )
-from utils.sandbox import run_tests_in_sandbox
+from utils.sandbox_util import run_tests_in_sandbox
 
 
 def test_code_review_schemas():
@@ -149,7 +149,7 @@ def test_subagent_schema():
 def test_time_travel_utilities():
     """Verify time-travel history inspection and fork mechanisms."""
     from langgraph.checkpoint.sqlite import SqliteSaver
-    from utils.time_travel import inspect_state_history
+    from utils.time_travel_util import inspect_state_history
 
     with SqliteSaver.from_conn_string(":memory:") as saver:
         graph = build_code_review_graph(checkpointer=saver)

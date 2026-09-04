@@ -11,7 +11,7 @@ from prompts.nodes.code_review_prompt import (
     TEST_GEN_PROMPT,
 )
 from state.code_review_state import CodeReviewState
-from utils.sandbox import run_tests_in_sandbox
+from utils.sandbox_util import run_tests_in_sandbox
 
 
 def _format_review_summary(review: ReviewResult | None) -> str:

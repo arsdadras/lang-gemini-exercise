@@ -13,11 +13,11 @@ from typing import Any
 
 from agents.interpreter_agent import interpreter_agent, make_interpreter_agent
 from configs.interpreter_config import DEFAULT_THREAD_ID
-from data.sqlite_db import get_recent_threads
+from data.sqlite_db_data import get_recent_threads
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.memory import InMemorySaver
-from utils.get_text import get_text
-from utils.run_with_hitl import run_with_hitl
+from utils.get_text_util import get_text
+from utils.run_with_hitl_util import run_with_hitl
 
 
 def resolve_session(raw_arg: str | None) -> tuple[Any, str, str, bool]:

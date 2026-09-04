@@ -1,7 +1,7 @@
 """System prompts for agents."""
 
-from .agents import build_repo_insight_prompt, build_web_researcher_prompt
-from .middlewares import _GROUNDEDNESS_PROMPT
+from .agents_prompt import build_repo_insight_prompt, build_web_researcher_prompt
+from .middlewares_prompt import _GROUNDEDNESS_PROMPT
 from .nodes.code_review_prompt import REVIEW_PROMPT, TEST_FIX_PROMPT, TEST_GEN_PROMPT
 from .nodes.rag_prompt import (
     _generate_from_web_prompt,
@@ -9,7 +9,7 @@ from .nodes.rag_prompt import (
     _grade_prompt,
     _rewrite_prompt,
 )
-from .subagents import researcher_subagent_prompt
+from .subagents_prompt import researcher_subagent_prompt
 from .template.builder import build_system_prompt
 from .template.template import DEFAULTS
 

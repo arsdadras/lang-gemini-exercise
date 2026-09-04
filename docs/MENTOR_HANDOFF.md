@@ -1098,6 +1098,39 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
   - `uv run pytest` ➔ 12/12 passing green in 3.27s.
   - Live module import test of prompts and nodes ➔ 100% functional.
 
+#### Universal Architectural Role Naming Convention (Zero Un-suffixed Files) (2026-09-05) ✅
+- **Objective:** Eliminate all generic/un-suffixed files across `core/`. Every single file across all 15 architectural packages carries its canonical role suffix (`_util`, `_tool`, `_middleware`, `_config`, `_model`, `_data`, `_retrieval`, `_output_schema`, `_prompt`).
+- **Renamed Modules (17 files via `git mv`):**
+  - `core/configs/models.py` ➔ `models_config.py`
+  - `core/src/data/sqlite_db.py` ➔ `sqlite_db_data.py`
+  - `core/src/middlewares/groundedness.py` ➔ `groundedness_middleware.py`
+  - `core/src/middlewares/hitl.py` ➔ `hitl_middleware.py`
+  - `core/src/middlewares/retry.py` ➔ `retry_middleware.py`
+  - `core/src/models/registry.py` ➔ `registry_model.py`
+  - `core/src/output_schemas/middlewares.py` ➔ `middlewares_output_schema.py`
+  - `core/src/prompts/agents.py` ➔ `agents_prompt.py`
+  - `core/src/prompts/middlewares.py` ➔ `middlewares_prompt.py`
+  - `core/src/prompts/subagents.py` ➔ `subagents_prompt.py`
+  - `core/src/retrieval/index.py` ➔ `index_retrieval.py`
+  - `core/src/tools/search.py` ➔ `web_search_tool.py` (explicitly requested Tavily instance tool name)
+  - `core/src/utils/get_docs_context.py` ➔ `get_docs_context_util.py`
+  - `core/src/utils/get_text.py` ➔ `get_text_util.py`
+  - `core/src/utils/run_with_hitl.py` ➔ `run_with_hitl_util.py`
+  - `core/src/utils/sandbox.py` ➔ `sandbox_util.py`
+  - `core/src/utils/time_travel.py` ➔ `time_travel_util.py`
+- **Updated Infrastructure & Re-exports:**
+  - Synchronized all 8 package `__init__.py` files (`configs`, `data`, `middlewares`, `models`, `output_schemas`, `prompts`, `retrieval`, `tools`, `utils`) to cleanly export public functions.
+  - Updated all direct call sites across `core/apps/`, `core/agents/`, `core/src/nodes/`, `core/src/subagents/`, `core/src/middlewares/`, `tests/test_code_review.py`, and `alireza/checknevis.py`.
+  - Re-installed editable distribution via `uv sync --reinstall-package agent`.
+  - Updated `AGENTS.md` coding standards.
+- **Verification (Ghanoon-e Pishmarg):**
+  - `uv run ruff check core/ tests/` ➔ All checks passed! (0 errors)
+  - `uv run pytest` ➔ 12/12 passing green in 3.29s.
+  - Direct import verification of all 17 renamed modules ➔ 100% OK.
+  - Root package import verification across all 9 packages ➔ 100% OK.
+  - Live execution of `uv run python core/apps/interpreter_app.py list` ➔ 100% functional.
+
+
 
 
 

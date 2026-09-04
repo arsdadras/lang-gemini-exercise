@@ -7,7 +7,7 @@ from .interpreter_config import (
     DEFAULT_THREAD_ID,
     DEFAULT_VIRTUAL_MODE,
 )
-from .models import (
+from .models_config import (
     DEFAULT_TIER,
     MODEL_TIERS,
     TEST_MODE,

@@ -3,7 +3,7 @@
 import sys
 from pathlib import Path
 
-from data.sqlite_db import get_sqlite_checkpointer
+from data.sqlite_db_data import get_sqlite_checkpointer
 from dotenv import load_dotenv
 from graphs.code_review_graph import build_code_review_graph
 from langgraph.types import Command

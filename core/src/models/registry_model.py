@@ -10,7 +10,7 @@ silently downgrading to a cheaper tier (fallback stays within the same tier by
 default, only the provider changes — cross-tier cascade is opt-in, see `chain`).
 """
 
-from configs.models import (
+from configs.models_config import (
     DEFAULT_TIER,
     MODEL_TIERS,
     TEST_MODE,
@@ -52,7 +52,7 @@ class LLMRegistry:
         """Apply the default-tier and test-mode substitution rules."""
         import os
 
-        from configs.models import TEST_TIER
+        from configs.models_config import TEST_TIER
         is_test_mode = os.getenv("LLM_TEST_MODE", "false").strip().lower() in {"1", "true", "yes"}
         if is_test_mode:
             return TEST_TIER

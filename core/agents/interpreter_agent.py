@@ -9,12 +9,12 @@ from configs.interpreter_config import (
     DEFAULT_SANDBOX_DIR,
     DEFAULT_VIRTUAL_MODE,
 )
-from data.sqlite_db import get_sqlite_checkpointer
+from data.sqlite_db_data import get_sqlite_checkpointer
 from deepagents import create_deep_agent
 from deepagents.backends import LocalShellBackend
 from langchain.agents.middleware import InterruptOnConfig
 from models import llm_model
-from prompts.agents import build_interpreter_agent_prompt
+from prompts.agents_prompt import build_interpreter_agent_prompt
 
 
 def make_interpreter_agent(

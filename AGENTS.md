@@ -34,7 +34,23 @@ exist yet — do not reintroduce them until that project starts (see `docs/ROADM
 ## Coding Standards
 
 - Type hints required on all public functions.
-- Follow the standard project/role file naming formula: `f"{project}_{role}.py"` where `role` is the singular form of the parent directory (e.g. `rag_app.py`, `rag_agent.py`, `rag_graph.py`, `rag_node.py`, `rag_config.py`, `rag_state.py`, `rag_subagent.py`, `rag_output_schema.py`). Generic files (e.g. `models.py`, `registry.py`, `sqlite_db.py`, `search.py`) remain un-suffixed. Exception: files inside `prompts/nodes/` use the `_prompt` suffix (e.g. `rag_prompt.py`, `code_review_prompt.py`) because their architectural role is prompts, with `nodes/` acting only as category organization.
+- Universal architectural role naming convention: EVERY file across `core/` must carry its architectural role suffix (singular form of its parent directory or canonical role):
+  - `configs/` ➔ `*_config.py` (e.g. `rag_config.py`, `models_config.py`)
+  - `agents/` ➔ `*_agent.py` (e.g. `repo_insight_agent.py`)
+  - `apps/` ➔ `*_app.py` (e.g. `interpreter_app.py`)
+  - `data/` ➔ `*_data.py` (e.g. `sqlite_db_data.py`)
+  - `graphs/` ➔ `*_graph.py` (e.g. `rag_graph.py`, `refactor_subgraph.py`)
+  - `middlewares/` ➔ `*_middleware.py` (e.g. `retry_middleware.py`, `hitl_middleware.py`)
+  - `models/` ➔ `*_model.py` (e.g. `registry_model.py`)
+  - `nodes/` ➔ `*_node.py` (e.g. `rag_node.py`)
+  - `output_schemas/` ➔ `*_output_schema.py` (e.g. `code_review_output_schema.py`, `middlewares_output_schema.py`)
+  - `prompts/` ➔ `*_prompt.py` (e.g. `agents_prompt.py`, `rag_prompt.py`, `code_review_prompt.py`)
+  - `retrieval/` ➔ `*_retrieval.py` (e.g. `index_retrieval.py`)
+  - `state/` ➔ `*_state.py` (e.g. `rag_state.py`)
+  - `subagents/` ➔ `*_subagent.py` (e.g. `research_subagent.py`)
+  - `tools/` ➔ `*_tool.py` (e.g. `web_search_tool.py`)
+  - `utils/` ➔ `*_util.py` (e.g. `get_text_util.py`, `sandbox_util.py`, `run_with_hitl_util.py`)
+  No generic/un-suffixed files remain in `core/`.
 - Follow the existing module layout — don't introduce a new top-level package
   without asking first.
 - Match the existing docstring style already used in the codebase.

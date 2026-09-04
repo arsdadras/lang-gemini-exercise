@@ -3,11 +3,11 @@ coordinators."""
 
 import uuid
 
-from data.sqlite_db import get_sqlite_checkpointer
+from data.sqlite_db_data import get_sqlite_checkpointer
 from graphs.code_review_graph import build_code_review_graph
 from langchain_core.messages import AIMessage
 from langchain_core.runnables import RunnableLambda
-from utils.get_text import get_text
+from utils.get_text_util import get_text
 
 _code_review_graph = build_code_review_graph(checkpointer=get_sqlite_checkpointer())
 
