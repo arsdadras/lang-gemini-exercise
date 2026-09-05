@@ -1,6 +1,6 @@
 """Graph exports for P2 RAG and P3 Code Review Subgraphs."""
 
-from graphs.code_review_graph import (
+from graphs.code_review_parentgraph import (
     build_code_review_graph,
     route_after_reviewer,
     route_after_test_gen,

@@ -60,7 +60,7 @@ def make_interpreter_agent(
         interrupt_on=interrupt_on,
     )
     # Expose configured interrupt tool names for introspection by callers/apps
-    agent.interrupt_tools = list(interrupt_on.keys()) if interrupt_on else []
+    setattr(agent, "interrupt_tools", list(interrupt_on.keys()) if interrupt_on else [])
     return agent
 
 
