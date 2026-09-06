@@ -4,7 +4,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from deepagents.backends import LocalShellBackend
 from deepagents.backends.protocol import ExecuteResponse
@@ -132,3 +132,45 @@ def run_tests_in_sandbox(
             exit_code=-1,
             output=f"Unsupported sandbox type: '{sandbox_type}'. Expected 'local', 'container', or 'cloud'.",
         )
+
+
+def list_sandbox_artifacts(sandbox_dir: Path | None = None) -> list[dict[str, Any]]:
+    """List all deliverable artifacts currently stored in the sandbox artifacts directory."""
+    if sandbox_dir is None:
+        from configs.interpreter_config import DEFAULT_SANDBOX_DIR
+
+        sandbox_dir = DEFAULT_SANDBOX_DIR
+
+    artifacts_dir = sandbox_dir / "artifacts"
+    if not artifacts_dir.exists() or not artifacts_dir.is_dir():
+        return []
+
+    artifacts = []
+    for item in sorted(artifacts_dir.rglob("*")):
+        if item.is_file():
+            rel_path = item.relative_to(sandbox_dir).as_posix()
+            artifacts.append(
+                {
+                    "name": item.name,
+                    "path": rel_path,
+                    "size_bytes": item.stat().st_size,
+                    "suffix": item.suffix.lower(),
+                }
+            )
+    return artifacts
+
+
+def get_artifact_path(relative_path: str, sandbox_dir: Path | None = None) -> Path:
+    """Resolve and validate an artifact path within the sandbox, preventing traversal."""
+    if sandbox_dir is None:
+        from configs.interpreter_config import DEFAULT_SANDBOX_DIR
+
+        sandbox_dir = DEFAULT_SANDBOX_DIR
+
+    artifacts_dir = (sandbox_dir / "artifacts").resolve()
+    target = (sandbox_dir / relative_path).resolve()
+
+    if not str(target).startswith(str(artifacts_dir)):
+        msg = f"Path traversal attempt: {relative_path} is outside artifacts directory"
+        raise ValueError(msg)
+    return target

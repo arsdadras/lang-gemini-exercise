@@ -7,6 +7,11 @@ from output_schemas.code_review_output_schema import (
     TestExecutionResult,
     TestSuite,
 )
+from output_schemas.interpreter_output_schema import (
+    ArtifactMetadata,
+    ArtifactType,
+    ExecutionManifest,
+)
 from output_schemas.middlewares_output_schema import _GroundednessVerdict
 from output_schemas.rag_output_schema import GradeDocument, GradeHallucination
 from output_schemas.research_output_schema import (
@@ -16,7 +21,10 @@ from output_schemas.research_output_schema import (
 )
 
 __all__ = [
+    "ArtifactMetadata",
+    "ArtifactType",
     "CodeIssue",
+    "ExecutionManifest",
     "GradeDocument",
     "GradeHallucination",
     "ResearchFindings",

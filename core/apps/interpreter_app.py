@@ -13,6 +13,7 @@ from configs.interpreter_config import DEFAULT_THREAD_ID
 from langchain_core.messages import HumanMessage
 from utils.get_text_util import get_text
 from utils.run_with_hitl_util import run_with_hitl
+from utils.sandbox_util import list_sandbox_artifacts
 from utils.session_util import resolve_session
 
 
@@ -40,6 +41,7 @@ def main() -> None:
     print("=" * 60)
     print("[Interpreter] P4 Sandbox / Interpreter Agent (DeepAgents)")
     print("Isolated workspace: out/sandbox/")
+    print("Artifacts: out/sandbox/artifacts/")
     interrupt_tools = getattr(agent, "interrupt_tools", [])
     if interrupt_tools:
         tools_str = ", ".join(interrupt_tools)
@@ -88,12 +90,23 @@ def main() -> None:
             print("Session ended.")
             break
 
+        prev_artifact_paths = {a["path"] for a in list_sandbox_artifacts()}
+
         result = run_with_hitl(
             agent,
             {"messages": [HumanMessage(content=user_prompt)]},
             config=config,
         )
         print(f"\n{get_text(result['messages'][-1])}")
+
+        new_artifacts = [
+            a for a in list_sandbox_artifacts() if a["path"] not in prev_artifact_paths
+        ]
+        if new_artifacts:
+            print("\n[Generated Artifacts]:")
+            for art in new_artifacts:
+                size_kb = art["size_bytes"] / 1024
+                print(f"  * {art['path']} ({size_kb:.1f} KB)")
 
 
 if __name__ == "__main__":

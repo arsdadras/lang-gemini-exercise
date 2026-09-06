@@ -1183,6 +1183,25 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
   - Caught and resolved Windows cp1252 `UnicodeEncodeError` on unicode checkmarks before delivering code.
   - Live end-to-end execution verified: agent requested `execute`, approved dynamically with `[Approved] Executing execute...`, produced output `180`, and finished with exit code 0.
 
+#### Phase B, Stage 3 — Artifact Management & Persistent Data Pipelines (2026-09-06) ✅
+- **Objective:** Establish clean separation between ephemeral runner scripts and final deliverable artifacts (CSVs, charts, reports). Provide structured output schemas (`ExecutionManifest`, `ArtifactMetadata`), automated artifact directory provisioning, path traversal safety, and live post-turn artifact detection in the REPL.
+- **Files Created/Modified:**
+  - `core/configs/interpreter_config.py`: Added `DEFAULT_ARTIFACTS_DIR = DEFAULT_SANDBOX_DIR / "artifacts"`.
+  - `core/src/output_schemas/interpreter_output_schema.py`: Created structured schemas: `ArtifactMetadata` (name, path, artifact_type, description) and `ExecutionManifest` (summary, artifacts, success).
+  - `core/src/output_schemas/__init__.py`: Re-exported `ArtifactMetadata`, `ArtifactType`, `ExecutionManifest`.
+  - `core/src/utils/sandbox_util.py`: Added `list_sandbox_artifacts(...)` (metadata scanner) and `get_artifact_path(...)` (with path-traversal prevention).
+  - `core/src/utils/__init__.py`: Re-exported `list_sandbox_artifacts` and `get_artifact_path`.
+  - `core/src/prompts/agents_prompt.py`: Updated `build_interpreter_agent_prompt()` to instruct the agent to save all final deliverables into `artifacts/` while keeping runner scripts in root, and explicitly list deliverables in final outputs.
+  - `core/agents/interpreter_agent.py`: Ensured both `DEFAULT_SANDBOX_DIR` and `DEFAULT_ARTIFACTS_DIR` are pre-created during agent factory initialization to avoid file write errors in custom scripts.
+  - `core/apps/interpreter_app.py`: Added artifacts directory to banner (`Artifacts: out/sandbox/artifacts/`) and added post-turn artifact detection (`[Generated Artifacts]: * artifacts/... (<size> KB)`).
+  - `tests/test_sandbox.py`: Added unit tests for artifact listing, path traversal enforcement, and schema validation.
+- **Verification (Ghanoon-e Pishmarg):**
+  - `uv run ruff check core/ tests/` ➔ All checks passed! (0 errors).
+  - `uv run pytest` ➔ 29/29 passing green in 5.38s.
+  - Live LLM execution verified: Requested synthetic CSV creation. Agent authored `/artifacts/sales_summary.csv`, listed deliverables in output, and `list_sandbox_artifacts()` registered the file with exact size and path.
+- **Milestone:** **Phase B (Growth & Governance) is 100% COMPLETE!**
+
+
 
 
 

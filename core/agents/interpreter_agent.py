@@ -4,6 +4,7 @@ from collections.abc import Sequence
 from typing import Any
 
 from configs.interpreter_config import (
+    DEFAULT_ARTIFACTS_DIR,
     DEFAULT_EXECUTE_TIMEOUT,
     DEFAULT_INHERIT_ENV,
     DEFAULT_INTERRUPT_TOOLS,
@@ -29,8 +30,10 @@ def make_interpreter_agent(
     interrupt_tools: Sequence[str] | dict[str, bool | InterruptOnConfig] | None = None,
 ):
     """Build and return an autonomous Sandbox / Interpreter agent."""
+    DEFAULT_SANDBOX_DIR.mkdir(parents=True, exist_ok=True)
+    DEFAULT_ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
+
     if backend is None:
-        DEFAULT_SANDBOX_DIR.mkdir(parents=True, exist_ok=True)
         backend = SandboxBackend(
             root_dir=DEFAULT_SANDBOX_DIR,
             virtual_mode=DEFAULT_VIRTUAL_MODE,
@@ -60,7 +63,7 @@ def make_interpreter_agent(
         interrupt_on=interrupt_on,
     )
     # Expose configured interrupt tool names for introspection by callers/apps
-    setattr(agent, "interrupt_tools", list(interrupt_on.keys()) if interrupt_on else [])
+    agent.interrupt_tools = list(interrupt_on.keys()) if interrupt_on else []
     return agent
 
 

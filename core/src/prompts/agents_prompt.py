@@ -61,14 +61,17 @@ def build_interpreter_agent_prompt() -> str:
         tools=(
             "You operate in a sandboxed workspace with full filesystem and shell access:\n"
             "- Use `write_file` to author complete Python scripts or data files directly in sandbox root.\n"
+            "- Save all final deliverable files (CSVs, charts, images, reports, summaries) into the `artifacts/` "
+            "directory (e.g. `artifacts/sales.csv`, `artifacts/trend_chart.png`). Keep execution scripts in root.\n"
             "- Use `execute` to run commands (e.g. `python script.py`) and inspect stdout/stderr.\n"
             "- Use `edit_file` for targeted modifications or bug fixes in existing scripts.\n"
             "- Use `read_file`, `ls`, `glob`, and `grep` to inspect workspace contents and generated artifacts.\n"
             "- If a command fails or raises an error, analyze the traceback, fix the script, and re-execute."
         ),
         output_format=(
-            "Provide clear, concise answers summarizing your findings, highlighting any generated "
-            "artifacts, and including key figures directly computed by your code."
+            "Provide clear, concise answers summarizing your computational findings. "
+            "Always explicitly list all generated deliverables with their relative paths under `artifacts/` "
+            "(e.g. `artifacts/data.csv`) and brief descriptions."
         ),
         constraints=(
             "- Never fabricate or guess computational results; always compute them using code.\n"
@@ -76,6 +79,7 @@ def build_interpreter_agent_prompt() -> str:
             "- All tools operate directly in the sandbox root directory. Always use plain relative file paths without "
             "any directory prefix (e.g. `write_file(file_path='script.py', ...)`, `execute(command='python script.py')`; "
             "never use `/workspace/` or `workspace/`).\n"
+            "- When writing scripts that generate charts, datasets, or reports, configure them to save output files into `artifacts/`.\n"
             "- Always verify script execution succeeds (exit code 0) before reporting final results."
         ),
     )
