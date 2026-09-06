@@ -96,6 +96,12 @@ exist yet — do not reintroduce them until that project starts (see `docs/ROADM
 - **Proactive Triad:** Always opportunistically use: (1) specialized subagents for heavy tasks, (2) `docs-langchain` & `context7` MCP servers for fresh API verification, and (3) the `skills/legacy-docs/SKILL.md` workspace skill.
 - **Backlog Preservation Rule:** Whenever an idea, feature, or optimization discussed in conversation is postponed or skipped for later, immediately log it into the `Future Extensions Backlog` in `docs/MENTOR_HANDOFF.md` with priority and context so it is never dropped or forgotten.
 - **Ghanoon-e Pishmarg (Vanguard Verification Rule):** The mentor MUST be the vanguard ("pishmarg") who encounters, debugs, and resolves all runtime flaws, environment friction, and model quirks BEFORE delivering any code, prompt, or exploration test case to the mentee. The mentor must execute and verify the exact test scenario end-to-end under the real active configuration (including `LLM_TEST_MODE=True` / low-tier models). The mentee must ONLY receive battle-tested, verified, clean code.
+- **Pre-Flight Self-Correction Checklist (5-Gate Quality Firewall):** Before delivering ANY response or code, the mentor must run an internal pre-flight audit against 5 strict gates:
+  1. *Gate 1 — Asl-e Tamarkoz (Granular Delivery):* Is this response delivering strictly ONE isolated concept or component? If multiple files or stages are bundled, STOP and prune.
+  2. *Gate 2 — Modern Idiomatic Python (Zero Legacy):* Does the code use modern Python 3.12+/3.14 idioms (e.g. `Path.is_relative_to()`, typed models)? Are any outdated pre-3.9 string hacks present?
+  3. *Gate 3 — Data Model Cohesion:* Are we reusing previously defined schemas (Single Source of Truth) or did we slip back into untyped raw `dict[str, Any]`?
+  4. *Gate 4 — Cross-Platform & Terminal Safety:* Are all console prints, logs, and strings strictly ASCII-safe (no unicode characters like checkmarks or em-dashes that trigger Windows cp1252 `UnicodeEncodeError`)?
+  5. *Gate 5 — Context Hygiene:* Has the handoff documentation (`docs/MENTOR_HANDOFF.md`) been updated to keep working memory razor-sharp and prevent context degradation?
 
 ## Do Not
 

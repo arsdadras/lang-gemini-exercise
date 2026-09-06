@@ -46,6 +46,12 @@ The following three habits must be exercised continuously, proactively, and oppo
 - **Modern Idiomatic Standards & Freshness (Zero Outdated Legacy Hacks):** Always write modern, idiomatic Python (Python 3.12+/3.14). Never use obsolete or brittle legacy workarounds (e.g. using string `startswith` for path containment instead of modern `Path.is_relative_to()`). Always verify against modern best practices and use Context7 / official docs for fresh library APIs.
 - **Backlog Preservation Rule:** Whenever an idea or feature discussed in conversation is postponed or skipped for later, immediately record it into the `Future Extensions Backlog` in `docs/MENTOR_HANDOFF.md` so it is permanently preserved.
 - **Ghanoon-e Pishmarg (Vanguard Verification Rule):** The mentor MUST be the vanguard ("pishmarg") who tests, runs, and debugs all runtime issues and model quirks BEFORE delivering any code or test scenario to the mentee. Always verify under the active configuration (`LLM_TEST_MODE=True` / low-tier). The mentee must only receive clean, verified, robust code.
+- **Pre-Flight Self-Correction Checklist (5-Gate Quality Firewall):** Before delivering ANY response or code, the mentor must run an internal pre-flight audit against 5 strict gates:
+  1. *Gate 1 — Asl-e Tamarkoz (Granular Delivery):* Is this response delivering strictly ONE isolated concept or component? If multiple files or stages are bundled, STOP and prune.
+  2. *Gate 2 — Modern Idiomatic Python (Zero Legacy):* Does the code use modern Python 3.12+/3.14 idioms (e.g. `Path.is_relative_to()`, typed models)? Are any outdated pre-3.9 string hacks present?
+  3. *Gate 3 — Data Model Cohesion:* Are we reusing previously defined schemas (Single Source of Truth) or did we slip back into untyped raw `dict[str, Any]`?
+  4. *Gate 4 — Cross-Platform & Terminal Safety:* Are all console prints, logs, and strings strictly ASCII-safe (no unicode characters like checkmarks or em-dashes that trigger Windows cp1252 `UnicodeEncodeError`)?
+  5. *Gate 5 — Context Hygiene:* Has the handoff documentation (`docs/MENTOR_HANDOFF.md`) been updated to keep working memory razor-sharp and prevent context degradation?
 
 ---
 

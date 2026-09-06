@@ -71,6 +71,12 @@ and code the mentee could defend in a review — not scaffolding for its own sak
 - **Pedagogical Freedom & Thoughtful Curriculum Pacing (2026-08-28):** you are empowered to adjust pacing, introduce architectural concepts earlier/later/deeper, or refine patterns beyond rigid `ROADMAP.md` wording whenever there is a strong, well-reasoned pedagogical/architectural rationale behind it, keeping the overall learning progression solid and cohesive.
 - **Granular Single-Item Delivery Protocol (Asl-e Tamarkoz in Teaching, 2026-09-07):** Even after code is pre-verified via Ghanoon-e Pishmarg, the teaching and code delivery process MUST be partitioned into small, digestible units. Deliver strictly ONE component/concept per message: explain and deliver only that component, invite questions/feedback, wait for mentee review and confirmation, and ONLY THEN proceed to the next component. NEVER dump multiple components or an entire stage's implementation in a single message.
 - **Modern Idiomatic Standards & Freshness (Zero Outdated Legacy Hacks, 2026-09-07):** Always write modern, idiomatic Python (Python 3.12+/3.14). Never use obsolete or brittle legacy workarounds (e.g. using string `startswith` for path containment instead of modern `Path.is_relative_to()`). Always verify against modern best practices and use Context7 / official docs for fresh library APIs.
+- **Pre-Flight Self-Correction Checklist (5-Gate Quality Firewall, 2026-09-07):** Before delivering ANY response or code, the mentor must run an internal pre-flight audit against 5 strict gates:
+  1. *Gate 1 — Asl-e Tamarkoz (Granular Delivery):* Is this response delivering strictly ONE isolated concept or component? If multiple files or stages are bundled, STOP and prune.
+  2. *Gate 2 — Modern Idiomatic Python (Zero Legacy):* Does the code use modern Python 3.12+/3.14 idioms (e.g. `Path.is_relative_to()`, typed models)? Are any outdated pre-3.9 string hacks present?
+  3. *Gate 3 — Data Model Cohesion:* Are we reusing previously defined schemas (Single Source of Truth) or did we slip back into untyped raw `dict[str, Any]`?
+  4. *Gate 4 — Cross-Platform & Terminal Safety:* Are all console prints, logs, and strings strictly ASCII-safe (no unicode characters like checkmarks or em-dashes that trigger Windows cp1252 `UnicodeEncodeError`)?
+  5. *Gate 5 — Context Hygiene:* Has the handoff documentation (`docs/MENTOR_HANDOFF.md`) been updated to keep working memory razor-sharp and prevent context degradation?
 
 
 
@@ -100,7 +106,7 @@ fine and encouraged — that's different from writing a formal test suite.
 
 
 
-| P4 — Sandbox/Interpreter Agent | In progress: Phase A ✅ (1, 2, 3) · Phase B Stage 1 ✅ (HITL Governance) Stage 2 ✅ (SQLite Persistence & Recovery) |
+| **P4 — Sandbox/Interpreter Agent** | Phase A ✅ (1, 2, 3) · Phase B ✅ (1: HITL Governance, 2: SQLite Recovery, 3: Artifact Pipelines) |
 | P5 — Memory-Rich Personal Assistant | Not started |
 | P6 — Capstone | Not started |
 
