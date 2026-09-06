@@ -1209,6 +1209,19 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
   - Live LLM execution verified: Requested synthetic CSV creation. Agent authored `/artifacts/sales_summary.csv`, listed deliverables in output, and `list_sandbox_artifacts()` registered the file with exact size and path.
 - **Milestone:** **Phase B (Growth & Governance) is 100% COMPLETE!**
 
+#### Governance Principles Addition (2026-09-07) ✅
+- **Added 3 Immutable Mentorship Principles:**
+  1. **Asle AbzaarDoosti:** Explicitly evaluate subagents and MCPs before starting any task and factor them into execution plans whenever helpful.
+  2. **Asle Docs-LangChain e Moghaddas:** Query `docs-langchain` MCP server without exception for anything relating to LangChain, LangGraph, DeepAgents, or LangSmith.
+  3. **Asle Goosh-Be-Farmani:** Conclude a stage or transition to a new stage ONLY upon explicit permission/confirmation from the mentee.
+- **Rules Updated:** Permanently integrated into `AGENTS.md` and `skills/legacy-docs/SKILL.md`.
+
+---
+
+### 🛠️ P4 — Sandbox / Interpreter Agent — Phase C Status
+- **Current Position:** Ready for **Stage 1 — Packaging as `CompiledSubAgent` (`interpreter_subagent.py`)**.
+- **Awaiting:** Explicit confirmation / instruction from mentee under **Asle Goosh-Be-Farmani**.
+
 
 
 

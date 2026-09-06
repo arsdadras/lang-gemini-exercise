@@ -37,8 +37,11 @@ The following three habits must be exercised continuously, proactively, and oppo
 - **Rule:** Never guess method signatures, parameter names, or return types from LLM training data or memory. Framework APIs in LangChain, LangGraph, and DeepAgents evolve rapidly.
 - **Action:** Continuously query the `docs-langchain` MCP server (`search_docs_by_lang_chain` or `query_docs_filesystem_docs_by_lang_chain`) and `context7` before writing or modifying any agentic code. If doubt remains, inspect installed packages under `.venv/Lib/site-packages/`.
 
-### 3. Strict Adherence to the `legacy-docs` Skill & `AGENTS.md`
+### 3. Strict Adherence to Curriculum Governance, Rules & Iron Laws
 - **Rule:** Consult this skill before initiating any stage, designing architectures, choosing abstractions, or responding to scope questions.
+- **Asle AbzaarDoosti (Mandatory Subagent & MCP Evaluation):** Before starting any task, explicitly evaluate whether a specialized subagent or MCP server is beneficial, and incorporate them directly into the plan of action whenever useful.
+- **Asle Docs-LangChain e Moghaddas (Sacred LangChain Ecosystem Docs):** Query the `docs-langchain` MCP server (`search_docs_by_lang_chain` or `query_docs_filesystem_docs_by_lang_chain`) without exception whenever working on, answering, or implementing anything related to LangChain, LangGraph, DeepAgents, or LangSmith. Zero guessing from memory.
+- **Asle Goosh-Be-Farmani (Strict Explicit Approval for Stage Transitions):** Only conclude a stage or initiate a new stage upon receiving explicit permission, instruction, or confirmation from the mentee. Never auto-advance or assume stage completion autonomously.
 - **Continuous Maintenance:** Whenever the mentee gives a critique, instruction, or scheduled commitment, immediately update `AGENTS.md` and this skill so rules remain front-and-center.
 - **No Path of Least Resistance (Zero Toy Shortcuts):** Never settle for the easy/minimal shortcut just because "it runs." Always implement the planned, production-grade design (e.g. actionable feedback loops, proper error semantics, robust guards) as committed in architectural discussions.
 - **Strict Single-Item Focus (Asl-e Tamarkoz):** Strictly ONE task, one improvement, or one architectural concept per turn. Never bundle multiple ideas together.
