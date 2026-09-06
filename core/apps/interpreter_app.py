@@ -90,7 +90,7 @@ def main() -> None:
             print("Session ended.")
             break
 
-        prev_artifact_paths = {a["path"] for a in list_sandbox_artifacts()}
+        prev_artifact_paths = {a.path for a in list_sandbox_artifacts()}
 
         result = run_with_hitl(
             agent,
@@ -100,13 +100,13 @@ def main() -> None:
         print(f"\n{get_text(result['messages'][-1])}")
 
         new_artifacts = [
-            a for a in list_sandbox_artifacts() if a["path"] not in prev_artifact_paths
+            a for a in list_sandbox_artifacts() if a.path not in prev_artifact_paths
         ]
         if new_artifacts:
             print("\n[Generated Artifacts]:")
             for art in new_artifacts:
-                size_kb = art["size_bytes"] / 1024
-                print(f"  * {art['path']} ({size_kb:.1f} KB)")
+                size_kb = (art.size_bytes or 0) / 1024
+                print(f"  * {art.path} ({size_kb:.1f} KB) [{art.artifact_type}]")
 
 
 if __name__ == "__main__":

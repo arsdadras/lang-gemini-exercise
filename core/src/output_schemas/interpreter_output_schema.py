@@ -15,10 +15,16 @@ class ArtifactMetadata(BaseModel):
         description="Relative path to the artifact within the sandbox (e.g. artifacts/sales_trend.png)"
     )
     artifact_type: ArtifactType = Field(
-        description="Type of the artifact: csv, json, chart, markdown, text, binary, other"
+        default="other",
+        description="Type of the artifact: csv, json, chart, markdown, text, binary, other",
     )
     description: str = Field(
-        description="Short description of what this artifact contains or represents"
+        default="",
+        description="Short description of what this artifact contains or represents",
+    )
+    size_bytes: int | None = Field(
+        default=None,
+        description="File size in bytes if known",
     )
 
 

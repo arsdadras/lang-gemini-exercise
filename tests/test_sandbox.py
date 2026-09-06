@@ -38,10 +38,15 @@ def test_list_sandbox_artifacts_and_path_validation():
 
         artifacts = list_sandbox_artifacts(sandbox_dir=sb)
         assert len(artifacts) == 2
-        paths = {a["path"] for a in artifacts}
+        paths = {a.path for a in artifacts}
         assert "artifacts/data.csv" in paths
         assert "artifacts/chart.png" in paths
         assert "runner.py" not in paths
+
+        by_path = {a.path: a for a in artifacts}
+        assert by_path["artifacts/data.csv"].artifact_type == "csv"
+        assert by_path["artifacts/chart.png"].artifact_type == "chart"
+        assert by_path["artifacts/data.csv"].size_bytes is not None
 
         # Safe resolution
         resolved = get_artifact_path("artifacts/data.csv", sandbox_dir=sb)

@@ -4,11 +4,12 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Any, Literal
+from typing import Literal
 
 from deepagents.backends import LocalShellBackend
 from deepagents.backends.protocol import ExecuteResponse
 from output_schemas.code_review_output_schema import TestExecutionResult
+from output_schemas.interpreter_output_schema import ArtifactMetadata, ArtifactType
 
 SandboxType = Literal["local", "container", "cloud"]
 
@@ -134,7 +135,22 @@ def run_tests_in_sandbox(
         )
 
 
-def list_sandbox_artifacts(sandbox_dir: Path | None = None) -> list[dict[str, Any]]:
+def _infer_artifact_type(suffix: str) -> ArtifactType:
+    normalized = suffix.lower()
+    if normalized == ".csv":
+        return "csv"
+    if normalized == ".json":
+        return "json"
+    if normalized in {".png", ".jpg", ".jpeg", ".svg", ".pdf"}:
+        return "chart"
+    if normalized in {".md", ".markdown"}:
+        return "markdown"
+    if normalized in {".txt", ".log"}:
+        return "text"
+    return "other"
+
+
+def list_sandbox_artifacts(sandbox_dir: Path | None = None) -> list[ArtifactMetadata]:
     """List all deliverable artifacts currently stored in the sandbox artifacts directory."""
     if sandbox_dir is None:
         from configs.interpreter_config import DEFAULT_SANDBOX_DIR
@@ -145,17 +161,18 @@ def list_sandbox_artifacts(sandbox_dir: Path | None = None) -> list[dict[str, An
     if not artifacts_dir.exists() or not artifacts_dir.is_dir():
         return []
 
-    artifacts = []
+    artifacts: list[ArtifactMetadata] = []
     for item in sorted(artifacts_dir.rglob("*")):
         if item.is_file():
             rel_path = item.relative_to(sandbox_dir).as_posix()
             artifacts.append(
-                {
-                    "name": item.name,
-                    "path": rel_path,
-                    "size_bytes": item.stat().st_size,
-                    "suffix": item.suffix.lower(),
-                }
+                ArtifactMetadata(
+                    name=item.name,
+                    path=rel_path,
+                    artifact_type=_infer_artifact_type(item.suffix),
+                    description=f"{item.suffix.upper().lstrip('.')} artifact ({item.stat().st_size} bytes)",
+                    size_bytes=item.stat().st_size,
+                )
             )
     return artifacts
 
