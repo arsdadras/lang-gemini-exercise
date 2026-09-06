@@ -170,7 +170,7 @@ def get_artifact_path(relative_path: str, sandbox_dir: Path | None = None) -> Pa
     artifacts_dir = (sandbox_dir / "artifacts").resolve()
     target = (sandbox_dir / relative_path).resolve()
 
-    if not str(target).startswith(str(artifacts_dir)):
+    if not target.is_relative_to(artifacts_dir):
         msg = f"Path traversal attempt: {relative_path} is outside artifacts directory"
         raise ValueError(msg)
     return target
