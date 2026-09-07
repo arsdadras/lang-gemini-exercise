@@ -164,14 +164,16 @@ def list_sandbox_artifacts(sandbox_dir: Path | None = None) -> list[ArtifactMeta
     artifacts: list[ArtifactMetadata] = []
     for item in sorted(artifacts_dir.rglob("*")):
         if item.is_file():
+            stat = item.stat()
             rel_path = item.relative_to(sandbox_dir).as_posix()
             artifacts.append(
                 ArtifactMetadata(
                     name=item.name,
                     path=rel_path,
                     artifact_type=_infer_artifact_type(item.suffix),
-                    description=f"{item.suffix.upper().lstrip('.')} artifact ({item.stat().st_size} bytes)",
-                    size_bytes=item.stat().st_size,
+                    description=f"{item.suffix.upper().lstrip('.')} artifact ({stat.st_size} bytes)",
+                    size_bytes=stat.st_size,
+                    modified_at=stat.st_mtime,
                 )
             )
     return artifacts

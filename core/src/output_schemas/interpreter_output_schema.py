@@ -26,6 +26,10 @@ class ArtifactMetadata(BaseModel):
         default=None,
         description="File size in bytes if known",
     )
+    modified_at: float | None = Field(
+        default=None,
+        description="Last modification timestamp (epoch seconds with sub-second precision) if known",
+    )
 
 
 class ExecutionManifest(BaseModel):

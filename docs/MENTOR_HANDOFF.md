@@ -1232,13 +1232,24 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
 - **Architectural Insights & Lessons Learned (Asle Ghorur & Asle Mohandesi-ye Asil):**
   - **Zero Layer Inversion via Pure Dependency Injection:** Refused pragmatic workarounds (lazy imports, global mutable singletons) and refused invalid graph files in `graphs/`. Cleanly injected `agent: Runnable` into `make_interpreter_subagent`, ensuring `core/src/` has zero dependencies on `core/agents/`.
   - **Data Model Cohesion in Subagent Handoff:** In addition to the LLM's text output, `_run_interpreter_subagent` scans for newly created artifacts using `list_sandbox_artifacts()` and appends formatted metadata (`path`, `size_bytes`, `artifact_type`) to the returned `AIMessage`, giving coordinator agents direct visibility into generated deliverables.
+  - **Two-Dimensional Diffing (Creation + Modification Tracking):** Extended `ArtifactMetadata` with `modified_at: float | None` and updated `list_sandbox_artifacts` to capture `stat.st_mtime`. The adapter tracks both newly created files (`[NEW]`) and in-place modified files (`[MODIFIED]` via size or timestamp changes), providing complete visibility to coordinator agents.
+  - **Parametric Workspace Injection:** Added `sandbox_dir: Path | None` to `make_interpreter_subagent` to enable clean dependency injection for test workspaces and future session-level sandbox isolation.
   - **Thread Isolation:** Uses dedicated UUIDs per delegation turn to prevent state collisions in checkpointers.
 - **Verification (Ghanoon-e Pishmarg):**
   - `uv run ruff check core/ tests/` ➔ All checks passed! (0 errors).
-  - `uv run pytest` ➔ 29/29 passing green in 6.34s.
-  - Unit verification with Mock Runnable ➔ Deliverable delta report verified.
+  - `uv run pytest` ➔ 29/29 passing green in 4.98s.
+  - Unit verification with 2D diffing mock ➔ Both `[NEW]` and `[MODIFIED]` deliverables detected and reported accurately.
   - End-to-end live verification with `make_interpreter_agent(hitl=False, tier='low')` ➔ Successful execution and calculation.
-- **Current Position:** Stage 1 completed and verified. Ready to present exploration test case to mentee. Awaiting mentee review and explicit approval under **Asle Goosh-Be-Farmani** before transitioning to Stage 2.
+- **Current Position:** Stage 1 + Two-Dimensional Diffing enhancement completed and verified. Ready to present exploration test case to mentee. Awaiting mentee review and explicit approval under **Asle Goosh-Be-Farmani** before transitioning to Stage 2.
+
+---
+
+## 📋 Future Extensions Backlog
+
+| Priority | Feature / Concept | Scope & Architectural Context | Status |
+| :--- | :--- | :--- | :--- |
+| **Medium-High** | **Multi-Tenant / Session-Scoped Sandbox Containerization** | Replace/augment global `out/sandbox` directory with session-scoped isolated workspaces (`out/sandbox/sessions/{session_id}/` or ephemeral Docker/container backends). Includes automatic mounting of workspace inputs (e.g. `employees.csv`) and per-session deliverable routing without cross-thread interference. (Originated from P4 Phase C Stage 1 review). | Backlogged for Post-P4 Hardening / Docker integration |
+
 
 
 
