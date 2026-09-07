@@ -89,9 +89,11 @@ This skill defines the complete operational rulebook, communication standards, a
 - Always write modern, idiomatic Python (Python 3.12+/3.14).
 - Never use obsolete or brittle legacy workarounds (e.g. using string `.startswith()` for path containment instead of modern `Path.is_relative_to()`).
 
-### No Path of Least Resistance (Zero Toy Shortcuts)
-- Never implement the easy or minimal shortcut just because "it runs."
-- Always implement the planned, production-grade, best-practice design (e.g. actionable feedback loops, proper error semantics, robust guards) as committed in architectural discussions.
+### Asle Mohandesi-ye Asil va Best Practice-e Motlaq (Zero Workarounds / Pure Production Engineering)
+- Never settle for the easy, minimal shortcut, temporary workaround, or "pragmatic hack" just because "it runs."
+- **Strict Prohibition on Architectural Hacks:** Under NO circumstances should temporary bypasses—such as lazy imports to mask circular dependencies, un-locked mutable global state singletons, or layer inversions—be accepted in the codebase.
+- **Root Cause Refactoring Mandate:** Even if a proper fix requires heavy restructuring, moving files between layers, splitting modules, or introducing Dependency Injection, ALWAYS refactor to the clean, production-grade architecture.
+- Always implement the planned, production-grade, best-practice design (e.g. actionable feedback loops, proper error semantics, robust guards, dependency injection, strict unidirectional layer boundaries).
 
 ### Continuous Rulebook Maintenance
 - Whenever the mentee gives a critique, instruction, or scheduled commitment, immediately update `AGENTS.md`, `skills/legacy-docs/SKILL.md`, `skills/mentor-governance/SKILL.md`, and `docs/MENTOR_HANDOFF.md`.
@@ -108,7 +110,7 @@ Before delivering ANY response or code, the mentor must run an internal pre-flig
 | Gate | Name | Audit Question |
 |---|---|---|
 | **Gate 1** | **Asl-e Tamarkoz (Micro-Granular Snippet Delivery)** | Is this response delivering strictly ONE isolated concept or ONE small code snippet with deep pedagogical explanation? If multiple snippets, full files, or stages are bundled, STOP and prune. |
-| **Gate 2** | **Modern Idiomatic Python (Zero Legacy)** | Does the code use modern Python 3.12+/3.14 idioms (e.g. `Path.is_relative_to()`, typed models)? Are any outdated string hacks present? |
+| **Gate 2** | **Modern Idiomatic Python & Clean Architecture (Zero Hacks)** | Does the code use modern Python 3.12+/3.14 idioms and clean architectural layering? Are any temporary hacks (lazy imports to bypass circular dependencies, untracked global states, mutable singletons without locks) present? If so, STOP and refactor properly. |
 | **Gate 3** | **Data Model Cohesion & Schema Reuse** | Are previously defined schemas and types being reused rather than forgotten? If a type was created, is it being utilized consistently? |
 | **Gate 4** | **Asle Docs-LangChain e Moghaddas** | Did we query the `docs-langchain` MCP server if dealing with LangChain, LangGraph, DeepAgents, or LangSmith? (Zero memory guessing). |
 | **Gate 5** | **Asle Be-Rooz-Talabi** | Did we verify third-party libraries, SDKs, or tools against Context7 or web search to guarantee fresh, up-to-date knowledge instead of stale training memory? |
