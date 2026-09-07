@@ -1215,9 +1215,9 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
   2. **Asle Docs-LangChain e Moghaddas:** Query `docs-langchain` MCP server without exception for anything relating to LangChain, LangGraph, DeepAgents, or LangSmith.
   3. **Asle Be-Rooz-Talabi:** Continuous freshness via Context7 and web search to avoid hallucinations and stale training data.
   4. **Asle Goosh-Be-Farmani:** Conclude a stage or transition to a new stage ONLY upon explicit permission/confirmation from the mentee.
-- **Data Model Cohesion & Schema Reuse:** Refined to emphasize that simple/untyped structures are fine when no formal schema is needed yet, but once a type/schema is defined in the project, it must NOT be forgotten and must be consistently reused wherever applicable across components.
-- **7-Gate Quality Firewall:** Expanded pre-flight checklist to 7 gates (Tamarkoz, Modern Python, Data Model Cohesion & Schema Reuse, Docs-LangChain, Be-Rooz-Talabi, Terminal Safety, Context Hygiene).
-- **Rules Updated:** Permanently integrated into `AGENTS.md` and `skills/legacy-docs/SKILL.md`.
+- **Micro-Granular Snippet Delivery Protocol (Part-by-Part Teaching & Code Review) (2026-09-07):** After the initial architectural concept of a stage is approved, the implementation is NOT delivered as a single code dump. Instead, it is partitioned into small, digestible snippets. For EACH snippet, the mentor must provide deep pedagogical context, architectural rationale, nuances, expert insights, and design tradeoffs, followed by ONLY that small snippet, and then STOP and await explicit mentee permission ("ejaze") before presenting the next snippet. Exploration testcases are provided only after all snippets are complete.
+- **7-Gate Quality Firewall:** Expanded pre-flight checklist to 7 gates (Gate 1: Micro-Granular Snippet Delivery, Modern Python, Data Model Cohesion & Schema Reuse, Docs-LangChain, Be-Rooz-Talabi, Terminal Safety, Context Hygiene).
+- **Rules Updated:** Permanently integrated into `AGENTS.md`, `skills/legacy-docs/SKILL.md`, and `skills/mentor-governance/SKILL.md`.
 
 ---
 
