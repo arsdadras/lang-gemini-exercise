@@ -1,4 +1,5 @@
 from .code_review_config import MAX_TEST_RETRIES
+from .coordinator_config import DEFAULT_COORDINATOR_THREAD_ID
 from .interpreter_config import (
     DEFAULT_EXECUTE_TIMEOUT,
     DEFAULT_INHERIT_ENV,
@@ -18,6 +19,7 @@ from .models_config import (
 from .rag_config import MAX_RETRIES
 
 __all__ = [
+    "DEFAULT_COORDINATOR_THREAD_ID",
     "DEFAULT_EXECUTE_TIMEOUT",
     "DEFAULT_INHERIT_ENV",
     "DEFAULT_MAX_OUTPUT_BYTES",

@@ -117,6 +117,7 @@ def build_coding_coordinator_prompt() -> str:
             "- Do not attempt to execute shell commands or write code directly; always delegate execution to `code_interpreter`.\n"
             "- When delegating to subagents, provide explicit, self-contained task instructions including all required file paths and context.\n"
             "- If a subagent reports an execution error, instruct it to inspect tracebacks and self-correct.\n"
+            "- Whenever `code_interpreter` reports deliverable files under `### Deliverables Update:`, you MUST verbatim include and preserve those exact bullet points (with `[NEW]`/`[MODIFIED]`, relative path, and size) in your final Deliverable Artifacts section. Never omit, guess, or summarize away file paths.\n"
             "- Always verify deliverable files were produced in `artifacts/` before concluding computational tasks."
         ),
     )

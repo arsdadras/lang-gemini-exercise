@@ -106,7 +106,7 @@ fine and encouraged — that's different from writing a formal test suite.
 
 
 
-| **P4 — Sandbox/Interpreter Agent** | Phase A ✅ (1, 2, 3) · Phase B ✅ (1: HITL Governance, 2: SQLite Recovery, 3: Artifact Pipelines) |
+| **P4 — Sandbox/Interpreter Agent** | Phase A ✅ · Phase B ✅ · Phase C ✅ (1: Subagent DI & 2D Diffing, 2: Multi-Agent Coordinator & Standardized Subagents) |
 | P5 — Memory-Rich Personal Assistant | Not started |
 | P6 — Capstone | Not started |
 
@@ -1240,7 +1240,31 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
   - `uv run pytest` ➔ 29/29 passing green in 4.98s.
   - Unit verification with 2D diffing mock ➔ Both `[NEW]` and `[MODIFIED]` deliverables detected and reported accurately.
   - End-to-end live verification with `make_interpreter_agent(hitl=False, tier='low')` ➔ Successful execution and calculation.
-- **Current Position:** Stage 1 + Two-Dimensional Diffing enhancement completed and verified. Ready to present exploration test case to mentee. Awaiting mentee review and explicit approval under **Asle Goosh-Be-Farmani** before transitioning to Stage 2.
+- **Current Position:** Stage 1 + Two-Dimensional Diffing enhancement completed and verified.
+
+#### Phase C, Stage 2 — Multi-Agent Coordinator Composition & Universal Function Factory Pattern (2026-09-08) ✅
+- **Objective:** Orchestrate the P4 sandbox interpreter (`code_interpreter`), P3 code review pipeline (`code_review`), and P1 web researcher (`researcher`) under a unified `coding_coordinator_agent` DeepAgent, while standardizing all subagents across the repository to the Function Factory (`make_*`) pattern with pure Dependency Injection and backward compatibility.
+- **Files Created/Modified:**
+  - `core/src/subagents/interpreter_subagent.py`: Upgraded to `make_interpreter_subagent(agent, sandbox_dir=None)` with pure DI and 2D diffing.
+  - `core/src/subagents/code_review_subagent.py`: Standardized to `make_code_review_subagent(graph=None)` + backward-compatible default instance `code_review_subagent`.
+  - `core/src/subagents/rag_subagent.py`: Standardized to `make_rag_subagent(graph=None)` + backward-compatible default instance `rag_subagent`.
+  - `core/src/subagents/__init__.py`: Exposed all factory functions and instances.
+  - `core/configs/coordinator_config.py`: Defined `DEFAULT_COORDINATOR_THREAD_ID = "coordinator_session_001"`.
+  - `core/configs/__init__.py`: Re-exported `DEFAULT_COORDINATOR_THREAD_ID`.
+  - `core/src/prompts/agents_prompt.py`: Added `build_coding_coordinator_prompt()` with strict verbatim deliverable preservation constraint.
+  - `core/agents/coding_coordinator_agent.py`: Created `make_coding_coordinator_agent(tier="low", ...)` composing `interpreter_subagent`, `code_review_subagent`, and `researcher_subagent`. Exposed default `coding_coordinator_agent`.
+  - `core/agents/__init__.py`: Re-exported `coding_coordinator_agent` and `make_coding_coordinator_agent`.
+  - `core/apps/coding_coordinator_app.py`: Created interactive REPL CLI application integrating `resolve_session` and persistent SQLite checkpointer, with redundant disk diffing cleanly pruned per mentee SRP critique.
+- **Architectural Insights & Critiques (Asle Ghorur & Asle Mohandesi-ye Asil):**
+  - **Single Responsibility Principle (Mentee Critique):** Refactored `coding_coordinator_app.py` to remove duplicate disk artifact diffing. Because `interpreter_subagent` already performs 2D diffing and embeds file metadata directly into its `AIMessage` (which becomes the `ToolMessage` read by the Coordinator), performing another diff in the UI layer was redundant and violated SRP.
+  - **Prompt Hardening for Low-Tier Model Verbatim Retention:** Low-tier models tend to aggressively summarize or drop exact file paths. Hardened `build_coding_coordinator_prompt()` with an explicit verbatim retention rule: `Whenever code_interpreter reports deliverable files under '### Deliverables Update:', you MUST verbatim include and preserve those exact bullet points (with [NEW]/[MODIFIED], relative path, and size) in your final Deliverable Artifacts section.`
+  - **Pure Dependency Injection vs Registry/Service-Locator Pattern:** Evaluated dynamic registration decorators vs explicit Function Factories (`make_*`). Explicit factories preserve static typing, make graph dependencies transparent, and accommodate heterogeneous graph state schemas without fragile generic adapters.
+- **Verification (Ghanoon-e Pishmarg):**
+  - `uv run ruff check core/ tests/` ➔ All checks passed! (0 errors).
+  - `uv run pytest` ➔ 29/29 passing green in 5.19s.
+  - CLI session listing verified: `uv run python core/apps/coding_coordinator_app.py list` lists recorded checkpoints cleanly.
+  - End-to-end Vanguard live execution: Coordinator autonomously dispatched calculation (`123 * 456`) to `code_interpreter`, verified via `code_review_subagent`, produced `out/sandbox/artifacts/result.txt` containing `56088`, and preserved deliverable metadata verbatim in its response.
+- **Current Position:** Phase C Stage 2 completed and battle-tested. P4 Sandbox / Interpreter Agent curriculum completed. Ready for mentee hands-on exploration and stage wrap-up.
 
 ---
 
