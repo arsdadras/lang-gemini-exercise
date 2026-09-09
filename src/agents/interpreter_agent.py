@@ -16,12 +16,24 @@ from configs.interpreter_config import (
     DEFAULT_SANDBOX_DIR,
     DEFAULT_VIRTUAL_MODE,
 )
+from core.manifest import AgentManifest
+from core.registry import agent_registry
 from data.sqlite_db_data import get_sqlite_checkpointer
 from models import llm_model
 from prompts.agents_prompt import build_interpreter_agent_prompt
 from utils.sandbox_util import SandboxBackend
 
+interpreter_manifest = AgentManifest(
+    name="interpreter",
+    display_name="Code Interpreter Agent",
+    description="Executes Python scripts, inspects workspaces, and produces artifacts in an isolated sandbox.",
+    agent_type="pure",
+    model_tier="medium",
+    tools=["execute", "view_file", "write_file", "edit_file", "list_directory"],
+)
 
+
+@agent_registry.register("interpreter", manifest=interpreter_manifest)
 def make_interpreter_agent(
     backend: LocalShellBackend | None = None,
     checkpointer: Any | None = None,

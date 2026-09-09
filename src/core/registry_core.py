@@ -1,5 +1,6 @@
 """Universal registry for agents and subagents with lazy factory instantiation."""
 
+import importlib
 from collections.abc import Callable
 from typing import Any
 
@@ -29,7 +30,23 @@ class AgentRegistry:
         return decorator
 
     def get(self, name: str, **kwargs: Any) -> Any:
-        """Lazy instantiation of registered factory."""
+        """Lazy instantiation of registered factory with automatic discovery fallback."""
+        if name not in self._registry:
+            # Attempt lazy auto-import of candidate modules if not yet loaded
+            candidate_modules = [
+                f"agents.{name}_agent",
+                f"subagents.{name}_subagent",
+                f"agents.{name}",
+                f"subagents.{name}",
+            ]
+            for module_name in candidate_modules:
+                try:
+                    importlib.import_module(module_name)
+                except ImportError:
+                    pass
+                if name in self._registry:
+                    break
+
         if name not in self._registry:
             available = list(self._registry.keys())
             raise KeyError(f"Agent '{name}' not found! Available: {available}")
