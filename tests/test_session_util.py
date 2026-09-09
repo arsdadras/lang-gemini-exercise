@@ -2,6 +2,7 @@
 
 import pytest
 from langgraph.checkpoint.memory import InMemorySaver
+
 from utils.session_util import ResolvedSession, format_session_list, resolve_session
 
 
@@ -35,7 +36,9 @@ def test_resolve_session_default_mode():
     assert not s1.is_secret
     assert s1.agent == agent
 
-    s2 = resolve_session("default", default_thread_id="sess_default", default_agent=agent)
+    s2 = resolve_session(
+        "default", default_thread_id="sess_default", default_agent=agent
+    )
     assert s2.thread_id == "sess_default"
     assert s2.mode_name == "default"
 
@@ -43,7 +46,9 @@ def test_resolve_session_default_mode():
 def test_resolve_session_new_mode():
     """Verify new mode generates a unique prefixed thread ID."""
     agent = DummyAgent()
-    s = resolve_session("new", default_thread_id="sess_default", default_agent=agent, app_name="testapp")
+    s = resolve_session(
+        "new", default_thread_id="sess_default", default_agent=agent, app_name="testapp"
+    )
     assert s.thread_id.startswith("testapp_")
     assert len(s.thread_id) > len("testapp_")
     assert s.mode_name == "new"
@@ -52,6 +57,7 @@ def test_resolve_session_new_mode():
 
 def test_resolve_session_secret_mode():
     """Verify secret mode creates ephemeral in-memory session."""
+
     def factory(saver):
         return DummyAgent(checkpointer=saver)
 
@@ -148,7 +154,9 @@ def test_resolve_session_custom_mode():
 
 def test_format_session_list():
     """Verify banner formatting for recorded threads."""
-    banner = format_session_list(["tid_1", "tid_2"], cli_command_hint="python test.py step[<index>]")
+    banner = format_session_list(
+        ["tid_1", "tid_2"], cli_command_hint="python test.py step[<index>]"
+    )
     assert "Recorded Sessions" in banner
     assert "step[0]: tid_1 (latest)" in banner
     assert "step[1]: tid_2" in banner

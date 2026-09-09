@@ -58,25 +58,60 @@ def test_graph_routing():
     assert route_after_reviewer({"error": None}) == "test_generator"
 
     # Parent routing after test gen
-    review_with_refactor = ReviewResult(summary="ok", score=8, refactored_code="def foo(): pass")
+    review_with_refactor = ReviewResult(
+        summary="ok", score=8, refactored_code="def foo(): pass"
+    )
     review_no_refactor = ReviewResult(summary="ok", score=10, refactored_code=None)
-    assert route_after_test_gen({"error": "Failed test gen", "review": None}) == "__end__"
-    assert route_after_test_gen({"error": None, "review": review_with_refactor}) == "refactor_gate"
-    assert route_after_test_gen({"error": None, "review": review_no_refactor}) == "__end__"
+    assert (
+        route_after_test_gen({"error": "Failed test gen", "review": None}) == "__end__"
+    )
+    assert (
+        route_after_test_gen({"error": None, "review": review_with_refactor})
+        == "refactor_gate"
+    )
+    assert (
+        route_after_test_gen({"error": None, "review": review_no_refactor}) == "__end__"
+    )
 
     # TestGen Subgraph routing (Self-Correction loop)
-    pass_exec = TestExecutionResult(status="passed", passed=True, exit_code=0, output="OK")
-    fail_exec = TestExecutionResult(status="failed", passed=False, exit_code=1, output="Error")
+    pass_exec = TestExecutionResult(
+        status="passed", passed=True, exit_code=0, output="OK"
+    )
+    fail_exec = TestExecutionResult(
+        status="failed", passed=False, exit_code=1, output="Error"
+    )
 
-    assert route_after_execution({"test_execution": pass_exec, "test_retries": 0}) == "__end__"
-    assert route_after_execution({"test_execution": fail_exec, "test_retries": 0}) == "fix_tests"
-    assert route_after_execution({"test_execution": fail_exec, "test_retries": 1}) == "fix_tests"
-    assert route_after_execution({"test_execution": fail_exec, "test_retries": 2}) == "__end__"
+    assert (
+        route_after_execution({"test_execution": pass_exec, "test_retries": 0})
+        == "__end__"
+    )
+    assert (
+        route_after_execution({"test_execution": fail_exec, "test_retries": 0})
+        == "fix_tests"
+    )
+    assert (
+        route_after_execution({"test_execution": fail_exec, "test_retries": 1})
+        == "fix_tests"
+    )
+    assert (
+        route_after_execution({"test_execution": fail_exec, "test_retries": 2})
+        == "__end__"
+    )
 
     # Runtime override via configurable
     config_5 = {"configurable": {"max_test_retries": 5}}
-    assert route_after_execution({"test_execution": fail_exec, "test_retries": 2}, config=config_5) == "fix_tests"
-    assert route_after_execution({"test_execution": fail_exec, "test_retries": 5}, config=config_5) == "__end__"
+    assert (
+        route_after_execution(
+            {"test_execution": fail_exec, "test_retries": 2}, config=config_5
+        )
+        == "fix_tests"
+    )
+    assert (
+        route_after_execution(
+            {"test_execution": fail_exec, "test_retries": 5}, config=config_5
+        )
+        == "__end__"
+    )
 
     # Refactor Subgraph routing (HITL)
     assert route_after_approval({"refactor_decision": "approve"}) == "apply_refactor"
@@ -106,7 +141,9 @@ def test_sandbox_execution():
 
     # 1. Passing test (default sandbox_type="local")
     pass_test = "from tested_module import is_even\ndef test_even():\n    assert is_even(4) is True\n"
-    res_pass = run_tests_in_sandbox(code=source_code, test_code=pass_test, sandbox_type="local")
+    res_pass = run_tests_in_sandbox(
+        code=source_code, test_code=pass_test, sandbox_type="local"
+    )
     assert res_pass.passed is True
     assert res_pass.status == "passed"
     assert res_pass.exit_code == 0
@@ -119,7 +156,9 @@ def test_sandbox_execution():
     assert res_fail.exit_code != 0
 
     # 3. Deferred / Unimplemented backend test
-    res_cloud = run_tests_in_sandbox(code=source_code, test_code=pass_test, sandbox_type="cloud")
+    res_cloud = run_tests_in_sandbox(
+        code=source_code, test_code=pass_test, sandbox_type="cloud"
+    )
     assert res_cloud.status == "error"
     assert "P4" in res_cloud.output
 
@@ -149,6 +188,7 @@ def test_subagent_schema():
 def test_time_travel_utilities():
     """Verify time-travel history inspection and fork mechanisms."""
     from langgraph.checkpoint.sqlite import SqliteSaver
+
     from utils.time_travel_util import inspect_state_history
 
     with SqliteSaver.from_conn_string(":memory:") as saver:

@@ -27,12 +27,12 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.package-dir]
-"" = "core/src"
+"" = "src"
 
 [tool.setuptools.packages.find]
-where = ["core/src", "core", "alireza"]
+where = ["src", "alireza"]
 include = ["*"]
-exclude = ["tests*", "notebooks*", "src*"]
+exclude = ["tests*", "notebooks*"]
 
 [dependency-groups]
 dev = [
@@ -43,7 +43,7 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 norecursedirs = ["P3-AntiGravity", ".venv"]
-pythonpath = ["core/src", "core/configs", "core/agents", "core/apps", "alireza", "alireza/py_files", "."]
+pythonpath = ["src", "alireza", "alireza/py_files", "."]
 
 [tool.pyrefly]
-search-path = ["core/src", "core", "alireza", "alireza/py_files"]
+search-path = ["src", "alireza", "alireza/py_files"]
