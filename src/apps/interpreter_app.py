@@ -25,9 +25,9 @@ def main() -> None:
         raw_arg,
         default_thread_id=DEFAULT_THREAD_ID,
         default_agent=interpreter_agent,
-        agent_factory=make_interpreter_agent,
+        agent_factory=lambda saver: make_interpreter_agent(checkpointer=saver),
         app_name="interpreter",
-        cli_command_hint="python core/apps/interpreter_app.py step[<index>]",
+        cli_command_hint="python src/apps/interpreter_app.py step[<index>]",
     )
     agent = session.agent
     thread_id = session.thread_id

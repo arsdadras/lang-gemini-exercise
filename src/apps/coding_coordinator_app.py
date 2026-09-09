@@ -26,9 +26,9 @@ def main() -> None:
         raw_arg,
         default_thread_id=DEFAULT_COORDINATOR_THREAD_ID,
         default_agent=coding_coordinator_agent,
-        agent_factory=make_coding_coordinator_agent,
+        agent_factory=lambda saver: make_coding_coordinator_agent(checkpointer=saver),
         app_name="coding_coordinator",
-        cli_command_hint="python core/apps/coding_coordinator_app.py step[<index>]",
+        cli_command_hint="python src/apps/coding_coordinator_app.py step[<index>]",
     )
     agent = session.agent
     thread_id = session.thread_id

@@ -114,7 +114,7 @@ def run_code_review(
             checkpointer=saver or get_sqlite_checkpointer()
         ),
         app_name="code_review",
-        cli_command_hint="python core/apps/code_review_app.py [file] step[<index>]",
+        cli_command_hint="python src/apps/code_review_app.py [file] step[<index>]",
     )
     graph = session.agent
     config = session.config

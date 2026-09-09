@@ -164,3 +164,49 @@ def test_format_session_list():
 
     empty_banner = format_session_list([])
     assert "No recorded sessions found" in empty_banner
+
+
+def test_resolve_session_with_keyword_only_factory():
+    """Verify resolve_session works with keyword-only agent factories without TypeError."""
+
+    def kwonly_factory(*, checkpointer=None, tier="low"):
+        return DummyAgent(name=f"kw_{tier}", checkpointer=checkpointer)
+
+    # Secret mode passes InMemorySaver
+    s_secret = resolve_session(
+        "secret",
+        default_thread_id="sess_default",
+        agent_factory=kwonly_factory,
+    )
+    assert s_secret.is_secret
+    assert isinstance(s_secret.agent.checkpointer, InMemorySaver)
+
+    # New mode passes None checkpointer
+    s_new = resolve_session(
+        "new",
+        default_thread_id="sess_default",
+        agent_factory=kwonly_factory,
+        app_name="app",
+    )
+    assert s_new.agent.name == "kw_low"
+
+
+def test_resolve_session_prefers_default_agent_when_available():
+    """Verify resolve_session reuses default_agent for non-secret modes instead of rebuilding."""
+    default_ag = DummyAgent("cached_agent")
+    call_count = 0
+
+    def counting_factory(checkpointer=None):
+        nonlocal call_count
+        call_count += 1
+        return DummyAgent("newly_built", checkpointer=checkpointer)
+
+    s = resolve_session(
+        "new",
+        default_thread_id="sess_default",
+        default_agent=default_ag,
+        agent_factory=counting_factory,
+        app_name="app",
+    )
+    assert s.agent is default_ag
+    assert call_count == 0  # Reused default_agent without invoking factory!

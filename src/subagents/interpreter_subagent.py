@@ -35,7 +35,7 @@ def make_interpreter_subagent(
 
     Pure Dependency Injection:
     Receives any Runnable (real compiled agent or a test mock) and optional sandbox_dir
-    from the caller layer (core/agents/ or core/apps/), ensuring core/src/ never depends on upper layers.
+    from the caller layer (src/agents/ or src/apps/), ensuring modular layering without coupling.
 
     Args:
         agent: Compiled agent runnable (e.g. from make_interpreter_agent(hitl=False)).

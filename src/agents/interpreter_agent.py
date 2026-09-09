@@ -6,8 +6,8 @@ from typing import Any
 from deepagents import create_deep_agent
 from deepagents.backends import LocalShellBackend
 from langchain.agents.middleware import InterruptOnConfig
-from temps.manifest import AgentManifest
-from temps.registry import agent_registry
+from langchain.agents.structured_output import AutoStrategy
+from requests import Response
 
 from configs.interpreter_config import (
     DEFAULT_ARTIFACTS_DIR,
@@ -18,6 +18,8 @@ from configs.interpreter_config import (
     DEFAULT_SANDBOX_DIR,
     DEFAULT_VIRTUAL_MODE,
 )
+from core.manifest import AgentManifest
+from core.registry import agent_registry
 from data.sqlite_db_data import get_sqlite_checkpointer
 from models import llm_model
 from prompts.agents_prompt import build_interpreter_agent_prompt
@@ -38,7 +40,7 @@ def make_interpreter_agent(
     backend: LocalShellBackend | None = None,
     checkpointer: Any | None = None,
     tier: str = "medium",
-    response_format: type | None = None,
+    response_format: AutoStrategy[Response] | None = None,
     hitl: bool = True,
     interrupt_tools: Sequence[str] | dict[str, bool | InterruptOnConfig] | None = None,
 ):
@@ -76,7 +78,7 @@ def make_interpreter_agent(
         interrupt_on=interrupt_on,
     )
     # Expose configured interrupt tool names for introspection by callers/apps
-    setattr(agent, "interrupt_tools", list(interrupt_on.keys()) if interrupt_on else [])
+    agent.interrupt_tools = list(interrupt_on.keys()) if interrupt_on else []
     return agent
 
 

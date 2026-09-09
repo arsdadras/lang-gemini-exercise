@@ -23,9 +23,9 @@ from subagents import (
 
 
 def make_coding_coordinator_agent(
-    *,
-    tier: str = "medium",
     checkpointer: Any | None = None,
+    *,
+    tier: str = "low",
     interpreter_hitl: bool = False,
     interpreter_sub: CompiledSubAgent | None = None,
     code_review_sub: CompiledSubAgent | None = None,

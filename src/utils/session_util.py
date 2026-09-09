@@ -83,7 +83,7 @@ def resolve_session(
         app_name: Prefix used when generating unique thread IDs in `new` mode.
         get_threads_fn: Callable returning recorded thread IDs ordered descending by latest activity.
         cli_command_hint: Hint displayed in `list` mode and error messages. Defaults to
-            `python core/apps/{app_name}_app.py step[<index>]`.
+            `python src/apps/{app_name}_app.py step[<index>]`.
         handle_cli_exit: If True, exits via `sys.exit(0)` on `list` or `sys.exit(1)` on invalid
             step index. If False, raises ValueError or returns special sessions.
 
@@ -91,11 +91,19 @@ def resolve_session(
         A `ResolvedSession` instance containing (agent, thread_id, mode_name, is_secret).
     """
     arg = (raw_arg or "").strip()
-    hint = cli_command_hint or f"python core/apps/{app_name}_app.py step[<index>]"
+    hint = cli_command_hint or f"python src/apps/{app_name}_app.py step[<index>]"
 
     def _resolve_agent(checkpointer: Any | None) -> Any:
+        if checkpointer is None and default_agent is not None:
+            return default_agent
         if agent_factory is not None:
-            return agent_factory(checkpointer)
+            try:
+                return agent_factory(checkpointer)
+            except TypeError:
+                try:
+                    return agent_factory(checkpointer=checkpointer)
+                except TypeError:
+                    return agent_factory()
         return default_agent
 
     # 1. Default Mode
