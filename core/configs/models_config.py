@@ -48,7 +48,6 @@ _GEMINI_BASE = {
 
 MODEL_TIERS = {
     "high": {
-        "gemini": {"model": "gemini-3.1-pro", **_GEMINI_BASE},
         "openai": {"model": "gpt-5.6-sol", **_GAPGPT_BASE},
         "anthropic": {"model": "claude-opus-5", **_GAPGPT_BASE},
     },
@@ -62,7 +61,7 @@ MODEL_TIERS = {
         "openai": {"model": "gpt-5.6-luna", **_GAPGPT_BASE},
     },
     "free": {
-        "glm": {"model": "z-ai/glm-5.2:free", **_OPENROUTER_BASE},
+        "glm": {"model": "z-ai/glm-5.3:free", **_OPENROUTER_BASE},
         "nvidia": {
             "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
             **_OPENROUTER_BASE,

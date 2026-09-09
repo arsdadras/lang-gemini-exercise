@@ -1,4 +1,11 @@
 from dotenv import load_dotenv
+from langgraph.checkpoint.base import BaseCheckpointSaver
+
+from agents import make_interpreter_agent
+from data import get_sqlite_checkpointer
+from middlewares import retry_on_failure
+from prompts import build_coding_coordinator_prompt
+from subagents import make_interpreter_subagent, code_review_subagent, researcher_subagent
 
 load_dotenv()
 
@@ -11,76 +18,62 @@ from configs.interpreter_config import (
     DEFAULT_SANDBOX_DIR,
     DEFAULT_VIRTUAL_MODE,
 )
-from typing import Any
+from typing import Any, Sequence
 from deepagents.backends import LocalShellBackend
 from prompts.agents_prompt import build_interpreter_agent_prompt
 from models.registry_model import llm_model
 from langchain_core.messages import HumanMessage
 from utils import get_text
-from deepagents import create_deep_agent
+from deepagents import create_deep_agent, CompiledSubAgent
 from utils.run_with_hitl_util import run_with_hitl
 
+def make_coordinator_agent(
+        *,
+        tier: str = "low",
+        checkpointer: BaseCheckpointSaver[Any]|None = None,
+        interpreter_hitl: bool = False,
+        interpreter_sbag: CompiledSubAgent|None = None,
+        extra_sbags: Sequence[CompiledSubAgent]|None = None,
+):
 
-# def make_interpreter_agent(
-#     tier: str = "medium",
-#     backend: LocalShellBackend | None = None,
-#     checkpointer: Any | None = None,
-#     response_format: type | None = None,
-#     hitl: bool = True,
-# ):
-#     DEFAULT_SANDBOX_DIR.mkdir(parents=True, exist_ok=True)
-#     if backend is None:
-#         backend = LocalShellBackend(
-#             root_dir=DEFAULT_SANDBOX_DIR,
-#             virtual_mode=DEFAULT_VIRTUAL_MODE,
-#             inherit_env=DEFAULT_INHERIT_ENV,
-#             timeout=DEFAULT_EXECUTE_TIMEOUT,
-#             max_output_bytes=DEFAULT_MAX_OUTPUT_BYTES,
-#         )
+    """
+    Create a coordinator agent that manages the execution of sub-agents.
 
-#     interrupt_on: dict[str, bool | InterruptOnConfig] | None = (
-#         {"execute": True} if hitl else None
-#     )
-#     checkpointer = InMemorySaver()
-
-#     return create_deep_agent(
-#         model=llm_model.get(tier),
-#         system_prompt=build_interpreter_agent_prompt(),
-#         backend=backend,
-#         checkpointer=checkpointer,
-#         response_format=response_format,
-#         interrupt_on=interrupt_on,
-#     )
+    Args:
+        tier (str): The tier of the agent, which can affect its capabilities.
+        checkpointer (BaseCheckpointSaver[Any]): A checkpoint saver for saving the state of the agent.
+        interpreter_hitl (bool): Whether to enable human-in-the-loop (HITL)
+        interpreter_sbag (CompiledSubAgent): The compiled sub-agent for the interpreter.
+        extra_sbag (Sequence[CompiledSubAgent]): A sequence of additional compiled sub-agents.
+    Returns:
+        A coordinator agent that can manage the execution of sub-agents.
+    """
 
 
-# def run_interpreter_agent():
-#     interpreter_agent = make_interpreter_agent()
-#     config = {"configurable": {"thread_id": "interpreter_session_001"}}
+    if checkpointer is None:
+        checkpointer = get_sqlite_checkpointer()
 
-#     while True:
-#         try:
-#             user_msg = input("\nsandbox> ").strip()
-#         except (EOFError, KeyboardInterrupt):
-#             print("\nExiting session.")
-#             break
+    if interpreter_sbag is None:
+        interpreter = make_interpreter_agent(hitl=interpreter_hitl)
+        interpreter_sbag = make_interpreter_subagent(interpreter)
 
-#         if not user_msg:
-#             continue
+    subagents=[
+        interpreter_sbag,
+        code_review_subagent,
+        researcher_subagent
+    ]
 
-#         if user_msg in ["q", "quit", "exit"]:
-#             print("Session ended.")
-#             break
+    if extra_sbags is not None:
+        subagents.extend(extra_sbags)
 
-#         result = run_with_hitl(
-#             agent=interpreter_agent,
-#             initial_input={
-#                 "messages": [HumanMessage(content=user_msg)],
-#             },
-#             config=config,
-#         )
-
-#         print(f"\n{get_text(result["messages"][-1])}")
+    return create_deep_agent(
+        name="coordinator",
+        model=llm_model(tier=tier),
+        system_prompt=build_coding_coordinator_prompt(),
+        subagents=subagents,
+        checkpointer=checkpointer,
+        middleware=[retry_on_failure(tier)]
+    )
 
 
-# if __name__ == "__main__":
-#     run_interpreter_agent()
+coding_coordinator = make_coordinator_agent(tier="low", interpreter_hitl=False)

@@ -9,6 +9,7 @@ load_dotenv()
 
 from data.sqlite_db_data import get_sqlite_checkpointer
 from deepagents import CompiledSubAgent, create_deep_agent
+from langchain.agents.middleware import TodoListMiddleware
 from middlewares.retry_middleware import retry_on_failure
 from models import llm_model
 from prompts.agents_prompt import build_coding_coordinator_prompt
@@ -23,12 +24,13 @@ from agents.interpreter_agent import make_interpreter_agent
 
 def make_coding_coordinator_agent(
     *,
-    tier: str = "low",
+    tier: str = "medium",
     checkpointer: Any | None = None,
     interpreter_hitl: bool = False,
     interpreter_sub: CompiledSubAgent | None = None,
     code_review_sub: CompiledSubAgent | None = None,
     extra_subagents: Sequence[CompiledSubAgent] | None = None,
+    enable_planning: bool = True,
 ) -> Any:
     """Builds the multi-agent Coding Coordinator DeepAgent.
 
@@ -67,12 +69,16 @@ def make_coding_coordinator_agent(
     if extra_subagents:
         subagents.extend(extra_subagents)
 
+    middleware = [retry_on_failure(tier)]
+    if enable_planning:
+        middleware.append(TodoListMiddleware())
+
     return create_deep_agent(
         model=llm_model.get(tier),
         system_prompt=build_coding_coordinator_prompt(),
         checkpointer=checkpointer,
         subagents=subagents,
-        middleware=[retry_on_failure(tier)],
+        middleware=middleware,
     )
 
 
