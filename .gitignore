@@ -39,3 +39,5 @@ last_threads.txt
 .chroma_index/
 *.db-shm
 *.db-wal
+.agents/
+.gemini/
