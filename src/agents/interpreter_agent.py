@@ -6,6 +6,8 @@ from typing import Any
 from deepagents import create_deep_agent
 from deepagents.backends import LocalShellBackend
 from langchain.agents.middleware import InterruptOnConfig
+from temps.manifest import AgentManifest
+from temps.registry import agent_registry
 
 from configs.interpreter_config import (
     DEFAULT_ARTIFACTS_DIR,
@@ -16,8 +18,6 @@ from configs.interpreter_config import (
     DEFAULT_SANDBOX_DIR,
     DEFAULT_VIRTUAL_MODE,
 )
-from core.manifest import AgentManifest
-from core.registry import agent_registry
 from data.sqlite_db_data import get_sqlite_checkpointer
 from models import llm_model
 from prompts.agents_prompt import build_interpreter_agent_prompt

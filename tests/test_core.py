@@ -1,10 +1,9 @@
 """Unit tests for src/core infrastructure: AgentManifest, AgentRegistry, and as_subagent."""
 
 import pytest
-
-from core.decorators import as_subagent
-from core.manifest import AgentManifest
-from core.registry import AgentRegistry
+from temps.decorators import as_subagent
+from temps.manifest import AgentManifest
+from temps.registry import AgentRegistry
 
 
 def test_agent_manifest_creation():
