@@ -17,6 +17,7 @@ from agents.coding_coordinator_agent import (
 from configs.coordinator_config import DEFAULT_COORDINATOR_THREAD_ID
 from utils.get_text_util import get_text
 from utils.session_util import resolve_session
+from utils.streaming_util import stream_agent_with_observability
 
 
 def main() -> None:
@@ -67,11 +68,15 @@ def main() -> None:
             break
 
         print("\n[Coordinator is thinking & orchestrating subagents...]")
-        result = agent.invoke(
+        result = stream_agent_with_observability(
+            agent,
             {"messages": [HumanMessage(content=user_input)]},
             config=config,
         )
-        output_text = get_text(result["messages"][-1])
+        last_msg = result.get("last_message")
+        if not last_msg and result.get("messages"):
+            last_msg = result["messages"][-1]
+        output_text = get_text(last_msg) if last_msg else "Task completed."
         print(f"\n[Coordinator Response]:\n{output_text}")
 
 

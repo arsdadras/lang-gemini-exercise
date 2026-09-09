@@ -9,6 +9,7 @@ from langchain_core.messages import HumanMessage
 from agents.repo_insight_agent import repo_insight_agent
 from utils.get_text_util import get_text
 from utils.session_util import resolve_session
+from utils.streaming_util import stream_agent_with_observability
 
 
 def main() -> None:
@@ -30,11 +31,16 @@ def main() -> None:
         if question.strip().lower() in {"quit", "q", "exit"}:
             break
 
-        result = agent.invoke(
+        result = stream_agent_with_observability(
+            agent,
             {"messages": [HumanMessage(content=question)]},
             config=config,
         )
-        print(f"\n{get_text(result['messages'][-1])}")
+        last_msg = result.get("last_message")
+        if not last_msg and result.get("messages"):
+            last_msg = result["messages"][-1]
+        output_text = get_text(last_msg) if last_msg else ""
+        print(f"\n{output_text}")
 
 
 if __name__ == "__main__":

@@ -106,9 +106,9 @@ fine and encouraged — that's different from writing a formal test suite.
 
 
 
-| **P4 — Sandbox/Interpreter Agent** | Phase A ✅ · Phase B ✅ · Phase C ✅ (1: Subagent DI & 2D Diffing, 2: Multi-Agent Coordinator & Standardized Subagents) |
-| P5 — Memory-Rich Personal Assistant | Not started |
-| P6 — Capstone | Not started |
+| **P4 — Sandbox/Interpreter Agent** | Phase A ✅ · Phase B ✅ · Phase C ✅ (Stage 1: Subagent DI & 2D Diffing, Stage 2: Multi-Agent Coordinator & Standardized Subagents, Stage 3: Universal Registry & Streaming Observability) — 100% COMPLETE ✅ |
+| **P5 — Memory-Rich Personal Assistant** | Ready to start (Session 0 briefing prepared) |
+| **P6 — Capstone** | Not started |
 
 ## Future Extensions Backlog (beyond `ROADMAP.md`), started 2026-08-25
 
@@ -1128,7 +1128,7 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
   - `core/src/utils/time_travel.py` ➔ `time_travel_util.py`
 - **Updated Infrastructure & Re-exports:**
   - Synchronized all 8 package `__init__.py` files (`configs`, `data`, `middlewares`, `models`, `output_schemas`, `prompts`, `retrieval`, `tools`, `utils`) to cleanly export public functions.
-  - Updated all direct call sites across `core/apps/`, `core/agents/`, `core/src/nodes/`, `core/src/subagents/`, `core/src/middlewares/`, `tests/test_code_review.py`, and `alireza/checknevis.py`.
+  - Updated all direct call sites across `core/apps/`, `core/agents/`, `core/src/nodes/`, `core/src/subagents/`, `core/src/middlewares/`, `tests/test_code_review.py`, and `../alireza/pys/checknevis.py`.
   - Re-installed editable distribution via `uv sync --reinstall-package agent`.
   - Updated `AGENTS.md` coding standards.
 - **Verification (Ghanoon-e Pishmarg):**
@@ -1258,13 +1258,42 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
 - **Architectural Insights & Critiques (Asle Ghorur & Asle Mohandesi-ye Asil):**
   - **Single Responsibility Principle (Mentee Critique):** Refactored `coding_coordinator_app.py` to remove duplicate disk artifact diffing. Because `interpreter_subagent` already performs 2D diffing and embeds file metadata directly into its `AIMessage` (which becomes the `ToolMessage` read by the Coordinator), performing another diff in the UI layer was redundant and violated SRP.
   - **Prompt Hardening for Low-Tier Model Verbatim Retention:** Low-tier models tend to aggressively summarize or drop exact file paths. Hardened `build_coding_coordinator_prompt()` with an explicit verbatim retention rule: `Whenever code_interpreter reports deliverable files under '### Deliverables Update:', you MUST verbatim include and preserve those exact bullet points (with [NEW]/[MODIFIED], relative path, and size) in your final Deliverable Artifacts section.`
-  - **Pure Dependency Injection vs Registry/Service-Locator Pattern:** Evaluated dynamic registration decorators vs explicit Function Factories (`make_*`). Explicit factories preserve static typing, make graph dependencies transparent, and accommodate heterogeneous graph state schemas without fragile generic adapters.
+  - **Autonomous Goal Formulation vs Imperative Scripting (Mentee Critique):** Refactored `build_coding_coordinator_prompt()` to shift from prescriptive micro-management to true autonomous supervision. The coordinator is explicitly trained on goal decomposition, autonomous `write_todos` planning, subagent selection heuristics, cross-subagent pipeline handoffs (Researcher -> Interpreter -> Code Review), and multi-format deliverable creation in `artifacts/`.
+  - **Layout Migration:** Repo standardized to clean `src/` layout per `AGENTS.md`.
 - **Verification (Ghanoon-e Pishmarg):**
-  - `uv run ruff check core/ tests/` ➔ All checks passed! (0 errors).
-  - `uv run pytest` ➔ 29/29 passing green in 5.19s.
-  - CLI session listing verified: `uv run python core/apps/coding_coordinator_app.py list` lists recorded checkpoints cleanly.
-  - End-to-end Vanguard live execution: Coordinator autonomously dispatched calculation (`123 * 456`) to `code_interpreter`, verified via `code_review_subagent`, produced `out/sandbox/artifacts/result.txt` containing `56088`, and preserved deliverable metadata verbatim in its response.
-- **Current Position:** Phase C Stage 2 completed and battle-tested. P4 Sandbox / Interpreter Agent curriculum completed. Ready for mentee hands-on exploration and stage wrap-up.
+  - `uv run ruff check src/ tests/` ➔ All checks passed! (0 errors).
+  - `uv run pytest` ➔ 34/34 passing green.
+  - End-to-end Vanguard live execution of purely declarative prompt: produced `out/sandbox/artifacts/accel_data.csv` (830 bytes) and `out/sandbox/artifacts/accel_briefing.md` (5,366 bytes) with full comparative hardware specs and analysis autonomously!
+
+#### Phase C, Stage 3 — Enterprise Agent Registry, Function Factory Alignment & Universal Streaming Observability (2026-09-09) ✅
+- **Objective:** Establish the foundational Enterprise Agent Registry & Manifest pattern (`src/core/`), resolve agent factory positional-vs-keyword calling contracts across `session_util.py` and CLI apps, and implement universal real-time streaming observability (`src/utils/streaming_util.py`).
+- **Files Created/Modified:**
+  - `src/core/manifest_core.py` & `manifest.py`: Enterprise `AgentManifest` model with type-safe metadata (tools, tags, model tiers).
+  - `src/core/registry_core.py` & `registry.py`: `AgentRegistry` singleton managing agent manifests and factories with lazy module discovery.
+  - `src/core/decorators_core.py` & `decorators.py`: `@as_subagent` decorator wrapping registered agents into LangGraph/DeepAgents compatible subagents.
+  - `src/agents/coding_coordinator_agent.py`: Fixed `make_coding_coordinator_agent(checkpointer: Any | None = None, *, tier: str = "low", ...)` signature allowing both positional and keyword invocation.
+  - `src/utils/session_util.py`: Hardened `_resolve_agent` to prioritize `default_agent` when `checkpointer is None` and defensively handle positional/keyword factories. Modernized all CLI path hints to `src/apps/`.
+  - `src/utils/streaming_util.py`: Universal `stream_agent_with_observability(agent, input_data, config=...)` providing real-time CLI visibility for todos planning, subagent delegation, and tool results via `agent.stream(..., stream_mode="updates", subgraphs=True)`.
+  - `src/apps/coding_coordinator_app.py` & `src/apps/repo_insight_app.py`: Integrated streaming observability.
+  - `tests/test_session_util.py` & `tests/test_streaming_util.py`: Added comprehensive unit tests (39/39 passing green).
+- **Live Production Verification:**
+  - Pure declarative testcase autonomously executed: 5-step `write_todos` plan, 5x `web_search` via researcher subagent, synthetic dataset & SVG & Markdown generated in `out/sandbox/artifacts/` via interpreter subagent, and QA audited via code review subagent.
+- **Milestone:** **P4 — Sandbox / Interpreter Agent & Multi-Agent Coding Coordinator is 100% COMPLETE!**
+
+---
+
+## 🚀 P5 — Memory-Rich Personal Assistant (Orientation & Session 0)
+
+### Strategic Problem Statement
+Agents must support ongoing, persistent user relationships by remembering user facts, preferences, constraints, and past tasks across sessions without context window explosion or hallucinated memory drift.
+
+### Architectural Core
+- **Frameworks:** DeepAgents + LangChain, progressing to LangGraph Store at Phase C.
+- **Memory Subsystem:** DeepAgents `CompositeBackend` combining `StateBackend` (short-term thread conversation) and `StoreBackend` (long-term memory indexed under `/memories/`).
+- **Phase A (Baseline):** CompositeBackend (`StateBackend` + `StoreBackend`), memory file initialization at session start, Tavily web search + filesystem tools.
+- **Phase B (Growth):** Dynamic Skills library (`/skills/`) for reusable behavioral prompts/scripts, Memory Consolidation/Summarization subagent, HITL approval for sensitive memory writes, and PII guardrails middleware.
+- **Phase C (Professional):** Per-user namespace isolation (`(user_id, "memories")`), persistent backing store (SQLite / Postgres Store), MCP tool ecosystem integrations, and memory drift evaluation.
+- **Feeds P6 Capstone:** P5 provides the persistent memory, user profile, and reusable skills engine that empowers the top-level P6 production multi-agent system.
 
 ---
 

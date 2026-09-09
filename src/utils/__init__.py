@@ -11,6 +11,7 @@ from utils.sandbox_util import (
     run_tests_in_sandbox,
 )
 from utils.session_util import ResolvedSession, format_session_list, resolve_session
+from utils.streaming_util import stream_agent_with_observability
 from utils.time_travel_util import fork_from_checkpoint, inspect_state_history
 
 __all__ = [
@@ -27,4 +28,5 @@ __all__ = [
     "resolve_session",
     "run_tests_in_sandbox",
     "run_with_hitl",
+    "stream_agent_with_observability",
 ]

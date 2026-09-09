@@ -1,5 +1,5 @@
 """Agent manifest re-export."""
 
-from core.manifest_core import AgentManifest
+from temps.manifest_core import AgentManifest
 
 __all__ = ["AgentManifest"]

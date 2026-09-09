@@ -7,7 +7,7 @@ from typing import Any
 from deepagents import CompiledSubAgent
 from langchain_core.runnables import RunnableLambda
 
-from core.manifest_core import AgentManifest
+from temps.manifest_core import AgentManifest
 
 
 def as_subagent(

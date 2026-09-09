@@ -37,3 +37,5 @@ gen/
 *.log
 last_threads.txt
 .chroma_index/
+*.db-shm
+*.db-wal

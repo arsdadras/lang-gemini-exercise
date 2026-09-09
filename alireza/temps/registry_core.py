@@ -4,7 +4,7 @@ import importlib
 from collections.abc import Callable
 from typing import Any
 
-from core.manifest_core import AgentManifest
+from temps.manifest_core import AgentManifest
 
 
 class AgentRegistry:
