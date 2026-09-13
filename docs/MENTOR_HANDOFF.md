@@ -47,14 +47,24 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
   - No construction at import time; apps are the composition root.
   - Runtime state moved to `out/state/`, and `checkpoints.db` is no longer tracked
     ([ADR-0002](adr/0002-single-package-and-composition-root.md)).
+  - `output_schemas/` and `state/` merged into `schemas/{output,state,context}` — one reference
+    location for every typed contract, grouped by role rather than by construction method.
+  - `utils/subagent_util.py` and `utils/sandbox_util.py`'s `snapshot_sandbox_artifacts`/
+    `diff_sandbox_artifacts` extract the plumbing that was identically duplicated across the
+    3 `subagents/*.py` adapters and across `interpreter_app.py`/`interpreter_subagent.py`
+    (the interactive app previously missed `[MODIFIED]` artifacts; it now reports them too).
 - **Removed.** The unused agent registry ([ADR-0006](adr/0006-remove-agent-registry.md)), the
   custom retry middleware (replaced by the built-in, [ADR-0007](adr/0007-built-in-model-fallback.md)),
   and the dead `ExecutionManifest` and sandbox-type stubs.
 - **Governance.** One short contract (`docs/MENTORING.md`) replaced the two rulebooks; Phase D
   was dropped ([ADR-0001](adr/0001-three-phase-project-model.md)). Roadmap v3 replaced v1/v2 and
-  the Term E doc. `CLAUDE.md` loads `AGENTS.md` and the contract.
-- **Tests.** 45 passing, including new model-registry, env-isolation, and real-graph memory
-  tests. The `core` tests had been testing the scratch copy under `alireza/temps`.
+  the Term E doc. `CLAUDE.md` loads `AGENTS.md` and the contract. `docs/MENTORING.md` also now
+  has a "When to build ahead of need" section (observed-vs-predicted shape, plumbing-vs-policy,
+  reversibility, teaches-the-curriculum-or-not) for the extract-now-vs-later call that recurs
+  every project.
+- **Tests.** 49 passing, including new model-registry, env-isolation, real-graph memory,
+  sandbox-diff, and subagent-plumbing tests. The `core` tests had been testing the scratch
+  copy under `alireza/temps`.
 
 ## Known issues and risks
 
