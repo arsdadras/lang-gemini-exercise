@@ -6,6 +6,7 @@ import sys
 import tempfile
 from collections.abc import Iterable, Mapping
 from pathlib import Path, PurePosixPath
+from typing import Literal
 
 from deepagents.backends import LocalShellBackend
 
@@ -169,6 +170,34 @@ def list_sandbox_artifacts(sandbox_dir: Path = DEFAULT_SANDBOX_DIR) -> list[Arti
             )
         )
     return artifacts
+
+
+ArtifactSnapshot = dict[str, tuple[int | None, float | None]]
+ArtifactChange = Literal["new", "modified"]
+
+
+def snapshot_sandbox_artifacts(sandbox_dir: Path = DEFAULT_SANDBOX_DIR) -> ArtifactSnapshot:
+    """Capture each artifact's (size, mtime), to diff against after an agent turn."""
+    return {a.path: (a.size_bytes, a.modified_at) for a in list_sandbox_artifacts(sandbox_dir)}
+
+
+def diff_sandbox_artifacts(
+    before: ArtifactSnapshot, sandbox_dir: Path = DEFAULT_SANDBOX_DIR
+) -> list[tuple[ArtifactChange, ArtifactMetadata]]:
+    """Compare a prior snapshot to the current artifacts: what's new, what changed.
+
+    An artifact absent from ``before`` is new; one present with a different
+    (size, mtime) pair was modified in place. Deletions aren't reported — nothing
+    that generates artifacts currently removes them mid-run.
+    """
+    changes: list[tuple[ArtifactChange, ArtifactMetadata]] = []
+    for artifact in list_sandbox_artifacts(sandbox_dir):
+        previous = before.get(artifact.path)
+        if previous is None:
+            changes.append(("new", artifact))
+        elif previous != (artifact.size_bytes, artifact.modified_at):
+            changes.append(("modified", artifact))
+    return changes
 
 
 def get_artifact_path(relative_path: str, sandbox_dir: Path = DEFAULT_SANDBOX_DIR) -> Path:

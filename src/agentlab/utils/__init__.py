@@ -11,10 +11,12 @@ from agentlab.utils.run_with_hitl_util import run_with_hitl
 from agentlab.utils.sandbox_util import (
     SandboxBackend,
     build_sandbox_env,
+    diff_sandbox_artifacts,
     get_artifact_path,
     list_sandbox_artifacts,
     make_sandbox_backend,
     run_tests_in_sandbox,
+    snapshot_sandbox_artifacts,
 )
 from agentlab.utils.session_util import (
     ResolvedSession,
@@ -22,6 +24,11 @@ from agentlab.utils.session_util import (
     resolve_session,
 )
 from agentlab.utils.streaming_util import stream_agent_with_observability
+from agentlab.utils.subagent_util import (
+    new_delegation_config,
+    task_text_from_state,
+    to_subagent_reply,
+)
 from agentlab.utils.time_travel_util import fork_from_checkpoint, inspect_state_history
 
 __all__ = [
@@ -29,6 +36,7 @@ __all__ = [
     "SandboxBackend",
     "build_sandbox_env",
     "configure_utf8_stdout",
+    "diff_sandbox_artifacts",
     "fork_from_checkpoint",
     "format_session_list",
     "get_artifact_path",
@@ -38,9 +46,13 @@ __all__ = [
     "list_sandbox_artifacts",
     "make_memory_composite_backend",
     "make_sandbox_backend",
+    "new_delegation_config",
     "resolve_session",
     "run_tests_in_sandbox",
     "run_with_hitl",
+    "snapshot_sandbox_artifacts",
     "stream_agent_with_observability",
+    "task_text_from_state",
+    "to_subagent_reply",
     "user_memory_namespace",
 ]

@@ -1,14 +1,16 @@
 """RAG subagent: exposes the compiled P2 RAG graph to DeepAgents coordinators."""
 
-import uuid
 from typing import Any
 
 from deepagents import CompiledSubAgent
-from langchain_core.messages import AIMessage
 from langchain_core.runnables import Runnable, RunnableLambda
 
 from agentlab.graphs.rag_graph import build_rag_graph
-from agentlab.utils.get_text_util import get_text
+from agentlab.utils.subagent_util import (
+    new_delegation_config,
+    task_text_from_state,
+    to_subagent_reply,
+)
 
 DEFAULT_RAG_SUBAGENT_NAME = "rag_subagent"
 DEFAULT_RAG_SUBAGENT_DESCRIPTION = (
@@ -32,9 +34,8 @@ def make_rag_subagent(
     rag_graph = graph if graph is not None else build_rag_graph()
 
     def run(state: dict[str, Any]) -> dict[str, Any]:
-        question = get_text(state["messages"][-1])
-        config = {"configurable": {"thread_id": str(uuid.uuid4())}}
-        result = rag_graph.invoke({"question": question}, config=config)
-        return {"messages": [AIMessage(content=result["generation"])]}
+        question = task_text_from_state(state)
+        result = rag_graph.invoke({"question": question}, config=new_delegation_config())
+        return to_subagent_reply(result["generation"])
 
     return {"name": name, "description": description, "runnable": RunnableLambda(run)}

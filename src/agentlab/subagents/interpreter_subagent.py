@@ -1,17 +1,24 @@
 """Interpreter subagent: exposes an injected P4 interpreter agent to DeepAgents coordinators."""
 
-import uuid
 from pathlib import Path
 from typing import Any
 
 from deepagents import CompiledSubAgent
-from langchain_core.messages import AIMessage, HumanMessage
-from langchain_core.runnables import Runnable, RunnableConfig, RunnableLambda
+from langchain_core.messages import HumanMessage
+from langchain_core.runnables import Runnable, RunnableLambda
 
 from agentlab.configs.interpreter_config import DEFAULT_SANDBOX_DIR
 from agentlab.schemas.output.interpreter_output_schema import ArtifactMetadata
 from agentlab.utils.get_text_util import get_text
-from agentlab.utils.sandbox_util import list_sandbox_artifacts
+from agentlab.utils.sandbox_util import (
+    diff_sandbox_artifacts,
+    snapshot_sandbox_artifacts,
+)
+from agentlab.utils.subagent_util import (
+    new_delegation_config,
+    task_text_from_state,
+    to_subagent_reply,
+)
 
 DEFAULT_SUBAGENT_NAME = "code_interpreter"
 DEFAULT_SUBAGENT_DESCRIPTION = (
@@ -45,31 +52,17 @@ def make_interpreter_subagent(
     """
 
     def run(state: dict[str, Any]) -> dict[str, Any]:
-        before = {
-            a.path: (a.size_bytes, a.modified_at)
-            for a in list_sandbox_artifacts(sandbox_dir)
-        }
-        config: RunnableConfig = {"configurable": {"thread_id": str(uuid.uuid4())}}
+        before = snapshot_sandbox_artifacts(sandbox_dir)
         result = agent.invoke(
-            {"messages": [HumanMessage(content=get_text(state["messages"][-1]))]},
-            config=config,
+            {"messages": [HumanMessage(content=task_text_from_state(state))]},
+            config=new_delegation_config(),
         )
 
-        updates: list[str] = []
-        for artifact in list_sandbox_artifacts(sandbox_dir):
-            previous = before.get(artifact.path)
-            if previous is None:
-                updates.append(_describe("NEW", artifact))
-            elif previous != (artifact.size_bytes, artifact.modified_at):
-                updates.append(_describe("MODIFIED", artifact))
-
+        changes = diff_sandbox_artifacts(before, sandbox_dir)
         parts = [get_text(result["messages"][-1])]
-        if updates:
-            parts.extend(["\n\n### Deliverables Update:", *updates])
-        return {"messages": [AIMessage(content="\n".join(parts))]}
+        if changes:
+            parts.append("\n\n### Deliverables Update:")
+            parts.extend(_describe(tag.upper(), artifact) for tag, artifact in changes)
+        return to_subagent_reply("\n".join(parts))
 
-    return {
-        "name": name,
-        "description": description,
-        "runnable": RunnableLambda(run),
-    }
+    return {"name": name, "description": description, "runnable": RunnableLambda(run)}

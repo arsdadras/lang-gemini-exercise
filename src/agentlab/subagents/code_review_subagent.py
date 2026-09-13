@@ -1,15 +1,17 @@
 """Code review subagent: exposes the compiled P3 review pipeline to DeepAgents coordinators."""
 
-import uuid
 from typing import Any
 
 from deepagents import CompiledSubAgent
-from langchain_core.messages import AIMessage
 from langchain_core.runnables import Runnable, RunnableLambda
 
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
 from agentlab.graphs.code_review_parentgraph import build_code_review_graph
-from agentlab.utils.get_text_util import get_text
+from agentlab.utils.subagent_util import (
+    new_delegation_config,
+    task_text_from_state,
+    to_subagent_reply,
+)
 
 DEFAULT_CODE_REVIEW_NAME = "code_review_subagent"
 DEFAULT_CODE_REVIEW_DESCRIPTION = (
@@ -58,15 +60,17 @@ def make_code_review_subagent(
     runs on a fresh thread.
     """
     review_graph = (
-        graph if graph is not None else build_code_review_graph(checkpointer=get_sqlite_checkpointer())
+        graph
+        if graph is not None
+        else build_code_review_graph(checkpointer=get_sqlite_checkpointer())
     )
 
     def run(state: dict[str, Any]) -> dict[str, Any]:
-        config = {"configurable": {"thread_id": str(uuid.uuid4())}}
+        code = task_text_from_state(state)
         result = review_graph.invoke(
-            {"code": get_text(state["messages"][-1]), "language": "python", "file_path": None},
-            config=config,
+            {"code": code, "language": "python", "file_path": None},
+            config=new_delegation_config(),
         )
-        return {"messages": [AIMessage(content=_format_report(result))]}
+        return to_subagent_reply(_format_report(result))
 
     return {"name": name, "description": description, "runnable": RunnableLambda(run)}

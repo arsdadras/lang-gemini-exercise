@@ -13,7 +13,10 @@ from agentlab.configs.interpreter_config import (
 from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.get_text_util import get_text
 from agentlab.utils.run_with_hitl_util import run_with_hitl
-from agentlab.utils.sandbox_util import list_sandbox_artifacts
+from agentlab.utils.sandbox_util import (
+    diff_sandbox_artifacts,
+    snapshot_sandbox_artifacts,
+)
 from agentlab.utils.session_util import ResolvedSession, resolve_session
 
 
@@ -60,16 +63,16 @@ def main() -> None:
         if prompt.lower() in {"quit", "q", "exit"}:
             break
 
-        before = {artifact.path for artifact in list_sandbox_artifacts()}
+        before = snapshot_sandbox_artifacts()
         result = run_with_hitl(agent, {"messages": [HumanMessage(content=prompt)]}, config)
         print(f"\n{get_text(result['messages'][-1])}")
 
-        created = [a for a in list_sandbox_artifacts() if a.path not in before]
-        if created:
+        changes = diff_sandbox_artifacts(before)
+        if changes:
             print("\n[Generated Artifacts]:")
-            for artifact in created:
+            for tag, artifact in changes:
                 size_kb = (artifact.size_bytes or 0) / 1024
-                print(f"  * {artifact.path} ({size_kb:.1f} KB) [{artifact.artifact_type}]")
+                print(f"  * [{tag.upper()}] {artifact.path} ({size_kb:.1f} KB) [{artifact.artifact_type}]")
 
 
 if __name__ == "__main__":

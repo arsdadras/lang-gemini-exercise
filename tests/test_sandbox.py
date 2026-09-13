@@ -7,8 +7,10 @@ import pytest
 from agentlab.utils.sandbox_util import (
     SandboxBackend,
     build_sandbox_env,
+    diff_sandbox_artifacts,
     get_artifact_path,
     list_sandbox_artifacts,
+    snapshot_sandbox_artifacts,
 )
 
 
@@ -60,3 +62,21 @@ def test_list_sandbox_artifacts_and_path_validation(tmp_path: Path) -> None:
     assert get_artifact_path("artifacts/data.csv", tmp_path) == (artifacts_dir / "data.csv").resolve()
     with pytest.raises(ValueError, match="Path traversal attempt"):
         get_artifact_path("../sensitive.txt", tmp_path)
+
+
+def test_diff_sandbox_artifacts_reports_new_and_modified(tmp_path: Path) -> None:
+    artifacts_dir = tmp_path / "artifacts"
+    artifacts_dir.mkdir()
+    (artifacts_dir / "unchanged.txt").write_text("same", encoding="utf-8")
+    (artifacts_dir / "will_change.txt").write_text("before", encoding="utf-8")
+
+    before = snapshot_sandbox_artifacts(tmp_path)
+    (artifacts_dir / "will_change.txt").write_text("after, longer content", encoding="utf-8")
+    (artifacts_dir / "brand_new.csv").write_text("a,b\n1,2", encoding="utf-8")
+
+    changes = {artifact.path: tag for tag, artifact in diff_sandbox_artifacts(before, tmp_path)}
+
+    assert changes == {
+        "artifacts/will_change.txt": "modified",
+        "artifacts/brand_new.csv": "new",
+    }

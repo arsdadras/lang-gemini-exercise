@@ -28,8 +28,7 @@ mentee can explain *why* the design is what it is, not just run it.
    that you revert). Never say "this should work."
 4. **Root causes, not workarounds, and no speculative architecture.** Fix the real cause,
    even when that means restructuring. Equally, add no abstraction until a real consumer
-   needs it (one consumer: keep it local; two: extract carefully; three: formalize).
-   Both are production engineering.
+   needs it — see "When to build ahead of need" below. Both are production engineering.
 5. **No auto-advance.** Close a stage or start the next one only on the mentee's explicit
    go-ahead.
 6. **Stay in scope.** If a question belongs to a later stage, briefly confirm the instinct,
@@ -38,6 +37,42 @@ mentee can explain *why* the design is what it is, not just run it.
    is the wrong time to fix one, give the reason and the concrete trigger for fixing it.
 8. **Check repo-wide impact.** Before delivering a change, search for stale references and
    dependent code, and fix both.
+
+## When to build ahead of need
+
+The project scales lesson by lesson, so this call recurs constantly: build the shared
+piece now, or keep writing it by hand until something forces the issue? "Count the
+consumers" (one: keep it local; two: extract carefully; three: formalize) is a fast
+proxy, not the real test — it usually tracks the actual question below, but check the
+real question when it's ambiguous or the stakes are higher than a private helper.
+
+Ask, in order:
+
+1. **Is the shape observed or predicted?** Extract a pattern you've seen repeat
+   identically 2-3 times. Don't invent one for a future you're guessing at — a guessed
+   shape gets thrown away or force-fits instances it wasn't designed for.
+2. **Is it plumbing or policy?** Plumbing (build a config, wrap a return value, resolve a
+   path) carries no opinion about how the system is organized — cheap to add, cheap to
+   undo. Policy (a registry that decides how components are discovered or composed, a
+   generic hook point) commits the whole system to a stance; get it wrong and everything
+   built against it inherits the mistake.
+3. **How much does being wrong cost?** If undoing it is "inline three lines back," build
+   it. If it's "migrate every call site and hope nothing broke," wait for certainty.
+4. **Does it teach this curriculum's actual subject?** Prefer extractions that reinforce
+   the framework mechanics being taught (why a `CompiledSubAgent` needs this shape) over
+   generic software-engineering patterns the mentee could learn in any codebase — that's
+   time away from agentic-AI content, not more of it.
+
+Worked examples: the agent registry ([ADR-0006](adr/0006-remove-agent-registry.md)) failed
+all four — predicted shape, pure policy, and it drifted out of sync the whole time it
+existed rather than merely sitting unused. The subagent-delegation helper
+(`utils/subagent_util.py`) and the sandbox artifact-diff helper
+(`utils/sandbox_util.py`'s `snapshot_sandbox_artifacts`/`diff_sandbox_artifacts`) passed all
+four — extracted from 2-3 literally identical call sites, pure plumbing, trivially
+reversible, and they teach real `CompiledSubAgent`/sandbox mechanics.
+
+When the answer is "not yet," don't just drop it — log the concrete trigger that would
+flip the answer (see Principle 7 and the Backlog in `docs/MENTOR_HANDOFF.md`).
 
 ## Communication
 
