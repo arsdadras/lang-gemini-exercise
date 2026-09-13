@@ -2,13 +2,18 @@
 
 from unittest.mock import MagicMock, patch
 
+from deepagents import create_deep_agent
+from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.types import Command
 
 from agentlab.utils.run_with_hitl_util import (
     _format_prompt,
     _handle_interrupt_decisions,
     run_with_hitl,
+    stream_with_hitl,
 )
+from tests.fakes import ScriptedToolModel, done, tool_turn
 
 
 class MockInterrupt:
@@ -115,3 +120,73 @@ def test_run_with_hitl_multi_turn_interrupt_cycle():
     second_call_arg = mock_agent.invoke.call_args_list[1][0][0]
     assert isinstance(second_call_arg, Command)
     assert second_call_arg.resume == {"decisions": [{"type": "approve"}]}
+
+
+# --- stream_with_hitl, on a real graph with a scripted model -----------------------------
+
+THREAD = {"configurable": {"thread_id": "stream-hitl"}}
+WRITE_NOTE = {"file_path": "/notes.md", "content": "hello"}
+
+
+def make_approval_agent(*responses: AIMessage):
+    """A real DeepAgent whose ``write_file`` always needs approval."""
+    return create_deep_agent(
+        model=ScriptedToolModel(messages=iter(responses)),
+        checkpointer=InMemorySaver(),
+        interrupt_on={"write_file": True},
+    )
+
+
+def tool_messages(agent) -> list[str]:
+    messages = agent.get_state(THREAD).values["messages"]
+    return [str(m.content) for m in messages if isinstance(m, ToolMessage)]
+
+
+def run_note_request(agent, answers: list[str]) -> tuple[dict, int]:
+    with patch("builtins.input", side_effect=answers) as prompt:
+        result = stream_with_hitl(agent, {"messages": [HumanMessage(content="write a note")]}, THREAD)
+    return result, prompt.call_count
+
+
+def test_stream_with_hitl_without_interrupt_never_prompts():
+    result, prompts = run_note_request(make_approval_agent(done()), [])
+
+    assert prompts == 0
+    assert result["interrupts"] == []
+    assert result["last_message"].content == "Done."
+
+
+def test_stream_with_hitl_approval_resumes_to_the_final_answer():
+    agent = make_approval_agent(tool_turn("write_file", **WRITE_NOTE), done())
+
+    result, prompts = run_note_request(agent, ["y"])
+
+    assert prompts == 1
+    assert result["last_message"].content == "Done."
+    assert tool_messages(agent) == ["Updated file /notes.md"]
+
+
+def test_stream_with_hitl_rejection_reason_reaches_the_model():
+    agent = make_approval_agent(tool_turn("write_file", **WRITE_NOTE), done())
+
+    result, prompts = run_note_request(agent, ["n", "not now"])
+
+    assert prompts == 2  # the decision, then the reason
+    assert result["interrupts"] == []
+    assert "with reason: not now" in tool_messages(agent)[0]
+
+
+def test_stream_with_hitl_asks_once_for_an_interrupt_inside_a_subagent():
+    """The subagent's interrupt streams once per namespace but must be answered once."""
+    agent = make_approval_agent(
+        tool_turn("task", subagent_type="general-purpose", description="write a note"),
+        tool_turn("write_file", **WRITE_NOTE),
+        done(),  # subagent's answer
+        done(),  # coordinator's answer
+    )
+
+    result, prompts = run_note_request(agent, ["y"])
+
+    assert prompts == 1
+    assert result["interrupts"] == []
+    assert result["last_message"].content == "Done."

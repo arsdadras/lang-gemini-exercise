@@ -57,19 +57,29 @@ Testing and evaluation rules: [ADR-0004](adr/0004-testing-and-evaluation-policy.
 Done: **A** (`CompositeBackend`: thread state plus per-user `/memories/` in a store,
 profile loaded each turn) and **B1** (skills library on `/skills/`).
 
-- **B2, memory write governance:** approval for writes to `/memories/` (built-in HITL
-  matches only tool names, so this needs path-aware `wrap_tool_call` middleware); read-only
-  `/skills/`; replace the placeholder coding skills with assistant-domain skills.
-- **B3, PII and secret guardrail:** built-in `PIIMiddleware`; choosing block, redact, mask,
-  or hash, and where to apply it (input, output, tool results).
+- **B2, memory write governance (deterministic layer):** conditional HITL by operation type,
+  decided in code through an HITL `when` predicate: adding a new fact is free; overwriting,
+  destructively editing, or deleting a stored memory needs approval. `/skills/` is read-only
+  for the assistant. CLI approval loop that works with streaming. Replace the placeholder
+  coding skills with assistant-domain skills.
+- **B3, content guardrail:** built-in `PIIMiddleware` for fixed-format data (block, redact,
+  mask, or hash; input, output, or tool results), plus a **security guard**: a separate
+  classifier model (engineered policy prompt, structured verdict) that judges additive
+  memory writes by content and triggers HITL when a write is sensitive. Runs after the code
+  layer, fails closed.
 - **B4, memory consolidation:** hot-path vs background writes; deduplication, conflict,
   and staleness policy.
 - **C1, durable memory:** `SqliteStore` plus checkpointer, with identity end to end
   (`thread_id` x `user_id`), including CLI session resolution.
 - **C2, memory eval-lite:** scenarios for recall, update, conflict, cross-user isolation,
-  and false "I saved it" claims, reviewed with traces.
-- **C3, one controlled MCP integration:** reads by default, writes need approval.
-- **C4, composition boundary:** P5 as a context provider (tool or middleware) rather than a
+  and false "I saved it" claims, plus the security guard's accuracy, reviewed with traces.
+- **C3, governed procedural memory (`skill_designer`):** a specialist that is the only writer
+  to the skills library. Other agents request instructions from it. One-off instructions for
+  a single task pass the security guard. Publishing to the shared library (new or improved
+  skills) is draft -> guard -> human approval, because a shared skill changes behavior for
+  every user and every future session.
+- **C4, one controlled MCP integration:** reads by default, writes need approval.
+- **C5, composition boundary:** P5 as a context provider (tool or middleware) rather than a
   chat subagent (ADR). Mini-workflow: personalized research brief (P5 + P1). Then the
   design card update and retrospective.
 

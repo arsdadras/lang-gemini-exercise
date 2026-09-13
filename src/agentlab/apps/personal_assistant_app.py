@@ -28,7 +28,7 @@ from agentlab.schemas.context.user_context_schema import UserContext
 from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.get_text_util import get_text
 from agentlab.utils.memory_backend_util import MEMORIES_NAMESPACE_KIND
-from agentlab.utils.streaming_util import stream_agent_with_observability
+from agentlab.utils.run_with_hitl_util import stream_with_hitl
 
 _HELP = """Commands:
   /memory      show stored memories for the active user
@@ -137,11 +137,12 @@ def main() -> None:
             print(f"[User] Active user is now '{user_id}' on thread '{thread_id}'.")
             continue
 
-        result = stream_agent_with_observability(
+        result = stream_with_hitl(
             agent,
             {"messages": [HumanMessage(content=prompt)]},
-            config={"configurable": {"thread_id": thread_id}},
+            {"configurable": {"thread_id": thread_id}},
             context=UserContext(user_id=user_id),
+            assistant_prompt="Allow this memory change? [y/n]: ",
         )
         if result["last_message"]:
             print(f"\nAssistant: {get_text(result['last_message'])}")

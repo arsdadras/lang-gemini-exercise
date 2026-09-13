@@ -21,13 +21,15 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
 | P3 Code review | Done |
 | P4 Sandbox interpreter + coordinator | Done |
 | Stage 0 stabilization | Done 2026-09-13 |
-| **P5 Memory assistant** | A done, B1 (skills) done. **Next: Phase B intro, then B2 brief** |
+| **P5 Memory assistant** | A done, B1 done. B2 in progress: conditional memory-write approval and streamed CLI approvals done (59 tests). **Next: B2 component 3, assistant skills** (`memory-curation`, `learning-plan`, prompt trim) |
 | P6-P12, Term E | Planned (`docs/ROADMAP.md`) |
 
 ## Working agreements
 
-- **Code delivery (2026-09-13):** the mentor sends verified code in chat and the mentee applies
-  it. The mentor edits the repo directly only for docs, hygiene, and delegated fixes.
+- **Code delivery (2026-09-13):** the mentor verifies each component, reverts, and sends the
+  lesson code in chat; the mentee types it for practice (tests aren't sent). Before the next
+  component, the mentor integrates the verified code and tests into the repo, replacing the
+  mentee's copy. The repo is always the mentor's clean version.
 - **Evaluation (2026-09-13):** eval-lite starts at P5 Phase C, and LangSmith traces get used
   deliberately ([ADR-0004](adr/0004-testing-and-evaluation-policy.md)).
 - **Pacing:** default 1-2 weeks per project, adjusted together.
@@ -92,7 +94,12 @@ Priority tags: **E** = Essential, **N** = Nice-to-have.
 
 **Cross-project**
 - **E:** Surface approvals raised inside subagents through composition (P6 Phase B).
+- **N:** Grow the P5 security guard from a classifier into a generic, policy-parameterized
+  security agent once a second consumer needs it (triggers: document prompt injection in P7,
+  action permissions in P8/P11), and add tools only if that consumer's judgment needs them.
 - **N:** Per-app checkpoint databases, or tagging threads by app.
+- **N:** After an HITL resume, the streamed CLI prints the approved tool call a second time
+  (the middleware re-emits the AI message update). Cosmetic.
 - **N:** Session-scoped sandbox workspaces or a remote sandbox such as `LangSmithSandbox`
   (Term E, E1).
 

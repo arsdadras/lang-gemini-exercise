@@ -34,7 +34,7 @@ def user_memory_namespace(runtime: Runtime[UserContext] | None) -> tuple[str, st
     if not isinstance(context, UserContext) or not context.user_id.strip():
         msg = "User memory requires context=UserContext(user_id=...) on the invocation"
         raise ValueError(msg)
-    return (context.user_id.strip(), MEMORIES_NAMESPACE_KIND)
+    return context.user_id.strip(), MEMORIES_NAMESPACE_KIND
 
 
 def make_memory_composite_backend(

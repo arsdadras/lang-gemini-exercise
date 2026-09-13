@@ -36,8 +36,10 @@
 7. **State:** the thread's messages and scratch files are transient; `/memories/` persists per
    user in the store.
 8. **Side effects:** creating and editing memory files.
-9. **Risk:** ordinary preference updates are low risk. Overwriting a profile, or storing
-   sensitive data, needs approval (B2) and a PII guardrail (B3).
+9. **Risk:** adding a fact is low risk. Overwriting, destructively editing, or deleting a
+   stored memory needs approval (B2, decided in code); sensitive content needs the PII
+   guardrail and security guard (B3). Shared skills are read-only for the assistant; only
+   `skill_designer` writes them (C3).
 10. **Failure contract:** missing user identity raises an error (it never falls back to a
     shared user). Store failures should degrade to a stateless answer (C1).
 11. **Verification:**
@@ -45,7 +47,7 @@
     - live two-user recall check (2026-09-13);
     - memory eval-lite in C2.
 12. **Composition boundary:** a context provider that exposes preferences and constraints to
-    workflows (decided in C4, first used in P6).
+    workflows (decided in C5, first used in P6).
 13. **Cost and latency:** tier `low`, provider pinned to `openai` (`gpt-5.6-luna`), because
     `gemini-3.5-flash-lite` claimed memory writes it never made. Consolidation tier is decided
     in B4.

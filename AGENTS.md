@@ -131,7 +131,8 @@ Policy: [ADR-0004](docs/adr/0004-testing-and-evaluation-policy.md).
 - `RunnableWithFallbacks` has neither `bind_tools` nor `with_structured_output`. Bind structured
   output to each model *before* `with_fallbacks`. When every fallback fails, it re-raises the
   **primary's** error.
-- `HumanInTheLoopMiddleware` matches exact tool names. Its `action_requests` entries are flat:
+- `HumanInTheLoopMiddleware` matches exact tool names; an `InterruptOnConfig` `when` predicate
+  narrows it per call (by args). Its `action_requests` entries are flat:
   `{name, args, description}`.
 - `LocalShellBackend(virtual_mode=True)` confines the file tools, not shell commands. On Windows
   the shell needs `PATH` and `SYSTEMROOT` in its environment.

@@ -8,6 +8,7 @@ from collections.abc import Callable
 from typing import Any
 
 from langchain_core.messages import AIMessage, ToolMessage
+from langgraph.types import Command
 
 from agentlab.utils.get_text_util import get_text
 
@@ -24,7 +25,7 @@ def _print_todos(todos: list[dict[str, Any]]) -> None:
 
 def stream_agent_with_observability(
     agent: Any,
-    input_data: dict[str, Any],
+    input_data: dict[str, Any] | Command,
     config: dict[str, Any] | None = None,
     *,
     context: Any | None = None,
@@ -35,18 +36,21 @@ def stream_agent_with_observability(
 
     Args:
         agent: Compiled DeepAgent or StateGraph.
-        input_data: Graph input, e.g. ``{"messages": [...]}``.
+        input_data: Graph input, e.g. ``{"messages": [...]}``, or a ``Command(resume=...)``.
         config: LangGraph config (usually carries ``thread_id``).
         context: Runtime context for agents built with a ``context_schema``.
         show_subgraphs: Also stream updates from subagents and subgraphs.
         callback: Optional ``(event_type, payload)`` hook for each printed event.
 
     Returns:
-        ``{"messages": [...], "last_message": AIMessage | None}`` where
-        ``last_message`` is the last non-empty AI answer without tool calls.
+        ``{"messages": [...], "last_message": AIMessage | None, "interrupts": [...]}``
+        where ``last_message`` is the last non-empty AI answer without tool calls and
+        ``interrupts`` lists the HITL interrupts the run is paused on (empty when it
+        finished).
     """
     last_ai_message: AIMessage | None = None
     all_messages: list[Any] = []
+    interrupted = False
 
     for item in agent.stream(
         input_data,
@@ -57,6 +61,9 @@ def stream_agent_with_observability(
     ):
         namespace, updates = item if isinstance(item, tuple) and len(item) == 2 else ((), item)
         if not isinstance(updates, dict):
+            continue
+        if "__interrupt__" in updates:
+            interrupted = True
             continue
 
         for node_update in updates.values():
@@ -97,4 +104,7 @@ def stream_agent_with_observability(
                     if callback:
                         callback("tool_result", {"name": message.name, "content": content})
 
-    return {"messages": all_messages, "last_message": last_ai_message}
+    # An interrupt raised inside a subagent streams once per namespace; the checkpoint
+    # holds each pending interrupt exactly once, so read them from there.
+    interrupts = list(agent.get_state(config).interrupts) if interrupted else []
+    return {"messages": all_messages, "last_message": last_ai_message, "interrupts": interrupts}

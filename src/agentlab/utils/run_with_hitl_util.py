@@ -2,7 +2,8 @@
 
 Any agent using an HITL middleware (e.g. `middlewares.hitl_for(...)`) pauses
 via a LangGraph interrupt instead of running unattended. This drives that
-interrupt/resume cycle over the CLI so callers don't each reimplement it.
+interrupt/resume cycle over the CLI so callers don't each reimplement it, either
+with a blocking ``invoke`` (``run_with_hitl``) or with live progress (``stream_with_hitl``).
 """
 
 import json
@@ -10,6 +11,8 @@ from collections.abc import Callable
 from typing import Any
 
 from langgraph.types import Command
+
+from agentlab.utils.streaming_util import stream_agent_with_observability
 
 
 def _get_messages_count(agent: Any, config: dict | None) -> int:
@@ -127,4 +130,30 @@ def run_with_hitl(
         result = agent.invoke(Command(resume=resume), config)
         seen_msg_count = _print_new_tool_outputs(agent, config, seen_msg_count)
 
+    return result
+
+
+def stream_with_hitl(
+    agent: Any,
+    input_data: dict[str, Any],
+    config: dict[str, Any],
+    *,
+    context: Any | None = None,
+    assistant_prompt: str | Callable[[dict[str, Any]], str] | None = None,
+) -> dict[str, Any]:
+    """Stream a run with live progress, resolving HITL interrupts via CLI y/n prompts.
+
+    Returns the final ``stream_agent_with_observability`` result once nothing is
+    pending. Decisions are keyed by interrupt id: LangGraph refuses an unkeyed resume
+    while more than one interrupt is pending (e.g. two subagents paused in parallel).
+    ``context`` is sent again on each resume: runtime context is per invocation and
+    is not checkpointed.
+    """
+    result = stream_agent_with_observability(agent, input_data, config, context=context)
+    while result["interrupts"]:
+        resume = {
+            interrupt.id: _handle_interrupt_decisions(interrupt, assistant_prompt)
+            for interrupt in result["interrupts"]
+        }
+        result = stream_agent_with_observability(agent, Command(resume=resume), config, context=context)
     return result

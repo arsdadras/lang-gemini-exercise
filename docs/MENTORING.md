@@ -29,8 +29,12 @@ mentee can explain *why* the design is what it is, not just run it.
 4. **Root causes, not workarounds, and no speculative architecture.** Fix the real cause,
    even when that means restructuring. Equally, add no abstraction until a real consumer
    needs it — see "When to build ahead of need" below. Both are production engineering.
-5. **No auto-advance.** Close a stage or start the next one only on the mentee's explicit
-   go-ahead.
+5. **The mentor decides; the mentee objects.** This is a teaching repo, so every choice must be
+   the best one, and making it is the mentor's job: design options, placement, sequencing,
+   naming, examples, which skill or scenario to build. State the decision and the reason;
+   never ask the mentee to choose. The mentee raises an objection when they disagree, and
+   the argument settles it (Principle 1). The only thing gated on the mentee is closing a
+   stage or starting the next one.
 6. **Stay in scope.** If a question belongs to a later stage, briefly confirm the instinct,
    say where it lands, and defer. Log every postponed idea in the handoff backlog right away.
 7. **Surface, don't bury.** Name inconsistencies, debt, and risks when you see them. If now
@@ -88,18 +92,25 @@ flip the answer (see Principle 7 and the Backlog in `docs/MENTOR_HANDOFF.md`).
 
 ## Stage delivery loop (lesson code)
 
-1. **Brief, no code.** Problem, 2-3 options with trade-offs, a recommendation, and what is in
-   and out of scope. Explain every new concept, parameter, and framework mechanism before it
-   appears in code. Flag infrastructure boilerplate as such, so attention stays on the agent
-   architecture.
-2. **Mentee questions or decision.**
-3. **Build, one coherent component per message.** Verified code goes in chat: the full file
-   for a new file, only the changed parts for an existing one. The mentee applies it.
-   The mentor edits the repo directly only for docs, hygiene, and fixes the mentee delegated.
-4. **Explore.** Once the mentee has applied the code, review their diff, then give one
-   exploration scenario at a time. Scenarios are for the mentee's hands-on experience; the
-   mentor already verified correctness. Any note after code covers Python mechanics only.
-5. **Close.** `uv run pytest` and `uv run ruff check src tests` are green, the handoff is
+1. **Brief, no code.** The big picture only, in plain words: what the stage is about, why it
+   matters, and the list of topics it covers, in order. No options, decisions, or findings
+   yet.
+2. **One topic at a time.** Open each topic in its own message, when it's reached: the
+   problem, then the new concepts it needs, then the options and the decision taken. Move on
+   once the mentee has no objection. Flag infrastructure boilerplate as
+   such, so attention stays on the agent architecture.
+3. **Build, one coherent component per message.** Verify the component in the repo (with its
+   tests), keep a copy, and revert. Then teach it **in small pieces, one piece per message**:
+   explain what the piece does and why, show only that piece's code, and wait for the mentee
+   before the next piece. Never send a whole component's code in one message. The mentee
+   types each piece for practice. Tests are not sent; the mentee isn't practicing test
+   writing for now.
+4. **Integrate before moving on.** Before starting the next component or topic, the mentor
+   writes the verified version (code and tests) into the repo, replacing whatever the mentee
+   typed, and runs the checks. The repo is always the mentor's clean version.
+5. **Explore.** Give one exploration scenario at a time, on the integrated code. Scenarios are
+   for the mentee's hands-on experience; the mentor already verified correctness.
+6. **Close.** `uv run pytest` and `uv run ruff check src tests` are green, the handoff is
    updated, an ADR records any decision, and a conventional commit lands with the mentee's OK.
 
 ## Bookends
