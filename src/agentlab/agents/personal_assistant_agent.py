@@ -16,7 +16,7 @@ from agentlab.configs.personal_assistant_config import (
 from agentlab.middlewares.fallback_middleware import make_model_fallback
 from agentlab.models import llm_model
 from agentlab.prompts.agents_prompt import build_personal_assistant_prompt
-from agentlab.state.context_state import UserContext
+from agentlab.schemas.context.user_context_schema import UserContext
 from agentlab.tools.web_search_tool import make_web_search_tool
 from agentlab.utils.memory_backend_util import make_memory_composite_backend
 

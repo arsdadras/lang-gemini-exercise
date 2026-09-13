@@ -8,8 +8,8 @@ from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
 from agentlab.middlewares.fallback_middleware import make_model_fallback
 from agentlab.middlewares.hitl_middleware import hitl_for
 from agentlab.models import llm_model
-from agentlab.output_schemas.research_output_schema import ResearchReport
 from agentlab.prompts.agents_prompt import build_web_researcher_prompt
+from agentlab.schemas.output.research_output_schema import ResearchReport
 from agentlab.subagents.research_subagent import make_researcher_subagent
 from agentlab.tools.web_search_tool import WEB_SEARCH_TOOL_NAME, make_web_search_tool
 

@@ -15,10 +15,10 @@ START -> reviewer -> [error?] -> test_generator -> [refactored code?] -> refacto
 
 ## Phase A: state and structured output
 
-- **State** (`state/code_review_state.py`): a `TypedDict` where only `code` is required. Each
+- **State** (`schemas/state/code_review_state.py`): a `TypedDict` where only `code` is required. Each
   node returns a partial update. `error` is a fail-fast channel that routers check before
   continuing.
-- **Schemas** (`output_schemas/code_review_output_schema.py`):
+- **Schemas** (`schemas/output/code_review_output_schema.py`):
   - `ReviewResult` (score 1-10, summary, `CodeIssue` list, optional `refactored_code`);
   - `TestSuite` (framework, `test_code`, `TestCase` list);
   - `TestExecutionResult` (status, passed, exit code, output).

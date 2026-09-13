@@ -24,7 +24,7 @@ from agentlab.configs.personal_assistant_config import (
     SKILLS_DIR,
 )
 from agentlab.models import llm_model
-from agentlab.state.context_state import UserContext
+from agentlab.schemas.context.user_context_schema import UserContext
 from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.get_text_util import get_text
 from agentlab.utils.memory_backend_util import MEMORIES_NAMESPACE_KIND

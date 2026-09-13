@@ -17,7 +17,7 @@ from langgraph.types import Command
 
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
 from agentlab.graphs.code_review_parentgraph import build_code_review_graph
-from agentlab.output_schemas.code_review_output_schema import (
+from agentlab.schemas.output.code_review_output_schema import (
     ReviewResult,
     TestExecutionResult,
     TestSuite,
@@ -38,7 +38,9 @@ def calculate_discount(price: float, discount_percent: float) -> float:
 
 def _make_graph(checkpointer: BaseCheckpointSaver | None) -> CompiledStateGraph:
     return build_code_review_graph(
-        checkpointer=checkpointer if checkpointer is not None else get_sqlite_checkpointer()
+        checkpointer=checkpointer
+        if checkpointer is not None
+        else get_sqlite_checkpointer()
     )
 
 
@@ -64,11 +66,15 @@ def _print_tests(tests: TestSuite, execution: TestExecutionResult | None) -> Non
     print(f"\nTest code:\n\n{tests.test_code}")
     if execution:
         print(f"\n{'-' * 60}")
-        print(f"Sandbox run: {execution.status.upper()} (exit code {execution.exit_code})")
+        print(
+            f"Sandbox run: {execution.status.upper()} (exit code {execution.exit_code})"
+        )
         print(f"{'-' * 60}\n{execution.output}")
 
 
-def _stream_pipeline(graph: CompiledStateGraph, inputs: dict[str, Any], config: dict) -> bool:
+def _stream_pipeline(
+    graph: CompiledStateGraph, inputs: dict[str, Any], config: dict
+) -> bool:
     """Stream node updates; return ``False`` if a stage reported a fatal error."""
     for update in graph.stream(inputs, config=config, stream_mode="updates"):
         for node_name, delta in update.items():
@@ -78,11 +84,17 @@ def _stream_pipeline(graph: CompiledStateGraph, inputs: dict[str, Any], config: 
                 print(f"\n[Failed] {node_name}: {delta['error']}")
                 return False
             if review := delta.get("review"):
-                print(f"  [ok] Review finished: score {review.score}/10, {len(review.issues)} issue(s)")
+                print(
+                    f"  [ok] Review finished: score {review.score}/10, {len(review.issues)} issue(s)"
+                )
             if tests := delta.get("tests"):
-                print(f"  [ok] Test suite generated: {len(tests.test_cases)} test case(s)")
+                print(
+                    f"  [ok] Test suite generated: {len(tests.test_cases)} test case(s)"
+                )
             if execution := delta.get("test_execution"):
-                print(f"  [ok] Sandbox run: {'PASSED' if execution.passed else 'FAILED'}")
+                print(
+                    f"  [ok] Sandbox run: {'PASSED' if execution.passed else 'FAILED'}"
+                )
             if "test_retries" in delta:
                 print(f"  [retry] Self-correction attempt {delta['test_retries']}")
     return True
@@ -95,7 +107,9 @@ def _run_refactor_gate(graph: CompiledStateGraph, config: dict) -> bool:
         return False
 
     payload = snapshot.tasks[0].interrupts[0].value
-    print(f"\n{'!' * 60}\nHUMAN APPROVAL REQUIRED: {payload.get('action_required', 'approval').upper()}")
+    print(
+        f"\n{'!' * 60}\nHUMAN APPROVAL REQUIRED: {payload.get('action_required', 'approval').upper()}"
+    )
     print("!" * 60)
     if payload.get("summary"):
         print(f"\nReview summary:\n{payload['summary']}")
@@ -105,7 +119,9 @@ def _run_refactor_gate(graph: CompiledStateGraph, config: dict) -> bool:
     answer = input("\nApply this refactored code? [y/N]: ").strip().lower()
     decision = "approve" if answer in {"y", "yes"} else "reject"
     print(f"  Resuming with decision: {decision.upper()}")
-    for _ in graph.stream(Command(resume=decision), config=config, stream_mode="updates"):
+    for _ in graph.stream(
+        Command(resume=decision), config=config, stream_mode="updates"
+    ):
         pass
     return decision == "approve"
 
@@ -134,8 +150,14 @@ def run_code_review(
     if final.get("tests"):
         _print_tests(final["tests"], final.get("test_execution"))
     applied = final.get("applied_code")
-    label = "APPROVED (refactored version)" if approved or applied else "ORIGINAL (refactor rejected or skipped)"
-    print(f"\n{_RULE}\nFINAL CODE [{label}]\n{_RULE}\n{applied or final.get('code', '')}\n{_RULE}")
+    label = (
+        "APPROVED (refactored version)"
+        if approved or applied
+        else "ORIGINAL (refactor rejected or skipped)"
+    )
+    print(
+        f"\n{_RULE}\nFINAL CODE [{label}]\n{_RULE}\n{applied or final.get('code', '')}\n{_RULE}"
+    )
 
 
 def main() -> None:
@@ -160,12 +182,19 @@ def main() -> None:
     )
 
     if target is not None:
-        run_code_review(session.agent, session.config, code=target.read_text(encoding="utf-8"), file_path=str(target))
+        run_code_review(
+            session.agent,
+            session.config,
+            code=target.read_text(encoding="utf-8"),
+            file_path=str(target),
+        )
     elif session_arg and session_arg.lower() not in {"new", "secret"}:
         run_code_review(session.agent, session.config, code=None, file_path=None)
     else:
         print("No file argument provided. Reviewing the demo snippet.")
-        run_code_review(session.agent, session.config, code=_SAMPLE_CODE, file_path="demo_calc.py")
+        run_code_review(
+            session.agent, session.config, code=_SAMPLE_CODE, file_path="demo_calc.py"
+        )
 
 
 if __name__ == "__main__":

@@ -16,8 +16,8 @@ from agentlab.configs.interpreter_config import (
     DEFAULT_VIRTUAL_MODE,
     SANDBOX_ENV_ALLOWLIST,
 )
-from agentlab.output_schemas.code_review_output_schema import TestExecutionResult
-from agentlab.output_schemas.interpreter_output_schema import (
+from agentlab.schemas.output.code_review_output_schema import TestExecutionResult
+from agentlab.schemas.output.interpreter_output_schema import (
     ArtifactMetadata,
     ArtifactType,
 )

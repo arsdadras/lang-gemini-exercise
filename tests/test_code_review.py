@@ -17,24 +17,24 @@ from agentlab.graphs.test_gen_subgraph import (
     build_test_gen_subgraph,
     route_after_execution,
 )
-from agentlab.output_schemas import code_review_output_schema as schemas
+from agentlab.schemas.output import code_review_output_schema as code_review_schemas
 from agentlab.subagents.code_review_subagent import make_code_review_subagent
 from agentlab.utils.sandbox_util import run_tests_in_sandbox
 from agentlab.utils.time_travel_util import inspect_state_history
 
 
 def test_code_review_schemas() -> None:
-    issue = schemas.CodeIssue(
+    issue = code_review_schemas.CodeIssue(
         line_number=5,
         severity="critical",
         category="bug",
         description="Index out of range",
         suggestion="Add bounds check",
     )
-    review = schemas.ReviewResult(summary="Found 1 critical bug", score=4, issues=[issue])
-    suite = schemas.TestSuite(
+    review = code_review_schemas.ReviewResult(summary="Found 1 critical bug", score=4, issues=[issue])
+    suite = code_review_schemas.TestSuite(
         test_code="def test_bounds(): assert True",
-        test_cases=[schemas.TestCase(name="test_bounds", description="bounds", target_function="get_item")],
+        test_cases=[code_review_schemas.TestCase(name="test_bounds", description="bounds", target_function="get_item")],
     )
 
     assert review.issues[0].severity == "critical"
@@ -42,10 +42,10 @@ def test_code_review_schemas() -> None:
 
 
 def test_graph_routing() -> None:
-    with_refactor = schemas.ReviewResult(summary="ok", score=8, refactored_code="def foo(): pass")
-    without_refactor = schemas.ReviewResult(summary="ok", score=10)
-    passed = schemas.TestExecutionResult(status="passed", passed=True, exit_code=0, output="OK")
-    failed = schemas.TestExecutionResult(status="failed", passed=False, exit_code=1, output="Error")
+    with_refactor = code_review_schemas.ReviewResult(summary="ok", score=8, refactored_code="def foo(): pass")
+    without_refactor = code_review_schemas.ReviewResult(summary="ok", score=10)
+    passed = code_review_schemas.TestExecutionResult(status="passed", passed=True, exit_code=0, output="OK")
+    failed = code_review_schemas.TestExecutionResult(status="failed", passed=False, exit_code=1, output="Error")
 
     assert route_after_reviewer({"error": "Fatal error"}) == "__end__"
     assert route_after_reviewer({"error": None}) == "test_generator"

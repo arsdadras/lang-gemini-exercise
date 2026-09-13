@@ -16,7 +16,7 @@ from agentlab.nodes.rag_node import (
     retrieve_node,
     web_search_fallback_node,
 )
-from agentlab.state.rag_state import RAGState
+from agentlab.schemas.state.rag_state import RAGState
 
 
 def route_after_grading(

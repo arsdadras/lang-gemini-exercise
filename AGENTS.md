@@ -25,8 +25,9 @@ src/agentlab/
   retrieval/       vector index build and retriever
   models/          tier x provider model registry (llm_model)
   prompts/         prompt text by role (agents, subagents, nodes/, middlewares, template/)
-  output_schemas/  Pydantic structured-output schemas
-  state/           graph state and runtime context schemas
+  schemas/         typed contracts by role, not construction method: output/ (Pydantic
+                   response contracts), state/ (graph-state TypedDicts), context/ (runtime
+                   context, e.g. UserContext)
   data/            persistence adapters (SQLite checkpoints)
   utils/           shared helpers (sessions, sandbox, streaming, HITL loop, memory backend)
   configs/         plain constants: paths, model catalog, one module per project
@@ -41,7 +42,7 @@ alireza/           the mentee's private scratch area: never imported, edited, or
 
 ## Dependency direction
 
-`apps -> agents -> subagents, graphs -> nodes, middlewares, tools, retrieval -> models, prompts, output_schemas, state, data, utils -> configs`
+`apps -> agents -> subagents, graphs -> nodes, middlewares, tools, retrieval -> models, prompts, schemas, data, utils -> configs`
 
 Imports point downward only. `subagents` never import `agents`: the caller builds the agent
 and injects it.
@@ -50,7 +51,10 @@ and injects it.
 
 Each module carries its role as a suffix, matching its directory: `<project>_<role>.py`
 (`rag_graph.py`, `interpreter_agent.py`, `web_search_tool.py`, `models_config.py`,
-`sqlite_db_data.py`, ...). Prompts under `prompts/nodes/` use `*_prompt.py`.
+`sqlite_db_data.py`, ...). A subdirectory that exists purely to group multiple files keeps
+that suffix too: `prompts/nodes/*_prompt.py`, `schemas/output/*_output_schema.py`,
+`schemas/state/*_state.py`. `schemas/context/` names each file for its specific context type
+(`user_context_schema.py`), since "context" isn't a project name.
 
 ## Conventions
 
@@ -91,6 +95,7 @@ Each module carries its role as a suffix, matching its directory: `<project>_<ro
 uv sync                                         # install (editable) with dev tools
 uv run pytest                                   # tests
 uv run ruff check src tests                     # lint
+uv run ruff format src tests                    # format
 uv run lab-research                             # P1 web researcher (approve each search)
 uv run lab-rag                                  # P2 raw RAG graph (history / replay <i>)
 uv run lab-repo-insight                         # P2 repo coordinator

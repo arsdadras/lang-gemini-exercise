@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 
 from agentlab.agents.web_researcher_agent import make_web_researcher_agent
-from agentlab.output_schemas.research_output_schema import ResearchReport
+from agentlab.schemas.output.research_output_schema import ResearchReport
 from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.run_with_hitl_util import run_with_hitl
 from agentlab.utils.session_util import resolve_session

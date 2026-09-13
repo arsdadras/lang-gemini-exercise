@@ -2,8 +2,8 @@
 
 from deepagents import SubAgent
 
-from agentlab.output_schemas.research_output_schema import ResearchFindings
 from agentlab.prompts.subagents_prompt import RESEARCHER_SUBAGENT_PROMPT
+from agentlab.schemas.output.research_output_schema import ResearchFindings
 from agentlab.tools.web_search_tool import make_web_search_tool
 
 RESEARCHER_SUBAGENT_NAME = "researcher"

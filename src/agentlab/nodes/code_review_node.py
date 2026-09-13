@@ -5,13 +5,13 @@ from typing import cast
 from langgraph.types import interrupt
 
 from agentlab.models import llm_model
-from agentlab.output_schemas.code_review_output_schema import ReviewResult, TestSuite
 from agentlab.prompts.nodes.code_review_prompt import (
     REVIEW_PROMPT,
     TEST_FIX_PROMPT,
     TEST_GEN_PROMPT,
 )
-from agentlab.state.code_review_state import CodeReviewState
+from agentlab.schemas.output.code_review_output_schema import ReviewResult, TestSuite
+from agentlab.schemas.state.code_review_state import CodeReviewState
 from agentlab.utils.sandbox_util import run_tests_in_sandbox
 
 

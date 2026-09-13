@@ -10,7 +10,7 @@ from agentlab.nodes.code_review_node import (
     fix_tests_node,
     generate_tests_node,
 )
-from agentlab.state.code_review_state import CodeReviewState
+from agentlab.schemas.state.code_review_state import CodeReviewState
 
 
 def route_after_test_gen(state: CodeReviewState) -> str:

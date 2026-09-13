@@ -2,7 +2,7 @@
 
 from typing import NotRequired, TypedDict
 
-from agentlab.output_schemas.code_review_output_schema import (
+from agentlab.schemas.output.code_review_output_schema import (
     ReviewResult,
     TestExecutionResult,
     TestSuite,

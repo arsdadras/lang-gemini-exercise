@@ -3,7 +3,7 @@
 from langgraph.graph import END, START, StateGraph
 
 from agentlab.nodes.code_review_node import review_code_node
-from agentlab.state.code_review_state import CodeReviewState
+from agentlab.schemas.state.code_review_state import CodeReviewState
 
 
 def build_reviewer_subgraph():

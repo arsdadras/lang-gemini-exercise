@@ -16,7 +16,7 @@ from agentlab.configs.personal_assistant_config import (
     SKILLS_DIR,
     SKILLS_ROUTE_PREFIX,
 )
-from agentlab.state.context_state import UserContext
+from agentlab.schemas.context.user_context_schema import UserContext
 
 MEMORIES_NAMESPACE_KIND = "memories"
 

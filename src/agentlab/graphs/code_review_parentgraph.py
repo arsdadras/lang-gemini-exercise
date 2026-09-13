@@ -7,7 +7,7 @@ from langgraph.graph import END, START, StateGraph
 from agentlab.graphs.refactor_subgraph import build_refactor_subgraph
 from agentlab.graphs.reviewer_subgraph import build_reviewer_subgraph
 from agentlab.graphs.test_gen_subgraph import build_test_gen_subgraph
-from agentlab.state.code_review_state import CodeReviewState
+from agentlab.schemas.state.code_review_state import CodeReviewState
 
 
 def route_after_reviewer(state: CodeReviewState) -> str:

@@ -7,8 +7,8 @@ from langchain_core.messages import AIMessage, ToolMessage
 from langgraph.runtime import Runtime
 
 from agentlab.models import llm_model
-from agentlab.output_schemas.middlewares_output_schema import GroundednessVerdict
 from agentlab.prompts.middlewares_prompt import GROUNDEDNESS_PROMPT
+from agentlab.schemas.output.middlewares_output_schema import GroundednessVerdict
 from agentlab.utils.get_text_util import get_text
 
 _DISCLAIMER = (

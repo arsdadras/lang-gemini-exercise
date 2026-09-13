@@ -1,19 +1,19 @@
 """Pydantic structured output schemas."""
 
-from agentlab.output_schemas.code_review_output_schema import (
+from agentlab.schemas.output.code_review_output_schema import (
     CodeIssue,
     ReviewResult,
     TestCase,
     TestExecutionResult,
     TestSuite,
 )
-from agentlab.output_schemas.interpreter_output_schema import (
+from agentlab.schemas.output.interpreter_output_schema import (
     ArtifactMetadata,
     ArtifactType,
 )
-from agentlab.output_schemas.middlewares_output_schema import GroundednessVerdict
-from agentlab.output_schemas.rag_output_schema import GradeDocument, GradeHallucination
-from agentlab.output_schemas.research_output_schema import (
+from agentlab.schemas.output.middlewares_output_schema import GroundednessVerdict
+from agentlab.schemas.output.rag_output_schema import GradeDocument, GradeHallucination
+from agentlab.schemas.output.research_output_schema import (
     ResearchFindings,
     ResearchReport,
     Source,

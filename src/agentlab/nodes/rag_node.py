@@ -3,7 +3,6 @@
 from typing import cast
 
 from agentlab.models import llm_model
-from agentlab.output_schemas.rag_output_schema import GradeDocument, GradeHallucination
 from agentlab.prompts.nodes.rag_prompt import (
     GENERATE_FROM_WEB_PROMPT,
     GENERATE_PROMPT,
@@ -12,7 +11,8 @@ from agentlab.prompts.nodes.rag_prompt import (
     REWRITE_PROMPT,
 )
 from agentlab.retrieval.index_retrieval import get_retriever
-from agentlab.state.rag_state import RAGState
+from agentlab.schemas.output.rag_output_schema import GradeDocument, GradeHallucination
+from agentlab.schemas.state.rag_state import RAGState
 from agentlab.tools.web_search_tool import make_web_search_tool
 from agentlab.utils.get_docs_context_util import get_docs_context
 from agentlab.utils.get_text_util import get_text

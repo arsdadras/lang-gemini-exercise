@@ -4,7 +4,7 @@ refactored code."""
 from langgraph.graph import END, START, StateGraph
 
 from agentlab.nodes.code_review_node import apply_refactor_node, approved_refactor_node
-from agentlab.state.code_review_state import CodeReviewState
+from agentlab.schemas.state.code_review_state import CodeReviewState
 
 
 def route_after_approval(state: CodeReviewState) -> str:

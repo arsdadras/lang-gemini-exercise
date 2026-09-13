@@ -14,7 +14,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.store.memory import InMemoryStore
 
 from agentlab.configs.personal_assistant_config import DEFAULT_USER_PROFILE_PATH
-from agentlab.state.context_state import UserContext
+from agentlab.schemas.context.user_context_schema import UserContext
 from agentlab.utils.memory_backend_util import (
     make_memory_composite_backend,
     user_memory_namespace,
