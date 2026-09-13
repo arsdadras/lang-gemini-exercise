@@ -41,3 +41,4 @@ last_threads.txt
 *.db-wal
 .agents/
 .gemini/
+.antigravity/

@@ -106,8 +106,7 @@ fine and encouraged — that's different from writing a formal test suite.
 
 
 
-| **P4 — Sandbox/Interpreter Agent** | Phase A ✅ · Phase B ✅ · Phase C ✅ (Stage 1: Subagent DI & 2D Diffing, Stage 2: Multi-Agent Coordinator & Standardized Subagents, Stage 3: Universal Registry & Streaming Observability) — 100% COMPLETE ✅ |
-| **P5 — Memory-Rich Personal Assistant** | Ready to start (Session 0 briefing prepared) |
+| **P5 — Memory-Rich Personal Assistant** | Phase A ✅ · Phase B Stage 1 (Procedural Skills Library) ✅ |
 | **P6 — Capstone** | Not started |
 
 ## Future Extensions Backlog (beyond `ROADMAP.md`), started 2026-08-25
@@ -1287,17 +1286,66 @@ configured. Don't ask the mentee to go set up LangSmith from scratch — it's re
 ### Strategic Problem Statement
 Agents must support ongoing, persistent user relationships by remembering user facts, preferences, constraints, and past tasks across sessions without context window explosion or hallucinated memory drift.
 
+### Architectural Specification & 15-Point Design Card
+Detailed architectural briefing, memory taxonomy, and the verified 15-Point Agent Design Card are permanently documented in:
+- **Design Card:** [`docs/design_cards/P5_memory_assistant.md`](design_cards/P5_memory_assistant.md)
+- **Registry Index:** [`docs/design_cards/README.md`](design_cards/README.md)
+
 ### Architectural Core
 - **Frameworks:** DeepAgents + LangChain, progressing to LangGraph Store at Phase C.
+- **Model Tiers (2026 Standards):**
+  - Primary / Conversational: `low` tier (`gemini-3.5-flash-lite`) via `src/configs/models_config.py`
+  - Routing / Consolidation: `medium` tier (`gemini-3.8-flash`)
 - **Memory Subsystem:** DeepAgents `CompositeBackend` combining `StateBackend` (short-term thread conversation) and `StoreBackend` (long-term memory indexed under `/memories/`).
 - **Phase A (Baseline):** CompositeBackend (`StateBackend` + `StoreBackend`), memory file initialization at session start, Tavily web search + filesystem tools.
 - **Phase B (Growth):** Dynamic Skills library (`/skills/`) for reusable behavioral prompts/scripts, Memory Consolidation/Summarization subagent, HITL approval for sensitive memory writes, and PII guardrails middleware.
 - **Phase C (Professional):** Per-user namespace isolation (`(user_id, "memories")`), persistent backing store (SQLite / Postgres Store), MCP tool ecosystem integrations, and memory drift evaluation.
 - **Feeds P6 Capstone:** P5 provides the persistent memory, user profile, and reusable skills engine that empowers the top-level P6 production multi-agent system.
 
+### Phase A — Baseline Composite Memory (Completed & Verified 2026-09-12) ✅
+- **Objective:** Establish the baseline memory-rich personal assistant with DeepAgents `CompositeBackend` (`StateBackend` + `StoreBackend`), cross-thread memory retention under `/memories/user_profile.md`, and an interactive multi-tenant REPL.
+- **Files Created/Modified:**
+  - `src/configs/personal_assistant_config.py` & `src/configs/__init__.py`: Constants for `/memories/` routing, `DEFAULT_USER_ID`, `DEFAULT_ASSISTANT_THREAD_ID`, `DEFAULT_ASSISTANT_TIER = "low"`, `DEFAULT_ASSISTANT_PROVIDER = "openai"`.
+  - `src/utils/memory_backend_util.py`: `make_memory_namespace(runtime)` extracting `(user_id, "memories")` dynamically with defensive fallback, and `make_memory_composite_backend(store)` routing `/memories/` to `StoreBackend` and unmatched paths to `StateBackend`.
+  - `src/prompts/agents_prompt.py`: `build_personal_assistant_prompt()` hardened with:
+    1. Autonomous memory extraction (extracts facts without requiring explicit "save" commands).
+    2. Zero False Memory Claims (anti-hallucination constraint: strictly prohibits asserting information was saved unless `write_file`/`edit_file` was actually executed).
+    3. 100% English memory content (translating attributes like `Occupation: Construction Worker`).
+    4. Strict Finglish chat responses (zero Perso-Arabic script).
+  - `src/agents/personal_assistant_agent.py` & `src/agents/__init__.py`: `make_personal_assistant_agent` supporting configurable `tier` and `provider`, registered with `AgentManifest` under `@agent_registry`.
+  - `src/apps/personal_assistant_app.py`: Interactive CLI REPL with dynamic model tier banner, `/memory`, `/new_thread`, and `/user <id>` tenant isolation commands, wired to `stream_agent_with_observability`.
+- **Key Architectural Findings & Discoveries:**
+  - **Autonomous Extraction vs Confabulation:** Compact models (`gemini-3.5-flash-lite`) exhibit verbal tool simulation (claiming memory was updated without invoking tools). Upgrading to `gemini-3.8-flash` or `gpt-5.6-luna` (via GapGPT) combined with negative prompt constraints eliminated false memory claims completely.
+  - **Asle DoorAndishi Codification:** Formalized the Principle of Foresight in `skills/mentor-governance/SKILL.md`. Identified the 1D (`thread_id` only) vs 2D (`thread_id` + `user_id`) session resolution gap between P3/P4 `session_util.py` and P5, scheduling full multi-tenant unification for Phase C (when durable `SqliteStore` is integrated).
+- **Verification:**
+  - `uv run ruff check src/ tests/` ➔ 0 errors.
+  - `uv run pytest` ➔ 39/39 passing green.
+  - Mentee live terminal verification: successful autonomous memory creation and cross-thread retrieval on `gpt-5.6-luna`.
+
+### Phase B, Stage 1 — Procedural Memory & Dynamic Skills Library (Completed & Verified 2026-09-13) ✅
+- **Objective:** Establish the procedural memory subsystem for the Personal Assistant using DeepAgents dynamic skills library mounted directly from disk via `FilesystemBackend` in `CompositeBackend`.
+- **Files Created/Modified:**
+  - `src/configs/personal_assistant_config.py` & `src/configs/__init__.py`: Added `SKILLS_ROUTE_PREFIX = "/skills/"`, `SKILLS_NAMESPACE = ("skills",)`, and `SKILLS_DATA_DIR = Path("src/data/skills")`.
+  - `src/data/skills/python-pro/SKILL.md`: Procedural skill providing Python 3.12+ modern typing, clean architecture, and single responsibility guidelines.
+  - `src/data/skills/clean-committer/SKILL.md`: Procedural skill providing Conventional Commits specifications and atomic commit best practices.
+  - `src/utils/memory_backend_util.py`: Updated `make_memory_composite_backend` to route `/skills/` directly to `FilesystemBackend(root_dir=SKILLS_DATA_DIR)`, enabling zero-copy, direct-on-disk skill discovery.
+  - `src/agents/personal_assistant_agent.py`: Wired `skills=[SKILLS_ROUTE_PREFIX]` into `create_deep_agent` via DeepAgents built-in `SkillsMiddleware`.
+  - `src/apps/personal_assistant_app.py`: Added interactive `/skills` inspection command to REPL.
+  - `tests/test_personal_assistant.py`: Added 4 comprehensive unit tests verifying namespace fallback, runtime user_id extraction, and store/filesystem routing under `CompositeBackend` (43/43 tests passing green).
+- **Key Architectural Findings & Best Practices:**
+  - **Direct `FilesystemBackend` Routing vs Store Copying:** Discarded intermediate Python copying scripts, globs, and redundant store synchronization. Mounting `FilesystemBackend` directly to `src/data/skills/` under route `/skills/` gives the agent native, zero-sync-delay access to standard markdown SOP files created by developers or agents.
+  - **Progressive Disclosure Mechanics:** `SkillsMiddleware` parses YAML frontmatter (`name`, `description`) at startup and injects skill summaries into the system prompt. The agent on-demand invokes `read_file("/skills/<name>/SKILL.md", limit=1000)` only when a task matches the skill's domain.
+  - **Phase D Architecture Agreement:** In Phase D (Production Hardening), enterprise-level dynamic routers and domain registries (`MemoryDomainRegistry`) will be introduced for complete pedagogical mastery, preserving Phase B's laser focus on clean procedural mechanics.
+- **Verification (Ghanoon-e Pishmarg):**
+  - `uv run ruff check src/ tests/` ➔ All checks passed! (0 errors).
+  - `uv run pytest` ➔ 43/43 passing green.
+  - End-to-end backend discovery tested: `/skills/` ls discovers `python-pro` and `clean-committer` directly from disk.
+
 ---
 
 ## 📋 Future Extensions Backlog
+
+> This table is for items **not** tied to one specific project's own retrospective section above (e.g. the "P1 — Research Agent (retrospective logged ...)" sections earlier in this file). A project's own Essential/Nice-to-have backlog lives in its retrospective section, not here — check both when reviewing what's outstanding for a given P (added 2026-09-11 to prevent this table from being read as the whole backlog).
 
 | Priority | Feature / Concept | Scope & Architectural Context | Status |
 | :--- | :--- | :--- | :--- |

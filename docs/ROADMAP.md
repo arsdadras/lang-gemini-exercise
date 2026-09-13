@@ -1,5 +1,7 @@
 # Project Roadmap — Production-Grade Agentic AI Curriculum
 
+> **Superseded by `docs/Agentic AI Curriculum Roadmap v2.md` (2026-09-11).** This file documents the original 6-project (P1–P6) curriculum shape and is kept for history. The curriculum has since expanded to 12 projects (P1–P12) with P6 and P12 as milestone capstones, followed by Term E (post-P12 platformization/scale) — read Roadmap v2 first for the current shape. The P1–P5 phase-by-phase content below is still accurate as *design* reference; for live status, always defer to `docs/MENTOR_HANDOFF.md`'s session log, not the status lines in this file.
+
 In this repository we build multiple distinct agentic AI projects.
 Each project has a practical **base level** and a pre-planned **growth path**
 toward more advanced and professional implementations.
@@ -125,6 +127,9 @@ See `MENTOR_HANDOFF.md` for full implementation details, architectural patterns,
 
 ## P4 — Sandbox / Interpreter Agent
 
+**Status (2026-09-09): Phase A ✅ · Phase B ✅ · Phase C ✅ COMPLETE.**
+See `MENTOR_HANDOFF.md` §"P4 — Sandbox / Interpreter Agent — Phase C Status" for full implementation detail, including the `interpreter_subagent`, the multi-agent `coding_coordinator_agent`, and the enterprise agent registry work.
+
 **Problem:** User gives data, computational, or shell automation tasks → agent plans, executes code/scripts in an isolated workspace, manages artifacts, self-corrects on errors, and returns verified results.
 
 ### Phase A — Native Workspace & Execution Engine
@@ -151,6 +156,9 @@ See `MENTOR_HANDOFF.md` for full implementation details, architectural patterns,
 
 ## P5 — Memory-Rich Personal Assistant
 
+**Status (2026-09-11): Session 0 approved, Phase A in progress.**
+See `docs/design_cards/P5_memory_assistant.md` for the full 15-Point Design Card and `MENTOR_HANDOFF.md` §"P5 — Memory-Rich Personal Assistant (Orientation & Session 0)" for the live session log.
+
 **Problem:** Agent supports ongoing user relationships → remembers facts, preferences, and past tasks across sessions.
 
 ### Phase A — Baseline
@@ -175,6 +183,8 @@ See `MENTOR_HANDOFF.md` for full implementation details, architectural patterns,
 ---
 
 ## P6 — Capstone: Production Multi-Agent System
+
+**Status:** Not started. Per `docs/Agentic AI Curriculum Roadmap v2.md`, P6 is now the *first* of two formal capstones (P6 and P12) rather than the curriculum's final project — read Roadmap v2 §"P6 — Midterm/Final I" before starting.
 
 **Problem:** Combine the strongest capabilities from P1–P5 into a single deployable, observable, multi-user production system.
 
@@ -214,6 +224,6 @@ See `MENTOR_HANDOFF.md` for full implementation details, architectural patterns,
 
 ## Build Order
 
-P1 → P2 → P3 → P4 → P5 → P6
+P1 → P2 → P3 → P4 → P5 → P6 → P7 → P8 → P9 → P10 → P11 → P12 → Term E
 
-Each project reaches a solid baseline first, then grows through its pre-planned path. Phase C of each project feeds directly into P6 as a composable component.
+Each project reaches a solid baseline first, then grows through its pre-planned path. Phase C of each project feeds directly into P6, and later P12, as a composable component. See `docs/Agentic AI Curriculum Roadmap v2.md` for P6–P12 and Term E, not covered by this historical file.

@@ -27,14 +27,14 @@ src/
 ├── configs/            # plain config constants (e.g. MAX_RETRIES)
 ├── data/               # database and checkpoint storage
 ├── middlewares/        # DeepAgents middleware
-├── models/             # LLM model registry and factories
+├── models/              # LLM model registry and factories
 ├── nodes/              # LangGraph node functions
 ├── output_schemas/     # Pydantic structured output schemas
-├── prompts/            # prompt templates
-├── retrieval/          # vector store indexing and retrieval
-├── state/              # LangGraph State schemas
-├── tools/              # agent tools
-└── utils/              # utility functions
+├── prompts/             # prompt templates
+├── retrieval/           # vector store indexing and retrieval
+├── state/               # LangGraph State schemas
+├── tools/                # agent tools
+└── utils/                # utility functions
 ```
 
 ## Coding Standards
@@ -92,15 +92,6 @@ src/
 
 ## Operational Governance & Mentorship Rules
 
-- **Asle Ghorur (Anti-Sycophancy, Critical Rigor & Self-Defense):** Flattery, performative praise, and automatic uncritical agreement are strictly forbidden ("Chaploosi va tarif o tamjid e bikhod kamelan mamnoo"). When an idea, critique, or proposal is presented (whether by the mentee or external experts): do NOT immediately accept, apologize, and blindly comply. You MUST critically analyze the critique against the codebase's actual architecture and design rules. If you disagree or see a contradiction, you MUST actively debate, voice technical opposition, and defend your position until logically resolved. Only if you genuinely agree after critical examination, implement an architectural mechanism to permanently prevent recurrence.
-- **Asle AbzaarDoosti (Mandatory Subagent & MCP Evaluation):** Before starting any task, explicitly evaluate whether a specialized subagent or MCP server is beneficial, and incorporate them directly into the plan of action whenever useful.
-- **Asle Docs-LangChain e Moghaddas (Sacred LangChain Ecosystem Docs):** Query the `docs-langchain` MCP server (`search_docs_by_lang_chain` or `query_docs_filesystem_docs_by_lang_chain`) without exception whenever working on, answering, or implementing anything related to LangChain, LangGraph, DeepAgents, or LangSmith. Zero guessing from memory.
-- **Asle Be-Rooz-Talabi (Continuous Freshness via Context7 & Web Search):** Always verify third-party libraries, SDKs, tools, and APIs using Context7 or web search to ensure up-to-date knowledge and eliminate hallucinations from stale training data.
-- **Asle Goosh-Be-Farmani (Strict Explicit Approval for Stage Transitions):** Only conclude a stage or initiate a new stage upon receiving explicit permission, instruction, or confirmation from the mentee. Never auto-advance or assume stage completion autonomously.
-- **Strict Single-Item Focus (Asl-e Tamarkoz):** Strictly ONE task, one improvement, or one architectural concept per turn. Never bundle multiple tasks or ideas together.
-- **Micro-Granular Snippet Delivery Protocol (Part-by-Part Teaching & Code Review):** Once the initial architectural explanation of a stage is approved, the next step is NOT sending the entire code file at once. The implementation MUST be partitioned into small, digestible Snippets / Parts. For EACH snippet: (1) provide thorough pedagogical context, nuances, strategies, design rationale (why-this-not-that), mentor teaching insights, and specialized expert recommendations; (2) present ONLY that small code snippet; (3) STOP and wait for mentee review, questions, or explicit permission ("ejaze"); (4) proceed to the next snippet only upon explicit permission; (5) present exploration testcases only after all snippets are completed. NEVER dump entire code files or multiple snippets at once.
-- **Modern Idiomatic Standards & Freshness (Zero Outdated Legacy Hacks):** Always write modern, idiomatic Python (Python 3.12+/3.14). Never use obsolete or brittle legacy workarounds (e.g. using string `startswith` for path containment instead of modern `Path.is_relative_to()`). Always verify against modern best practices and use Context7 / official docs for fresh library APIs.
-- **Asle Mohandesi-ye Asil va Best Practice-e Motlaq (Zero Workarounds / Pure Production Engineering):** Never settle for the easy, minimal shortcut, temporary workaround, or "pragmatic hack" just because "it runs." Under NO circumstances should temporary bypasses—such as lazy imports to mask circular dependencies, un-locked mutable global state singletons, or layer inversions—be accepted in the codebase. Even if a proper fix requires heavy restructuring, moving files between layers, splitting modules, or introducing Dependency Injection, ALWAYS refactor to the clean, production-grade architecture.
-- **Continuous Rulebook Maintenance:** Whenever the mentee gives a critique, instruction, or scheduled commitment, immediately update `AGENTS.md` and `skills/legacy-docs/SKILL.md` so the guidance remains permanent and active.
-- **Mentee Workflow:** The mentee explores and experiments in Jupyter notebooks (`alireza/notebooks/`); the mentor writes, tests, and verifies production `.py` code directly in `src/` under the mentee's direction.
-- **Deferred Hardening Scope (2026-08-19 Agreement):** Formal unit test suites in `tests/test_*.py`, eval datasets, LangSmith tracing, and deployment are deferred across all projects to a dedicated post-build hardening round. Active work focuses on System Design, architecture, runnable apps in `src/apps/`, and live hands-on exploration.
+**Canonical location: `skills/mentor-governance/SKILL.md`.** Every mentorship/communication/quality-gate rule (Asle Ghorur, Asle AbzaarDoosti, Asle Docs-LangChain e Moghaddas, Asle Be-Rooz-Talabi, Asle Goosh-Be-Farmani, Asle Tamarkoz, Micro-Granular Snippet Delivery, Ghanoon-e Pishmarg, Modern Idiomatic Standards, Asle Mohandesi-ye Asil va Best Practice-e Motlaq, Continuous Rulebook Maintenance, Backlog Preservation, the 15-Point Design Card requirement, Modern 2026 Model Tiers, Mentee Workflow, and the 8-Gate Quality Firewall) lives there, not here — read it before starting any mentoring/implementation session. This section used to restate all of it; that duplication was itself the reason rules drifted out of sync (see `docs/MENTOR_HANDOFF.md`, 2026-09-11 consolidation). If a rule changes, edit `skills/mentor-governance/SKILL.md` only.
+
+**Curriculum shape:** the canonical curriculum definition is `docs/Agentic AI Curriculum Roadmap v2.md` (12 projects, P6/P12 capstones, Term E after P12) — `docs/ROADMAP.md` is the original 6-project draft, kept for history only. For live per-project status, read `docs/MENTOR_HANDOFF.md`'s session log, not a table in any skill/README file.

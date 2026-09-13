@@ -13,11 +13,11 @@ This repository demonstrates the progressive evolution of agentic architectures 
 | **P1** | **Web Research Agent** | DeepAgents orchestrator, structured citations, multi-tier fallback cascade, streaming output | ✅ **Complete** |
 | **P2** | **RAG Coordinator Agent** | LangGraph StateGraph, vector indexing, document grading, corrective retrieval, subagent delegation | ✅ **Complete** |
 | **P3** | **Code Review & Test Gen** | 3-subgraph parent graph, process-isolated sandbox runner, cyclic test fixer loop, modern HITL (`interrupt()` + `Command(resume=...)`), SQLite checkpointing, time-travel history replay | ✅ **Complete** |
-| **P4** | **Sandbox / Interpreter Agent** | DeepAgents native `LocalShellBackend`, anchored filesystem confinement (`out/sandbox`), execution safety, shell HITL governance | 🎯 **Current Focus** |
-| **P5** | **Memory-Rich Assistant** | `CompositeBackend` (`StateBackend` + `StoreBackend`), persistent cross-session facts, dynamic skill loading | 📋 *Planned* |
-| **P6** | **Autonomous Capstone** | Hierarchical multi-agent coordinator, LangGraph SDK deployment, inter-agent delegation | 📋 *Planned* |
+| **P4** | **Sandbox / Interpreter Agent** | DeepAgents native `LocalShellBackend`, anchored filesystem confinement (`out/sandbox`), execution safety, shell HITL governance, `CompiledSubAgent` composition, streaming observability | ✅ **Complete** |
+| **P5** | **Memory-Rich Assistant** | `CompositeBackend` (`StateBackend` + `StoreBackend`), persistent cross-session facts, dynamic skill loading | 🎯 **Current Focus** (Phase A) |
+| **P6–P12** | Midterm/Final capstones + specialist portfolio (Document Intelligence, Support Operations, Analytics, Multimodal Perception, API Operations, Business Operations Control Tower) | Full 12-project shape, mini-workflow composition cadence, and Term E (post-P12 platformization/scale) | 📋 *Planned* |
 
-See [`docs/ROADMAP.md`](docs/ROADMAP.md) for full phase-by-phase specifications and [`docs/MENTOR_HANDOFF.md`](docs/MENTOR_HANDOFF.md) for operational engineering logs.
+> **Curriculum shape note:** the canonical, current curriculum definition is [`docs/Agentic AI Curriculum Roadmap v2.md`](<docs/Agentic AI Curriculum Roadmap v2.md>) (12 projects, P6 & P12 as milestone capstones, Term E after P12). [`docs/ROADMAP.md`](docs/ROADMAP.md) is the original 6-project draft, kept for history — read Roadmap v2 first. [`docs/MENTOR_HANDOFF.md`](docs/MENTOR_HANDOFF.md) is the live, session-by-session operational log and the source of truth for exactly where each project currently stands.
 
 ---
 
@@ -30,16 +30,16 @@ core/
 ├── src/                    # Reusable library building blocks
 │   ├── graphs/             # Compiled LangGraph StateGraphs (P2, P3)
 │   ├── nodes/              # Pure node functions and reducers
-│   ├── prompts/            # System prompts isolated by architectural role
+│   ├── prompts/             # System prompts isolated by architectural role
 │   ├── output_schemas/     # Strongly-typed Pydantic V2 schemas
 │   ├── subagents/          # CompiledSubAgent adapters and subagent specs
 │   ├── middlewares/        # Agent middleware (HITL gates, model fallbacks)
-│   ├── models/             # Dynamic multi-tier LLM registry & cascade routing
-│   ├── tools/              # Domain-specific tools (search, REPL, filesystem)
-│   ├── retrieval/          # Document chunking, vector stores, and indices
-│   ├── state/              # TypedDict schemas for LangGraph states
-│   ├── data/               # Persistent storage engines (SQLite checkpointers)
-│   └── utils/              # Shared security, sandboxing, and time-travel utilities
+│   ├── models/               # Dynamic multi-tier LLM registry & cascade routing
+│   ├── tools/                 # Domain-specific tools (search, REPL, filesystem)
+│   ├── retrieval/            # Document chunking, vector stores, and indices
+│   ├── state/                # TypedDict schemas for LangGraph states
+│   ├── data/                  # Persistent storage engines (SQLite checkpointers)
+│   └── utils/                 # Shared security, sandboxing, and time-travel utilities
 ├── configs/                # Pure constant configuration values (timeouts, tiers)
 ├── agents/                 # Pre-assembled, ready-to-invoke agent definitions
 └── apps/                   # Runnable application entry points and CLI loops
@@ -50,6 +50,8 @@ tests/                      # Comprehensive pytest verification suite
 alireza/                    # Mentee interactive exploration and notebook playground
 out/                        # Sandboxed execution artifacts (gitignored)
 ```
+
+> Note: the tree above documents the original `core/`-prefixed layout. The repo has since migrated to a clean `src/` layout at the top level (see `AGENTS.md` → Package Layout for the current, accurate tree — that section is the canonical one).
 
 ---
 
@@ -110,7 +112,9 @@ uv run ruff format core/ tests/
 
 ## 📜 Documentation & History
 
-- **Active Roadmap:** [`docs/ROADMAP.md`](docs/ROADMAP.md)
-- **Active Operational Log:** [`docs/MENTOR_HANDOFF.md`](docs/MENTOR_HANDOFF.md)
+- **Canonical Curriculum Roadmap (12 projects, P6/P12 capstones, Term E):** [`docs/Agentic AI Curriculum Roadmap v2.md`](<docs/Agentic AI Curriculum Roadmap v2.md>)
+- **Original 6-project Roadmap (historical):** [`docs/ROADMAP.md`](docs/ROADMAP.md)
+- **Active Operational Log (live per-project status):** [`docs/MENTOR_HANDOFF.md`](docs/MENTOR_HANDOFF.md)
+- **Operating Rulebook (canonical):** [`skills/mentor-governance/SKILL.md`](skills/mentor-governance/SKILL.md)
 - **P3 Master Architectural Study Guide:** [`study_guides/p3_code_review/MASTER_GUIDE.md`](study_guides/p3_code_review/MASTER_GUIDE.md)
 - **Historical Archive:** [`archive/claude_initial_docs/`](archive/claude_initial_docs/)
