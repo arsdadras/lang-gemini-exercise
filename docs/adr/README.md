@@ -1,0 +1,35 @@
+# Architecture Decision Records
+
+An ADR records one significant decision: the forces behind it, what was decided, what it
+costs, and what else was considered. Write one whenever a stage settles a design or process
+question that future work depends on, and whenever the mentee overrides the mentor
+(record the dissent too).
+
+Keep ADRs short. Never rewrite an accepted ADR's decision: supersede it with a new ADR and
+set the old one's status to `Superseded by ADR-XXXX`.
+
+## Index
+
+| ADR | Decision | Status |
+| :--- | :--- | :--- |
+| [0001](0001-three-phase-project-model.md) | Three phases per project, no Phase D | Accepted |
+| [0002](0002-single-package-and-composition-root.md) | One `agentlab` package; apps are the composition root | Accepted |
+| [0003](0003-runtime-context-for-user-identity.md) | User identity travels as runtime context | Accepted |
+| [0004](0004-testing-and-evaluation-policy.md) | Unit tests now, eval-lite from P5-C, eval infrastructure in Term E | Accepted |
+| [0005](0005-sandbox-secret-isolation.md) | Sandboxed code never sees secrets | Accepted |
+| [0006](0006-remove-agent-registry.md) | Remove the agent registry until P6 needs one | Accepted |
+| [0007](0007-built-in-model-fallback.md) | Agent model fallback uses `ModelFallbackMiddleware` | Accepted |
+
+## Template
+
+```markdown
+# ADR-NNNN: Title
+
+- Status: Proposed | Accepted | Superseded by ADR-XXXX
+- Date: YYYY-MM-DD
+
+## Context
+## Decision
+## Consequences
+## Alternatives considered
+```

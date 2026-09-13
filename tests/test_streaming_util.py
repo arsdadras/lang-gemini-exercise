@@ -4,7 +4,7 @@ from typing import Any
 
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
-from utils.streaming_util import stream_agent_with_observability
+from agentlab.utils.streaming_util import stream_agent_with_observability
 
 
 class MockStreamingAgent:

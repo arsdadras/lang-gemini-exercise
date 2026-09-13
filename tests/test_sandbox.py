@@ -1,83 +1,62 @@
-"""Unit tests for SandboxBackend path normalization."""
+"""Tests for sandbox helpers: path aliasing, environment allowlist, artifacts."""
 
-import tempfile
 from pathlib import Path
 
 import pytest
-from output_schemas.interpreter_output_schema import ArtifactMetadata, ExecutionManifest
-from utils.sandbox_util import SandboxBackend, get_artifact_path, list_sandbox_artifacts
+
+from agentlab.utils.sandbox_util import (
+    SandboxBackend,
+    build_sandbox_env,
+    get_artifact_path,
+    list_sandbox_artifacts,
+)
 
 
-def test_sandbox_backend_resolve_path_normalization():
-    """Verify SandboxBackend normalizes virtual paths to sandbox root."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        backend = SandboxBackend(root_dir=Path(tmpdir), virtual_mode=True)
+def test_workspace_alias_maps_to_sandbox_root(tmp_path: Path) -> None:
+    backend = SandboxBackend(root_dir=tmp_path, virtual_mode=True)
+    root = tmp_path.resolve()
 
-        assert backend._resolve_path("/workspace/test.py") == Path(tmpdir) / "test.py"
-        assert backend._resolve_path("workspace/test.py") == Path(tmpdir) / "test.py"
-        assert backend._resolve_path("test.py") == Path(tmpdir) / "test.py"
-        assert backend._resolve_path("/workspace") == Path(tmpdir)
-        assert backend._resolve_path("workspace") == Path(tmpdir)
-        assert (
-            backend._resolve_path("/workspace/artifacts/report.csv")
-            == Path(tmpdir) / "artifacts" / "report.csv"
-        )
+    assert backend._resolve_path("/workspace/test.py") == root / "test.py"
+    assert backend._resolve_path("workspace/test.py") == root / "test.py"
+    assert backend._resolve_path("test.py") == root / "test.py"
+    assert backend._resolve_path("/workspace") == root
+    assert backend._resolve_path("workspace") == root
+    assert backend._resolve_path("/workspace/artifacts/report.csv") == root / "artifacts" / "report.csv"
+    assert backend._resolve_path("my_workspace/test.py") == root / "my_workspace" / "test.py"
 
 
-def test_list_sandbox_artifacts_and_path_validation():
-    """Verify listing artifacts and path traversal enforcement."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        sb = Path(tmpdir)
-        art_dir = sb / "artifacts"
-        art_dir.mkdir(parents=True, exist_ok=True)
+def test_build_sandbox_env_keeps_only_allowlisted_names() -> None:
+    source = {"PATH": "bin", "SystemRoot": "C:\\Windows", "GITHUB_ACCESS_TOKEN": "secret"}
 
-        # Create dummy artifacts and root script
-        (sb / "runner.py").write_text("print('script')", encoding="utf-8")
-        (art_dir / "data.csv").write_text("a,b\n1,2", encoding="utf-8")
-        (art_dir / "chart.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    env = build_sandbox_env(allowlist=("PATH", "SYSTEMROOT"), source=source)
 
-        artifacts = list_sandbox_artifacts(sandbox_dir=sb)
-        assert len(artifacts) == 2
-        paths = {a.path for a in artifacts}
-        assert "artifacts/data.csv" in paths
-        assert "artifacts/chart.png" in paths
-        assert "runner.py" not in paths
-
-        by_path = {a.path: a for a in artifacts}
-        assert by_path["artifacts/data.csv"].artifact_type == "csv"
-        assert by_path["artifacts/chart.png"].artifact_type == "chart"
-        assert by_path["artifacts/data.csv"].size_bytes is not None
-
-        # Safe resolution
-        resolved = get_artifact_path("artifacts/data.csv", sandbox_dir=sb)
-        assert resolved == art_dir / "data.csv"
-
-        # Traversal protection
-        with pytest.raises(ValueError, match="Path traversal attempt"):
-            get_artifact_path("../sensitive.txt", sandbox_dir=sb)
+    assert env == {"PATH": "bin", "SystemRoot": "C:\\Windows"}
 
 
-def test_execution_manifest_schema():
-    """Verify ExecutionManifest and ArtifactMetadata instantiation."""
-    manifest = ExecutionManifest(
-        summary="Generated synthetic revenue dataset and histogram plot",
-        artifacts=[
-            ArtifactMetadata(
-                name="sales.csv",
-                path="artifacts/sales.csv",
-                artifact_type="csv",
-                description="Synthetic Q3 transactions",
-            ),
-            ArtifactMetadata(
-                name="sales_hist.png",
-                path="artifacts/sales_hist.png",
-                artifact_type="chart",
-                description="Histogram distribution of sales",
-            ),
-        ],
-        success=True,
-    )
-    assert len(manifest.artifacts) == 2
-    assert manifest.artifacts[0].artifact_type == "csv"
-    assert manifest.artifacts[1].name == "sales_hist.png"
-    assert manifest.success is True
+def test_sandbox_shell_cannot_read_process_secrets(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("AGENTLAB_FAKE_SECRET", "leaked")
+    backend = SandboxBackend(root_dir=tmp_path, virtual_mode=True, env=build_sandbox_env())
+
+    result = backend.execute("python -c \"import os; print(os.getenv('AGENTLAB_FAKE_SECRET'))\"")
+
+    assert result.exit_code == 0
+    assert "leaked" not in result.output
+    assert "None" in result.output
+
+
+def test_list_sandbox_artifacts_and_path_validation(tmp_path: Path) -> None:
+    artifacts_dir = tmp_path / "artifacts"
+    artifacts_dir.mkdir()
+    (tmp_path / "runner.py").write_text("print('script')", encoding="utf-8")
+    (artifacts_dir / "data.csv").write_text("a,b\n1,2", encoding="utf-8")
+    (artifacts_dir / "chart.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+
+    by_path = {artifact.path: artifact for artifact in list_sandbox_artifacts(tmp_path)}
+
+    assert set(by_path) == {"artifacts/data.csv", "artifacts/chart.png"}
+    assert by_path["artifacts/data.csv"].artifact_type == "csv"
+    assert by_path["artifacts/chart.png"].artifact_type == "chart"
+    assert by_path["artifacts/data.csv"].size_bytes is not None
+    assert get_artifact_path("artifacts/data.csv", tmp_path) == (artifacts_dir / "data.csv").resolve()
+    with pytest.raises(ValueError, match="Path traversal attempt"):
+        get_artifact_path("../sensitive.txt", tmp_path)

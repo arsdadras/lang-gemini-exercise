@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 from langgraph.types import Command
 
-from utils.run_with_hitl_util import (
+from agentlab.utils.run_with_hitl_util import (
     _format_prompt,
     _handle_interrupt_decisions,
     run_with_hitl,

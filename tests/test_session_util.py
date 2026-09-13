@@ -1,212 +1,102 @@
-"""Unit tests for universal session resolution & thread management utility."""
+"""Tests for CLI session resolution."""
+
+from typing import Any
 
 import pytest
 from langgraph.checkpoint.memory import InMemorySaver
 
-from utils.session_util import ResolvedSession, format_session_list, resolve_session
+from agentlab.utils.session_util import (
+    ResolvedSession,
+    format_session_list,
+    resolve_session,
+)
 
 
-class DummyAgent:
-    """Mock agent object for testing."""
+class RecordingFactory:
+    """Agent factory double that records the checkpointer each call received."""
 
-    def __init__(self, name: str = "dummy", checkpointer=None):
-        self.name = name
-        self.checkpointer = checkpointer
+    def __init__(self) -> None:
+        self.calls: list[Any] = []
 
-
-def test_resolved_session_config_property():
-    """Verify ResolvedSession provides a valid LangGraph config dict."""
-    session = ResolvedSession(
-        agent=DummyAgent(),
-        thread_id="test_thread_123",
-        mode_name="custom (test_thread_123)",
-        is_secret=False,
-    )
-    assert session.thread_id == "test_thread_123"
-    assert session.config == {"configurable": {"thread_id": "test_thread_123"}}
-    assert not session.is_secret
+    def __call__(self, checkpointer: Any) -> dict[str, Any]:
+        self.calls.append(checkpointer)
+        return {"checkpointer": checkpointer}
 
 
-def test_resolve_session_default_mode():
-    """Verify default mode when raw_arg is None or 'default'."""
-    agent = DummyAgent("default_agent")
-    s1 = resolve_session(None, default_thread_id="sess_default", default_agent=agent)
-    assert s1.thread_id == "sess_default"
-    assert s1.mode_name == "default"
-    assert not s1.is_secret
-    assert s1.agent == agent
-
-    s2 = resolve_session(
-        "default", default_thread_id="sess_default", default_agent=agent
-    )
-    assert s2.thread_id == "sess_default"
-    assert s2.mode_name == "default"
-
-
-def test_resolve_session_new_mode():
-    """Verify new mode generates a unique prefixed thread ID."""
-    agent = DummyAgent()
-    s = resolve_session(
-        "new", default_thread_id="sess_default", default_agent=agent, app_name="testapp"
-    )
-    assert s.thread_id.startswith("testapp_")
-    assert len(s.thread_id) > len("testapp_")
-    assert s.mode_name == "new"
-    assert not s.is_secret
-
-
-def test_resolve_session_secret_mode():
-    """Verify secret mode creates ephemeral in-memory session."""
-
-    def factory(saver):
-        return DummyAgent(checkpointer=saver)
-
-    s = resolve_session(
-        "secret",
+def resolve(arg: str | None, factory: RecordingFactory, threads: list[str] | None = None) -> ResolvedSession:
+    return resolve_session(
+        arg,
         default_thread_id="sess_default",
         agent_factory=factory,
-    )
-    assert s.thread_id.startswith("secret_")
-    assert s.is_secret is True
-    assert "secret" in s.mode_name
-    assert isinstance(s.agent.checkpointer, InMemorySaver)
-
-
-def test_resolve_session_resume_mode():
-    """Verify resume picks the latest recorded thread or falls back gracefully."""
-    mock_threads = ["thread_3_latest", "thread_2", "thread_1"]
-    s = resolve_session(
-        "resume",
-        default_thread_id="sess_default",
-        default_agent=DummyAgent(),
-        get_threads_fn=lambda **kwargs: mock_threads,
-    )
-    assert s.thread_id == "thread_3_latest"
-    assert "resume" in s.mode_name
-
-    # Empty DB fallback
-    s_empty = resolve_session(
-        "resume",
-        default_thread_id="sess_default",
-        default_agent=DummyAgent(),
-        get_threads_fn=lambda **kwargs: [],
-    )
-    assert s_empty.thread_id == "sess_default"
-    assert "no prior sessions" in s_empty.mode_name
-
-
-def test_resolve_session_step_mode():
-    """Verify step[N] indexes correctly and handles bounds."""
-    mock_threads = ["t0_latest", "t1", "t2", "t3"]
-
-    s0 = resolve_session(
-        "step[0]",
-        default_thread_id="sess_default",
-        default_agent=DummyAgent(),
-        get_threads_fn=lambda **kwargs: mock_threads,
+        app_name="testapp",
+        get_threads_fn=lambda **_: list(threads or []),
         handle_cli_exit=False,
     )
-    assert s0.thread_id == "t0_latest"
-    assert s0.mode_name == "step[0] (t0_latest)"
 
-    s2 = resolve_session(
-        "step2",
-        default_thread_id="sess_default",
-        default_agent=DummyAgent(),
-        get_threads_fn=lambda **kwargs: mock_threads,
-        handle_cli_exit=False,
-    )
-    assert s2.thread_id == "t2"
-    assert s2.mode_name == "step[2] (t2)"
 
-    # Out of bounds
+def test_config_carries_the_thread_id() -> None:
+    session = ResolvedSession(agent=None, thread_id="t1", mode_name="custom (t1)")
+    assert session.config == {"configurable": {"thread_id": "t1"}}
+
+
+@pytest.mark.parametrize("arg", [None, "", "default"])
+def test_default_mode_uses_default_thread_and_durable_factory(arg: str | None) -> None:
+    factory = RecordingFactory()
+    session = resolve(arg, factory)
+
+    assert (session.thread_id, session.mode_name, session.is_secret) == ("sess_default", "default", False)
+    assert factory.calls == [None]
+
+
+def test_new_mode_generates_prefixed_thread() -> None:
+    session = resolve("new", RecordingFactory())
+    assert session.thread_id.startswith("testapp_") and len(session.thread_id) > len("testapp_")
+
+
+def test_secret_mode_uses_in_memory_checkpointer() -> None:
+    factory = RecordingFactory()
+    session = resolve("secret", factory)
+
+    assert session.is_secret and session.thread_id.startswith("secret_")
+    assert isinstance(factory.calls[0], InMemorySaver)
+
+
+def test_resume_picks_latest_thread_or_falls_back() -> None:
+    assert resolve("resume", RecordingFactory(), ["t_latest", "t_old"]).thread_id == "t_latest"
+    assert resolve("resume", RecordingFactory(), []).thread_id == "sess_default"
+
+
+def test_step_mode_indexes_recent_threads() -> None:
+    threads = ["t0", "t1", "t2"]
+    assert resolve("step[0]", RecordingFactory(), threads).thread_id == "t0"
+    assert resolve("step2", RecordingFactory(), threads).mode_name == "step[2] (t2)"
+
+
+def test_step_mode_errors_do_not_build_an_agent() -> None:
+    factory = RecordingFactory()
     with pytest.raises(IndexError):
-        resolve_session(
-            "step[10]",
-            default_thread_id="sess_default",
-            default_agent=DummyAgent(),
-            get_threads_fn=lambda **kwargs: mock_threads,
-            handle_cli_exit=False,
-        )
-
-    # Empty DB
+        resolve("step[9]", factory, ["t0"])
     with pytest.raises(ValueError, match="No recorded sessions"):
-        resolve_session(
-            "step[0]",
-            default_thread_id="sess_default",
-            default_agent=DummyAgent(),
-            get_threads_fn=lambda **kwargs: [],
-            handle_cli_exit=False,
-        )
+        resolve("step[0]", factory, [])
+    assert factory.calls == []
 
 
-def test_resolve_session_custom_mode():
-    """Verify custom user-provided thread ID."""
-    s = resolve_session(
-        "my_custom_feature_session",
-        default_thread_id="sess_default",
-        default_agent=DummyAgent(),
-    )
-    assert s.thread_id == "my_custom_feature_session"
-    assert s.mode_name == "custom (my_custom_feature_session)"
-    assert not s.is_secret
+def test_custom_mode_uses_argument_as_thread_id() -> None:
+    session = resolve("feature_x", RecordingFactory())
+    assert (session.thread_id, session.mode_name) == ("feature_x", "custom (feature_x)")
 
 
-def test_format_session_list():
-    """Verify banner formatting for recorded threads."""
-    banner = format_session_list(
-        ["tid_1", "tid_2"], cli_command_hint="python test.py step[<index>]"
-    )
-    assert "Recorded Sessions" in banner
+def test_list_mode_prints_threads_without_building_an_agent(capsys: pytest.CaptureFixture[str]) -> None:
+    factory = RecordingFactory()
+    session = resolve("list", factory, ["t0"])
+
+    assert session.agent is None and factory.calls == []
+    assert "step[0]: t0 (latest)" in capsys.readouterr().out
+
+
+def test_format_session_list() -> None:
+    banner = format_session_list(["tid_1", "tid_2"], cli_command_hint="python test.py step[<index>]")
     assert "step[0]: tid_1 (latest)" in banner
     assert "step[1]: tid_2" in banner
     assert "python test.py step[<index>]" in banner
-
-    empty_banner = format_session_list([])
-    assert "No recorded sessions found" in empty_banner
-
-
-def test_resolve_session_with_keyword_only_factory():
-    """Verify resolve_session works with keyword-only agent factories without TypeError."""
-
-    def kwonly_factory(*, checkpointer=None, tier="low"):
-        return DummyAgent(name=f"kw_{tier}", checkpointer=checkpointer)
-
-    # Secret mode passes InMemorySaver
-    s_secret = resolve_session(
-        "secret",
-        default_thread_id="sess_default",
-        agent_factory=kwonly_factory,
-    )
-    assert s_secret.is_secret
-    assert isinstance(s_secret.agent.checkpointer, InMemorySaver)
-
-    # New mode passes None checkpointer
-    s_new = resolve_session(
-        "new",
-        default_thread_id="sess_default",
-        agent_factory=kwonly_factory,
-        app_name="app",
-    )
-    assert s_new.agent.name == "kw_low"
-
-
-def test_resolve_session_prefers_default_agent_when_available():
-    """Verify resolve_session reuses default_agent for non-secret modes instead of rebuilding."""
-    default_ag = DummyAgent("cached_agent")
-    call_count = 0
-
-    def counting_factory(checkpointer=None):
-        nonlocal call_count
-        call_count += 1
-        return DummyAgent("newly_built", checkpointer=checkpointer)
-
-    s = resolve_session(
-        "new",
-        default_thread_id="sess_default",
-        default_agent=default_ag,
-        agent_factory=counting_factory,
-        app_name="app",
-    )
-    assert s.agent is default_ag
-    assert call_count == 0  # Reused default_agent without invoking factory!
+    assert "No recorded sessions found" in format_session_list([])

@@ -1,6 +1,6 @@
 """Tests for the prompt builder."""
 
-from prompts import DEFAULTS, build_system_prompt
+from agentlab.prompts import DEFAULTS, build_system_prompt
 
 
 def test_build_system_prompt_returns_string() -> None:

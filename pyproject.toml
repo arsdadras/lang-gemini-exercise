@@ -1,7 +1,7 @@
 [project]
-name = "agent"
+name = "agentlab"
 version = "0.1.0"
-description = "An agentic AI system built on DeepAgents and LangChain"
+description = "Production-track agentic AI curriculum built on LangChain, LangGraph, and DeepAgents"
 readme = "README.md"
 authors = [
     { name = "ar-sdadras", email = "alireza.s.dadras@gmail.com" }
@@ -9,41 +9,46 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "deepagents==0.7.10",
-    "python-dotenv==1.2.3",
     "langchain==1.4.0a1",
-    "langchain-google-genai>=4.3.2",
-    "langchain-tavily>=0.2.18",
-    "langgraph>=1.2.10",
-    "pydantic>=2.13.4",
-    "ipykernel>=7.3.0",
-    "langchain-community>=0.4.2",
-    "langchain-openai==1.6.0",
+    "langchain-core>=1.6.1",
     "langchain-chroma>=1.1.0",
+    "langchain-google-genai>=4.3.2",
+    "langchain-openai==1.6.0",
+    "langchain-tavily>=0.2.18",
+    "langchain-text-splitters>=1.1.2",
+    "langgraph>=1.2.10",
     "langgraph-checkpoint-sqlite>=3.1.1",
+    "pydantic>=2.13.4",
+    "python-dotenv==1.2.3",
+    "pyyaml>=6.0",
 ]
+
+[project.scripts]
+lab-research = "agentlab.apps.research_app:main"
+lab-rag = "agentlab.apps.rag_app:main"
+lab-repo-insight = "agentlab.apps.repo_insight_app:main"
+lab-code-review = "agentlab.apps.code_review_app:main"
+lab-interpreter = "agentlab.apps.interpreter_app:main"
+lab-coordinator = "agentlab.apps.coding_coordinator_app:main"
+lab-assistant = "agentlab.apps.personal_assistant_app:main"
 
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools.package-dir]
-"" = "src"
-
 [tool.setuptools.packages.find]
-where = ["src", "alireza"]
-include = ["*"]
-exclude = ["tests*", "notebooks*"]
+where = ["src"]
+include = ["agentlab*"]
+
+[tool.setuptools.package-data]
+agentlab = ["resources/**/*"]
 
 [dependency-groups]
 dev = [
+    "ipykernel>=7.3.0",
     "pytest>=9.1.1",
     "ruff==0.16.5",
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-norecursedirs = ["P3-AntiGravity", ".venv"]
-pythonpath = ["src", "alireza", "alireza/py_files", "."]
-
-[tool.pyrefly]
-search-path = ["src", "alireza", "alireza/py_files"]

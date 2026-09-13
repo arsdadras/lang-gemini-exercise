@@ -1,229 +1,206 @@
-# Project Roadmap — Production-Grade Agentic AI Curriculum
-
-> **Superseded by `docs/Agentic AI Curriculum Roadmap v2.md` (2026-09-11).** This file documents the original 6-project (P1–P6) curriculum shape and is kept for history. The curriculum has since expanded to 12 projects (P1–P12) with P6 and P12 as milestone capstones, followed by Term E (post-P12 platformization/scale) — read Roadmap v2 first for the current shape. The P1–P5 phase-by-phase content below is still accurate as *design* reference; for live status, always defer to `docs/MENTOR_HANDOFF.md`'s session log, not the status lines in this file.
-
-In this repository we build multiple distinct agentic AI projects.
-Each project has a practical **base level** and a pre-planned **growth path**
-toward more advanced and professional implementations.
-
-Frameworks are used **only when the problem requires them** — never forced.
-
-- **LangChain** — models, tools, prompt templates, structured output, middleware, guardrails.
-- **LangGraph** — stateful orchestration, routing, subgraphs, checkpointing, HITL, time-travel.
-- **DeepAgents** — planning, delegation, memory/skills, interpreter, sandbox, MCP, advanced context. Built on LangGraph; can consume `CompiledSubAgent` (a compiled LangGraph graph exposed as a runnable subagent).
-- **LangGraph SDK / LangSmith** — deployment, multi-user threads, streaming at scale, observability.
-
-> **Planning rule:** every project must be complete and useful at the base level. Its upgrade path is defined from day one so it can grow professionally without a rewrite.
-
----
-
-## Advanced Features Map
-
-These features are not forced into every project on day one. They are mapped below and activated when the project reaches the right maturity.
-
-| Feature | Description | Introduced in |
-|---|---|---|
-| **Structured output** | Pydantic schemas for reliable downstream consumption | P1-B |
-| **Middleware** | Retries, model fallback, guardrails, PII detection, rate limits | P1-B |
-| **HITL (Human-in-the-loop)** | Interrupt + approval for sensitive or high-risk actions | P3-B |
-| **Persistence / Checkpointing** | Durable execution, resumability, crash recovery | P2-B |
-| **Time-travel / Replay / Fork** | Re-run from prior checkpoints for debugging and auditing | P2-B / P3-C |
-| **Streaming** | Real-time node/graph/subagent output visibility | P1-B |
-| **Memory & Skills** | Long-term facts, preferences, reusable behavior files | P5-A |
-| **Interpreter** | In-process, stateful code execution within the agent loop | P4-A |
-| **Sandbox** | Isolated shell execution, package installs, artifact generation | P4-B |
-| **RAG** | Grounded retrieval over documents, code, and internal knowledge | P2-A |
-| **Subgraphs / CompiledSubAgent** | Modular LangGraph graphs composed inside larger systems | P2-C / P3-C |
-| **Multi-agent delegation** | Parallel / sequential subagent task dispatch | P3-C / P6-A |
-| **MCP tools** | External tool ecosystems via standard interface | P5-C |
-| **LangSmith observability** | Tracing, evaluation, and debugging across agents | P2-B |
-| **LangGraph SDK deployment** | Multi-user threads, remote client access, production hosting | P6-C |
-| **ACP (Agent Client Protocol)** | Standardized inter-agent communication | P6-C |
-
----
-
-## P1 — Research Agent
-
-**Status (2026-08-19): Phase A ✅ · Phase B ✅ · Phase C 🔶 in progress.**
-See `MENTOR_HANDOFF.md` for the detailed session-by-session state and open items — read that file first before resuming work here.
-
-**Problem:** User gives a topic → agent searches the web → returns a structured, cited report.
-
-### Phase A — Baseline ✅
-- DeepAgents `create_deep_agent` as orchestrator
-- LangChain `TavilySearchResults` tool
-- Streaming output to terminal
-
-### Phase B — Growth ✅
-- Structured Pydantic schema for report sections (`schemas.research.ResearchReport`)
-- Middleware: retries + fallback model (`middleware.retry`), HITL approval (`middleware.hitl`)
-- HITL approval before web_search calls, via `HumanInTheLoopMiddleware` + `InMemorySaver` checkpointer
-- Memory for recurring research preferences and past topics — **not started, deferred**
-
-### Phase C — Professional 🔶
-- ✅ Research subagent per sub-question (`subagents.researcher.researcher_subagent`, structured `ResearchFindings` output) — wired into `app.py`
-- ⬜ LangSmith traces and evaluation datasets — `.env` already has `LANGSMITH_*` vars provisioned, just needs wiring + a first traced run
-- ⬜ SDK-exposed multi-session service
-- ⬜ Optional RAG overlay for local notes or saved corpus
-
-**Frameworks:** DeepAgents + LangChain → LangGraph SDK at Phase C
-
----
-
-## P2 — RAG Agent
-
-**Problem:** User asks questions over private documents, notes, or code → agent answers with grounded retrieval.
-
-### Phase A — Baseline
-- LangGraph `StateGraph`: ingest → retrieve → grade → generate nodes
-- Vector retrieval (FAISS or Chroma) + prompt-grounded answering
-- Conditional edge: irrelevant docs → fallback/retry
-
-### Phase B — Growth
-- Corrective-RAG loop with query rewrite and grading
-- `InMemorySaver` checkpointing for resumable multi-turn work
-- Streaming node-by-node output
-- Time-travel and replay for debugging retrieval mistakes
-- LangSmith tracing per node
-
-### Phase C — Professional
-- Hybrid retrieval: local vector store + web fallback
-- Wrap compiled graph as `CompiledSubAgent` for use inside larger systems
-- Skills for domain-specific retrieval behavior
-- Middleware guardrails and response validation
-
-**Frameworks:** LangGraph + LangChain → DeepAgents wrapper at Phase C
-
----
-
-## P3 — Code Review & Test Generation Agent
-
-**Status (2026-09-02): Phase A ✅ · Phase B ✅ · Phase C ✅ COMPLETE.**
-See `MENTOR_HANDOFF.md` for full implementation details, architectural patterns, and verified test suite.
-
-**Problem:** User gives a file or PR diff → agent reviews code, suggests refactors, and generates tests.
-
-### Phase A — Baseline ✅
-- LangGraph orchestration across review stages
-- LangChain file tools (`file_ops.py`)
-- Structured `ReviewResult` and `TestSuite` Pydantic output
-
-### Phase B — Growth ✅
-- HITL interrupt before writing file changes (`interrupt()` + `Command(resume=...)`)
-- Sandbox execution for running generated tests (`run_tests_in_sandbox`)
-- Self-correction feedback loop (`fix_tests_node`)
-- Middleware: model fallback and tool retry
-- Persistent SQLite checkpointer (`SqliteSaver` in `core/src/data/sqlite_db.py`)
-
-### Phase C — Professional ✅
-- Reviewer, test-writer, and refactor-gate as separate compiled LangGraph subgraphs
-- DeepAgents adapter wrapping parent graph as `CompiledSubAgent` (`code_review_subagent`)
-- Time-travel and state history inspection (`inspect_state_history`, `fork_from_checkpoint`)
-- High-speed model routing (`gemini-3.5-flash-lite` under 10s runtime)
-
-**Frameworks:** LangGraph + LangChain → DeepAgents + CompiledSubAgent at Phase C
-
----
-
-## P4 — Sandbox / Interpreter Agent
-
-**Status (2026-09-09): Phase A ✅ · Phase B ✅ · Phase C ✅ COMPLETE.**
-See `MENTOR_HANDOFF.md` §"P4 — Sandbox / Interpreter Agent — Phase C Status" for full implementation detail, including the `interpreter_subagent`, the multi-agent `coding_coordinator_agent`, and the enterprise agent registry work.
-
-**Problem:** User gives data, computational, or shell automation tasks → agent plans, executes code/scripts in an isolated workspace, manages artifacts, self-corrects on errors, and returns verified results.
-
-### Phase A — Native Workspace & Execution Engine
-- DeepAgents `create_deep_agent` powered by native `LocalShellBackend` / `FilesystemBackend`
-- Confinement in anchored `out/sandbox/` workspace (zero repository pollution)
-- Native file operations (`ls`, `glob`, `grep`, `read`, `write`, `edit`) and shell execution (`execute`)
-- Stateful Python computation loop with automatic output capture and error recovery
-
-### Phase B — Growth & Governance
-- Security policies via `FilesystemPermission`
-- Human-In-The-Loop (HITL) approval on high-risk shell commands via `interrupt_on={"execute": True}`
-- Artifact management and persistent data pipelines (generating CSVs, charts, reports)
-- Cross-session persistence via `get_sqlite_checkpointer()`
-
-### Phase C — Professional & Subagent Composition
-- Streaming execution events in real time
-- LangSmith tracing and run observability
-- Wrapping the Sandbox/Interpreter Agent as a `CompiledSubAgent` for modular multi-agent reuse
-
-**Frameworks:** DeepAgents (`LocalShellBackend`, `FilesystemPermission`) + LangGraph (Checkpoints, HITL)
-
-
----
-
-## P5 — Memory-Rich Personal Assistant
-
-**Status (2026-09-11): Session 0 approved, Phase A in progress.**
-See `docs/design_cards/P5_memory_assistant.md` for the full 15-Point Design Card and `MENTOR_HANDOFF.md` §"P5 — Memory-Rich Personal Assistant (Orientation & Session 0)" for the live session log.
-
-**Problem:** Agent supports ongoing user relationships → remembers facts, preferences, and past tasks across sessions.
-
-### Phase A — Baseline
-- DeepAgents `CompositeBackend`: `StateBackend` for conversation + `StoreBackend` for `/memories/`
-- Memory file loaded at session start
-- Tavily search + file tools
-
-### Phase B — Growth
-- Skills library (`/skills/`) for reusable behaviors
-- Memory consolidation / summarization subagent
-- HITL approval for sensitive memory writes
-- Middleware guardrails and PII protection
-
-### Phase C — Professional
-- Per-user namespace isolation via `lambda rt: (rt.server_info.assistant_id,)`
-- Persistent backing store (SQLite or Postgres)
-- MCP tools for controlled external integrations
-- Evaluation of memory quality and drift
-
-**Frameworks:** DeepAgents + LangChain → LangGraph SDK at Phase C
-
----
-
-## P6 — Capstone: Production Multi-Agent System
-
-**Status:** Not started. Per `docs/Agentic AI Curriculum Roadmap v2.md`, P6 is now the *first* of two formal capstones (P6 and P12) rather than the curriculum's final project — read Roadmap v2 §"P6 — Midterm/Final I" before starting.
-
-**Problem:** Combine the strongest capabilities from P1–P5 into a single deployable, observable, multi-user production system.
-
-### Phase A — Integration Baseline
-- DeepAgents coordinator at the top level
-- Subagents composed from P1–P4 Phase C components as `CompiledSubAgent` instances
-- Shared LangChain model/tool layer with GapGPT router + Gemini fallback
-- Standardized state schemas, prompt registry, and config
-
-### Phase B — Hardening
-- Full LangSmith observability across all agents and subgraphs
-- Durable persistence: SQLite → Postgres checkpointer
-- Streaming at all levels (node, graph, subagent)
-- Retries, model fallback, guardrails, approval flows
-
-### Phase C — Deployment
-- `langgraph.json` deployment config for all graphs
-- LangGraph SDK client for external access
-- Multi-user thread isolation
-- ACP (Agent Client Protocol) for standardized inter-agent communication
-- Health checks, secrets via env, operational logging
-
-**Frameworks:** Full stack — LangChain + LangGraph + DeepAgents + LangGraph SDK
-
----
-
-## Framework Selection Guide
-
-| Need | Best fit |
-|---|---|
-| Models, tools, prompts, structured output, middleware | LangChain |
-| Custom state, routing, subgraphs, checkpointing, HITL, time-travel | LangGraph |
-| Planning, delegation, memory/skills, interpreter, sandbox, MCP, context management | DeepAgents |
-| Deployment, SDK access, multi-user threads | LangGraph SDK |
-
----
-
-## Build Order
-
-P1 → P2 → P3 → P4 → P5 → P6 → P7 → P8 → P9 → P10 → P11 → P12 → Term E
-
-Each project reaches a solid baseline first, then grows through its pre-planned path. Phase C of each project feeds directly into P6, and later P12, as a composable component. See `docs/Agentic AI Curriculum Roadmap v2.md` for P6–P12 and Term E, not covered by this historical file.
+# Curriculum Roadmap (v3)
+
+Adopted 2026-09-13. Replaces the original 6-project roadmap and Roadmap v2. Both are
+still readable in git history (`git show 85f714d:docs/ROADMAP.md`,
+`git show "85f714d:docs/Agentic AI Curriculum Roadmap v2.md"`). Live status lives in
+`docs/MENTOR_HANDOFF.md`.
+
+## Shape
+
+- **Term P:** 12 projects. P1-P5 and P7-P11 build specialists; **P6** and **P12** are
+  capstones that compose them. Small composition exercises ("mini-workflows") recur
+  throughout, instead of waiting for the end.
+- **Term E:** productization and scale, which starts only after P12.
+- Every project has three phases. There is no fourth "hardening" phase
+  ([ADR-0001](adr/0001-three-phase-project-model.md)).
+
+## Phase contract
+
+| Phase | Goal | In scope | Out of scope |
+| :--- | :--- | :--- | :--- |
+| **A: domain core** | A useful vertical slice | One user job, minimal tools, typed output where something consumes it, one runnable app, a clear success condition | Generic registries or platform layers, deployment |
+| **B: robust operation** | Resilient, meaningful behavior | Persistence and resume, recovery, streaming, validation and self-correction, HITL on consequential actions, domain errors | Extracting shared primitives before a second consumer exists |
+| **C: composable specialist** | Safe reuse by later workflows | Explicit input/output contract, side-effect and risk declaration, failure contract, subagent or graph wrapper, domain verification (eval-lite), one small composition exercise | Full production hardening (Term E) |
+
+## Cross-cutting threads
+
+Every project moves each thread one step forward.
+
+| Thread | Where it stands | How it grows |
+| :--- | :--- | :--- |
+| Contracts | Pydantic output schemas (P1+) | Typed inter-agent contracts (P6), workflow schemas (P12) |
+| Observability | LangSmith tracing is already on for every run | Deliberate trace reading (P5-C), per-run tags (P6), metrics (E1) |
+| Evaluation | Unit tests for deterministic code | Eval-lite scenario sets (P5-C), routing/synthesis evals (P6), regression gate (P8), datasets (E1) |
+| Security | Allow-listed sandbox env, `.env` read denial ([ADR-0005](adr/0005-sandbox-secret-isolation.md)) | Prompt injection through documents (P7), action permissions (P8, P11), tenant isolation (E5) |
+| Cost and latency | Tier x provider model catalog | Measured tier choices (P9), model routing (E3) |
+
+Testing and evaluation rules: [ADR-0004](adr/0004-testing-and-evaluation-policy.md).
+
+## Done
+
+- **P1 Research agent:** DeepAgents orchestrator, Tavily search, structured cited report,
+  model fallback, HITL before search, researcher subagent.
+- **P2 RAG agent:** raw `StateGraph`, grading, corrective loop, checkpointing, streaming,
+  time travel, web fallback, hallucination check, `CompiledSubAgent`, repo-insight
+  coordinator with a retrieval-strategy skill.
+- **P3 Code review and test generation:** three compiled subgraphs, sandboxed pytest runs,
+  self-correcting test loop, `interrupt()` refactor gate, SQLite checkpoints, time travel,
+  subagent adapter.
+- **P4 Sandbox interpreter:** `LocalShellBackend` workspace, HITL on `execute`, artifacts,
+  durable sessions, interpreter subagent with deliverable diffing, coding coordinator over
+  P1/P3/P4 (first mini-workflow).
+- **Stage 0 stabilization (2026-09-13):** single `agentlab` package, composition root,
+  runtime-context identity, secret isolation, governance reset.
+
+## P5: Memory-rich personal assistant (in progress)
+
+Done: **A** (`CompositeBackend`: thread state plus per-user `/memories/` in a store,
+profile loaded each turn) and **B1** (skills library on `/skills/`).
+
+- **B2, memory write governance:** approval for writes to `/memories/` (built-in HITL
+  matches only tool names, so this needs path-aware `wrap_tool_call` middleware); read-only
+  `/skills/`; replace the placeholder coding skills with assistant-domain skills.
+- **B3, PII and secret guardrail:** built-in `PIIMiddleware`; choosing block, redact, mask,
+  or hash, and where to apply it (input, output, tool results).
+- **B4, memory consolidation:** hot-path vs background writes; deduplication, conflict,
+  and staleness policy.
+- **C1, durable memory:** `SqliteStore` plus checkpointer, with identity end to end
+  (`thread_id` x `user_id`), including CLI session resolution.
+- **C2, memory eval-lite:** scenarios for recall, update, conflict, cross-user isolation,
+  and false "I saved it" claims, reviewed with traces.
+- **C3, one controlled MCP integration:** reads by default, writes need approval.
+- **C4, composition boundary:** P5 as a context provider (tool or middleware) rather than a
+  chat subagent (ADR). Mini-workflow: personalized research brief (P5 + P1). Then the
+  design card update and retrospective.
+
+## P6: Capstone I, Research-to-Decision workflow
+
+Turn an open question into a grounded decision brief: external research, private
+knowledge, optional analysis, verification, approval.
+
+- **A:** a deterministic LangGraph parent workflow calls P1 and P2 through typed contracts,
+  synthesizes, and gates delivery on approval.
+- **B:** parallel branches (`Send`), partial-failure recovery, source-conflict handling,
+  checkpointed long runs, progress streaming, and approvals raised inside subagents surfaced
+  to the top-level app.
+- **C:** an evaluator-optimizer loop; the same eval set run against the deterministic
+  workflow and against a DeepAgents supervisor, with the choice recorded in an ADR; a typed
+  capability catalog for selecting specialists (the first real consumer of a registry,
+  [ADR-0006](adr/0006-remove-agent-registry.md)); optional local serving through LangGraph
+  server plus the SDK client.
+
+## P7: Document intelligence agent
+
+- **A:** one document family, extraction into typed schemas, confidence reporting.
+- **B:** multiple formats, tables and layout, validation loops, human review of ambiguous
+  fields, document comparison.
+- **C:** provenance and lineage, multi-document reasoning, reusable extraction skills,
+  audit-ready output.
+- **Mini-workflow, Document Intake Cell:** P7 extraction -> P2 lookup -> validation gate ->
+  P4 report.
+- **New thread step:** prompt injection carried in documents.
+
+## P8: Customer support operations agent
+
+- **A:** classify a ticket, retrieve an answer, draft a response.
+- **B:** multi-intent tickets, customer context from P5, SLA and priority routing,
+  escalation states, HITL for sensitive actions.
+- **C:** action permissions, ticket-system integration, audit trail, critic check.
+- **Mini-workflow (required), Support Resolution Cell:** triage -> P2 retrieval -> P1
+  research fallback -> critic -> approval -> response or controlled ticket update.
+  It teaches response vs side effect.
+
+## P9: Data and SQL analytics agent
+
+- **A:** question -> query -> result, with a table or chart.
+- **B:** query validation and repair, read/write separation, sandboxed analysis through P4,
+  multi-step metrics, HITL before risky queries.
+- **C:** a semantic metric layer, provenance, reusable analysis plans, anomaly explanation.
+- **Mini-workflow, Analytics-to-Report Cell:** P9 analysis -> P4 artifacts -> P1 benchmark
+  context -> verification.
+
+## P10: Multimodal perception agent
+
+Builds on P7's document pipeline instead of duplicating it.
+
+- **A:** one non-text modality plus text context.
+- **B:** multiple modalities, preprocessing, uncertainty, cross-modal evidence links, HITL on
+  ambiguous perception.
+- **C:** temporal media, provenance (pages, regions, timestamps), reusable perception
+  subagents.
+- **Mini-workflow, Multimodal Evidence Cell:** P10 -> P7 -> P2 -> verification -> P4 report.
+
+## P11: API and business operations agent
+
+- **A:** read-only API integration with structured responses.
+- **B:** action proposals, approval gates, retries and rate limits, error mapping,
+  idempotency keys.
+- **C:** transactional boundaries, compensation, tenant isolation, connector catalog.
+- **Mini-workflow, Plan-to-Action Cell:** plan -> gather context -> P11 proposal ->
+  approval -> idempotent execution -> audit record.
+
+## P12: Capstone II, Business Operations Control Tower
+
+A bounded control-tower workflow, not a generic super-agent. It routes a business request
+across P5 context, P7 documents, P2 knowledge, P1 research, P9 analysis, P10 perception,
+P11 actions, and P4 artifacts.
+
+- **A:** explicit routing, typed contracts, a sequential path plus one parallel branch,
+  approval before side effects.
+- **B:** planner/executor separation, task dependencies, partial failure and compensation,
+  intermediate evaluation, persistent workflow state, progress streaming, per-specialist
+  permissions, context budgets.
+- **C:** hierarchical orchestration, capability discovery, evaluator-optimizer, replay and
+  audit, workflow variants on the same specialists, multi-user isolation, and a documented
+  line between deterministic control and model-directed agency.
+
+## Composition patterns
+
+Use the simplest pattern that works. More agents do not make a better system.
+
+| Pattern | Use when |
+| :--- | :--- |
+| Sequential | Steps are known and ordered |
+| Routing | A request belongs to one of several specialist paths |
+| Parallelization | Independent work can run concurrently, then merge |
+| Orchestrator-workers | Decomposition is only knowable at runtime (needs clear worker contracts and a stop condition) |
+| Evaluator-optimizer | Output can be checked against a meaningful rubric |
+| Hierarchical | Multiple domains need supervisors (P12 or later) |
+| Autonomous loop | The path can't be hardcoded, but progress is still verifiable |
+
+Every new specialist gets a design card before code (template:
+`docs/design_cards/README.md`).
+
+## Term E (after P12)
+
+1. **E1, production hardening and evaluation:** eval datasets, trace taxonomy, failure
+   classes, idempotency, timeouts and cancellation, audit, authorization, sandbox and
+   session isolation.
+2. **E2, shared workflow runtime:** a common lifecycle, event model, checkpoint, approval,
+   and retry services, proven by two real workflows.
+3. **E3, agent application platform:** versioned agent, tool, and workflow registries;
+   policy; model routing; memory and artifact services.
+4. **E4, multi-workflow portfolio:** at least three workflows on the platform, as an
+   architecture fitness test.
+5. **E5, distributed execution:** API boundary, job queue and workers, durable run state,
+   tenant isolation, observability triad.
+6. **E6, vertical product and adaptive systems:** one domain in depth; trace-driven
+   optimization behind evaluation and promotion gates.
+
+**Extraction rule:** one consumer, keep it local; two, extract carefully; three, formalize.
+
+**Entry gate from Term P:**
+- at least 10 specialist roles built (or waived with a rationale);
+- P6 and P12 complete;
+- at least three mini-workflows implemented during P7-P11;
+- design cards and composition contracts for every retained specialist;
+- deterministic and model-directed control compared at least once;
+- an approval boundary and a side-effect boundary exercised;
+- a failure replayed and analyzed;
+- every shared abstraction justified by multiple consumers.
+
+Each E stage gets planned in detail when it is reached.
+
+## Pacing
+
+Default: 1-2 weeks per project. Adjusted together as we go.

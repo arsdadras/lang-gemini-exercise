@@ -1,185 +1,84 @@
-# P3: Code Review & Test Generation Agent — Comprehensive Master Guide
+# P3 Study Guide: Code Review and Test Generation
 
----
+Rewritten 2026-09-13 to match the code. Paths are relative to `src/agentlab/`.
 
-## 1. Executive Summary & Architectural Vision
+## The problem
 
-The **P3 Code Review & Test Generation Agent** is a production-grade, stateful autonomous system designed to ingest raw source code or PR diffs, produce structured code quality audits, generate regression test suites, safely execute tests in isolated sandboxes, self-correct failing test code, request human approval for critical refactors, and maintain durable state history with time-travel capabilities.
+Given source code, produce a structured review, generate tests, run them safely, repair
+failing tests, and apply a refactor only after a human approves it. Every step is known in
+advance, so this is a **workflow** (raw LangGraph), not an autonomous agent.
 
-```mermaid
-flowchart TD
-    Start([Input: Source Code]) --> Reviewer[Reviewer Subgraph<br/>LLM + Structured Output]
-    Reviewer --> CondReview{Fatal Error?}
-    CondReview -- Yes --> EndFail([End: Fail-Fast])
-    CondReview -- No --> TestGen[TestGen Subgraph<br/>Generate -> Sandbox Execute]
-    TestGen --> CondTest{Tests Passed?}
-    CondTest -- Failed & Retries < Max --> FixTest[Fix Tests Loop<br/>Self-Correction]
-    FixTest --> TestGen
-    CondTest -- Passed / Max Retries --> Refactor[Refactor Subgraph<br/>HITL Approval Gate]
-    Refactor --> Gate{Human Decision}
-    Gate -- Approved --> Apply[Apply Refactored Code]
-    Gate -- Rejected / Skipped --> Keep[Retain Original Code]
-    Apply --> EndSuccess([End: Review & Refactor Complete])
-    Keep --> EndSuccess
+```
+START -> reviewer -> [error?] -> test_generator -> [refactored code?] -> refactor_gate -> END
+                                  (generate -> execute -> fix loop)       (interrupt -> apply)
 ```
 
----
+## Phase A: state and structured output
 
-## 2. Phase A: Baseline Architecture (Foundational State & Structured Output)
+- **State** (`state/code_review_state.py`): a `TypedDict` where only `code` is required. Each
+  node returns a partial update. `error` is a fail-fast channel that routers check before
+  continuing.
+- **Schemas** (`output_schemas/code_review_output_schema.py`):
+  - `ReviewResult` (score 1-10, summary, `CodeIssue` list, optional `refactored_code`);
+  - `TestSuite` (framework, `test_code`, `TestCase` list);
+  - `TestExecutionResult` (status, passed, exit code, output).
+- **Structured calls** (`nodes/code_review_node.py`):
+  `REVIEW_PROMPT | llm_model.chain("medium", structured=ReviewResult, cascade=True)`. The model
+  must answer in the schema, and if the medium tier fails the call cascades to lower tiers.
 
-### 2.1 State Design: `CodeReviewState`
-Located at `core/src/state/code_review.py`.
-In LangGraph, state acts as the single source of truth across all nodes and subgraphs.
+## Phase B: execution, loops, approval, persistence
 
-```python
-from typing import TypedDict
-from output_schemas.code_review import ReviewResult, TestExecutionResult, TestSuite
+- **Sandboxed tests** (`utils/sandbox_util.run_tests_in_sandbox`):
+  - writes `tested_module.py` and `test_module.py` into a temporary directory;
+  - runs `python -m pytest` in a subprocess with a timeout;
+  - the subprocess gets an **allow-listed environment**, because generated tests are untrusted
+    code (ADR-0005).
+- **Self-correction loop** (`graphs/test_gen_subgraph.py`):
+  - `execute_tests` -> `route_after_execution`, which goes to `fix_tests` while tests fail and
+    `test_retries < max_test_retries`;
+  - the retry budget defaults to `MAX_TEST_RETRIES = 2` and can be overridden per run via
+    `config["configurable"]["max_test_retries"]`;
+  - `fix_tests` feeds pytest's output back into `TEST_FIX_PROMPT` and loops back to
+    `execute_tests`.
+- **Human approval** (`nodes/code_review_node.approved_refactor_node`):
+  - `interrupt({"action_required", "summary", "refactored_code"})` pauses the graph and
+    persists the state;
+  - the app resumes with `graph.stream(Command(resume="approve" | "reject"), config)`;
+  - `route_after_approval` sends the run to `apply_refactor` (which sets `applied_code`) or
+    ends it.
+- **Persistence:** the parent graph compiles with a checkpointer (the app uses SQLite at
+  `out/state/checkpoints.db`). Interrupts, resume, and history all depend on it.
 
-class CodeReviewState(TypedDict, total=False):
-    code: str
-    language: str
-    file_path: str | None
-    review: ReviewResult | None
-    tests: TestSuite | None
-    test_execution: TestExecutionResult | None
-    test_retries: int
-    refactor_decision: str | None
-    error: str | None
+## Phase C: subgraphs, composition, time travel
+
+- **Three compiled subgraphs** (`graphs/reviewer_subgraph.py`, `test_gen_subgraph.py`,
+  `refactor_subgraph.py`), each mounted as a single node by `graphs/code_review_parentgraph.py`.
+  - Each subgraph is testable and replaceable on its own.
+  - The parent sees one node per stage; subgraph state flows through the shared schema.
+- **Subagent adapter** (`subagents/code_review_subagent.py`): DeepAgents coordinators speak
+  `messages`, but the pipeline speaks `CodeReviewState`. The adapter reads the last message as
+  code, runs the graph on a fresh thread, and renders a Markdown report. The graph's own state
+  never learns about chat.
+- **Time travel** (`utils/time_travel_util.py`): `inspect_state_history` lists checkpoints;
+  `fork_from_checkpoint` re-invokes from a chosen `checkpoint_id`.
+
+## Running it
+
+```bash
+uv run lab-code-review examples/buggy_bank_account.py
+uv run lab-code-review list            # recorded sessions
+uv run lab-code-review step[0]         # inspect or resume the latest session
 ```
 
-**Key Architectural Insights:**
-- `total=False`: Enables partial-state updates. Each node returns only the keys it modifies without overwriting the entire state dictionary.
-- **Fail-Fast Error Channel (`error`):** If an LLM call or external API fails, the node populates `error`. Downstream conditional edges inspect this key immediately to abort execution and prevent costly subsequent steps.
+## Lessons worth keeping
 
-### 2.2 Strict Structured Output Schemas
-Located at `core/src/output_schemas/code_review.py`.
-Using Pydantic V2 models ensures 100% type safety and reliable machine consumption.
+- Choose workflow vs agent by asking: is the control path known in advance?
+- Put failure in state (`error`) and route on it; don't let exceptions tear down the run.
+- An approval gate is only as durable as the checkpointer behind it.
+- Adapters keep each component's contract clean: chat at the edge, typed state inside.
+- Treat generated code as untrusted input everywhere it runs.
 
-- `ReviewResult`: Contains numerical score (1-10), qualitative summary, list of `CodeIssue` (line number, severity, category, description, suggestion), and optional `refactored_code`.
-- `TestSuite`: Contains test framework name, list of `TestCase`, and the raw runnable `test_code`.
-- `TestExecutionResult`: Encapsulates sandbox status (`passed`, `failed`, `timed_out`, `error`), exit code, boolean `passed`, and execution stdout/stderr.
+## Tests
 
----
-
-## 3. Phase B: Growth Architecture (Execution, Loops & Persistence)
-
-### 3.1 Sandbox Runner & Process Isolation
-Located at `core/src/utils/sandbox.py`.
-LLM-generated tests must **never** be executed directly in the host agent's runtime process.
-
-```python
-def run_tests_in_sandbox(
-    code: str,
-    test_code: str,
-    sandbox_type: SandboxType = "local",
-    timeout_seconds: int = 30,
-) -> TestExecutionResult:
-    # 1. Creates an isolated temporary directory
-    # 2. Writes code as tested_module.py and test_code as test_module.py
-    # 3. Spawns an isolated subprocess running pytest
-    # 4. Enforces strict timeouts and captures full traceback
-```
-
-### 3.2 Cyclic Self-Correction Feedback Loop
-Located at `core/src/nodes/code_review.py` & `core/src/graphs/test_gen_subgraph.py`.
-When tests fail during sandbox execution:
-1. `execute_tests_node` records the failure traceback into state.
-2. `route_after_execution` checks `state["test_execution"].passed` and `test_retries < MAX_TEST_RETRIES`.
-3. If failing, execution routes to `fix_tests_node`, which injects the traceback into `TEST_FIX_PROMPT`.
-4. The LLM produces a corrected test suite and increments `test_retries`.
-5. Execution loops back to `execute_tests_node` until tests pass or the retry budget is exhausted.
-
-### 3.3 Human-in-the-Loop (HITL) Gate via `interrupt()`
-Located at `core/src/graphs/refactor_subgraph.py`.
-Modern LangGraph uses `interrupt(payload)` to pause the state machine:
-
-```python
-def approved_refactor_node(state: CodeReviewState) -> dict:
-    review = state.get("review")
-    if not review or not review.refactored_code:
-        return {"refactor_decision": "skip"}
-
-    # Freeze execution and wait for human decision:
-    human_response = interrupt(
-        {
-            "action": "refactor_approval_required",
-            "proposed_code": review.refactored_code,
-            "issues_addressed": len(review.issues),
-        }
-    )
-    return {"refactor_decision": human_response.get("decision", "rejected")}
-```
-The caller resumes execution seamlessly using `graph.invoke(Command(resume={"decision": "approved"}), config=config)`.
-
-### 3.4 Persistent SQLite Checkpointing
-Located at `core/src/data/sqlite_db.py`.
-`SqliteSaver.from_conn_string("core/src/data/checkpoints.db")` serializes graph state at every super-step.
-- Enables persistent cross-session recovery.
-- Allows thread-isolated execution via `{"configurable": {"thread_id": "session_id"}}`.
-
----
-
-## 4. Phase C: Professional Architecture (Modular Subgraphs & DeepAgents Integration)
-
-### 4.1 Modular 3-Subgraph Architecture
-Instead of a single monolithic StateGraph, P3 decomposes responsibilities into 3 independent, compiled subgraphs:
-1. **`ReviewerSubgraph`** (`core/src/graphs/reviewer_subgraph.py`): Standalone code analysis and review generation.
-2. **`TestGenSubgraph`** (`core/src/graphs/test_gen_subgraph.py`): Standalone test generation, sandbox execution, and retry loop.
-3. **`RefactorSubgraph`** (`core/src/graphs/refactor_subgraph.py`): Standalone HITL approval gate and code modification.
-
-**Parent Graph Orchestration:**
-`core/src/graphs/code_review_parentgraph.py` mounts these compiled subgraphs as nodes:
-```python
-workflow.add_node("reviewer", build_reviewer_subgraph())
-workflow.add_node("test_generator", build_test_gen_subgraph())
-workflow.add_node("refactor_gate", build_refactor_subgraph())
-```
-
-### 4.2 DeepAgents `CompiledSubAgent` Adapter
-Located at `core/src/subagents/code_review.py`.
-DeepAgents communicates via `messages: list[BaseMessage]`. To expose our deterministic Parent Graph to DeepAgents supervisors, we implement the **Adapter Pattern** via `RunnableLambda`:
-
-```python
-code_review_subagent = {
-    "name": "code_review_subagent",
-    "description": "Reviews code, generates/runs unit tests, and proposes refactors.",
-    "runnable": RunnableLambda(_run_code_review_from_messages),
-}
-```
-
-### 4.3 Time-Travel & State History Exploration
-Located at `core/src/utils/time_travel.py`.
-Because every state snapshot is persisted in SQLite:
-- `inspect_state_history(graph, thread_id)`: Fetches chronological execution milestones.
-- `fork_from_checkpoint(graph, thread_id, checkpoint_id)`: Rewinds time to a specific historical checkpoint and forks execution down an alternative path.
-
----
-
-## 5. Signature Code Catalog (P3 Architecture Showcase)
-
-| Component | File Path | Architectural Role |
-|---|---|---|
-| **State Schema** | `core/src/state/code_review.py` | Typed partial-state contract |
-| **Output Schemas** | `core/src/output_schemas/code_review.py` | Pydantic V2 structured models |
-| **Sandbox Execution** | `core/src/utils/sandbox.py` | Isolated subprocess test execution |
-| **Reviewer Subgraph** | `core/src/graphs/reviewer_subgraph.py` | Standalone review node |
-| **TestGen Subgraph** | `core/src/graphs/test_gen_subgraph.py` | Cyclic self-correcting test generator |
-| **Refactor Subgraph** | `core/src/graphs/refactor_subgraph.py` | HITL pause/resume gate |
-| **Parent Pipeline** | `core/src/graphs/code_review_parentgraph.py` | 3-subgraph deterministic orchestrator |
-| **SubAgent Adapter** | `core/src/subagents/code_review.py` | DeepAgents integration wrapper |
-| **Time-Travel Utils** | `core/src/utils/time_travel.py` | State inspection & history replay |
-| **Database Checkpointer** | `core/src/data/sqlite_db.py` | SQLite connection manager |
-
----
-
-## 6. Production Verification & Test Coverage
-
-- **Linter & Formatter:** 100% clean (`uv run ruff check core/ tests/` -> 0 errors).
-- **Automated Test Suite:** 12/12 unit tests passing in `tests/test_code_review.py` & `tests/test_prompts.py`:
-  - `test_schemas_instantiation`: Verifies Pydantic contracts.
-  - `test_route_after_reviewer_and_test_gen`: Validates conditional edges and fail-fast routing.
-  - `test_sandbox_execution_passed`: Verifies sandbox runner on valid code.
-  - `test_sandbox_execution_failed`: Verifies sandbox runner on syntax/assertion failures.
-  - `test_standalone_subgraphs_compile`: Confirms isolated subgraph compilation.
-  - `test_subagent_spec_structure`: Validates DeepAgents adapter dictionary.
-  - `test_time_travel_utilities`: Verifies checkpoint history inspection and time rewind.
+`tests/test_code_review.py` covers schemas, all routers, subgraph compilation, passing and
+failing sandbox runs, secret isolation, SQLite checkpointing and history, and the subagent spec.
