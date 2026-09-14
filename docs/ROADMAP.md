@@ -98,10 +98,12 @@ knowledge, optional analysis, verification, approval.
 
 - **A:** a deterministic LangGraph parent workflow calls P1 and P2 through typed contracts,
   synthesizes, and gates delivery on approval.
-- **B:** parallel branches (`Send`), partial-failure recovery, source-conflict handling,
-  checkpointed long runs, progress streaming, and approvals raised inside subagents surfaced
-  to the top-level app.
-- **C:** an evaluator-optimizer loop; the same eval set run against the deterministic
+- **B:** parallel branches (`Send` fan-out; fan-in through a reducer or a deferred node),
+  partial-failure recovery (node `RetryPolicy`), source-conflict handling, checkpointed long
+  runs and durability modes, progress streaming with `stream_events(version="v3")` subagent
+  projections, and approvals raised inside subagents surfaced to the top-level app.
+- **C:** an evaluator-optimizer loop (a graph loop in the workflow, `RubricMiddleware` on
+  the supervisor); the same eval set run against the deterministic
   workflow and against a DeepAgents supervisor, with the choice recorded in an ADR; a typed
   capability catalog for selecting specialists (the first real consumer of a registry,
   [ADR-0006](adr/0006-remove-agent-registry.md)); optional local serving through LangGraph
@@ -113,7 +115,8 @@ knowledge, optional analysis, verification, approval.
 - **B:** multiple formats, tables and layout, validation loops, human review of ambiguous
   fields, document comparison.
 - **C:** provenance and lineage, multi-document reasoning, reusable extraction skills,
-  audit-ready output.
+  audit-ready output. Fan-out over many documents with an interpreter and dynamic subagents,
+  contrasted with P6's code-decided `Send`; model-written code becomes an injection surface.
 - **Mini-workflow, Document Intake Cell:** P7 extraction -> P2 lookup -> validation gate ->
   P4 report.
 - **New thread step:** prompt injection carried in documents.
@@ -132,7 +135,9 @@ knowledge, optional analysis, verification, approval.
 
 - **A:** question -> query -> result, with a table or chart.
 - **B:** query validation and repair, read/write separation, sandboxed analysis through P4,
-  multi-step metrics, HITL before risky queries.
+  multi-step metrics, HITL before risky queries. Measured tier choices, with harness profiles
+  for model-specific tuning; programmatic tool calling to aggregate results outside the
+  context.
 - **C:** a semantic metric layer, provenance, reusable analysis plans, anomaly explanation.
 - **Mini-workflow, Analytics-to-Report Cell:** P9 analysis -> P4 artifacts -> P1 benchmark
   context -> verification.
@@ -188,6 +193,11 @@ Use the simplest pattern that works. More agents do not make a better system.
 
 Every new specialist gets a design card before code (template:
 `docs/design_cards/README.md`).
+
+**Framework features.** A LangChain, LangGraph, or DeepAgents feature enters the curriculum
+at the first stage that has a real consumer for it, not as a tour. Beta APIs (interpreters,
+dynamic subagents, `RubricMiddleware`, harness profiles) are verified against the pinned
+version when that stage starts, and the stage notes what replaces them if the API changes.
 
 ## Term E (after P12)
 
