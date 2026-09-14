@@ -15,7 +15,7 @@ capstones then compose the specialists into workflows.
 | P3 Code review and test generation | Subgraphs, sandboxed tests, self-correction, `interrupt()` approval | Done |
 | P4 Sandbox interpreter | Shell backend, artifacts, durable sessions, multi-agent coordinator | Done |
 | P5 Memory-rich assistant | Per-user long-term memory, skills, memory governance | In progress |
-| P6-P12 | Capstone I, documents, support ops, analytics, multimodal, business actions, capstone II | Planned |
+| P6-P12 | Capstone I, documents (with vision), support ops, analytics, business actions, capstone II (P10 folded into P7) | Planned |
 
 Full plan: [`docs/ROADMAP.md`](docs/ROADMAP.md). Live status:
 [`docs/MENTOR_HANDOFF.md`](docs/MENTOR_HANDOFF.md).

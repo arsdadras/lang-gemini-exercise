@@ -32,7 +32,8 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
   mentee's copy. The repo is always the mentor's clean version.
 - **Evaluation (2026-09-13):** eval-lite starts at P5 Phase C, and LangSmith traces get used
   deliberately ([ADR-0004](adr/0004-testing-and-evaluation-policy.md)).
-- **Pacing:** default 1-2 weeks per project, adjusted together.
+- **Pacing:** counted in stages (one central lesson each), not weeks
+  ([ADR-0009](adr/0009-stage-admission-rule.md)).
 - **Scratch area:** `alireza/` (notebooks, practice files) is the mentee's scratch paper.
   Never read, reference, or sync it.
 
@@ -100,6 +101,8 @@ Priority tags: **E** = Essential, **N** = Nice-to-have.
 - **N:** Grow the P5 security guard from a classifier into a generic, policy-parameterized
   security agent once a second consumer needs it (triggers: document prompt injection in P7,
   action permissions in P8/P11), and add tools only if that consumer's judgment needs them.
+- **N:** DeepAgents harness profiles, once a fallback model needs different prompts or tool
+  descriptions than the primary.
 - **N:** Per-app checkpoint databases, or tagging threads by app.
 - **N:** After an HITL resume, the streamed CLI prints the approved tool call a second time
   (the middleware re-emits the AI message update). Cosmetic.

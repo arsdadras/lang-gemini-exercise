@@ -20,6 +20,7 @@ set the old one's status to `Superseded by ADR-XXXX`.
 | [0006](0006-remove-agent-registry.md) | Remove the agent registry until P6 needs one | Accepted |
 | [0007](0007-built-in-model-fallback.md) | Agent model fallback uses `ModelFallbackMiddleware` | Accepted |
 | [0008](0008-memory-write-governance.md) | Memory writes governed by operation in code; content by a later guard | Accepted |
+| [0009](0009-stage-admission-rule.md) | A stage admission rule; P10 folded into P7 and the roadmap refined | Accepted |
 
 ## Template
 

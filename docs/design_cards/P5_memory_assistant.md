@@ -57,7 +57,7 @@ once per thread.
       demand mid-conversation and after ~150k characters of context;
     - memory eval-lite in C2 (includes rejection evasion and false "saved" claims).
 12. **Composition boundary:** a context provider that exposes preferences and constraints to
-    workflows (decided in C5, first used in P6).
+    workflows (decided in C4, first used in P6).
 13. **Cost and latency:** tier `low`, provider pinned to `openai` (`gpt-5.6-luna`), because
     `gemini-3.5-flash-lite` claimed memory writes it never made. Consolidation tier is decided
     in B4.
