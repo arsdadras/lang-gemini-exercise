@@ -30,8 +30,8 @@ Every project moves each thread one step forward.
 | :--- | :--- | :--- |
 | Contracts | Pydantic output schemas (P1+) | Typed inter-agent contracts (P6), workflow schemas (P12) |
 | Observability | LangSmith tracing is already on for every run | Deliberate trace reading (P5-C), per-run tags (P6), metrics (E1) |
-| Evaluation | Unit tests for deterministic code | Eval-lite scenario sets (P5-C), routing/synthesis evals (P6), regression gate (P8), datasets (E1) |
-| Security | Allow-listed sandbox env, `.env` read denial ([ADR-0005](adr/0005-sandbox-secret-isolation.md)) | Prompt injection through documents (P7), action permissions (P8, P11), tenant isolation (E5) |
+| Evaluation | Unit tests for deterministic code | Eval-lite scenario sets (P5-C), routing/synthesis evals (P6), regression gate and production feedback loop (P8), datasets (E1) |
+| Security | Allow-listed sandbox env, `.env` read denial ([ADR-0005](adr/0005-sandbox-secret-isolation.md)), memory write approval ([ADR-0008](adr/0008-memory-write-governance.md)) | Content guardrails (P5-B3), prompt injection through documents (P7), action permissions (P8, P11), delegated authorization (P11), red-teaming (E1), tenant isolation (E5) |
 | Cost and latency | Tier x provider model catalog | Measured tier choices (P9), model routing (E3) |
 
 Testing and evaluation rules: [ADR-0004](adr/0004-testing-and-evaluation-policy.md).
@@ -63,7 +63,8 @@ profile loaded each turn) and **B1** (skills library on `/skills/`).
   for the assistant. CLI approval loop that works with streaming. Replace the placeholder
   coding skills with assistant-domain skills.
 - **B3, content guardrail:** built-in `PIIMiddleware` for fixed-format data (block, redact,
-  mask, or hash; input, output, or tool results), plus a **security guard**: a separate
+  mask, or hash; input, output, tool results, and what reaches LangSmith traces), plus a
+  **security guard**: a separate
   classifier model (engineered policy prompt, structured verdict) that judges additive
   memory writes by content and triggers HITL when a write is sensitive. Runs after the code
   layer, fails closed. Also a deterministic output check for the Finglish rule (the model
@@ -71,9 +72,11 @@ profile loaded each turn) and **B1** (skills library on `/skills/`).
   stops telling the model to skip sensitive facts: relevant ones get proposed and the guard
   routes them to the user for approval.
 - **B4, memory consolidation:** hot-path vs background writes; deduplication, conflict,
-  and staleness policy.
+  and staleness policy, using semantic search over the store to find related memories.
+  Context growth in long threads (summarization and context-editing middleware).
 - **C1, durable memory:** `SqliteStore` plus checkpointer, with identity end to end
-  (`thread_id` x `user_id`), including CLI session resolution.
+  (`thread_id` x `user_id`), including CLI session resolution. User-controlled data
+  lifecycle: export and "forget me" deletion.
 - **C2, memory eval-lite:** scenarios for recall, update, conflict, cross-user isolation,
   and false "I saved it" claims, plus the security guard's accuracy, reviewed with traces.
   Include rejection evasion: after a rejected change, the agent must not reach the same
@@ -99,15 +102,16 @@ knowledge, optional analysis, verification, approval.
 - **A:** a deterministic LangGraph parent workflow calls P1 and P2 through typed contracts,
   synthesizes, and gates delivery on approval.
 - **B:** parallel branches (`Send` fan-out; fan-in through a reducer or a deferred node),
-  partial-failure recovery (node `RetryPolicy`), source-conflict handling, checkpointed long
+  partial-failure recovery (node `RetryPolicy`; tool and model retry, tool-error, and
+  call-limit middleware against runaway loops), source-conflict handling, checkpointed long
   runs and durability modes, progress streaming with `stream_events(version="v3")` subagent
   projections, and approvals raised inside subagents surfaced to the top-level app.
 - **C:** an evaluator-optimizer loop (a graph loop in the workflow, `RubricMiddleware` on
   the supervisor); the same eval set run against the deterministic
   workflow and against a DeepAgents supervisor, with the choice recorded in an ADR; a typed
   capability catalog for selecting specialists (the first real consumer of a registry,
-  [ADR-0006](adr/0006-remove-agent-registry.md)); optional local serving through LangGraph
-  server plus the SDK client.
+  [ADR-0006](adr/0006-remove-agent-registry.md)); local serving through Agent Server plus
+  the SDK client, with async subagents (launch, check, steer, cancel) for long research runs.
 
 ## P7: Document intelligence agent
 
@@ -119,14 +123,18 @@ knowledge, optional analysis, verification, approval.
   contrasted with P6's code-decided `Send`; model-written code becomes an injection surface.
 - **Mini-workflow, Document Intake Cell:** P7 extraction -> P2 lookup -> validation gate ->
   P4 report.
-- **New thread step:** prompt injection carried in documents.
+- **New thread step:** prompt injection carried in documents, with a red-team scenario set
+  in its eval.
 
 ## P8: Customer support operations agent
 
 - **A:** classify a ticket, retrieve an answer, draft a response.
 - **B:** multi-intent tickets, customer context from P5, SLA and priority routing,
-  escalation states, HITL for sensitive actions.
-- **C:** action permissions, ticket-system integration, audit trail, critic check.
+  escalation states, HITL for sensitive actions. Router vs handoffs (the active agent
+  changes mid-conversation), compared on the same tickets.
+- **C:** action permissions, ticket-system integration, audit trail, critic check. A
+  production feedback loop: user feedback and annotation queues feed the regression set,
+  plus online evaluators and simulated multi-turn conversations.
 - **Mini-workflow (required), Support Resolution Cell:** triage -> P2 retrieval -> P1
   research fallback -> critic -> approval -> response or controlled ticket update.
   It teaches response vs side effect.
@@ -135,7 +143,7 @@ knowledge, optional analysis, verification, approval.
 
 - **A:** question -> query -> result, with a table or chart.
 - **B:** query validation and repair, read/write separation, sandboxed analysis through P4,
-  multi-step metrics, HITL before risky queries. Measured tier choices, with harness profiles
+  multi-step metrics, HITL before risky queries. Measured tier choices (cost tracking, prompt caching), with harness profiles
   for model-specific tuning; programmatic tool calling to aggregate results outside the
   context.
 - **C:** a semantic metric layer, provenance, reusable analysis plans, anomaly explanation.
@@ -157,8 +165,11 @@ Builds on P7's document pipeline instead of duplicating it.
 
 - **A:** read-only API integration with structured responses.
 - **B:** action proposals, approval gates, retries and rate limits, error mapping,
-  idempotency keys.
+  idempotency keys. The Functional API (`@entrypoint`, `@task`), so completed side effects
+  are not re-run on resume; emulated tools for testing actions.
 - **C:** transactional boundaries, compensation, tenant isolation, connector catalog.
+  Delegated authorization (the agent acts with the user's scoped credentials, MCP auth
+  included); tool selection or tool search once the catalog outgrows the context.
 - **Mini-workflow, Plan-to-Action Cell:** plan -> gather context -> P11 proposal ->
   approval -> idempotent execution -> audit record.
 
@@ -198,12 +209,18 @@ Every new specialist gets a design card before code (template:
 at the first stage that has a real consumer for it, not as a tour. Beta APIs (interpreters,
 dynamic subagents, `RubricMiddleware`, harness profiles) are verified against the pinned
 version when that stage starts, and the stage notes what replaces them if the API changes.
+Coverage was checked against the LangChain, LangGraph, DeepAgents, and LangSmith docs on
+2026-09-14.
+
+**Deliberately out of scope:** model training and fine-tuning, frontend engineering beyond a
+thin client, editor integration (ACP), voice agents (optional in P10), and LangSmith platform
+administration (self-hosting, BYOC, RBAC, the LLM gateway).
 
 ## Term E (after P12)
 
 1. **E1, production hardening and evaluation:** eval datasets, trace taxonomy, failure
    classes, idempotency, timeouts and cancellation, audit, authorization, sandbox and
-   session isolation.
+   session isolation; threat modeling for excessive agency and a red-team suite.
 2. **E2, shared workflow runtime:** a common lifecycle, event model, checkpoint, approval,
    and retry services, proven by two real workflows.
 3. **E3, agent application platform:** versioned agent, tool, and workflow registries;
@@ -211,9 +228,10 @@ version when that stage starts, and the stage notes what replaces them if the AP
 4. **E4, multi-workflow portfolio:** at least three workflows on the platform, as an
    architecture fitness test.
 5. **E5, distributed execution:** API boundary, job queue and workers, durable run state,
-   tenant isolation, observability triad.
+   tenant isolation, observability triad; Agent Server background runs, cron jobs,
+   double-texting policy, custom auth, `RemoteGraph`, and A2A between services.
 6. **E6, vertical product and adaptive systems:** one domain in depth; trace-driven
-   optimization behind evaluation and promotion gates.
+   optimization behind evaluation and promotion gates; a thin UI over the event stream.
 
 **Extraction rule:** one consumer, keep it local; two, extract carefully; three, formalize.
 

@@ -84,7 +84,8 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
   (Finglish policy, response-mode codes) applied to every agent, including non-chat subagents.
   Revisit with the P6 contracts.
 - **Personal data in traces.** LangSmith tracing is on for all runs, including P5 personal
-  data, under project `lang_claude_exercise-p1`. Consider one project per curriculum project.
+  data, under project `lang_claude_exercise-p1`. Trace masking is part of B3; also consider one
+  project per curriculum project.
 - **Perso-Arabic script in long P5 replies.** `gpt-5.6-luna` mixes Perso-Arabic into long
   Finglish answers despite the prompt rule (~1000 characters in one long plan reply, with
   both the old and the trimmed prompt, 2026-09-14). A prompt rule alone can't enforce it; a
