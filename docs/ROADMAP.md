@@ -78,13 +78,17 @@ governance by operation, decided in code; read-only skills; streamed CLI approva
 
 - **B3, content guardrails:** a **security guard** (a separate classifier model with a
   policy prompt and a structured verdict, failing closed) judges the memory writes the code
-  layer lets through and routes sensitive ones to the user. `PIIMiddleware` handles
-  fixed-format data, including what reaches LangSmith traces. A deterministic output check
+  layer lets through and routes sensitive ones to the user. One detector set for
+  fixed-format secrets is applied where each risk is: redacted at the app boundary before
+  input (so checkpoints, traces, and the model never see them), blocked in memory writes, and
+  masked in LangSmith traces. `PIIMiddleware` isn't used here: it protects what the model
+  sees, not checkpoints or tool-call arguments (verified). A deterministic output check
   enforces the Finglish rule. `memory-curation` then proposes sensitive facts instead of
   skipping them.
 - **B4, memory consolidation:** hot-path vs background writes; deduplication, conflict, and
   staleness, using semantic search over the store to find related memories; how long
-  threads are summarized.
+  threads are summarized. Changed memories keep their previous version, so the guard may let
+  a correction the user asked for pass without approval.
 - **C1, durable memory:** `SqliteStore` plus checkpointer, with identity end to end
   (`thread_id` x `user_id`), CLI session resolution, and user-requested deletion
   ("forget me").
@@ -99,8 +103,9 @@ governance by operation, decided in code; read-only skills; streamed CLI approva
   behavior for every user and future session. `SkillsMiddleware` caches the skill list per
   thread, so decide how running threads pick up a published skill.
 - **C4, composition boundary:** P5 as a context provider (tool or middleware) rather than a
-  chat subagent (ADR). Mini-workflow: personalized research brief (P5 + P1). Then the design
-  card update and retrospective.
+  chat subagent (ADR). Input protection has to travel with the agent once other workflows
+  call it, so `PIIMiddleware` joins here. Mini-workflow: personalized research brief
+  (P5 + P1). Then the design card update and retrospective.
 
 ## P6: Capstone I, Research-to-Decision workflow
 

@@ -9,6 +9,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+import langsmith
 import yaml
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
@@ -29,6 +30,10 @@ from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.get_text_util import get_text
 from agentlab.utils.memory_backend_util import MEMORIES_NAMESPACE_KIND
 from agentlab.utils.run_with_hitl_util import stream_with_hitl
+from agentlab.utils.secret_redaction_util import (
+    make_trace_masking_client,
+    redact_secrets,
+)
 
 _HELP = """Commands:
   /memory      preview stored memories for the active user
@@ -53,6 +58,18 @@ def _read_frontmatter(skill_file: Path) -> dict[str, Any]:
     _, block, _ = text.split("---", 2)
     data = yaml.safe_load(block)
     return data if isinstance(data, dict) else {}
+
+
+def sanitize_user_input(text: str) -> str:
+    """Redact secrets from what the user typed, before anything records it.
+
+    The graph checkpoints its input and the tracer sees it before any middleware runs, so
+    this is the last point where a secret can be kept out of state, traces, and the model.
+    """
+    redacted, found = redact_secrets(text)
+    if found:
+        print(f"[Privacy] Removed {found} secret(s) before sending; secrets are never stored.")
+    return redacted
 
 
 def print_user_memories(store: BaseStore, user_id: str, *, max_lines: int | None = _PREVIEW_LINES) -> None:
@@ -98,6 +115,7 @@ def main() -> None:
     """Run the assistant REPL."""
     load_dotenv()
     configure_utf8_stdout()
+    langsmith.configure(client=make_trace_masking_client())
 
     store = InMemoryStore()
     agent = make_personal_assistant_agent(store)
@@ -108,6 +126,7 @@ def main() -> None:
     print("[Personal Assistant] P5 Memory-Rich Assistant")
     print(f"Model: {spec.model} (tier {llm_model.resolve_tier(DEFAULT_ASSISTANT_TIER)})")
     print("Memory store: in-memory (cleared when this process exits)")
+    print("Privacy: secrets are removed before sending; traces mask secrets and emails")
     print(_HELP)
     print("=" * 65)
 
@@ -150,7 +169,7 @@ def main() -> None:
 
         result = stream_with_hitl(
             agent,
-            {"messages": [HumanMessage(content=prompt)]},
+            {"messages": [HumanMessage(content=sanitize_user_input(prompt))]},
             {"configurable": {"thread_id": thread_id}},
             context=UserContext(user_id=user_id),
             assistant_prompt="Allow this memory change? [y/n]: ",

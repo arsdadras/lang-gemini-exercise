@@ -104,7 +104,9 @@ flip the answer (see Principle 7 and the Backlog in `docs/MENTOR_HANDOFF.md`).
    explain what the piece does and why, show only that piece's code, and wait for the mentee
    before the next piece. Never send a whole component's code in one message. The mentee
    types each piece for practice. Tests are not sent; the mentee isn't practicing test
-   writing for now.
+   writing for now. **Boilerplate components** (plumbing with little agent-architecture
+   content, such as detectors, wiring, and CLI changes) are not taught piece by piece: the
+   mentor integrates them directly and sends a short summary of what changed and why.
 4. **Integrate before moving on.** Before starting the next component or topic, the mentor
    writes the verified version (code and tests) into the repo, replacing whatever the mentee
    typed, and runs the checks. The repo is always the mentor's clean version.

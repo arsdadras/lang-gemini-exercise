@@ -72,6 +72,17 @@ def test_handle_interrupt_rejection_with_reason():
         }
 
 
+def test_handle_interrupt_rejection_reason_never_carries_a_secret():
+    """A typed rejection reason is user input too, so secrets are redacted from it."""
+    interrupt = MockInterrupt([{"name": "write_file", "args": {"file_path": "/memories/x.md"}}])
+    fake_key = "sk-proj-" + "a1B2c3D4" * 4
+
+    with patch("builtins.input", side_effect=["n", f"never store {fake_key}"]):
+        res = _handle_interrupt_decisions(interrupt)
+
+    assert res == {"decisions": [{"type": "reject", "message": "never store [SECRET_DETECTED]"}]}
+
+
 def test_handle_interrupt_rejection_empty_reason():
     """Verify rejecting without feedback omits message key."""
     interrupt = MockInterrupt([{"name": "delete", "args": {"path": "tmp.txt"}}])

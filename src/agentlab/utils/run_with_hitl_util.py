@@ -12,6 +12,7 @@ from typing import Any
 
 from langgraph.types import Command
 
+from agentlab.utils.secret_redaction_util import redact_secrets
 from agentlab.utils.streaming_util import stream_agent_with_observability
 
 
@@ -87,7 +88,7 @@ def _handle_interrupt_decisions(
             print(f"[Rejected] {action_name} rejected. Returning feedback to agent...")
             reject_payload: dict[str, Any] = {"type": "reject"}
             if reason:
-                reject_payload["message"] = reason
+                reject_payload["message"] = redact_secrets(reason)[0]
             decisions.append(reject_payload)
 
     return {"decisions": decisions}

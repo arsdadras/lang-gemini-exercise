@@ -1,9 +1,12 @@
-"""Tests for the P5 CLI's memory display (``/memory`` preview and ``/more``)."""
+"""Tests for the P5 CLI: memory display (``/memory``, ``/more``) and input sanitizing."""
 
 import pytest
 from langgraph.store.memory import InMemoryStore
 
-from agentlab.apps.personal_assistant_app import print_user_memories
+from agentlab.apps.personal_assistant_app import (
+    print_user_memories,
+    sanitize_user_input,
+)
 
 LONG_PROFILE = "\n".join(f"- fact {number}" for number in range(1, 16))
 
@@ -32,3 +35,17 @@ def test_more_prints_every_line(store: InMemoryStore, capsys: pytest.CaptureFixt
     output = capsys.readouterr().out
     assert "- fact 15" in output
     assert "more lines" not in output
+
+
+def test_secrets_are_removed_from_user_input_with_a_notice(capsys: pytest.CaptureFixture[str]) -> None:
+    fake_key = "sk-proj-" + "a1B2c3D4" * 4
+
+    sanitized = sanitize_user_input(f"remember my key {fake_key}")
+
+    assert sanitized == "remember my key [SECRET_DETECTED]"
+    assert "Removed 1 secret(s)" in capsys.readouterr().out
+
+
+def test_ordinary_input_passes_through_silently(capsys: pytest.CaptureFixture[str]) -> None:
+    assert sanitize_user_input("my email is sam@example.com") == "my email is sam@example.com"
+    assert capsys.readouterr().out == ""
