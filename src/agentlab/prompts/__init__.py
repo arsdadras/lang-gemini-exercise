@@ -7,7 +7,11 @@ from agentlab.prompts.agents_prompt import (
     build_repo_insight_prompt,
     build_web_researcher_prompt,
 )
-from agentlab.prompts.middlewares_prompt import GROUNDEDNESS_PROMPT
+from agentlab.prompts.middlewares_prompt import (
+    GROUNDEDNESS_PROMPT,
+    MEMORY_WRITE_POLICY,
+    SECURITY_GUARD_PROMPT,
+)
 from agentlab.prompts.nodes.code_review_prompt import (
     REVIEW_PROMPT,
     TEST_FIX_PROMPT,
@@ -31,9 +35,11 @@ __all__ = [
     "GRADE_PROMPT",
     "GROUNDEDNESS_PROMPT",
     "HALLUCINATION_PROMPT",
+    "MEMORY_WRITE_POLICY",
     "RESEARCHER_SUBAGENT_PROMPT",
     "REVIEW_PROMPT",
     "REWRITE_PROMPT",
+    "SECURITY_GUARD_PROMPT",
     "TEST_FIX_PROMPT",
     "TEST_GEN_PROMPT",
     "build_coding_coordinator_prompt",

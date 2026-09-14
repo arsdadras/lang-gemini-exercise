@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class GroundednessVerdict(BaseModel):
@@ -11,3 +11,18 @@ class GroundednessVerdict(BaseModel):
     binary_score: Literal["yes", "no"] = Field(
         description="'yes' if the answer is fully grounded in the tool context, else 'no'."
     )
+
+
+class GuardVerdict(BaseModel):
+    """A security guard's decision on one action, judged against a policy."""
+
+    model_config = ConfigDict(frozen=True)
+
+    decision: Literal["allow", "ask", "block"] = Field(
+        description=(
+            "'allow' to proceed, 'ask' when the user must approve, "
+            "'block' when the policy never allows it."
+        )
+    )
+    category: str = Field(description="The policy category that applies, or 'none' when allowing.")
+    reason: str = Field(description="One short sentence, addressed to the user, explaining the decision.")

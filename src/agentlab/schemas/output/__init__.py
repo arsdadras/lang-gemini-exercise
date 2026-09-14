@@ -11,7 +11,10 @@ from agentlab.schemas.output.interpreter_output_schema import (
     ArtifactMetadata,
     ArtifactType,
 )
-from agentlab.schemas.output.middlewares_output_schema import GroundednessVerdict
+from agentlab.schemas.output.middlewares_output_schema import (
+    GroundednessVerdict,
+    GuardVerdict,
+)
 from agentlab.schemas.output.rag_output_schema import GradeDocument, GradeHallucination
 from agentlab.schemas.output.research_output_schema import (
     ResearchFindings,
@@ -26,6 +29,7 @@ __all__ = [
     "GradeDocument",
     "GradeHallucination",
     "GroundednessVerdict",
+    "GuardVerdict",
     "ResearchFindings",
     "ResearchReport",
     "ReviewResult",
