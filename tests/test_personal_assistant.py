@@ -9,6 +9,7 @@ from typing import Any
 from unittest.mock import patch
 
 import pytest
+import yaml
 from deepagents import create_deep_agent
 from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.checkpoint.memory import InMemorySaver
@@ -16,7 +17,10 @@ from langgraph.store.memory import InMemoryStore
 from langgraph.types import Command
 
 from agentlab.agents.personal_assistant_agent import PERSONAL_ASSISTANT_PERMISSIONS
-from agentlab.configs.personal_assistant_config import DEFAULT_USER_PROFILE_PATH
+from agentlab.configs.personal_assistant_config import (
+    DEFAULT_USER_PROFILE_PATH,
+    SKILLS_DIR,
+)
 from agentlab.middlewares.memory_approval_middleware import make_memory_interrupt_on
 from agentlab.schemas.context.user_context_schema import UserContext
 from agentlab.utils.memory_backend_util import (
@@ -76,10 +80,25 @@ def test_namespace_requires_user_context() -> None:
         user_memory_namespace(None)
 
 
+ASSISTANT_SKILLS = {"memory-curation", "goal-plan"}
+
+
 def test_skills_route_serves_packaged_skill_files() -> None:
     listing = make_memory_composite_backend().ls("/skills/")
     names = {entry["path"].rstrip("/").rsplit("/", 1)[-1] for entry in listing.entries}
-    assert {"python-pro", "clean-committer"} <= names
+    assert names == ASSISTANT_SKILLS
+
+
+@pytest.mark.parametrize("skill", sorted(ASSISTANT_SKILLS))
+def test_skill_frontmatter_follows_the_agent_skills_spec(skill: str) -> None:
+    """SkillsMiddleware skips a skill whose frontmatter lacks a name or description."""
+    text = (SKILLS_DIR / skill / "SKILL.md").read_text(encoding="utf-8")
+    _, frontmatter, body = text.split("---", 2)
+    meta = yaml.safe_load(frontmatter)
+
+    assert meta["name"] == skill
+    assert 0 < len(meta["description"]) <= 1024
+    assert body.strip()
 
 
 # --- Memory write approval ------------------------------------------------------------
@@ -133,6 +152,41 @@ def test_adding_memory_needs_no_approval(tmp_path: Path) -> None:
     assert pending_approvals(send(agent, "I like tea")) == []
     assert pending_approvals(send(agent, "I play chess too")) == []
     assert stored_memories(store) == {"/user_profile.md": "- likes tea\n- plays chess\n"}
+
+
+def test_inserting_lines_needs_no_approval_but_dropping_one_does(tmp_path: Path) -> None:
+    store = InMemoryStore()
+    agent = make_governed_agent(
+        store,
+        tmp_path,
+        tool_turn(
+            "write_file",
+            file_path=DEFAULT_USER_PROFILE_PATH,
+            content="## Identity\n- Name: Reza\n\n## Preferences\n",
+        ),
+        done(),
+        # A bullet inserted mid-section: the old text isn't contiguous in the new text,
+        # but every old line survives in order.
+        tool_turn(
+            "edit_file",
+            file_path=DEFAULT_USER_PROFILE_PATH,
+            old_string="- Name: Reza\n\n## Preferences",
+            new_string="- Name: Reza\n- Occupation: Math teacher\n\n## Preferences",
+        ),
+        done(),
+        tool_turn(
+            "edit_file",
+            file_path=DEFAULT_USER_PROFILE_PATH,
+            old_string="- Name: Reza\n- Occupation: Math teacher\n",
+            new_string="- Name: Reza\n",
+        ),
+        done(),
+    )
+    send(agent, "I'm Reza")
+
+    assert pending_approvals(send(agent, "I teach math")) == []
+    assert "- Occupation: Math teacher" in stored_memories(store)["/user_profile.md"]
+    assert pending_approvals(send(agent, "Forget my job")) == ["edit_file"]
 
 
 def test_overwrite_waits_for_approval_and_reject_keeps_memory(tmp_path: Path) -> None:

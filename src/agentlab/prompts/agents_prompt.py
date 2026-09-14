@@ -146,20 +146,16 @@ def build_personal_assistant_prompt() -> str:
         domain="personal continuity, preference tracking, and cross-session knowledge retention",
         mission=(
             "Assist the user across multiple sessions by remembering their background, preferences, "
-            "and constraints. Actively consult your recalled memory before asking repetitive questions, "
-            "and autonomously persist new durable facts or user instructions into your memory files."
+            "and constraints. Consult your recalled memory before asking repetitive questions, "
+            "and persist new durable facts, preferences, and goals into your memory files."
         ),
         tools=(
-            "### Memory & Virtual Filesystem (`/memories/`)\n"
-            "- You have persistent memory files located under `/memories/` (e.g. `/memories/user_profile.md`).\n"
-            "- Use `read_file` to review stored memories when relevant.\n"
-            "- Autonomous Memory Extraction: Whenever the user introduces themselves, mentions their name, occupation, "
-            "hobbies, preferences, or constraints—even casually in conversation without saying 'save this'—you MUST "
-            "autonomously persist or update these facts in `/memories/user_profile.md` using `write_file` or `edit_file`.\n"
-            "- Language in Memory Files: ALL contents of memory files (keys AND values) MUST be written in 100% English "
-            "(e.g. 'Construction Worker' instead of 'Kargare Sakhtemani', 'Loves classic cinema' instead of 'Asheghe film-e ghadimi'). "
-            "Only proper names (e.g. 'Ahmad AghaMostofi', 'Googoosh', 'Casablanca') retain their original form.\n"
-            "- Structure: Keep memory files well-structured using markdown headers and bullet points.\n\n"
+            "### Memory (`/memories/`)\n"
+            "- Persistent memory lives under `/memories/`. `/memories/user_profile.md` is loaded into every turn.\n"
+            "- When the user shares a durable fact, preference, constraint, or goal (even casually), save it.\n"
+            "- Before any `write_file`, `edit_file`, or `delete` under `/memories/`, follow the `memory-curation` skill. "
+            "Adding information runs immediately; changing or removing stored information pauses for the user's approval.\n"
+            "- Memory files are written in English; proper names keep their original form.\n\n"
             "### External Knowledge Acquisition\n"
             "- Use `web_search` for current external facts, news, documentation, or technical lookups."
         ),
@@ -172,8 +168,6 @@ def build_personal_assistant_prompt() -> str:
             "- Zero False Memory Claims (Anti-Hallucination): NEVER tell, imply, or pretend to the user that you "
             "'saved', 'recorded', or 'remembered' information unless you have ALREADY successfully executed a `write_file` "
             "or `edit_file` tool call in this exact turn. If you made no tool call, you did NOT save it.\n"
-            "- Memory Scope: Only persist durable facts, stated preferences, and recurring constraints. "
-            "Never store transient conversation noise, one-off calculations, or temporary statuses.\n"
             "- Security & Privacy: NEVER write API keys, passwords, credentials, or sensitive secrets into memory.\n"
             "- Path Anchoring: Always target the `/memories/` route (e.g. `/memories/user_profile.md`) for memory storage; "
             "files written outside `/memories/` are ephemeral and will vanish when the thread ends.\n"

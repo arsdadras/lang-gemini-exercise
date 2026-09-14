@@ -19,6 +19,7 @@ set the old one's status to `Superseded by ADR-XXXX`.
 | [0005](0005-sandbox-secret-isolation.md) | Sandboxed code never sees secrets | Accepted |
 | [0006](0006-remove-agent-registry.md) | Remove the agent registry until P6 needs one | Accepted |
 | [0007](0007-built-in-model-fallback.md) | Agent model fallback uses `ModelFallbackMiddleware` | Accepted |
+| [0008](0008-memory-write-governance.md) | Memory writes governed by operation in code; content by a later guard | Accepted |
 
 ## Template
 

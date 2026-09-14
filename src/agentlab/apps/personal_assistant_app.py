@@ -1,7 +1,7 @@
 """CLI for the P5 personal assistant: ``lab-assistant``.
 
-Commands: ``/memory`` (show the active user's stored memories), ``/skills``
-(list packaged skills), ``/new_thread`` (same user, fresh conversation),
+Commands: ``/memory`` (preview the active user's stored memories), ``/more`` (show them in
+full), ``/skills`` (list packaged skills), ``/new_thread`` (same user, fresh conversation),
 ``/user <id>`` (switch user; memories are isolated per user), ``/help``, ``quit``.
 """
 
@@ -31,7 +31,8 @@ from agentlab.utils.memory_backend_util import MEMORIES_NAMESPACE_KIND
 from agentlab.utils.run_with_hitl_util import stream_with_hitl
 
 _HELP = """Commands:
-  /memory      show stored memories for the active user
+  /memory      preview stored memories for the active user
+  /more        show stored memories in full
   /skills      list available procedural skills
   /new_thread  start a new conversation thread for the same user
   /user <id>   switch the active user (starts a new thread)
@@ -54,8 +55,14 @@ def _read_frontmatter(skill_file: Path) -> dict[str, Any]:
     return data if isinstance(data, dict) else {}
 
 
-def print_user_memories(store: BaseStore, user_id: str) -> None:
-    """Print the files stored in ``user_id``'s memory namespace."""
+def print_user_memories(store: BaseStore, user_id: str, *, max_lines: int | None = _PREVIEW_LINES) -> None:
+    """Print the files stored in ``user_id``'s memory namespace.
+
+    Args:
+        store: The long-term memory store.
+        user_id: Whose namespace to print.
+        max_lines: Lines shown per file; ``None`` prints every line.
+    """
     items = store.search((user_id, MEMORIES_NAMESPACE_KIND))
     if not items:
         print(f"  [Memory] No stored memories for user '{user_id}'.")
@@ -67,11 +74,12 @@ def print_user_memories(store: BaseStore, user_id: str) -> None:
         if isinstance(content, list):  # file content stored as a list of lines
             content = "\n".join(str(line) for line in content)
         lines = str(content).strip().splitlines()
+        shown = lines if max_lines is None else lines[:max_lines]
         print(f"\n* {item.key}")
-        for line in lines[:_PREVIEW_LINES]:
+        for line in shown:
             print(f"    {line}")
-        if len(lines) > _PREVIEW_LINES:
-            print(f"    ... [{len(lines) - _PREVIEW_LINES} more lines]")
+        if len(shown) < len(lines):
+            print(f"    ... [{len(lines) - len(shown)} more lines, /more shows everything]")
 
 
 def print_available_skills(skills_dir: Path = SKILLS_DIR) -> None:
@@ -120,6 +128,9 @@ def main() -> None:
             continue
         if command == "/memory":
             print_user_memories(store, user_id)
+            continue
+        if command == "/more":
+            print_user_memories(store, user_id, max_lines=None)
             continue
         if command == "/skills":
             print_available_skills()

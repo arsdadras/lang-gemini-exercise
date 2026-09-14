@@ -21,7 +21,7 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
 | P3 Code review | Done |
 | P4 Sandbox interpreter + coordinator | Done |
 | Stage 0 stabilization | Done 2026-09-13 |
-| **P5 Memory assistant** | A done, B1 done. B2 in progress: conditional memory-write approval and streamed CLI approvals done (59 tests). **Next: B2 component 3, assistant skills** (`memory-curation`, `learning-plan`, prompt trim) |
+| **P5 Memory assistant** | A, B1, B2 done. B2 (2026-09-14): conditional memory-write approval, streamed CLI approvals, `memory-curation` and `goal-plan` skills, `/more` ([ADR-0008](adr/0008-memory-write-governance.md), 64 tests). **Next: B3 brief** (PII guardrail, security guard, Finglish output check) |
 | P6-P12, Term E | Planned (`docs/ROADMAP.md`) |
 
 ## Working agreements
@@ -85,8 +85,10 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
   Revisit with the P6 contracts.
 - **Personal data in traces.** LangSmith tracing is on for all runs, including P5 personal
   data, under project `lang_claude_exercise-p1`. Consider one project per curriculum project.
-- **Placeholder skills.** P5 ships coding SOPs (`python-pro`, `clean-committer`) instead of
-  assistant-domain skills. Replace them in B2.
+- **Perso-Arabic script in long P5 replies.** `gpt-5.6-luna` mixes Perso-Arabic into long
+  Finglish answers despite the prompt rule (~1000 characters in one long plan reply, with
+  both the old and the trimmed prompt, 2026-09-14). A prompt rule alone can't enforce it; a
+  deterministic output check lands in B3 with the other output guardrails.
 
 ## Backlog
 

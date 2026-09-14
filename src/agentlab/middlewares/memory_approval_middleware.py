@@ -57,14 +57,29 @@ def _overwrites_stored_memory(backend: BackendProtocol) -> Callable[[ToolCallReq
     return when
 
 
+def _keeps_every_line(old: str, new: str) -> bool:
+    """Whether each line of ``old`` is still in ``new``, in the same order.
+
+    New lines may be inserted anywhere in between. ``line in remaining`` advances the
+    shared iterator past the match, so a later line can't match an earlier position.
+    """
+    remaining = iter(new.splitlines())
+    return all(line in remaining for line in old.splitlines())
+
+
 def _edit_removes_stored_text(request: ToolCallRequest) -> bool:
-    """An edit is additive only when the new text still contains the text it replaces."""
+    """An edit is additive only when nothing it replaces is lost.
+
+    That holds when the new text contains the old text whole (appending), or keeps
+    every old line in order (inserting lines, e.g. a bullet in the middle of a section).
+    """
     args = request.tool_call.get("args", {})
     if not _is_memory_file(_normalize(args.get("file_path"))):
         return False
     old, new = args.get("old_string"), args.get("new_string")
-    is_additive = isinstance(old, str) and isinstance(new, str) and bool(old) and old in new
-    return not is_additive
+    if not (isinstance(old, str) and isinstance(new, str) and old):
+        return True
+    return not (old in new or _keeps_every_line(old, new))
 
 
 def _deletes_memory(request: ToolCallRequest) -> bool:

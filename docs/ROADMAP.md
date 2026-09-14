@@ -66,18 +66,26 @@ profile loaded each turn) and **B1** (skills library on `/skills/`).
   mask, or hash; input, output, or tool results), plus a **security guard**: a separate
   classifier model (engineered policy prompt, structured verdict) that judges additive
   memory writes by content and triggers HITL when a write is sensitive. Runs after the code
-  layer, fails closed.
+  layer, fails closed. Also a deterministic output check for the Finglish rule (the model
+  leaks Perso-Arabic script into long replies). With the guard in place, `memory-curation`
+  stops telling the model to skip sensitive facts: relevant ones get proposed and the guard
+  routes them to the user for approval.
 - **B4, memory consolidation:** hot-path vs background writes; deduplication, conflict,
   and staleness policy.
 - **C1, durable memory:** `SqliteStore` plus checkpointer, with identity end to end
   (`thread_id` x `user_id`), including CLI session resolution.
 - **C2, memory eval-lite:** scenarios for recall, update, conflict, cross-user isolation,
   and false "I saved it" claims, plus the security guard's accuracy, reviewed with traces.
+  Include rejection evasion: after a rejected change, the agent must not reach the same
+  result through a different tool call (seen in B2 exploration: a rejected overwrite came
+  back as two deleting edits).
 - **C3, governed procedural memory (`skill_designer`):** a specialist that is the only writer
   to the skills library. Other agents request instructions from it. One-off instructions for
   a single task pass the security guard. Publishing to the shared library (new or improved
   skills) is draft -> guard -> human approval, because a shared skill changes behavior for
-  every user and every future session.
+  every user and every future session. `SkillsMiddleware` loads the skill list once per
+  thread and keeps it in state, so a published skill only reaches new threads; decide how
+  running threads pick it up.
 - **C4, one controlled MCP integration:** reads by default, writes need approval.
 - **C5, composition boundary:** P5 as a context provider (tool or middleware) rather than a
   chat subagent (ADR). Mini-workflow: personalized research brief (P5 + P1). Then the
