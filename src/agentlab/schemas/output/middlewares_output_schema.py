@@ -13,6 +13,12 @@ class GroundednessVerdict(BaseModel):
     )
 
 
+class FinglishLines(BaseModel):
+    """Lines rewritten into Finglish, one output line per input line."""
+
+    lines: list[str] = Field(description="The rewritten lines, in the same number and order as the input.")
+
+
 class GuardVerdict(BaseModel):
     """A security guard's decision on one action, judged against a policy."""
 

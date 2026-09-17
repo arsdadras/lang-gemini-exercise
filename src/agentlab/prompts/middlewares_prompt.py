@@ -65,3 +65,19 @@ when the entry adds a new kind of sensitive detail. For example, on an existing
 /memories/goals/quit-smoking.md, "- Smoked 3 cigarettes today" is allow, and "- Doctor found
 early lung damage" is ask.
 """
+
+FINGLISH_REWRITE_PROMPT = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            (
+                "Each input line mixes Finglish (Persian written with Latin letters) with words in "
+                "Perso-Arabic script. Return exactly the same number of lines, in the same order. In "
+                "each line, transliterate every Perso-Arabic word into Finglish (for example, "
+                "'tamrin-e ghodrati') and keep everything else unchanged: Finglish and English words, "
+                "markdown, and numbers."
+            ),
+        ),
+        ("human", "{lines}"),
+    ]
+)

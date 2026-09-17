@@ -14,6 +14,7 @@ from agentlab.configs.personal_assistant_config import (
     SKILLS_ROUTE_PREFIX,
 )
 from agentlab.middlewares.fallback_middleware import make_model_fallback
+from agentlab.middlewares.finglish_output_middleware import make_finglish_output_guard
 from agentlab.middlewares.memory_approval_middleware import (
     GatedMemoryBackend,
     MemoryGate,
@@ -59,7 +60,8 @@ def make_personal_assistant_agent(
 
     Every memory change passes one gate in the memory storage: ordinary additions run
     freely; overwriting, destructive edits, deletions, and sensitive content wait for
-    approval; secrets and credentials are refused. Skills are read-only.
+    approval; secrets and credentials are refused. Skills are read-only. A final answer that
+    leaks Perso-Arabic script is repaired into Finglish.
     """
     gate = MemoryGate(guard if guard is not None else make_security_guard(MEMORY_WRITE_POLICY))
     return create_deep_agent(
@@ -73,5 +75,5 @@ def make_personal_assistant_agent(
         checkpointer=checkpointer if checkpointer is not None else InMemorySaver(),
         store=store,
         context_schema=UserContext,
-        middleware=[make_model_fallback(tier, primary=provider)],
+        middleware=[make_model_fallback(tier, primary=provider), make_finglish_output_guard()],
     )

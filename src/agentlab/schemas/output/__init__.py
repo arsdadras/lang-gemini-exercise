@@ -12,6 +12,7 @@ from agentlab.schemas.output.interpreter_output_schema import (
     ArtifactType,
 )
 from agentlab.schemas.output.middlewares_output_schema import (
+    FinglishLines,
     GroundednessVerdict,
     GuardVerdict,
 )
@@ -26,6 +27,7 @@ __all__ = [
     "ArtifactMetadata",
     "ArtifactType",
     "CodeIssue",
+    "FinglishLines",
     "GradeDocument",
     "GradeHallucination",
     "GroundednessVerdict",
