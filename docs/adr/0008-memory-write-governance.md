@@ -1,6 +1,7 @@
 # ADR-0008: Memory writes are governed by operation in code, content later by a guard
 
-- Status: Accepted
+- Status: Accepted; enforcement superseded by [ADR-0010](0010-one-gate-in-memory-storage.md)
+  (the rules moved from `interrupt_on` into the memory storage, which also judges content)
 - Date: 2026-09-14
 
 ## Context

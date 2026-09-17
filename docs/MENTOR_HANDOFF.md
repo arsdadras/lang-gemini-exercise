@@ -21,7 +21,7 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
 | P3 Code review | Done |
 | P4 Sandbox interpreter + coordinator | Done |
 | Stage 0 stabilization | Done 2026-09-13 |
-| **P5 Memory assistant** | A, B1, B2 done. B2 (2026-09-14): conditional memory-write approval, streamed CLI approvals, `memory-curation` and `goal-plan` skills, `/more` ([ADR-0008](adr/0008-memory-write-governance.md), 64 tests). **Next: B3 brief** (PII guardrail, security guard, Finglish output check) |
+| **P5 Memory assistant** | A, B1, B2, B3 done. B3 (2026-09-17): one gate inside the memory storage judging content as well as operation, security guard classifier, secret detectors at the app boundary and in traces, Finglish output repair ([ADR-0010](adr/0010-one-gate-in-memory-storage.md), 93 tests). **Next: B4 brief** (memory consolidation) |
 | P6-P12, Term E | Planned (`docs/ROADMAP.md`) |
 
 ## Working agreements
@@ -84,13 +84,13 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
 - **Chat template in every agent.** `prompts/template/template.py` is a chat-assistant persona
   (Finglish policy, response-mode codes) applied to every agent, including non-chat subagents.
   Revisit with the P6 contracts.
-- **Personal data in traces.** LangSmith tracing is on for all runs, including P5 personal
-  data, under project `lang_claude_exercise-p1`. Trace masking is part of B3; also consider one
-  project per curriculum project.
-- **Perso-Arabic script in long P5 replies.** `gpt-5.6-luna` mixes Perso-Arabic into long
-  Finglish answers despite the prompt rule (~1000 characters in one long plan reply, with
-  both the old and the trimmed prompt, 2026-09-14). A prompt rule alone can't enforce it; a
-  deterministic output check lands in B3 with the other output guardrails.
+- **Personal data in traces.** The P5 app masks secrets and emails before upload (B3), but
+  conversation content still reaches LangSmith under project `lang_claude_exercise-p1`.
+  Consider one project per curriculum project.
+- **Perso-Arabic script in long P5 replies.** `gpt-5.6-luna` writes Perso-Arabic in 30-50% of
+  the lines of a long plan. B3's repair cuts that by about three quarters (215 leaked lines to
+  55 across three plans), but some lines survive two repair passes. The root cause is the
+  assistant model itself.
 
 ## Backlog
 
@@ -104,6 +104,12 @@ Priority tags: **E** = Essential, **N** = Nice-to-have.
 - **N:** DeepAgents harness profiles, once a fallback model needs different prompts or tool
   descriptions than the primary.
 - **N:** Per-app checkpoint databases, or tagging threads by app.
+
+**P5 Memory assistant**
+- **E:** Compare assistant models in C2 (script leakage per line, false "saved" claims, guard
+  agreement), since B3's Finglish repair only mitigates the leak.
+- **N:** Let the guard lift a code-required approval for a correction the user asked for, once
+  B4 keeps the previous version of a changed memory.
 - **N:** After an HITL resume, the streamed CLI prints the approved tool call a second time
   (the middleware re-emits the AI message update). Cosmetic.
 - **N:** Session-scoped sandbox workspaces or a remote sandbox such as `LangSmithSandbox`
