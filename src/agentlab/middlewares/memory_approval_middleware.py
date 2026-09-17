@@ -1,60 +1,56 @@
-"""Conditional approval for P5 memory writes: adding a fact is free, changing or removing one is not.
+"""Memory write governance for the P5 assistant: one gate, inside the memory storage.
 
-The decision is made in code from the tool call itself, never by the model: each
-filesystem tool gets a ``when`` predicate that tells ``HumanInTheLoopMiddleware``
-whether this particular call needs a human. Pass the result to
-``create_deep_agent(interrupt_on=...)`` instead of adding a middleware yourself:
-DeepAgents also applies ``interrupt_on`` to its general-purpose subagent, so a
-write delegated through ``task`` can't skip the gate.
+Every change under ``/memories/`` goes through ``GatedMemoryBackend``. The assistant and all of
+its subagents share that storage, so no tool call or delegation can go around it. For each
+write, edit, or delete it asks ``MemoryGate`` for one verdict, built in order:
+
+1. code rules: overwriting a stored file, an edit that drops text, or deleting asks;
+2. secret detectors: a secret in the new content blocks;
+3. the security guard on the new content, which can only make the verdict stricter.
+
+``allow`` stores the change, ``block`` refuses it with an error the model reads, and ``ask``
+pauses the run with a standard HITL request (the shape ``HumanInTheLoopMiddleware`` sends, so
+the CLI approval loop and HITL-aware UIs handle it unchanged).
+
+On resume LangGraph runs the tool again from the start, so the gate is asked twice. The
+guard's verdict is cached in the user's store: a model that changed its mind between pause and
+resume could otherwise void the human's decision.
 """
 
-from collections.abc import Callable
+import hashlib
+import json
 from typing import Any
 
-from deepagents.backends import BackendProtocol
-from deepagents.backends.utils import validate_path
-from langchain.agents.middleware import InterruptOnConfig
-from langchain.agents.middleware.human_in_the_loop import DecisionType
-from langchain.tools.tool_node import ToolCallRequest
-from langchain_core.messages import ToolCall
+from deepagents.backends import StoreBackend
+from deepagents.backends.protocol import DeleteResult, EditResult, WriteResult
+from langchain.agents.middleware.human_in_the_loop import (
+    ActionRequest,
+    DecisionType,
+    HITLRequest,
+    ReviewConfig,
+)
+from langgraph.store.base import BaseStore
+from langgraph.types import interrupt
 
 from agentlab.configs.personal_assistant_config import MEMORIES_ROUTE_PREFIX
+from agentlab.middlewares.security_guard_middleware import SecurityGuard
+from agentlab.schemas.output.middlewares_output_schema import GuardVerdict
+from agentlab.utils.secret_redaction_util import redact_secrets
 
 # The CLI approval loop offers approve or reject-with-reason; "edit" is in the backlog.
-MEMORY_APPROVAL_DECISIONS: tuple[DecisionType, ...] = ("approve", "reject")
+MEMORY_APPROVAL_DECISIONS: list[DecisionType] = ["approve", "reject"]
+VERDICT_CACHE_KIND = "memory_verdicts"
 
-
-def _normalize(raw_path: Any) -> str | None:
-    """Canonical form of a tool's path argument, so ``/memories/./x.md`` can't dodge a rule.
-
-    ``None`` for a path the tool itself would reject before touching storage.
-    """
-    if not isinstance(raw_path, str):
-        return None
-    try:
-        return validate_path(raw_path)
-    except ValueError:
-        return None
-
-
-def _is_memory_file(path: str | None) -> bool:
-    return path is not None and path.startswith(MEMORIES_ROUTE_PREFIX)
-
-
-def _file_exists(backend: BackendProtocol, path: str) -> bool:
-    """Whether ``path`` is already stored. A listing that fails counts as existing: fail closed."""
-    listing = backend.ls(path.rsplit("/", 1)[0] + "/")
-    if listing.error:
-        return True
-    return any(entry.get("path") == path for entry in listing.entries or [])
-
-
-def _overwrites_stored_memory(backend: BackendProtocol) -> Callable[[ToolCallRequest], bool]:
-    def when(request: ToolCallRequest) -> bool:
-        path = _normalize(request.tool_call.get("args", {}).get("file_path"))
-        return _is_memory_file(path) and _file_exists(backend, path)
-
-    return when
+ALLOW = GuardVerdict(decision="allow", category="none", reason="Adds to memory.")
+_OVERWRITE = GuardVerdict(
+    decision="ask", category="destructive", reason="Overwrite a stored memory file (its current content is replaced)."
+)
+_DESTRUCTIVE_EDIT = GuardVerdict(decision="ask", category="destructive", reason="Change or remove text in stored memory.")
+_DELETE = GuardVerdict(decision="ask", category="destructive", reason="Delete stored memory.")
+_SECRET = GuardVerdict(
+    decision="block", category="credential", reason="The content contains a secret, and secrets are never stored."
+)
+_STRICTNESS = {"allow": 0, "ask": 1, "block": 2}
 
 
 def _keeps_every_line(old: str, new: str) -> bool:
@@ -67,60 +63,135 @@ def _keeps_every_line(old: str, new: str) -> bool:
     return all(line in remaining for line in old.splitlines())
 
 
-def _edit_removes_stored_text(request: ToolCallRequest) -> bool:
+def _edit_removes_text(old: str, new: str) -> bool:
     """An edit is additive only when nothing it replaces is lost.
 
     That holds when the new text contains the old text whole (appending), or keeps
     every old line in order (inserting lines, e.g. a bullet in the middle of a section).
     """
-    args = request.tool_call.get("args", {})
-    if not _is_memory_file(_normalize(args.get("file_path"))):
-        return False
-    old, new = args.get("old_string"), args.get("new_string")
-    if not (isinstance(old, str) and isinstance(new, str) and old):
+    if not old:
         return True
     return not (old in new or _keeps_every_line(old, new))
 
 
-def _deletes_memory(request: ToolCallRequest) -> bool:
-    """Deleting anything under ``/memories/``, or a parent directory of it such as ``/``."""
-    raw_path = request.tool_call.get("args", {}).get("file_path")
-    if not isinstance(raw_path, str):
-        return True
-    path = _normalize(raw_path)
-    if path is None:
-        return False
-    return path.startswith(MEMORIES_ROUTE_PREFIX) or MEMORIES_ROUTE_PREFIX.startswith(path.rstrip("/") + "/")
+def _stricter(code: GuardVerdict, guard: GuardVerdict) -> GuardVerdict:
+    if code.decision == guard.decision == "ask":
+        return GuardVerdict(decision="ask", category=guard.category, reason=f"{code.reason} {guard.reason}")
+    return max((code, guard), key=lambda verdict: _STRICTNESS[verdict.decision])
 
 
-def _describe(reason: str) -> Callable[[ToolCall, Any, Any], str]:
-    def description(tool_call: ToolCall, _state: Any, _runtime: Any) -> str:
-        return f"{reason}\n\nTool: {tool_call['name']}\nArgs: {tool_call['args']}"
+class MemoryGate:
+    """The decision point: one verdict for each change under ``/memories/``."""
 
-    return description
+    def __init__(self, guard: SecurityGuard) -> None:
+        self._guard = guard
+
+    def write(self, path: str, content: str, *, exists: bool, store: BaseStore, user_id: str) -> GuardVerdict:
+        if exists:
+            return self._judge(_OVERWRITE, f"overwrite existing file {path}", content, store, user_id)
+        return self._judge(ALLOW, f"create new file {path}", content, store, user_id)
+
+    def edit(self, path: str, old_string: str, new_string: str, *, store: BaseStore, user_id: str) -> GuardVerdict:
+        if _edit_removes_text(old_string, new_string):
+            return self._judge(_DESTRUCTIVE_EDIT, f"replace text in existing file {path}", new_string, store, user_id)
+        return self._judge(ALLOW, f"append to existing file {path}", new_string, store, user_id)
+
+    def delete(self) -> GuardVerdict:
+        """A delete adds no content to judge, so the code rule alone decides."""
+        return _DELETE
+
+    def _judge(self, code: GuardVerdict, action: str, content: str, store: BaseStore, user_id: str) -> GuardVerdict:
+        """Detectors first (a secret blocks outright), then the guard; the stricter verdict wins."""
+        if redact_secrets(content)[1]:
+            return _SECRET
+        return _stricter(code, self._cached_guard(action, content, store, user_id))
+
+    def _cached_guard(self, action: str, content: str, store: BaseStore, user_id: str) -> GuardVerdict:
+        namespace = (user_id, VERDICT_CACHE_KIND)
+        key = hashlib.sha256(json.dumps([action, content]).encode()).hexdigest()
+        if (cached := store.get(namespace, key)) is not None:
+            return GuardVerdict.model_validate(cached.value)
+        verdict = self._guard(action, content)
+        store.put(namespace, key, verdict.model_dump())
+        return verdict
 
 
-def make_memory_interrupt_on(backend: BackendProtocol) -> dict[str, InterruptOnConfig]:
-    """Approval rules for the assistant's memory tools.
+def _enforce(verdict: GuardVerdict, tool_name: str, args: dict[str, Any]) -> str | None:
+    """Apply a verdict: ``None`` to go ahead, or the error message the model reads instead."""
+    if verdict.decision == "allow":
+        return None
+    if verdict.decision == "block":
+        return f"Blocked: {verdict.reason}"
+    request = HITLRequest(
+        action_requests=[
+            ActionRequest(
+                name=tool_name, args=args, description=f"{verdict.reason}\n\nTool: {tool_name}\nArgs: {args}"
+            )
+        ],
+        review_configs=[ReviewConfig(action_name=tool_name, allowed_decisions=MEMORY_APPROVAL_DECISIONS)],
+    )
+    decision = interrupt(request)["decisions"][0]
+    if decision["type"] == "approve":
+        return None
+    reason = decision.get("message")
+    return f"The user rejected this memory change{f': {reason}' if reason else ''}. Do not retry it another way."
 
-    Args:
-        backend: The agent's own backend, used to check whether a write would
-            replace a file that is already stored.
+
+class GatedMemoryBackend(StoreBackend):
+    """The enforcement point: ``/memories/`` storage that applies the gate's verdict.
+
+    ``CompositeBackend`` strips the route prefix, so a key arrives as ``/user_profile.md``; the
+    gate and the approval prompt see the full ``/memories/user_profile.md``. The user id comes
+    from the namespace factory, which already refuses a call without user identity.
     """
-    return {
-        "write_file": InterruptOnConfig(
-            allowed_decisions=list(MEMORY_APPROVAL_DECISIONS),
-            when=_overwrites_stored_memory(backend),
-            description=_describe("Overwrite a stored memory file (its current content is replaced)."),
-        ),
-        "edit_file": InterruptOnConfig(
-            allowed_decisions=list(MEMORY_APPROVAL_DECISIONS),
-            when=_edit_removes_stored_text,
-            description=_describe("Change or remove text in stored memory."),
-        ),
-        "delete": InterruptOnConfig(
-            allowed_decisions=list(MEMORY_APPROVAL_DECISIONS),
-            when=_deletes_memory,
-            description=_describe("Delete stored memory."),
-        ),
-    }
+
+    def __init__(self, gate: MemoryGate, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self._gate = gate
+
+    def _full_path(self, key: str) -> str:
+        return MEMORIES_ROUTE_PREFIX.rstrip("/") + key
+
+    def _check_write(self, key: str, content: str) -> str | None:
+        store, namespace, path = self._get_store(), self._get_namespace(), self._full_path(key)
+        exists = store.get(namespace, key) is not None
+        verdict = self._gate.write(path, content, exists=exists, store=store, user_id=namespace[0])
+        return _enforce(verdict, "write_file", {"file_path": path, "content": content})
+
+    def _check_edit(self, key: str, old_string: str, new_string: str) -> str | None:
+        store, namespace, path = self._get_store(), self._get_namespace(), self._full_path(key)
+        verdict = self._gate.edit(path, old_string, new_string, store=store, user_id=namespace[0])
+        return _enforce(verdict, "edit_file", {"file_path": path, "old_string": old_string, "new_string": new_string})
+
+    def _check_delete(self, key: str) -> str | None:
+        return _enforce(self._gate.delete(), "delete", {"file_path": self._full_path(key)})
+
+    def write(self, file_path: str, content: str) -> WriteResult:
+        if refusal := self._check_write(file_path, content):
+            return WriteResult(error=refusal)
+        return super().write(file_path, content)
+
+    async def awrite(self, file_path: str, content: str) -> WriteResult:
+        if refusal := self._check_write(file_path, content):
+            return WriteResult(error=refusal)
+        return await super().awrite(file_path, content)
+
+    def edit(self, file_path: str, old_string: str, new_string: str, replace_all: bool = False) -> EditResult:
+        if refusal := self._check_edit(file_path, old_string, new_string):
+            return EditResult(error=refusal)
+        return super().edit(file_path, old_string, new_string, replace_all)
+
+    async def aedit(self, file_path: str, old_string: str, new_string: str, replace_all: bool = False) -> EditResult:
+        if refusal := self._check_edit(file_path, old_string, new_string):
+            return EditResult(error=refusal)
+        return await super().aedit(file_path, old_string, new_string, replace_all)
+
+    def delete(self, file_path: str) -> DeleteResult:
+        if refusal := self._check_delete(file_path):
+            return DeleteResult(error=refusal)
+        return super().delete(file_path)
+
+    async def adelete(self, file_path: str) -> DeleteResult:
+        if refusal := self._check_delete(file_path):
+            return DeleteResult(error=refusal)
+        return await super().adelete(file_path)

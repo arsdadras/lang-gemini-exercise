@@ -21,14 +21,18 @@ from agentlab.configs.personal_assistant_config import (
     DEFAULT_USER_PROFILE_PATH,
     SKILLS_DIR,
 )
-from agentlab.middlewares.memory_approval_middleware import make_memory_interrupt_on
+from agentlab.middlewares.memory_approval_middleware import (
+    VERDICT_CACHE_KIND,
+    GatedMemoryBackend,
+    MemoryGate,
+)
 from agentlab.schemas.context.user_context_schema import UserContext
 from agentlab.utils.memory_backend_util import (
     make_memory_composite_backend,
     user_memory_namespace,
 )
 from agentlab.utils.run_with_hitl_util import stream_with_hitl
-from tests.fakes import ScriptedToolModel, done, tool_turn
+from tests.fakes import RecordingGuard, ScriptedToolModel, done, tool_turn
 
 
 def save_profile_turn(store: InMemoryStore, user_id: str, profile: str) -> None:
@@ -106,9 +110,14 @@ def test_skill_frontmatter_follows_the_agent_skills_spec(skill: str) -> None:
 ALICE_THREAD = {"configurable": {"thread_id": "t1"}}
 
 
-def make_governed_agent(store: InMemoryStore, skills_dir: Path, *responses: AIMessage) -> Any:
-    """The assistant's real approval policy on a real graph; only the model is scripted."""
-    backend = make_memory_composite_backend(skills_dir=skills_dir)
+def make_governed_agent(
+    store: InMemoryStore, skills_dir: Path, *responses: AIMessage, guard: RecordingGuard | None = None
+) -> Any:
+    """The assistant's real memory gate on a real graph; only the model and the guard are scripted."""
+    gate = MemoryGate(guard if guard is not None else RecordingGuard("allow"))
+    backend = make_memory_composite_backend(
+        skills_dir=skills_dir, memories=GatedMemoryBackend(gate, namespace=user_memory_namespace)
+    )
     return create_deep_agent(
         model=ScriptedToolModel(messages=iter(responses)),
         backend=backend,
@@ -116,7 +125,6 @@ def make_governed_agent(store: InMemoryStore, skills_dir: Path, *responses: AIMe
         checkpointer=InMemorySaver(),
         context_schema=UserContext,
         permissions=PERSONAL_ASSISTANT_PERMISSIONS,
-        interrupt_on=make_memory_interrupt_on(backend),
     )
 
 
@@ -282,3 +290,142 @@ def test_cli_approval_resumes_with_the_user_context(tmp_path: Path) -> None:
 
     assert result["interrupts"] == []
     assert stored_memories(store) == {"/user_profile.md": "- likes coffee\n"}
+
+
+# --- Memory gate: secret detectors, the guard, and its verdict cache ------------------------
+
+
+def last_tool_message(agent: Any) -> str:
+    messages = agent.get_state(ALICE_THREAD).values["messages"]
+    return next(str(message.content) for message in reversed(messages) if message.type == "tool")
+
+
+def approval_description(result: dict[str, Any]) -> str:
+    return result["__interrupt__"][0].value["action_requests"][0]["description"]
+
+
+def test_sensitive_addition_waits_and_shows_the_guard_reason(tmp_path: Path) -> None:
+    store = InMemoryStore()
+    guard = RecordingGuard("ask", category="health", reason="This stores a health detail.")
+    agent = make_governed_agent(
+        store,
+        tmp_path,
+        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- Has asthma\n"),
+        done(),
+        guard=guard,
+    )
+
+    result = send(agent, "I have asthma")
+
+    assert pending_approvals(result) == ["write_file"]
+    assert approval_description(result).startswith("This stores a health detail.")
+    assert guard.calls == [("create new file /memories/user_profile.md", "- Has asthma\n")]
+    send(agent, Command(resume={"decisions": [{"type": "reject"}]}))
+    assert stored_memories(store) == {}
+
+
+def test_overwrite_with_sensitive_content_explains_both_reasons(tmp_path: Path) -> None:
+    guard = RecordingGuard("allow", "ask", category="health", reason="This stores a health detail.")
+    agent = make_governed_agent(
+        InMemoryStore(),
+        tmp_path,
+        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes tea\n"),
+        done(),
+        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- Has asthma\n"),
+        done(),
+        guard=guard,
+    )
+    send(agent, "I like tea")
+
+    description = approval_description(send(agent, "Replace it: I have asthma"))
+
+    assert "Overwrite a stored memory file" in description
+    assert "This stores a health detail." in description
+
+
+def test_a_guard_that_changes_its_mind_cannot_void_a_rejection(tmp_path: Path) -> None:
+    """HITL re-runs ``when`` on resume; the cached verdict keeps pause and resume in agreement."""
+    store = InMemoryStore()
+    guard = RecordingGuard("ask", "allow")
+    agent = make_governed_agent(
+        store,
+        tmp_path,
+        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- Wife has a heart condition\n"),
+        done(),
+        guard=guard,
+    )
+
+    assert pending_approvals(send(agent, "My wife has a heart condition")) == ["write_file"]
+    send(agent, Command(resume={"decisions": [{"type": "reject"}]}))
+
+    assert stored_memories(store) == {}
+    assert len(guard.calls) == 1
+    assert store.search(("alice", VERDICT_CACHE_KIND))
+
+
+def test_secret_in_new_content_is_refused_before_the_guard_runs(tmp_path: Path) -> None:
+    store = InMemoryStore()
+    guard = RecordingGuard("allow")
+    fake_key = "sk-proj-" + "a1B2c3D4" * 4
+    agent = make_governed_agent(
+        store,
+        tmp_path,
+        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content=f"- OpenAI key: {fake_key}\n"),
+        done(),
+        guard=guard,
+    )
+
+    assert pending_approvals(send(agent, "Remember my key")) == []
+    assert stored_memories(store) == {}
+    assert "Blocked: The content contains a secret" in last_tool_message(agent)
+    assert guard.calls == []
+
+
+def test_guard_block_beats_the_overwrite_approval_and_keeps_memory(tmp_path: Path) -> None:
+    store = InMemoryStore()
+    guard = RecordingGuard("allow", "block", category="credential", reason="This stores a password.")
+    agent = make_governed_agent(
+        store,
+        tmp_path,
+        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes tea\n"),
+        done(),
+        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- wifi password is blue-horse-42\n"),
+        done(),
+        guard=guard,
+    )
+    send(agent, "I like tea")
+
+    assert pending_approvals(send(agent, "Remember the wifi password")) == []
+    assert stored_memories(store) == {"/user_profile.md": "- likes tea\n"}
+    assert "Blocked: This stores a password." in last_tool_message(agent)
+
+
+def test_delegated_blocked_write_is_refused_by_the_shared_backend(tmp_path: Path) -> None:
+    store = InMemoryStore()
+    guard = RecordingGuard("block", category="credential", reason="This stores a password.")
+    agent = make_governed_agent(
+        store,
+        tmp_path,
+        tool_turn("task", subagent_type="general-purpose", description="Save the wifi password"),
+        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- wifi password is blue-horse-42\n"),
+        done(),  # subagent's answer
+        done(),  # coordinator's answer
+        guard=guard,
+    )
+
+    assert pending_approvals(send(agent, "Ask a helper to save my wifi password")) == []
+    assert stored_memories(store) == {}
+
+
+def test_guard_never_judges_files_outside_memory(tmp_path: Path) -> None:
+    guard = RecordingGuard("block")
+    agent = make_governed_agent(
+        InMemoryStore(),
+        tmp_path,
+        tool_turn("write_file", file_path="/notes.md", content="scratch"),
+        done(),
+        guard=guard,
+    )
+
+    assert pending_approvals(send(agent, "Take a note")) == []
+    assert guard.calls == []

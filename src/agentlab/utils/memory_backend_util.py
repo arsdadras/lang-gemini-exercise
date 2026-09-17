@@ -40,18 +40,20 @@ def user_memory_namespace(runtime: Runtime[UserContext] | None) -> tuple[str, st
 def make_memory_composite_backend(
     skills_dir: Path = SKILLS_DIR,
     default: BackendProtocol | None = None,
+    memories: BackendProtocol | None = None,
 ) -> CompositeBackend:
     """Route the assistant's virtual paths to the right storage.
 
-    - ``/memories/`` -> ``StoreBackend``: durable, one namespace per user. The store
-      itself is the one compiled into the running agent (``create_deep_agent(store=...)``).
+    - ``/memories/`` -> ``memories``, by default a ``StoreBackend``: durable, one namespace per
+      user. The store itself is the one compiled into the running agent
+      (``create_deep_agent(store=...)``). Pass a gated store backend to enforce write policy.
     - ``/skills/`` -> ``FilesystemBackend`` over the packaged skill files.
     - anything else -> ``StateBackend``: scratch files that live only in the thread's state.
     """
     return CompositeBackend(
         default=default if default is not None else StateBackend(),
         routes={
-            MEMORIES_ROUTE_PREFIX: StoreBackend(namespace=user_memory_namespace),
+            MEMORIES_ROUTE_PREFIX: memories if memories is not None else StoreBackend(namespace=user_memory_namespace),
             SKILLS_ROUTE_PREFIX: FilesystemBackend(root_dir=skills_dir, virtual_mode=True),
         },
     )
