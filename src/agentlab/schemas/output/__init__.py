@@ -11,6 +11,10 @@ from agentlab.schemas.output.interpreter_output_schema import (
     ArtifactMetadata,
     ArtifactType,
 )
+from agentlab.schemas.output.memory_consolidation_output_schema import (
+    MemoryEdit,
+    MemoryEdits,
+)
 from agentlab.schemas.output.middlewares_output_schema import (
     FinglishLines,
     GroundednessVerdict,
@@ -32,6 +36,8 @@ __all__ = [
     "GradeHallucination",
     "GroundednessVerdict",
     "GuardVerdict",
+    "MemoryEdit",
+    "MemoryEdits",
     "ResearchFindings",
     "ResearchReport",
     "ReviewResult",

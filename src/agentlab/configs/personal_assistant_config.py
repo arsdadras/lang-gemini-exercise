@@ -18,3 +18,9 @@ DEFAULT_ASSISTANT_THREAD_ID: str = "pa_session_001"
 # tool; gpt-5.6-luna (same tier) didn't, so the assistant pins that provider.
 DEFAULT_ASSISTANT_TIER: str = "low"
 DEFAULT_ASSISTANT_PROVIDER: str = "openai"
+
+# The memory consolidator must notice a new fact that contradicts an old one under another
+# heading (a new diet vs. an old food preference). Measured on 2026-09-19, 3 runs per case:
+# claude-sonnet-5 resolved 6/6, gpt-5.6-terra 4/6; gemini-3.8-flash was rate-limited.
+CONSOLIDATOR_TIER: str = "medium"
+CONSOLIDATOR_PROVIDER: str = "anthropic"

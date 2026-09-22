@@ -158,3 +158,21 @@ def stream_with_hitl(
         }
         result = stream_agent_with_observability(agent, Command(resume=resume), config, context=context)
     return result
+
+
+def resume_pending_with_hitl(
+    graph: Any,
+    config: dict[str, Any],
+    *,
+    context: Any | None = None,
+    assistant_prompt: str | Callable[[dict[str, Any]], str] | None = None,
+) -> dict[str, Any]:
+    """Resolve the interrupts a paused run already holds, then any raised on resume.
+
+    For a run that paused earlier, possibly in the background, and waits for the user.
+    Returns the run's final state values.
+    """
+    while interrupts := [i for task in graph.get_state(config).tasks for i in task.interrupts]:
+        resume = {interrupt.id: _handle_interrupt_decisions(interrupt, assistant_prompt) for interrupt in interrupts}
+        graph.invoke(Command(resume=resume), config, context=context)
+    return graph.get_state(config).values

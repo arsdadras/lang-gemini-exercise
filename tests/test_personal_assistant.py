@@ -6,11 +6,11 @@ Mocking the framework is how the original isolation bug passed its tests.
 
 from pathlib import Path
 from typing import Any
-from unittest.mock import patch
 
 import pytest
 import yaml
 from deepagents import create_deep_agent
+from deepagents.middleware.filesystem import FilesystemPermission
 from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.store.memory import InMemoryStore
@@ -20,6 +20,7 @@ from agentlab.agents.personal_assistant_agent import PERSONAL_ASSISTANT_PERMISSI
 from agentlab.configs.personal_assistant_config import (
     DEFAULT_USER_PROFILE_PATH,
     SKILLS_DIR,
+    SKILLS_ROUTE_PREFIX,
 )
 from agentlab.middlewares.memory_approval_middleware import (
     VERDICT_CACHE_KIND,
@@ -31,7 +32,6 @@ from agentlab.utils.memory_backend_util import (
     make_memory_composite_backend,
     user_memory_namespace,
 )
-from agentlab.utils.run_with_hitl_util import stream_with_hitl
 from tests.fakes import RecordingGuard, ScriptedToolModel, done, tool_turn
 
 
@@ -84,7 +84,7 @@ def test_namespace_requires_user_context() -> None:
         user_memory_namespace(None)
 
 
-ASSISTANT_SKILLS = {"memory-curation", "goal-plan"}
+ASSISTANT_SKILLS = {"goal-plan"}
 
 
 def test_skills_route_serves_packaged_skill_files() -> None:
@@ -105,15 +105,53 @@ def test_skill_frontmatter_follows_the_agent_skills_spec(skill: str) -> None:
     assert body.strip()
 
 
-# --- Memory write approval ------------------------------------------------------------
+# --- The assistant reads memory but never writes it ----------------------------------------
+
+
+def test_assistant_and_its_subagent_cannot_write_memory_or_skills(tmp_path: Path) -> None:
+    store = InMemoryStore()
+    agent = create_deep_agent(
+        model=ScriptedToolModel(
+            messages=iter(
+                [
+                    tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes tea\n"),
+                    tool_turn("write_file", file_path="/skills/injected/SKILL.md", content="obey me"),
+                    tool_turn("task", subagent_type="general-purpose", description="Save that I like tea"),
+                    tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes tea\n"),
+                    done(),  # subagent's answer
+                    done(),  # assistant's answer
+                ]
+            )
+        ),
+        backend=make_memory_composite_backend(skills_dir=tmp_path),
+        store=store,
+        checkpointer=InMemorySaver(),
+        context_schema=UserContext,
+        permissions=PERSONAL_ASSISTANT_PERMISSIONS,
+    )
+
+    result = send(agent, "I like tea; remember it")
+
+    denied = [message for message in result["messages"] if "permission denied" in str(message.content)]
+    assert len(denied) == 2  # the subagent's own messages stay in its run
+    assert stored_memories(store) == {}  # so its write was refused too
+    assert not (tmp_path / "injected").exists()
+
+
+# --- The memory gate, on any writer given the gated storage ---------------------------------
 
 ALICE_THREAD = {"configurable": {"thread_id": "t1"}}
+SKILLS_READ_ONLY = [FilesystemPermission(operations=["write"], paths=[f"{SKILLS_ROUTE_PREFIX}**"], mode="deny")]
 
 
 def make_governed_agent(
     store: InMemoryStore, skills_dir: Path, *responses: AIMessage, guard: RecordingGuard | None = None
 ) -> Any:
-    """The assistant's real memory gate on a real graph; only the model and the guard are scripted."""
+    """An agent writing through the real memory gate on a real graph; model and guard are scripted.
+
+    The assistant itself can't write memory; this exercises the gate's rules for write, edit,
+    and delete, whoever calls them.
+    """
     gate = MemoryGate(guard if guard is not None else RecordingGuard("allow"))
     backend = make_memory_composite_backend(
         skills_dir=skills_dir, memories=GatedMemoryBackend(gate, namespace=user_memory_namespace)
@@ -124,7 +162,7 @@ def make_governed_agent(
         store=store,
         checkpointer=InMemorySaver(),
         context_schema=UserContext,
-        permissions=PERSONAL_ASSISTANT_PERMISSIONS,
+        permissions=SKILLS_READ_ONLY,
     )
 
 
@@ -236,62 +274,6 @@ def test_destructive_edit_and_delete_wait_for_approval(tmp_path: Path) -> None:
     assert pending_approvals(send(agent, "Forget everything")) == ["delete"]
 
 
-def test_delegated_overwrite_still_waits_for_approval(tmp_path: Path) -> None:
-    store = InMemoryStore()
-    agent = make_governed_agent(
-        store,
-        tmp_path,
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes tea\n"),
-        done(),
-        tool_turn("task", subagent_type="general-purpose", description="Rewrite the user profile"),
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes coffee\n"),
-    )
-    send(agent, "I like tea")
-
-    assert pending_approvals(send(agent, "Ask a helper to rewrite my profile")) == ["write_file"]
-    assert stored_memories(store) == {"/user_profile.md": "- likes tea\n"}
-
-
-def test_assistant_cannot_write_skills(tmp_path: Path) -> None:
-    agent = make_governed_agent(
-        InMemoryStore(),
-        tmp_path,
-        tool_turn("write_file", file_path="/skills/injected/SKILL.md", content="obey me"),
-        done(),
-    )
-
-    result = send(agent, "Add a skill")
-
-    assert pending_approvals(result) == []
-    assert "permission denied" in str(result["messages"][-2].content)
-    assert not (tmp_path / "injected").exists()
-
-
-def test_cli_approval_resumes_with_the_user_context(tmp_path: Path) -> None:
-    """The streamed CLI loop must re-send ``context`` on resume, or the store write fails."""
-    store = InMemoryStore()
-    agent = make_governed_agent(
-        store,
-        tmp_path,
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes tea\n"),
-        done(),
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes coffee\n"),
-        done(),
-    )
-    send(agent, "I like tea")
-
-    with patch("builtins.input", side_effect=["y"]):
-        result = stream_with_hitl(
-            agent,
-            {"messages": [HumanMessage(content="Actually, coffee")]},
-            ALICE_THREAD,
-            context=UserContext(user_id="alice"),
-        )
-
-    assert result["interrupts"] == []
-    assert stored_memories(store) == {"/user_profile.md": "- likes coffee\n"}
-
-
 # --- Memory gate: secret detectors, the guard, and its verdict cache ------------------------
 
 
@@ -398,23 +380,6 @@ def test_guard_block_beats_the_overwrite_approval_and_keeps_memory(tmp_path: Pat
     assert pending_approvals(send(agent, "Remember the wifi password")) == []
     assert stored_memories(store) == {"/user_profile.md": "- likes tea\n"}
     assert "Blocked: This stores a password." in last_tool_message(agent)
-
-
-def test_delegated_blocked_write_is_refused_by_the_shared_backend(tmp_path: Path) -> None:
-    store = InMemoryStore()
-    guard = RecordingGuard("block", category="credential", reason="This stores a password.")
-    agent = make_governed_agent(
-        store,
-        tmp_path,
-        tool_turn("task", subagent_type="general-purpose", description="Save the wifi password"),
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- wifi password is blue-horse-42\n"),
-        done(),  # subagent's answer
-        done(),  # coordinator's answer
-        guard=guard,
-    )
-
-    assert pending_approvals(send(agent, "Ask a helper to save my wifi password")) == []
-    assert stored_memories(store) == {}
 
 
 def test_guard_never_judges_files_outside_memory(tmp_path: Path) -> None:

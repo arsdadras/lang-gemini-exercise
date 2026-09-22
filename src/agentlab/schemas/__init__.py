@@ -18,6 +18,8 @@ from agentlab.schemas.output import (
     GradeHallucination,
     GroundednessVerdict,
     GuardVerdict,
+    MemoryEdit,
+    MemoryEdits,
     ResearchFindings,
     ResearchReport,
     ReviewResult,
@@ -26,7 +28,7 @@ from agentlab.schemas.output import (
     TestExecutionResult,
     TestSuite,
 )
-from agentlab.schemas.state import CodeReviewState, RAGState
+from agentlab.schemas.state import CodeReviewState, MemoryConsolidationState, RAGState
 
 __all__ = [
     "ArtifactMetadata",
@@ -38,6 +40,9 @@ __all__ = [
     "GradeHallucination",
     "GroundednessVerdict",
     "GuardVerdict",
+    "MemoryConsolidationState",
+    "MemoryEdit",
+    "MemoryEdits",
     "RAGState",
     "ResearchFindings",
     "ResearchReport",

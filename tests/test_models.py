@@ -1,6 +1,7 @@
 """Tests for the tier x provider model registry (models are stubbed; no network)."""
 
 import pytest
+from langchain_core.runnables import RunnableLambda
 
 from agentlab.configs.models_config import ModelSpec
 from agentlab.models.registry_model import LLMRegistry
@@ -43,6 +44,17 @@ def test_fallbacks_stay_in_tier_and_skip_the_pinned_primary() -> None:
 
     assert registry.fallback_models("high") == ["high-b"]
     assert registry.fallback_models("high", primary="b") == ["high-a"]
+
+
+def test_chain_with_a_pinned_provider_falls_back_to_the_rest_of_the_tier() -> None:
+    registry = LLMRegistry(
+        TIERS, default_tier="low", model_builder=lambda spec: RunnableLambda(lambda _, name=spec.model: name)
+    )
+
+    chain = registry.chain("high", provider="b")
+
+    assert chain.invoke("hi") == "high-b"
+    assert [fallback.invoke("hi") for fallback in chain.fallbacks] == ["high-a"]
 
 
 def test_cascade_appends_lower_tiers_in_order() -> None:

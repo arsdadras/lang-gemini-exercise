@@ -3,15 +3,18 @@
 - Created: 2026-09-11 (Session 0). Revised: 2026-09-13 (identity via runtime context, skills
   route, actual tools); 2026-09-14 (B2 write governance, assistant skills); 2026-09-17 (B3
   content guardrails: one gate in the memory storage, security guard, secret detectors,
-  Finglish repair).
-- Code: `agents/personal_assistant_agent.py`, `middlewares/memory_approval_middleware.py`,
+  Finglish repair); 2026-09-22 (B4 topic 1: the assistant only reads memory; a background
+  consolidator is the single writer).
+- Code: `agents/personal_assistant_agent.py`, `graphs/memory_consolidation_graph.py`,
+  `nodes/memory_consolidation_node.py`, `middlewares/memory_approval_middleware.py`,
   `middlewares/security_guard_middleware.py`, `middlewares/finglish_output_middleware.py`,
   `utils/memory_backend_util.py`, `utils/secret_redaction_util.py`,
   `apps/personal_assistant_app.py`, skills under `resources/skills/personal_assistant/`.
   Stages: `docs/ROADMAP.md` (P5). Decisions:
   [ADR-0003](../adr/0003-runtime-context-for-user-identity.md),
   [ADR-0008](../adr/0008-memory-write-governance.md),
-  [ADR-0010](../adr/0010-one-gate-in-memory-storage.md).
+  [ADR-0010](../adr/0010-one-gate-in-memory-storage.md),
+  [ADR-0012](../adr/0012-memory-consolidation-single-writer.md).
 
 ## Memory model
 
@@ -19,7 +22,7 @@
 | :--- | :--- | :--- |
 | Short-term (working) | One thread | Checkpointer + `StateBackend` (unrouted paths) |
 | Long-term declarative | One user, across threads | `GatedMemoryBackend` (a `StoreBackend`) on `/memories/`, namespace `(user_id, "memories")`: profile plus one file per goal under `/memories/goals/` |
-| Procedural (skills) | Shared across users, read-only | `SkillsMiddleware` over `/skills/` -> `FilesystemBackend` on `resources/skills/personal_assistant` (`memory-curation`, `goal-plan`) |
+| Procedural (skills) | Shared across users, read-only | `SkillsMiddleware` over `/skills/` -> `FilesystemBackend` on `resources/skills/personal_assistant` (`goal-plan`) |
 | Episodic | One user, searchable history | Not built (candidate for Phase C or later) |
 
 `CompositeBackend` routes by longest path prefix. `MemoryMiddleware` loads
@@ -35,8 +38,8 @@ once per thread. Guard verdicts are cached per user under `(user_id, "memory_ver
 3. **Environment:** a LangGraph store (in-memory now, SQLite in C1), the checkpointer, and the
    packaged skill files.
 4. **Tools:**
-   - DeepAgents file tools (`ls`, `read_file`, `write_file`, `edit_file`, `delete`, `glob`,
-     `grep`) over the routed backend;
+   - DeepAgents file tools over the routed backend (`ls`, `read_file`, `glob`, `grep`; writes
+     to `/memories/` and `/skills/` are denied);
    - `web_search` (Tavily);
    - `task` for delegation.
 5. **Input:** `messages`. Config carries `thread_id`; runtime context is
@@ -45,11 +48,12 @@ once per thread. Guard verdicts are cached per user under `(user_id, "memory_ver
    effects are files under `/memories/`.
 7. **State:** the thread's messages and scratch files are transient; `/memories/` persists per
    user in the store.
-8. **Side effects:** creating, editing, and deleting memory files.
-9. **Risk:** every memory change passes one gate in the storage, shared by the assistant and
-   its subagents (B3, [ADR-0010](../adr/0010-one-gate-in-memory-storage.md)): adding an
-   ordinary fact runs; overwriting, destructive edits, deletions, and sensitive content wait
-   for approval; secrets and credentials are refused. The user's typed input is redacted at
+8. **Side effects:** memory files change only through the consolidator, after the
+   conversation ends (ADR-0012). The assistant and its subagents can't write memory.
+9. **Risk:** every consolidator edit passes one gate in the storage (B3,
+   [ADR-0010](../adr/0010-one-gate-in-memory-storage.md)): adding an ordinary fact runs;
+   replacements, removals, and sensitive content wait for approval, one edit at a time;
+   secrets and credentials are refused. The user's typed input is redacted at
    the app boundary before anything records it. Shared skills are read-only for the assistant;
    only `skill_designer` writes them (C3).
 10. **Failure contract:** missing user identity raises an error (it never falls back to a

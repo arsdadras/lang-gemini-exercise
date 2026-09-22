@@ -143,20 +143,21 @@ class LLMRegistry:
         tier: str | None = None,
         *,
         structured: type[BaseModel] | None = None,
+        provider: str | None = None,
         cascade: bool = False,
     ) -> Runnable:
-        """Return the tier's primary model wrapped with its fallbacks.
+        """Return the tier's primary model (or the pinned ``provider``) wrapped with its fallbacks.
 
         Structured output is bound to each model *before* wrapping, because
         ``RunnableWithFallbacks`` has no ``with_structured_output`` of its own.
         """
-        primary: Runnable = self.get(tier)
-        fallbacks: list[Runnable] = list(self.fallback_models(tier, cascade=cascade))
+        primary: Runnable = self.get(tier, provider)
+        fallbacks: list[Runnable] = list(self.fallback_models(tier, primary=provider, cascade=cascade))
         if structured is not None:
-            primary = self.get(tier).with_structured_output(structured)
+            primary = self.get(tier, provider).with_structured_output(structured)
             fallbacks = [
                 model.with_structured_output(structured)
-                for model in self.fallback_models(tier, cascade=cascade)
+                for model in self.fallback_models(tier, primary=provider, cascade=cascade)
             ]
         return primary.with_fallbacks(fallbacks) if fallbacks else primary
 
