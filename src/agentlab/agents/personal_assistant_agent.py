@@ -12,6 +12,7 @@ from agentlab.configs.personal_assistant_config import (
     DEFAULT_ASSISTANT_TIER,
     DEFAULT_USER_PROFILE_PATH,
     MEMORIES_ROUTE_PREFIX,
+    PUBLISHED_SKILLS_ROUTE_PREFIX,
     SKILLS_ROUTE_PREFIX,
 )
 from agentlab.middlewares.fallback_middleware import make_model_fallback
@@ -23,9 +24,10 @@ from agentlab.tools.web_search_tool import make_web_search_tool
 from agentlab.utils.memory_backend_util import make_memory_composite_backend
 
 # The assistant reads memory and skills but changes neither. Memory has one writer, the
-# consolidator that runs after each conversation; skills are shared by every user.
+# consolidator that runs after each conversation; skills are shared by every user, and only the
+# skill designer publishes new ones.
 PERSONAL_ASSISTANT_PERMISSIONS = [
-    FilesystemPermission(operations=["write"], paths=[f"{MEMORIES_ROUTE_PREFIX}**", f"{SKILLS_ROUTE_PREFIX}**"], mode="deny"),
+    FilesystemPermission(operations=["write"], paths=[f"{MEMORIES_ROUTE_PREFIX}**", f"{SKILLS_ROUTE_PREFIX}**", f"{PUBLISHED_SKILLS_ROUTE_PREFIX}**"], mode="deny"),
 ]
 
 
@@ -56,7 +58,7 @@ def make_personal_assistant_agent(
         backend=make_memory_composite_backend(),
         permissions=PERSONAL_ASSISTANT_PERMISSIONS,
         memory=[DEFAULT_USER_PROFILE_PATH],
-        skills=[SKILLS_ROUTE_PREFIX],
+        skills=[SKILLS_ROUTE_PREFIX, PUBLISHED_SKILLS_ROUTE_PREFIX],
         checkpointer=checkpointer if checkpointer is not None else InMemorySaver(),
         store=store,
         context_schema=UserContext,

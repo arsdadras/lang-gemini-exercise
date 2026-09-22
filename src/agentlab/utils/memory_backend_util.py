@@ -13,6 +13,8 @@ from langgraph.runtime import Runtime
 
 from agentlab.configs.personal_assistant_config import (
     MEMORIES_ROUTE_PREFIX,
+    PUBLISHED_SKILLS_NAMESPACE,
+    PUBLISHED_SKILLS_ROUTE_PREFIX,
     SKILLS_DIR,
     SKILLS_ROUTE_PREFIX,
 )
@@ -48,6 +50,8 @@ def make_memory_composite_backend(
       user. The store itself is the one compiled into the running agent
       (``create_deep_agent(store=...)``). Pass a gated store backend to enforce write policy.
     - ``/skills/`` -> ``FilesystemBackend`` over the packaged skill files.
+    - ``/published-skills/`` -> ``StoreBackend`` over the shared namespace the skill designer
+      publishes to (the same for every user).
     - anything else -> ``StateBackend``: scratch files that live only in the thread's state.
     """
     return CompositeBackend(
@@ -55,5 +59,6 @@ def make_memory_composite_backend(
         routes={
             MEMORIES_ROUTE_PREFIX: memories if memories is not None else StoreBackend(namespace=user_memory_namespace),
             SKILLS_ROUTE_PREFIX: FilesystemBackend(root_dir=skills_dir, virtual_mode=True),
+            PUBLISHED_SKILLS_ROUTE_PREFIX: StoreBackend(namespace=lambda _runtime: PUBLISHED_SKILLS_NAMESPACE),
         },
     )

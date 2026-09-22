@@ -8,6 +8,9 @@ from agentlab.configs.paths_config import SKILLS_RESOURCES_DIR, STATE_DIR
 MEMORIES_ROUTE_PREFIX: str = "/memories/"
 DEFAULT_USER_PROFILE_PATH: str = "/memories/user_profile.md"
 SKILLS_ROUTE_PREFIX: str = "/skills/"
+# Skills published by the skill designer, shared by every user (stored in the long-term store).
+PUBLISHED_SKILLS_ROUTE_PREFIX: str = "/published-skills/"
+PUBLISHED_SKILLS_NAMESPACE: tuple[str, str] = ("shared", "skills")
 SKILLS_DIR: Path = SKILLS_RESOURCES_DIR / "personal_assistant"
 
 # Durable state of the P5 app, apart from the other apps' shared checkpoint database.
