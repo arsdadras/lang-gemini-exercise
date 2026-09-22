@@ -12,7 +12,6 @@ import pytest
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.runnables import RunnableLambda
 
-from agentlab.apps.personal_assistant_app import load_session, save_session
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer, get_sqlite_store
 from agentlab.graphs.memory_consolidation_graph import make_memory_consolidation_graph
 from agentlab.schemas.output.memory_consolidation_output_schema import (
@@ -24,6 +23,8 @@ from agentlab.utils.memory_session_util import (
     THREADS_KIND,
     MemorySessions,
     forget_user,
+    load_session,
+    save_session,
 )
 from tests.fakes import RecordingGuard
 

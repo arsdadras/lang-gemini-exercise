@@ -31,6 +31,7 @@ lab-code-review = "agentlab.apps.code_review_app:main"
 lab-interpreter = "agentlab.apps.interpreter_app:main"
 lab-coordinator = "agentlab.apps.coding_coordinator_app:main"
 lab-assistant = "agentlab.apps.personal_assistant_app:main"
+lab-brief = "agentlab.apps.personal_brief_app:main"
 
 [build-system]
 requires = ["setuptools>=61.0"]

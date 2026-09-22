@@ -21,6 +21,10 @@ from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.store.base import BaseStore
 
+from agentlab.configs.personal_assistant_config import (
+    DEFAULT_ASSISTANT_THREAD_ID,
+    DEFAULT_USER_ID,
+)
 from agentlab.middlewares.memory_approval_middleware import HISTORY_KIND
 from agentlab.nodes.memory_consolidation_node import format_transcript
 from agentlab.schemas.context.user_context_schema import UserContext
@@ -30,6 +34,19 @@ from agentlab.utils.run_with_hitl_util import resume_pending_with_hitl
 
 THREADS_KIND = "threads"
 REVIEWS_KIND = "memory_reviews"
+_SESSION_NAMESPACE = ("app", "personal_assistant")
+
+
+def load_session(store: BaseStore) -> tuple[str, str]:
+    """The P5 app's last active user and thread, or the defaults on first run."""
+    item = store.get(_SESSION_NAMESPACE, "last")
+    if item is None:
+        return DEFAULT_USER_ID, DEFAULT_ASSISTANT_THREAD_ID
+    return item.value["user_id"], item.value["thread_id"]
+
+
+def save_session(store: BaseStore, user_id: str, thread_id: str) -> None:
+    store.put(_SESSION_NAMESPACE, "last", {"user_id": user_id, "thread_id": thread_id})
 
 
 def _config(thread_id: str) -> dict[str, Any]:

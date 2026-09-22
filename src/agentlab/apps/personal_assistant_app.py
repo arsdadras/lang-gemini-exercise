@@ -30,9 +30,7 @@ from agentlab.configs.personal_assistant_config import (
     ASSISTANT_CHECKPOINT_DB_PATH,
     ASSISTANT_STORE_DB_PATH,
     DEFAULT_ASSISTANT_PROVIDER,
-    DEFAULT_ASSISTANT_THREAD_ID,
     DEFAULT_ASSISTANT_TIER,
-    DEFAULT_USER_ID,
     LONG_THREAD_CONSOLIDATION_CHARS,
     PUBLISHED_SKILLS_NAMESPACE,
     SKILLS_DIR,
@@ -48,7 +46,9 @@ from agentlab.utils.memory_backend_util import MEMORIES_NAMESPACE_KIND
 from agentlab.utils.memory_session_util import (
     MemorySessions,
     forget_user,
+    load_session,
     memory_history,
+    save_session,
     undo_last_change,
 )
 from agentlab.utils.run_with_hitl_util import resume_pending_with_hitl, stream_with_hitl
@@ -70,23 +70,10 @@ _HELP = """Commands:
   /help        show this help
   quit         end the session"""
 _PREVIEW_LINES = 10
-_SESSION_NAMESPACE = ("app", "personal_assistant")
 
 
 def _new_thread_id() -> str:
     return f"thread_{uuid.uuid4().hex[:6]}"
-
-
-def load_session(store: BaseStore) -> tuple[str, str]:
-    """The last active user and thread, or the defaults on first run."""
-    item = store.get(_SESSION_NAMESPACE, "last")
-    if item is None:
-        return DEFAULT_USER_ID, DEFAULT_ASSISTANT_THREAD_ID
-    return item.value["user_id"], item.value["thread_id"]
-
-
-def save_session(store: BaseStore, user_id: str, thread_id: str) -> None:
-    store.put(_SESSION_NAMESPACE, "last", {"user_id": user_id, "thread_id": thread_id})
 
 
 def sanitize_user_input(text: str) -> str:
