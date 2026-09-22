@@ -22,6 +22,8 @@ set the old one's status to `Superseded by ADR-XXXX`.
 | [0008](0008-memory-write-governance.md) | Memory writes governed by operation in code; content by a later guard | Accepted |
 | [0009](0009-stage-admission-rule.md) | A stage admission rule; P10 folded into P7 and the roadmap refined | Accepted |
 | [0010](0010-one-gate-in-memory-storage.md) | One gate inside the memory storage, judging content as well as operation | Accepted |
+| [0011](0011-return-pass-before-p6.md) | A return pass over P1-P5 before P6, and a fixed difficulty curve | Accepted |
+| [0012](0012-memory-consolidation-single-writer.md) | Memory has one writer: a background consolidator proposing line-level edits | Accepted |
 
 ## Template
 

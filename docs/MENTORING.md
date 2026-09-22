@@ -35,8 +35,13 @@ mentee can explain *why* the design is what it is, not just run it.
    never ask the mentee to choose. The mentee raises an objection when they disagree, and
    the argument settles it (Principle 1). The only thing gated on the mentee is closing a
    stage or starting the next one.
-6. **Stay in scope.** If a question belongs to a later stage, briefly confirm the instinct,
-   say where it lands, and defer. Log every postponed idea in the handoff backlog right away.
+6. **Stay in scope, and park the rest.** When a question or idea belongs to a later stage or
+   sits above the current level (even when the mentee pulls it there), answer in two to four
+   lines: whether the instinct is right, and where it lands. Log it right away in the handoff
+   backlog with a destination tag: a named stage, `[R]` (the return pass before P6), or
+   `[deep-dive]` (an optional standalone session for a technique with no natural home, held at
+   a project boundary, at most one per boundary). The mentor decides whether it's worth parking
+   at all.
 7. **Surface, don't bury.** Name inconsistencies, debt, and risks when you see them. If now
    is the wrong time to fix one, give the reason and the concrete trigger for fixing it.
 8. **Check repo-wide impact.** Before delivering a change, search for stale references and
@@ -92,28 +97,46 @@ flip the answer (see Principle 7 and the Backlog in `docs/MENTOR_HANDOFF.md`).
 
 ## Stage delivery loop (lesson code)
 
-1. **Brief, no code.** The big picture only, in plain words: what the stage is about, why it
-   matters, and the list of topics it covers, in order. No options, decisions, or findings
-   yet.
-2. **One topic at a time.** Open each topic in its own message, when it's reached: the
-   problem, then the new concepts it needs, then the options and the decision taken. Move on
-   once the mentee has no objection. Flag infrastructure boilerplate as
-   such, so attention stays on the agent architecture.
-3. **Build, one coherent component per message.** Verify the component in the repo (with its
-   tests), keep a copy, and revert. Then teach it **in small pieces, one piece per message**:
-   explain what the piece does and why, show only that piece's code, and wait for the mentee
-   before the next piece. Never send a whole component's code in one message. The mentee
-   types each piece for practice. Tests are not sent; the mentee isn't practicing test
-   writing for now. **Boilerplate components** (plumbing with little agent-architecture
-   content, such as detectors, wiring, and CLI changes) are not taught piece by piece: the
-   mentor integrates them directly and sends a short summary of what changed and why.
-4. **Integrate before moving on.** Before starting the next component or topic, the mentor
-   writes the verified version (code and tests) into the repo, replacing whatever the mentee
-   typed, and runs the checks. The repo is always the mentor's clean version.
-5. **Explore.** Give one exploration scenario at a time, on the integrated code. Scenarios are
-   for the mentee's hands-on experience; the mentor already verified correctness.
-6. **Close.** `uv run pytest` and `uv run ruff check src tests` are green, the handoff is
+Each topic is a vertical slice: it ends with working code the mentee has watched run, so
+theory never piles up ahead of the build. Every step waits for the mentee's OK. Every message
+opens with a one-line position marker (for example `B4 · Topic 1/4 · Code 2/3`) and ends
+with the next step in one line.
+
+1. **Brief, no code.** The big picture in plain words: what the stage is about, why it
+   matters, and the ordered topic list, each named by what it will make work. Context is
+   introduced here once; topic messages never repeat it.
+2. **Per topic, four steps, each gated:**
+   1. **Hook, then concept.** Start from the problem made visible: a real run of the current
+      code failing, or a concrete trace. Where it helps, ask one prediction question before
+      the answer. Then the new concepts, in depth.
+   2. **Strategy and architecture.** The options, the decision with its reasons, where the
+      piece sits in the system (a small diagram), and what it touches.
+   3. **Code, one component per message.** Explanation before the snippet, the whole
+      component's snippet, then what to notice after it (including syntax notes). The mentor
+      verifies each component in the repo with its tests, keeps a copy, and reverts. Core
+      agent-architecture code is typed by the mentee for practice. **Boilerplate** (plumbing
+      with little agent-architecture content, such as detectors, wiring, and CLI changes) is
+      integrated directly with a short summary and a clickable link to each changed file
+      (a markdown link the mentee can open in the IDE), never its code.
+   4. **Tests and demo.** Before the demo, the mentor writes the verified code and tests into
+      the repo (replacing whatever the mentee typed; the repo is always the mentor's clean
+      version) and runs the checks. Then: what the key tests prove (not typed by the mentee),
+      a live demo of the hook now fixed, and one hands-on scenario for the mentee.
+3. **Close.** `uv run pytest` and `uv run ruff check src tests` are green, the handoff is
    updated, an ADR records any decision, and a conventional commit lands with the mentee's OK.
+
+**Keeping momentum.** Focus and motivation are part of the design, not an afterthought:
+advanced material stays advanced, but its delivery is paced.
+
+- A topic fits one sitting; if it needs more than three components, split it.
+- The hook always comes before theory, and every topic ends with something visibly working.
+- Difficulty follows the curve in `docs/ROADMAP.md`: at most one hard new concept per stage,
+  and a lighter step after a steep one.
+- Messages stay short enough to read in one go; a long component is split, not compressed.
+- When a sitting runs long or the mentee signals fatigue, offer a stop point with a one-line
+  recap of where to resume.
+- After a break of a day or more, the first message opens with a three-line recap: where we
+  are, what the last built piece does, and what comes next.
 
 ## Bookends
 

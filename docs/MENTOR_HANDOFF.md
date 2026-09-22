@@ -12,7 +12,7 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
 - P4 through P5 Phase B Stage 1: Gemini Flash 3.8
 - From 2026-09-13: Claude Opus 5, with full authority over plan and process
 
-## Status (2026-09-13)
+## Status (2026-09-22)
 
 | Project | State |
 | :--- | :--- |
@@ -21,7 +21,8 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
 | P3 Code review | Done |
 | P4 Sandbox interpreter + coordinator | Done |
 | Stage 0 stabilization | Done 2026-09-13 |
-| **P5 Memory assistant** | A, B1, B2, B3 done. B3 (2026-09-17): one gate inside the memory storage judging content as well as operation, security guard classifier, secret detectors at the app boundary and in traces, Finglish output repair ([ADR-0010](adr/0010-one-gate-in-memory-storage.md), 93 tests). **Next: B4 brief** (memory consolidation) |
+| P5 Memory assistant | A, B1-B3, and B4 topic 1 done (single-writer background consolidator, [ADR-0012](adr/0012-memory-consolidation-single-writer.md), commit `c78d327`, 104 tests). **Paused** at the mentee's request (2026-09-22); resumes after R4 with topic 1's tests-and-demo step (`docs/ROADMAP.md`) |
+| **Return pass R0-R5** | Planned and refined 2026-09-22 ([ADR-0011](adr/0011-return-pass-before-p6.md)); order R0-R4 -> P5 rest -> R5 -> P6. **Next: R phase start, then R0 brief** |
 | P6-P12, Term E | Planned (`docs/ROADMAP.md`) |
 
 ## Working agreements
@@ -74,16 +75,23 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
 - **Coordinator shell has no approval step.** The coordinator's interpreter runs shell commands
   without per-command approval, because approvals raised inside a subagent aren't surfaced to
   the CLI. The banner states this. Fix: P6 Phase B.
-- **Old checkpoint DB still in place.** `src/data/dbs/checkpoints.db` couldn't be moved on
-  2026-09-13 because running Python processes (probably notebook kernels) held it open. A
-  consistent copy with all 53 threads is at `out/state/checkpoints.db`. Delete `src/data/`
-  once those processes are closed.
+- **Old checkpoint DB still in place, and still tracked by git.** `src/data/dbs/checkpoints.db`
+  couldn't be moved on 2026-09-13 because running Python processes held it open; a consistent
+  copy with all 53 threads is at `out/state/checkpoints.db`. The 2026-09-22 audit found it is
+  still in the git index (`git ls-files src/data`). Untrack and delete it with the mentee's OK
+  (deleting data needs asking) once those processes are closed. Destination: `[R]` R0.
 - **Stale RAG index metadata.** `.chroma_index` was built before the restructure, so source
   paths show the old layout. Rebuild when convenient (paced, takes minutes).
 - **Shared session list.** All apps share one checkpoint DB, so `list` shows every app's threads.
+  Destination: `[R]` R0.
 - **Chat template in every agent.** `prompts/template/template.py` is a chat-assistant persona
   (Finglish policy, response-mode codes) applied to every agent, including non-chat subagents.
-  Revisit with the P6 contracts.
+  Destination: `[R]` R0 (chat vs worker prompts).
+- **No shared specialist contract** (audit 2026-09-22): P1 returns a Pydantic report, P2 a
+  string, P3 formatted text, P4 text plus an artifact diff. P6-A needs one. Destination: `[R]` R0.
+- **Dead code:** `middlewares/groundedness_middleware.py` and `utils/time_travel_util.py` are
+  exported but used nowhere. The first gets wired in R1; the second is removed in R5 unless a
+  consumer appears.
 - **Personal data in traces.** The P5 app masks secrets and emails before upload (B3), but
   conversation content still reaches LangSmith under project `lang_claude_exercise-p1`.
   Consider one project per curriculum project.
@@ -94,47 +102,61 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
 
 ## Backlog
 
-Priority tags: **E** = Essential, **N** = Nice-to-have.
+Priority tags: **E** = Essential, **N** = Nice-to-have. Destination tags say where an item
+lands: a named stage, `[R]` (the return pass before P6, `docs/ROADMAP.md`), or `[deep-dive]`
+(an optional standalone session at a project boundary). Items without a tag wait for their
+trigger.
 
 **Cross-project**
-- **E:** Surface approvals raised inside subagents through composition (P6 Phase B).
+- **E:** Surface approvals raised inside subagents through composition. P6-B.
 - **N:** Grow the P5 security guard from a classifier into a generic, policy-parameterized
   security agent once a second consumer needs it (triggers: document prompt injection in P7,
   action permissions in P8/P11), and add tools only if that consumer's judgment needs them.
 - **N:** DeepAgents harness profiles, once a fallback model needs different prompts or tool
   descriptions than the primary.
-- **N:** Per-app checkpoint databases, or tagging threads by app.
+- **N:** Per-app checkpoint databases, or tagging threads by app. `[R]` R0.
+- **N:** One CLI approval loop (`run_with_hitl` and `stream_with_hitl` overlap). `[R]` R5.
+- **N:** Secret redaction and trace masking in every app, not only P5. `[R]` R5.
 
 **P5 Memory assistant**
 - **E:** Compare assistant models in C2 (script leakage per line, false "saved" claims, guard
   agreement), since B3's Finglish repair only mitigates the leak.
-- **N:** Let the guard lift a code-required approval for a correction the user asked for, once
-  B4 keeps the previous version of a changed memory.
+- **N:** Semantic search over memory (`IndexConfig` on the store, one item per fact or per
+  goal file). Not needed while the profile and its goal index fit in the prompt. Trigger:
+  memory that can't be loaded whole, such as episodic memory or a goal list too long for the
+  profile. Search per fact (a chunk per line with `{file, line}` metadata, as in P2), not per
+  file, and keep the index in sync on every write, edit, and delete.
+- **N:** Let the guard lift a code-required approval for a correction the user asked for. B4,
+  topic 2 (previous versions).
 - **N:** After an HITL resume, the streamed CLI prints the approved tool call a second time
-  (the middleware re-emits the AI message update). Cosmetic.
+  (the middleware re-emits the AI message update). Cosmetic. `[R]` R5.
 - **N:** Session-scoped sandbox workspaces or a remote sandbox such as `LangSmithSandbox`
   (Term E, E1).
 
 **P1 Research**
-- **E:** Memory for recurring research preferences (original Phase B item; fits after P5).
-- **N:** Wire `rag_subagent` into the researcher as a local-knowledge overlay.
-- **N:** Check citation groundedness with the `response_groundedness` middleware.
+- **E:** Memory for recurring research preferences. P5-C4 mini-workflow (personalized
+  research brief).
+- **N:** Check citation groundedness with the `response_groundedness` middleware. `[R]` R1.
+- **N:** Wire `rag_subagent` into the researcher as a local-knowledge overlay. P6-A (the
+  workflow composes P1 and P2 instead).
 
 **P2 RAG**
 - **N:** Reroute ungrounded answers to query rewrite or web search instead of a disclaimer.
-- **N:** Run the groundedness check on the web fallback path too.
-- **N:** Batch document grading.
-- **N:** Index agents/apps as well (batching now keeps the rebuild within rate limits).
+  `[R]` R2.
+- **N:** Run the groundedness check on the web fallback path too. `[R]` R2.
+- **N:** Batch document grading. `[R]` R2.
+- **N:** Rebuild the stale index; index agents and apps as well. `[R]` R2.
 - **N:** Dual-collection embedding fallback (Gemini 3072-dim vs OpenAI 1536-dim).
 
 **P3 Code review**
-- **N:** Multi-file and PR-diff input.
-- **N:** Deterministic static checks (ruff/AST) before the LLM review.
+- **N:** Deterministic static checks (ruff/AST) before the LLM review. `[R]` R3.
+- **N:** Multi-file and PR-diff input. `[R]` R3.
 
 **P4 Sandbox**
+- **N:** Artifact diff as declared side effects in the contract. `[R]` R4.
 - **N:** HITL "edit" decision for commands.
-- **N:** Clearer approval prompt formatting.
+- **N:** Clearer approval prompt formatting. `[R]` R5.
 - **N:** Snapshot the sandbox filesystem alongside checkpoints for true time travel.
 
-**P5 Memory assistant**
-- Planned stages are tracked in `docs/ROADMAP.md`. Nothing extra logged yet.
+**Deep-dive candidates** (`[deep-dive]`, optional, one per project boundary)
+- None yet. Parked techniques above the current level land here when they have no stage.

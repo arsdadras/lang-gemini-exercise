@@ -14,7 +14,8 @@ capstones then compose the specialists into workflows.
 | P2 RAG agent | Raw StateGraph, corrective retrieval, checkpoints, time travel, CompiledSubAgent | Done |
 | P3 Code review and test generation | Subgraphs, sandboxed tests, self-correction, `interrupt()` approval | Done |
 | P4 Sandbox interpreter | Shell backend, artifacts, durable sessions, multi-agent coordinator | Done |
-| P5 Memory-rich assistant | Per-user long-term memory, skills, memory governance | In progress |
+| P5 Memory-rich assistant | Per-user long-term memory, skills, memory governance, background consolidation | Paused after B4 topic 1; resumes after R4 |
+| Return pass | P1-P5 brought to one specialist contract, one upgrade each, before P6 | Planned |
 | P6-P12 | Capstone I, documents (with vision), support ops, analytics, business actions, capstone II (P10 folded into P7) | Planned |
 
 Full plan: [`docs/ROADMAP.md`](docs/ROADMAP.md). Live status:

@@ -1,6 +1,7 @@
 # Curriculum Roadmap (v3)
 
-Adopted 2026-09-13, refined 2026-09-14 ([ADR-0009](adr/0009-stage-admission-rule.md)). Replaces
+Adopted 2026-09-13, refined 2026-09-14 ([ADR-0009](adr/0009-stage-admission-rule.md)) and
+2026-09-22 (return pass and difficulty curve, [ADR-0011](adr/0011-return-pass-before-p6.md)). Replaces
 the original 6-project roadmap and Roadmap v2. Both are still readable in git history
 (`git show 85f714d:docs/ROADMAP.md`,
 `git show "85f714d:docs/Agentic AI Curriculum Roadmap v2.md"`). Live status lives in
@@ -12,6 +13,8 @@ the original 6-project roadmap and Roadmap v2. Both are still readable in git hi
   capstones that compose them. P10 (multimodal perception) was folded into P7; project
   numbers stay stable so ADRs and history keep their meaning. Small composition exercises
   ("mini-workflows") recur throughout, instead of waiting for the end.
+- **Return pass (R0-R5):** after P5 and before P6, P1-P5 are brought to one specialist
+  contract, and each gets one real upgrade.
 - **Term E:** productization and scale, which starts only after P12.
 - Every project has three phases. There is no fourth "hardening" phase
   ([ADR-0001](adr/0001-three-phase-project-model.md)).
@@ -30,6 +33,25 @@ A topic, framework feature, or practice enters a stage only when all three hold:
 Framework features enter at the first stage with a real consumer, never as a tour. Beta APIs
 are re-verified against the pinned version when that stage starts. An item that fails the
 rule goes to the handoff backlog with the trigger that would admit it.
+
+## Difficulty curve
+
+The level rises only at project boundaries, never mid-project. Within a stage there is at
+most one hard new concept (a stage that needs two is split), and a steep stage is followed
+by a lighter one that practices it.
+
+| Level | What gets hard | Where |
+| :--- | :--- | :--- |
+| L1 | One agent with tools and structured output | P1 |
+| L2 | Explicit graphs: state, loops, checkpoints, streaming | P2 |
+| L3 | Composed subgraphs, sandboxes, approval gates, subagent adapters | P3, P4 |
+| L4 | Governance, memory, guards, background work, contracts | P5, return pass |
+| L5 | Multi-specialist workflows: parallelism, failure classes, eval-driven choices | P6-P9 |
+| L6 | Actions with side effects: authorization, catalogs, compensation, hierarchy | P11, P12 |
+| L7 | Production platform: runtime services, distribution, tenancy | Term E |
+
+The return pass is L4 practice: known techniques applied to earlier code, plus one new
+concept per stage.
 
 ## Phase contract
 
@@ -69,127 +91,153 @@ Testing and evaluation rules: [ADR-0004](adr/0004-testing-and-evaluation-policy.
 - **Stage 0 stabilization (2026-09-13):** single `agentlab` package, composition root,
   runtime-context identity, secret isolation, governance reset.
 
-## P5: Memory-rich personal assistant (in progress)
+## Order from here
+
+P5 is paused after B4 topic 1 (2026-09-22). The return pass runs first, then P5 resumes and
+is finished against the specialist contract, then R5 closes the pass with every specialist,
+P5 included:
+
+**R0-R4 -> P5 (rest of B4, C1-C4) -> R5 -> P6 -> P7 -> P8 -> P9 -> P11 -> P12 -> Term E**
+
+Stages are planned below with the one hard concept each one teaches. They are re-cut at each
+phase start when the build shows a better split; the difficulty rules above still apply.
+
+## P5: Memory-rich personal assistant (paused after B4 topic 1)
 
 Done: **A** (`CompositeBackend`: thread state plus per-user `/memories/` in a store,
-profile loaded each turn), **B1** (skills library on `/skills/`), and **B2** (memory write
-governance by operation, decided in code; read-only skills; streamed CLI approvals;
-[ADR-0008](adr/0008-memory-write-governance.md)).
+profile loaded each turn), **B1** (skills library on `/skills/`), **B2** (memory write
+governance by operation, [ADR-0008](adr/0008-memory-write-governance.md)), **B3** (content
+guardrails: one gate in the memory storage, security guard, secret detectors, Finglish repair,
+[ADR-0010](adr/0010-one-gate-in-memory-storage.md)), and **B4 topic 1** (the assistant only
+reads memory; a background consolidator proposes line-level edits applied one per graph step,
+[ADR-0012](adr/0012-memory-consolidation-single-writer.md)). No semantic search: the profile
+and its goal index are in the prompt every turn (trigger in the handoff backlog).
 
-- **B3, content guardrails:** a **security guard** (a separate classifier model with a
-  policy prompt and a structured verdict, failing closed) judges the memory writes the code
-  layer lets through and routes sensitive ones to the user. One detector set for
-  fixed-format secrets is applied where each risk is: redacted at the app boundary before
-  input (so checkpoints, traces, and the model never see them), blocked in memory writes, and
-  masked in LangSmith traces. `PIIMiddleware` isn't used here: it protects what the model
-  sees, not checkpoints or tool-call arguments (verified). A deterministic output check
-  enforces the Finglish rule. `memory-curation` then proposes sensitive facts instead of
-  skipping them.
-- **B4, memory consolidation:** hot-path vs background writes; deduplication, conflict, and
-  staleness, using semantic search over the store to find related memories; how long
-  threads are summarized. Changed memories keep their previous version, so the guard may let
-  a correction the user asked for pass without approval.
+Remaining, after R4:
+- **B4, rest:** topic 1's tests-and-demo step (a live `lab-assistant` run); **previous
+  versions** of changed lines, so the guard may let a correction the user asked for pass
+  without approval; **rejected edits remembered**, so the consolidator doesn't propose the
+  same change after every conversation; **long threads**: what summarization does to a thread
+  and what must survive it.
 - **C1, durable memory:** `SqliteStore` plus checkpointer, with identity end to end
-  (`thread_id` x `user_id`), CLI session resolution, and user-requested deletion
-  ("forget me").
-- **C2, memory eval-lite:** scenarios for recall, update, conflict, cross-user isolation,
-  and false "I saved it" claims, plus the security guard's accuracy, reviewed with traces.
-  Includes rejection evasion: after a rejected change, the agent must not reach the same
-  result through a different tool call (seen in B2: a rejected overwrite came back as two
-  deleting edits).
+  (`thread_id` x `user_id`), durable proposals awaiting review, CLI session resolution, and
+  user-requested deletion ("forget me").
+- **C2, memory eval-lite:** recall, update, conflict, cross-user isolation, false "I saved it"
+  claims, the security guard's accuracy, and the consolidator's edits (missed conflicts,
+  invented facts, re-proposed rejections), reviewed with traces. Built on R0's harness.
 - **C3, governed procedural memory (`skill_designer`):** the only writer to the skills
-  library; other agents request instructions from it. One-off instructions pass the security
-  guard. Publishing a shared skill is draft -> guard -> human approval, because it changes
-  behavior for every user and future session. `SkillsMiddleware` caches the skill list per
-  thread, so decide how running threads pick up a published skill.
-- **C4, composition boundary:** P5 as a context provider (tool or middleware) rather than a
-  chat subagent (ADR). Input protection has to travel with the agent once other workflows
-  call it, so `PIIMiddleware` joins here. Mini-workflow: personalized research brief
-  (P5 + P1). Then the design card update and retrospective.
+  library; other agents request instructions from it. Publishing a shared skill is draft ->
+  guard -> human approval. `SkillsMiddleware` caches the skill list per thread, so decide how
+  running threads pick up a published skill.
+- **C4, composition boundary:** P5 as a context provider (tool or middleware) that meets the
+  specialist contract. Input protection has to travel with the agent once other workflows call
+  it, so `PIIMiddleware` joins here. Mini-workflow: personalized research brief (P5 plus the
+  upgraded P1). Then the design card update and retrospective.
 
-## P6: Capstone I, Research-to-Decision workflow
+## Return pass (R0-R5), before P6
+
+P1-P5 were built at rising levels and share no contract (audit 2026-09-22,
+[ADR-0011](adr/0011-return-pass-before-p6.md)). The pass brings every specialist to one
+baseline before P6 composes them. Conformance work is done by the mentor directly; each
+stage's lesson is its upgrade. No rewrites unless a project can't meet the contract. Every
+stage ends with a before/after demo of the same scenario.
+
+**Specialist contract** (defined in R0 from P6's needs, checked in every R stage):
+a typed result envelope (output, provenance, status: ok / partial / failed, declared side
+effects); `UserContext` wherever user data is touched; one approval path (the standard HITL
+request, streamed by the app); secret redaction at the app boundary and trace masking in
+every app; a design card; an eval-lite smoke set of 5-10 scenarios.
+
+| Stage | Hard concept | Also lands (mentor-direct) |
+| :--- | :--- | :--- |
+| **R0, the specialist contract** | What a caller must know about a specialist: result envelope, provenance, status, declared side effects, and the failure contract (what "partial" means, who retries) | Shared eval-lite harness (first consumer: R1); design cards for P1-P4; chat prompts split from worker prompts; per-app checkpoint databases |
+| **R1, P1 evidence-grounded research** | Claim-level provenance: read the pages instead of snippets, map every claim to its supporting source, confidence computed from source agreement | The unused groundedness middleware wired in; a search budget replaces approving every search |
+| **R2, P2 retrieval you can measure** | Retrieval evaluation: a small labeled question set and hit rate at k, so changes are judged by numbers | Incremental re-index with stale-source detection; batch grading; ungrounded answers rerouted instead of a disclaimer |
+| **R3, P3 hybrid analysis** | Deterministic tools first, model second: ruff and AST findings feed the review, and the model explains instead of hunting | Diff and multi-file input |
+| **R4, P4 side effects as contract** | Declared side effects: the artifact diff becomes part of the result, so a caller knows what changed on disk | A light stage by design, after R1-R3 |
+| **R5, close** | None new: practice | One CLI approval loop; secret redaction and trace masking in every app; dead code removed; study guides for P1 and P2; every specialist, P5 included, run on one scenario. P6 Session 0 starts from here |
+
+## P6: Capstone I, Research-to-Decision workflow (L5)
 
 Turn an open question into a grounded decision brief: external research, private
 knowledge, optional analysis, verification, approval.
 
-- **A:** a deterministic LangGraph parent workflow calls P1 and P2 through typed contracts,
-  synthesizes, and gates delivery on approval.
-- **B:** parallel research branches with fan-in (`Send`); failure handling by error class
-  (retry transient errors, feed recoverable ones back to the model, pause for a human, cap
-  runaway loops); source conflicts; long checkpointed runs; progress streaming, with
-  approvals raised inside subagents surfaced to the app.
-- **C:** deterministic vs model-directed control. The same eval set runs against the
-  workflow and against a DeepAgents supervisor, each with its own evaluator-optimizer loop
-  (a graph loop vs `RubricMiddleware`), and the choice is recorded in an ADR.
+| Stage | Hard concept |
+| :--- | :--- |
+| **A1** | A deterministic parent workflow over specialists: P1 and P2 called through the specialist contract, synthesis, delivery gated on approval |
+| **B1** | Fan-out and fan-in: parallel research branches with `Send`, merged by a reducer; source conflicts surface in the synthesis |
+| **B2** | Failure by error class: retry transient errors, feed recoverable ones back to the model, pause for a human, cap runaway loops |
+| **B3** | Nested runs: approvals raised inside subagents surfaced to the app, progress streamed across namespaces, long checkpointed runs resumed |
+| **C1** | Deterministic vs model-directed control: the same eval set against the workflow and a DeepAgents supervisor |
+| **C2** | Evaluator-optimizer: a graph loop vs `RubricMiddleware`, and the control choice recorded in an ADR |
 
-## P7: Document intelligence agent
+## P7: Document intelligence agent (L5)
 
 Also covers visual perception (formerly P10).
 
-- **A:** one document family, extraction into typed schemas, confidence reporting.
-- **B:** multiple formats including scanned pages and images (vision models), tables and
-  layout, validation loops, human review of ambiguous fields.
-- **C:** multi-document reasoning with provenance (page and region) and audit-ready output,
-  reusable extraction skills. Fan-out over many documents with an interpreter and dynamic
-  subagents, contrasted with P6's code-decided `Send`.
-- **Mini-workflow, Document Intake Cell:** P7 extraction -> P2 lookup -> validation gate ->
-  P4 report.
-- **New thread step:** prompt injection carried in documents, including into model-written
-  orchestration code, with a red-team scenario set in the eval.
+| Stage | Hard concept |
+| :--- | :--- |
+| **A1** | Extraction into typed schemas for one document family, with per-field confidence |
+| **B1** | Vision: scanned pages and images, tables and layout |
+| **B2** | Validation loops, and human review of ambiguous fields only |
+| **C1** | Multi-document reasoning with provenance (page and region) and audit-ready output; reusable extraction skills |
+| **C2** | Model-decided fan-out: an interpreter and dynamic subagents over many documents, contrasted with P6's code-decided `Send` |
+| **C3** | Prompt injection carried in documents, including into model-written orchestration code, with a red-team scenario set |
+| **C4** | Mini-workflow, Document Intake Cell: P7 extraction -> P2 lookup -> validation gate -> P4 report (practice) |
 
-## P8: Customer support operations agent
+## P8: Customer support operations agent (L5)
 
-- **A:** classify a ticket, retrieve an answer, draft a response.
-- **B:** multi-intent tickets, customer context from P5, SLA and priority routing,
-  escalation states, HITL for sensitive actions. Router vs handoffs (the active agent
-  changes mid-conversation), compared on the same tickets.
-- **C:** action permissions, ticket-system integration, audit trail, critic check. A
-  production feedback loop: user feedback and annotation queues feed the regression gate,
-  tested with simulated multi-turn conversations.
-- **Mini-workflow (required), Support Resolution Cell:** triage -> P2 retrieval -> P1
-  research fallback -> critic -> approval -> response or controlled ticket update.
-  It teaches response vs side effect.
+| Stage | Hard concept |
+| :--- | :--- |
+| **A1** | Classify a ticket, retrieve an answer, draft a response |
+| **B1** | Multi-intent tickets with customer context from P5, SLA and priority routing |
+| **B2** | Router vs handoffs (the active agent changes mid-conversation), compared on the same tickets |
+| **B3** | Escalation states and HITL for sensitive actions |
+| **C1** | Action permissions, ticket-system integration, audit trail, critic check |
+| **C2** | A production feedback loop: user feedback and annotation queues feed a regression gate, tested with simulated multi-turn conversations |
+| **C3** | Mini-workflow (required), Support Resolution Cell: triage -> P2 -> P1 fallback -> critic -> approval -> response or controlled ticket update. It teaches response vs side effect |
 
-## P9: Data and SQL analytics agent
+## P9: Data and SQL analytics agent (L5)
 
-- **A:** question -> query -> result, with a table or chart.
-- **B:** query validation and repair, read/write separation, sandboxed analysis through P4,
-  multi-step metrics, HITL before risky queries. Measured tier and cost choices (token cost
-  per question, prompt caching).
-- **C:** a semantic metric layer, provenance, reusable analysis plans, anomaly explanation.
-- **Mini-workflow, Analytics-to-Report Cell:** P9 analysis -> P4 artifacts -> P1 benchmark
-  context -> verification.
+| Stage | Hard concept |
+| :--- | :--- |
+| **A1** | Question -> query -> result, with a table or chart |
+| **B1** | Query validation and repair, read/write separation, HITL before risky queries |
+| **B2** | Sandboxed multi-step analysis through P4, with measured tier and cost choices (token cost per question, prompt caching) |
+| **C1** | A semantic metric layer with provenance |
+| **C2** | Reusable analysis plans and anomaly explanation |
+| **C3** | Mini-workflow, Analytics-to-Report Cell: P9 analysis -> P4 artifacts -> P1 benchmark context -> verification (practice) |
 
 ## P10: folded into P7
 
-Vision over scanned pages and images is P7-B. Temporal media (audio, video) is out of scope.
+Vision over scanned pages and images is P7-B1. Temporal media (audio, video) is out of scope.
 
-## P11: API and business operations agent
+## P11: API and business operations agent (L6)
 
-- **A:** read-only integration with structured responses, through one MCP server.
-- **B:** action proposals, approval gates, retries and rate limits, error mapping,
-  idempotency keys.
-- **C:** transactional boundaries, compensation, tenant isolation, and a connector catalog
-  with delegated authorization (the agent acts with the user's scoped credentials); tool
-  search once the catalog outgrows the context.
-- **Mini-workflow, Plan-to-Action Cell:** plan -> gather context -> P11 proposal ->
-  approval -> idempotent execution -> audit record.
+| Stage | Hard concept |
+| :--- | :--- |
+| **A1** | Read-only integration with structured responses, through one MCP server |
+| **B1** | Action proposals behind approval gates, with idempotency keys |
+| **B2** | Retries, rate limits, and error mapping for external APIs |
+| **C1** | Transactional boundaries and compensation |
+| **C2** | Delegated authorization (the agent acts with the user's scoped credentials) and tenant isolation |
+| **C3** | A connector catalog, with tool search once it outgrows the context |
+| **C4** | Mini-workflow, Plan-to-Action Cell: plan -> context -> P11 proposal -> approval -> idempotent execution -> audit record (practice) |
 
-## P12: Capstone II, Business Operations Control Tower
+## P12: Capstone II, Business Operations Control Tower (L6)
 
 A bounded control-tower workflow, not a generic super-agent. It routes a business request
 across P5 context, P7 documents, P2 knowledge, P1 research, P9 analysis, P11 actions, and
 P4 artifacts.
 
-- **A:** explicit routing, typed contracts, a sequential path plus one parallel branch,
-  approval before side effects.
-- **B:** planner/executor separation, task dependencies, partial failure and compensation,
-  persistent workflow state, per-specialist permissions, context budgets. Served through
-  Agent Server: long tasks run as async subagents the user can check, steer, or cancel.
-- **C:** a typed capability catalog replacing hand-written routing (the first real consumer
-  of a registry, [ADR-0006](adr/0006-remove-agent-registry.md)), hierarchical orchestration
-  only if the number of domains needs it, replay and audit, and a documented line between
-  deterministic control and model-directed agency.
+| Stage | Hard concept |
+| :--- | :--- |
+| **A1** | Explicit routing over typed contracts: a sequential path plus one parallel branch, approval before side effects |
+| **B1** | Planner/executor separation with task dependencies |
+| **B2** | Partial failure and compensation across specialists, persistent workflow state, per-specialist permissions, context budgets |
+| **B3** | Served through Agent Server: long tasks as async subagents the user can check, steer, or cancel |
+| **C1** | A typed capability catalog replacing hand-written routing (the first real consumer of a registry, [ADR-0006](adr/0006-remove-agent-registry.md)); hierarchical orchestration only if the number of domains needs it |
+| **C2** | Replay and audit, and a documented line between deterministic control and model-directed agency |
 
 ## Composition patterns
 
@@ -231,6 +279,7 @@ RBAC, the LLM gateway).
 **Extraction rule:** one consumer, keep it local; two, extract carefully; three, formalize.
 
 **Entry gate from Term P:**
+- the return pass (R0-R5) complete;
 - every specialist project (P1-P5, P7-P9, P11) complete, or waived with a rationale;
 - P6 and P12 complete;
 - at least three mini-workflows implemented during P7-P11;
