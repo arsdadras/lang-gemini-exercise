@@ -78,8 +78,9 @@ def _read_rejections(runtime: Runtime[UserContext]) -> list[str]:
 
 def _remember_rejection(runtime: Runtime[UserContext], edit: MemoryEdit) -> None:
     namespace = (user_memory_namespace(runtime)[0], REJECTIONS_KIND)
-    key = hashlib.sha256(edit.describe().encode()).hexdigest()
-    runtime.store.put(namespace, key, {"edit": edit.describe(), "rejected_at": time.time()})
+    text = edit.describe(full=True)
+    key = hashlib.sha256(text.encode()).hexdigest()
+    runtime.store.put(namespace, key, {"edit": text, "rejected_at": time.time()})
 
 
 def make_consolidate_node(

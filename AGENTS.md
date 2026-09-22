@@ -36,6 +36,7 @@ tests/             pytest suite
 docs/              roadmap, handoff, mentoring contract, ADRs, design cards
 study_guides/      write-ups of finished projects
 examples/          sample inputs (e.g. code to review)
+evals/             live eval-lite scenario sets (real models, run by hand, not by pytest)
 out/               runtime output, gitignored: sandbox/, state/checkpoints.db
 alireza/           the mentee's private scratch area: never imported, edited, or read
 ```
@@ -102,7 +103,9 @@ uv run lab-repo-insight                         # P2 repo coordinator
 uv run lab-code-review examples/buggy_bank_account.py   # P3 review pipeline
 uv run lab-interpreter                          # P4 sandbox interpreter (approve execute)
 uv run lab-coordinator                          # P4 multi-agent coordinator
-uv run lab-assistant                            # P5 memory assistant
+uv run lab-assistant                            # P5 memory assistant (/skill, /undo, /forget)
+uv run lab-brief                                # P5 + P1 personalized research brief
+uv run python evals/p5_memory_eval.py           # P5 eval-lite against real models (minutes)
 uv run python -m agentlab.retrieval.index_retrieval     # rebuild the RAG index (paced; minutes)
 ```
 

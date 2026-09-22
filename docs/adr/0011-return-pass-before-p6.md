@@ -1,6 +1,7 @@
 # ADR-0011: A return pass over P1-P5 before P6, and a fixed difficulty curve
 
-- Status: Accepted
+- Status: Accepted; amended 2026-09-23 by [ADR-0013](0013-p5-completion.md) (P5 finished
+  by the mentor before R0, then taught again from B4 after R4)
 - Date: 2026-09-22
 
 ## Context

@@ -93,46 +93,31 @@ Testing and evaluation rules: [ADR-0004](adr/0004-testing-and-evaluation-policy.
 
 ## Order from here
 
-P5 is paused after B4 topic 1 (2026-09-22). The return pass runs first, then P5 resumes and
-is finished against the specialist contract, then R5 closes the pass with every specialist,
-P5 included:
+P5 was finished by the mentor on 2026-09-23 so the return pass covers all five specialists
+([ADR-0013](adr/0013-p5-completion.md)). Its later stages are then taught again, from B4, after
+R4: R0-R4 may change parts they depend on (approvals, for one), and the mentee builds them
+against the specialist contract:
 
-**R0-R4 -> P5 (rest of B4, C1-C4) -> R5 -> P6 -> P7 -> P8 -> P9 -> P11 -> P12 -> Term E**
+**R0-R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6 -> P7 -> P8 -> P9 -> P11 -> P12 -> Term E**
 
 Stages are planned below with the one hard concept each one teaches. They are re-cut at each
 phase start when the build shows a better split; the difficulty rules above still apply.
 
-## P5: Memory-rich personal assistant (paused after B4 topic 1)
+## P5: Memory-rich personal assistant (complete; teaching pass from B4 after R4)
 
-Done: **A** (`CompositeBackend`: thread state plus per-user `/memories/` in a store,
-profile loaded each turn), **B1** (skills library on `/skills/`), **B2** (memory write
-governance by operation, [ADR-0008](adr/0008-memory-write-governance.md)), **B3** (content
-guardrails: one gate in the memory storage, security guard, secret detectors, Finglish repair,
-[ADR-0010](adr/0010-one-gate-in-memory-storage.md)), and **B4 topic 1** (the assistant only
-reads memory; a background consolidator proposes line-level edits applied one per graph step,
-[ADR-0012](adr/0012-memory-consolidation-single-writer.md)). No semantic search: the profile
-and its goal index are in the prompt every turn (trigger in the handoff backlog).
+Built: **A** (per-user `/memories/` in a store, profile loaded each turn), **B1** (skills
+library), **B2** (write governance by operation, [ADR-0008](adr/0008-memory-write-governance.md)),
+**B3** (one gate in the memory storage, security guard, secret detectors, Finglish repair,
+[ADR-0010](adr/0010-one-gate-in-memory-storage.md)), **B4** (the assistant only reads memory; a
+background consolidator proposes line-level edits; previous versions kept with undo; requested
+corrections without approval; rejections remembered; long threads in segments,
+[ADR-0012](adr/0012-memory-consolidation-single-writer.md)), and **C1-C4** (durable SQLite
+memory with resumable reviews and forget-me; a live eval-lite; a skill designer as the only
+writer to shared skills; P5 as a read-only context provider with the `lab-brief` mini-workflow,
+[ADR-0013](adr/0013-p5-completion.md)).
 
-Remaining, after R4:
-- **B4, rest:** topic 1's tests-and-demo step (a live `lab-assistant` run); **previous
-  versions** of changed lines, so the guard may let a correction the user asked for pass
-  without approval; **rejected edits remembered**, so the consolidator doesn't propose the
-  same change after every conversation; **long threads**: what summarization does to a thread
-  and what must survive it.
-- **C1, durable memory:** `SqliteStore` plus checkpointer, with identity end to end
-  (`thread_id` x `user_id`), durable proposals awaiting review, CLI session resolution, and
-  user-requested deletion ("forget me").
-- **C2, memory eval-lite:** recall, update, conflict, cross-user isolation, false "I saved it"
-  claims, the security guard's accuracy, and the consolidator's edits (missed conflicts,
-  invented facts, re-proposed rejections), reviewed with traces. Built on R0's harness.
-- **C3, governed procedural memory (`skill_designer`):** the only writer to the skills
-  library; other agents request instructions from it. Publishing a shared skill is draft ->
-  guard -> human approval. `SkillsMiddleware` caches the skill list per thread, so decide how
-  running threads pick up a published skill.
-- **C4, composition boundary:** P5 as a context provider (tool or middleware) that meets the
-  specialist contract. Input protection has to travel with the agent once other workflows call
-  it, so `PIIMiddleware` joins here. Mini-workflow: personalized research brief (P5 plus the
-  upgraded P1). Then the design card update and retrospective.
+**Teaching pass (after R4):** B4 to C4 again, one topic at a time, starting with B4 topic 1's
+tests-and-demo step, and adapted to whatever R0-R4 changed.
 
 ## Return pass (R0-R5), before P6
 

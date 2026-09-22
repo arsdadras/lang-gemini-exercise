@@ -25,7 +25,10 @@ class MemoryEdit(BaseModel):
         description="True only when the user explicitly asked, in this conversation, to change or forget this fact.",
     )
 
-    def describe(self) -> str:
+    def describe(self, *, full: bool = False) -> str:
+        """One line for the user; ``full`` keeps a multi-line addition whole."""
+        if self.kind == "add" and "\n" in self.new.strip() and not full:
+            return f"{self.path}: + new content ({len(self.new.strip().splitlines())} lines)"
         if self.kind == "add":
             return f"{self.path}: + {self.new}"
         if self.kind == "replace":

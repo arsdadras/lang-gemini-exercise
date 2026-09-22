@@ -21,8 +21,8 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
 | P3 Code review | Done |
 | P4 Sandbox interpreter + coordinator | Done |
 | Stage 0 stabilization | Done 2026-09-13 |
-| P5 Memory assistant | A, B1-B3, and B4 topic 1 done (single-writer background consolidator, [ADR-0012](adr/0012-memory-consolidation-single-writer.md), commit `c78d327`, 104 tests). **Paused** at the mentee's request (2026-09-22); resumes after R4 with topic 1's tests-and-demo step (`docs/ROADMAP.md`) |
-| **Return pass R0-R5** | Planned and refined 2026-09-22 ([ADR-0011](adr/0011-return-pass-before-p6.md)); order R0-R4 -> P5 rest -> R5 -> P6. **Next: R phase start, then R0 brief** |
+| P5 Memory assistant | **Complete** (2026-09-23, mentor-built at the mentee's request, [ADR-0013](adr/0013-p5-completion.md)): B4 rest, C1 durable SQLite memory, C2 eval-lite (13/13 on one live run), C3 skill designer, C4 context provider and `lab-brief`. 122 tests. Taught again from B4 after R4 |
+| **Return pass R0-R5** | In progress: **R0 topic 1, hook delivered** (P1-P4 called like a workflow would; P5 joins the hook's recap). Prediction question pending: which is more dangerous for P6, P4's crash or P2's confident wrong answer? Order R0-R4 -> P5 teaching pass -> R5 -> P6 |
 | P6-P12, Term E | Planned (`docs/ROADMAP.md`) |
 
 ## Working agreements
@@ -126,16 +126,14 @@ trigger.
   memory that can't be loaded whole, such as episodic memory or a goal list too long for the
   profile. Search per fact (a chunk per line with `{file, line}` metadata, as in P2), not per
   file, and keep the index in sync on every write, edit, and delete.
-- **N:** Let the guard lift a code-required approval for a correction the user asked for. B4,
-  topic 2 (previous versions).
 - **N:** After an HITL resume, the streamed CLI prints the approved tool call a second time
   (the middleware re-emits the AI message update). Cosmetic. `[R]` R5.
 - **N:** Session-scoped sandbox workspaces or a remote sandbox such as `LangSmithSandbox`
   (Term E, E1).
 
 **P1 Research**
-- **E:** Memory for recurring research preferences. P5-C4 mini-workflow (personalized
-  research brief).
+- **N:** P1's report can leak Perso-Arabic script (seen in the `lab-brief` live run); P1 has no
+  Finglish repair. `[R]` R1.
 - **N:** Check citation groundedness with the `response_groundedness` middleware. `[R]` R1.
 - **N:** Wire `rag_subagent` into the researcher as a local-knowledge overlay. P6-A (the
   workflow composes P1 and P2 instead).
