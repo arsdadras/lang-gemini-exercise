@@ -5,6 +5,7 @@ from contextlib import closing
 from pathlib import Path
 
 from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.store.sqlite import SqliteStore
 
 from agentlab.configs.paths_config import CHECKPOINT_DB_PATH
 
@@ -18,6 +19,18 @@ def get_sqlite_checkpointer(db_path: Path = CHECKPOINT_DB_PATH) -> SqliteSaver:
     db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(db_path), check_same_thread=False)
     return SqliteSaver(conn)
+
+
+def get_sqlite_store(db_path: Path) -> SqliteStore:
+    """Open a process-lifetime SQLite long-term store, creating its tables on first use.
+
+    ``check_same_thread`` is off because the store is used from background threads too; the
+    store serializes access with its own lock.
+    """
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    store = SqliteStore(sqlite3.connect(str(db_path), check_same_thread=False, isolation_level=None))
+    store.setup()
+    return store
 
 
 def get_recent_threads(

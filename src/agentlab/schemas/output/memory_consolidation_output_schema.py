@@ -20,6 +20,10 @@ class MemoryEdit(BaseModel):
         description="add/replace: the new line. For add to a file that doesn't exist, its full content.",
     )
     reason: str = Field(description="What the user said that shows this change.")
+    user_requested: bool = Field(
+        default=False,
+        description="True only when the user explicitly asked, in this conversation, to change or forget this fact.",
+    )
 
     def describe(self) -> str:
         if self.kind == "add":

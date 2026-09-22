@@ -1,16 +1,19 @@
 """CLI for the P5 personal assistant: ``lab-assistant``.
 
 Commands: ``/memory`` (preview the active user's stored memories), ``/more`` (show them in
-full), ``/skills`` (list packaged skills), ``/new_thread`` (same user, fresh conversation),
-``/user <id>`` (switch user; memories are isolated per user), ``/help``, ``quit``.
+full), ``/history`` (previous versions of changed memories), ``/undo`` (restore the latest
+one), ``/forget`` (delete everything kept about the active user), ``/skills`` (list skills),
+``/new_thread`` (same user, fresh conversation), ``/user <id>`` (switch user; memories are
+isolated per user), ``/help``, ``quit``.
 
-When a conversation ends (``/new_thread`` or ``/user``), the memory consolidator reviews it in the
-background. Its proposal waits until the user types their next message, is shown first, and
-changes that need approval are asked then.
+Memory, conversations, and pending reviews are durable (SQLite under ``out/state/``), and the
+app resumes the last user and thread. When a conversation ends (``/new_thread``, ``/user``,
+``quit``) or grows long, the memory consolidator reviews it in the background; its proposal is
+shown before the user's next message, and changes that need approval are asked then.
 """
 
 import uuid
-from concurrent.futures import Future, ThreadPoolExecutor
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -18,27 +21,33 @@ import langsmith
 import yaml
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
-from langgraph.graph.state import CompiledStateGraph
 from langgraph.store.base import BaseStore
-from langgraph.store.memory import InMemoryStore
 
 from agentlab.agents.personal_assistant_agent import make_personal_assistant_agent
 from agentlab.configs.personal_assistant_config import (
+    ASSISTANT_CHECKPOINT_DB_PATH,
+    ASSISTANT_STORE_DB_PATH,
     DEFAULT_ASSISTANT_PROVIDER,
     DEFAULT_ASSISTANT_THREAD_ID,
     DEFAULT_ASSISTANT_TIER,
     DEFAULT_USER_ID,
+    LONG_THREAD_CONSOLIDATION_CHARS,
     SKILLS_DIR,
 )
+from agentlab.data.sqlite_db_data import get_sqlite_checkpointer, get_sqlite_store
 from agentlab.graphs.memory_consolidation_graph import make_memory_consolidation_graph
 from agentlab.models import llm_model
-from agentlab.nodes.memory_consolidation_node import format_transcript
 from agentlab.schemas.context.user_context_schema import UserContext
-from agentlab.schemas.output.memory_consolidation_output_schema import MemoryEdit
 from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.get_text_util import get_text
 from agentlab.utils.memory_backend_util import MEMORIES_NAMESPACE_KIND
-from agentlab.utils.run_with_hitl_util import resume_pending_with_hitl, stream_with_hitl
+from agentlab.utils.memory_session_util import (
+    MemorySessions,
+    forget_user,
+    memory_history,
+    undo_last_change,
+)
+from agentlab.utils.run_with_hitl_util import stream_with_hitl
 from agentlab.utils.secret_redaction_util import (
     make_trace_masking_client,
     redact_secrets,
@@ -47,66 +56,32 @@ from agentlab.utils.secret_redaction_util import (
 _HELP = """Commands:
   /memory      preview stored memories for the active user
   /more        show stored memories in full
+  /history     list previous versions of changed memories
+  /undo        restore the most recent previous version
+  /forget      delete everything kept about the active user
   /skills      list available procedural skills
   /new_thread  start a new conversation thread for the same user
   /user <id>   switch the active user (starts a new thread)
   /help        show this help
   quit         end the session"""
 _PREVIEW_LINES = 10
-
-
-class BackgroundConsolidation:
-    """Consolidate each finished conversation in the background; the user reviews it later.
-
-    ``start`` never blocks the chat. ``review`` runs in the main loop before the user's next
-    message: it shows what a finished run proposed and asks for the changes that need approval.
-    """
-
-    def __init__(self, assistant: CompiledStateGraph, consolidator: CompiledStateGraph) -> None:
-        self._assistant = assistant
-        self._consolidator = consolidator
-        self._executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="memory-consolidation")
-        self._jobs: list[tuple[str, dict[str, Any], Future]] = []
-
-    def start(self, user_id: str, thread_id: str) -> None:
-        state = self._assistant.get_state({"configurable": {"thread_id": thread_id}})
-        transcript = format_transcript(state.values.get("messages", []))
-        if not transcript:
-            return
-        config = {"configurable": {"thread_id": f"consolidate_{thread_id}_{uuid.uuid4().hex[:6]}"}}
-        future = self._executor.submit(
-            self._consolidator.invoke, {"transcript": transcript}, config, context=UserContext(user_id=user_id)
-        )
-        self._jobs.append((user_id, config, future))
-
-    def review(self, user_id: str) -> None:
-        for job in [job for job in self._jobs if job[0] == user_id and job[2].done()]:
-            self._jobs.remove(job)
-            _, config, future = job
-            if (error := future.exception()) is not None:
-                print(f"\n[Memory] Could not review the last conversation ({error}); memory is unchanged.")
-                continue
-            edits = [MemoryEdit.model_validate(edit) for edit in self._consolidator.get_state(config).values["edits"]]
-            if not edits:
-                continue
-            print("\n[Memory] From your last conversation:")
-            for edit in edits:
-                print(f"  - {edit.describe()}  ({edit.reason})")
-            values = resume_pending_with_hitl(
-                self._consolidator,
-                config,
-                context=UserContext(user_id=user_id),
-                assistant_prompt="Save this memory change? [y/n]: ",
-            )
-            for outcome in values.get("outcomes", []):
-                print(f"[Memory] {outcome}")
-
-    def close(self) -> None:
-        self._executor.shutdown(wait=False, cancel_futures=True)
+_SESSION_NAMESPACE = ("app", "personal_assistant")
 
 
 def _new_thread_id() -> str:
     return f"thread_{uuid.uuid4().hex[:6]}"
+
+
+def load_session(store: BaseStore) -> tuple[str, str]:
+    """The last active user and thread, or the defaults on first run."""
+    item = store.get(_SESSION_NAMESPACE, "last")
+    if item is None:
+        return DEFAULT_USER_ID, DEFAULT_ASSISTANT_THREAD_ID
+    return item.value["user_id"], item.value["thread_id"]
+
+
+def save_session(store: BaseStore, user_id: str, thread_id: str) -> None:
+    store.put(_SESSION_NAMESPACE, "last", {"user_id": user_id, "thread_id": thread_id})
 
 
 def _read_frontmatter(skill_file: Path) -> dict[str, Any]:
@@ -158,6 +133,18 @@ def print_user_memories(store: BaseStore, user_id: str, *, max_lines: int | None
             print(f"    ... [{len(lines) - len(shown)} more lines, /more shows everything]")
 
 
+def print_history(store: BaseStore, user_id: str, *, limit: int = 10) -> None:
+    """Print the most recent previous versions of the user's memory files."""
+    history = memory_history(store, user_id)
+    if not history:
+        print(f"  [Memory] No previous versions for user '{user_id}'.")
+        return
+    print(f"\n--- Previous versions for '{user_id}' (newest first; /undo restores the first) ---")
+    for item in history[:limit]:
+        saved = datetime.fromtimestamp(item.value["saved_at"]).astimezone().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"* {saved}  {item.value['path']}")
+
+
 def print_available_skills(skills_dir: Path = SKILLS_DIR) -> None:
     """Print the name and description of each packaged skill."""
     skill_files = sorted(skills_dir.glob("*/SKILL.md"))
@@ -176,23 +163,33 @@ def main() -> None:
     configure_utf8_stdout()
     langsmith.configure(client=make_trace_masking_client())
 
-    store = InMemoryStore()
-    agent = make_personal_assistant_agent(store)
-    consolidation = BackgroundConsolidation(agent, make_memory_consolidation_graph(store))
-    user_id, thread_id = DEFAULT_USER_ID, DEFAULT_ASSISTANT_THREAD_ID
+    store = get_sqlite_store(ASSISTANT_STORE_DB_PATH)
+    checkpointer = get_sqlite_checkpointer(ASSISTANT_CHECKPOINT_DB_PATH)
+    agent = make_personal_assistant_agent(store, checkpointer=checkpointer)
+    consolidator = make_memory_consolidation_graph(store, checkpointer=checkpointer)
+    sessions = MemorySessions(store, agent, consolidator, long_thread_chars=LONG_THREAD_CONSOLIDATION_CHARS)
+    user_id, thread_id = load_session(store)
     spec = llm_model.spec(DEFAULT_ASSISTANT_TIER, DEFAULT_ASSISTANT_PROVIDER)
 
     print("=" * 65)
     print("[Personal Assistant] P5 Memory-Rich Assistant")
     print(f"Model: {spec.model} (tier {llm_model.resolve_tier(DEFAULT_ASSISTANT_TIER)})")
-    print("Memory store: in-memory (cleared when this process exits)")
-    print("Memory updates: proposed after each conversation (/new_thread, /user), saved with your OK")
+    print(f"Memory and conversations: SQLite under {ASSISTANT_STORE_DB_PATH.parent}")
+    print("Memory updates: proposed after each conversation, saved with your OK (/undo reverts)")
     print("Privacy: secrets are removed before sending; traces mask secrets and emails")
+    print(f"Resumed: user '{user_id}' on thread '{thread_id}' (/new_thread for a fresh one)")
     print(_HELP)
     print("=" * 65)
+    sessions.resume(user_id)
+
+    def switch(new_user: str, new_thread: str) -> None:
+        nonlocal user_id, thread_id
+        user_id, thread_id = new_user, new_thread
+        save_session(store, user_id, thread_id)
+        sessions.resume(user_id)
 
     while True:
-        consolidation.review(user_id)
+        sessions.review(user_id)
         try:
             prompt = input(f"\n[{user_id}@{thread_id}]> ").strip()
         except (KeyboardInterrupt, EOFError):
@@ -213,12 +210,28 @@ def main() -> None:
         if command == "/more":
             print_user_memories(store, user_id, max_lines=None)
             continue
+        if command == "/history":
+            print_history(store, user_id)
+            continue
+        if command == "/undo":
+            restored = undo_last_change(store, user_id)
+            print(f"[Memory] Restored the previous version of {restored}." if restored else "[Memory] Nothing to undo.")
+            continue
+        if command == "/forget":
+            answer = input(f"Delete ALL memory and conversations of '{user_id}'? Type the user id to confirm: ")
+            if answer.strip() != user_id:
+                print("[Memory] Cancelled; nothing was deleted.")
+                continue
+            deleted = forget_user(store, checkpointer, user_id)
+            print(f"[Memory] Forgot '{user_id}': memory, history, and {deleted} conversation(s) deleted.")
+            switch(user_id, _new_thread_id())
+            continue
         if command == "/skills":
             print_available_skills()
             continue
         if command == "/new_thread":
-            consolidation.start(user_id, thread_id)
-            thread_id = _new_thread_id()
+            sessions.start(user_id, thread_id)
+            switch(user_id, _new_thread_id())
             print(f"[Thread] Now on '{thread_id}': conversation state is fresh, memories persist.")
             continue
         if command.startswith("/user"):
@@ -226,11 +239,13 @@ def main() -> None:
             if not new_user:
                 print("Usage: /user <user_id>")
                 continue
-            consolidation.start(user_id, thread_id)
-            user_id, thread_id = new_user, _new_thread_id()
+            sessions.start(user_id, thread_id)
+            switch(new_user, _new_thread_id())
             print(f"[User] Active user is now '{user_id}' on thread '{thread_id}'.")
             continue
 
+        sessions.track(user_id, thread_id)
+        save_session(store, user_id, thread_id)
         result = stream_with_hitl(
             agent,
             {"messages": [HumanMessage(content=sanitize_user_input(prompt))]},
@@ -239,8 +254,11 @@ def main() -> None:
         )
         if result["last_message"]:
             print(f"\nAssistant: {get_text(result['last_message'])}")
+        if sessions.start_if_long(user_id, thread_id):
+            print("[Memory] This conversation is getting long; reviewing it so far in the background.")
 
-    consolidation.close()
+    sessions.queue(user_id, thread_id)
+    sessions.close()
 
 
 if __name__ == "__main__":

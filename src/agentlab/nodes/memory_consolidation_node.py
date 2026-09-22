@@ -4,6 +4,8 @@
 run, through the memory gate: the model proposes, code decides what the edit does to the file.
 """
 
+import hashlib
+import time
 from collections.abc import Callable, Sequence
 from typing import Any
 
@@ -17,7 +19,10 @@ from agentlab.configs.personal_assistant_config import (
     CONSOLIDATOR_TIER,
     MEMORIES_ROUTE_PREFIX,
 )
-from agentlab.middlewares.memory_approval_middleware import GatedMemoryBackend
+from agentlab.middlewares.memory_approval_middleware import (
+    REJECTION_PREFIX,
+    GatedMemoryBackend,
+)
 from agentlab.models import llm_model
 from agentlab.prompts.nodes.memory_consolidation_prompt import (
     MEMORY_CONSOLIDATION_PROMPT,
@@ -32,6 +37,10 @@ from agentlab.utils.get_text_util import get_text
 from agentlab.utils.memory_backend_util import user_memory_namespace
 
 NO_MEMORY = "(no memory files yet)"
+NO_REJECTIONS = "(none)"
+REJECTIONS_KIND = "memory_rejections"
+# The consolidator sees the most recent rejections; older ones age out of its view.
+MAX_REJECTIONS_SHOWN = 30
 
 
 def format_transcript(messages: Sequence[BaseMessage]) -> str:
@@ -59,6 +68,20 @@ def _read_memory(runtime: Runtime[UserContext]) -> dict[str, str]:
     return {MEMORIES_ROUTE_PREFIX.rstrip("/") + item.key: _stored_text(item.value) for item in items}
 
 
+def _read_rejections(runtime: Runtime[UserContext]) -> list[str]:
+    """Edits the user rejected before, newest first, so they aren't proposed again."""
+    namespace = (user_memory_namespace(runtime)[0], REJECTIONS_KIND)
+    items = runtime.store.search(namespace, limit=1000)
+    items.sort(key=lambda item: item.value.get("rejected_at", 0), reverse=True)
+    return [item.value["edit"] for item in items[:MAX_REJECTIONS_SHOWN]]
+
+
+def _remember_rejection(runtime: Runtime[UserContext], edit: MemoryEdit) -> None:
+    namespace = (user_memory_namespace(runtime)[0], REJECTIONS_KIND)
+    key = hashlib.sha256(edit.describe().encode()).hexdigest()
+    runtime.store.put(namespace, key, {"edit": edit.describe(), "rejected_at": time.time()})
+
+
 def make_consolidate_node(
     model: Runnable | None = None,
 ) -> Callable[[MemoryConsolidationState, Runtime[UserContext]], dict]:
@@ -72,7 +95,10 @@ def make_consolidate_node(
     def consolidate(state: MemoryConsolidationState, runtime: Runtime[UserContext]) -> dict:
         files = _read_memory(runtime)
         memory = "\n\n".join(f'<file path="{path}">\n{text}\n</file>' for path, text in files.items())
-        proposal = chain.invoke({"memory": memory or NO_MEMORY, "transcript": state["transcript"]})
+        rejected = "\n".join(f"- {edit}" for edit in _read_rejections(runtime)) or NO_REJECTIONS
+        proposal = chain.invoke(
+            {"memory": memory or NO_MEMORY, "rejected": rejected, "transcript": state["transcript"]}
+        )
         # Additions first: they rarely need approval, so they land even if the user
         # never gets to the changes that do.
         edits = sorted(proposal.edits, key=lambda edit: edit.kind != "add")
@@ -126,10 +152,9 @@ def _apply(edit: MemoryEdit, key: str, current: str | None, backend: GatedMemory
         line = _find_line(current or "", edit.old)
         if line is None:
             return f"Skipped {edit.describe()} (that line is not in memory)."
-        if edit.kind == "replace":
-            result = backend.edit(key, line, edit.new)
-        else:
-            result = backend.edit(key, f"{line}\n" if f"{line}\n" in current else line, "")
+        old = line if edit.kind == "replace" else (f"{line}\n" if f"{line}\n" in current else line)
+        new = edit.new if edit.kind == "replace" else ""
+        result = backend.edit(key, old, new, requested=edit.user_requested)
     if result.error:
         return f"Not applied {edit.describe()}: {result.error}"
     return f"Applied {edit.describe()}."
@@ -152,6 +177,8 @@ def make_apply_next_edit_node(
         else:
             stored = runtime.store.get(user_memory_namespace(runtime), key)
             outcome = _apply(edit, key, _stored_text(stored.value) if stored else None, backend)
+            if REJECTION_PREFIX in outcome:
+                _remember_rejection(runtime, edit)
         return {"cursor": state["cursor"] + 1, "outcomes": [outcome]}
 
     return apply_next_edit

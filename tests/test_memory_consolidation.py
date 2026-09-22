@@ -12,7 +12,6 @@ from langchain_core.runnables import RunnableLambda
 from langgraph.store.memory import InMemoryStore
 from langgraph.types import Command
 
-from agentlab.apps.personal_assistant_app import BackgroundConsolidation
 from agentlab.graphs.memory_consolidation_graph import make_memory_consolidation_graph
 from agentlab.nodes.memory_consolidation_node import NO_MEMORY, format_transcript
 from agentlab.schemas.context.user_context_schema import UserContext
@@ -20,6 +19,7 @@ from agentlab.schemas.output.memory_consolidation_output_schema import (
     MemoryEdit,
     MemoryEdits,
 )
+from agentlab.utils.memory_session_util import memory_history, undo_last_change
 from agentlab.utils.run_with_hitl_util import resume_pending_with_hitl
 from tests.fakes import RecordingGuard
 
@@ -214,45 +214,48 @@ def test_review_later_applies_the_approved_edit() -> None:
     assert "- Lives in Karaj" in profile(store)
 
 
-# --- The CLI: consolidate in the background, review before the next message ------------------
+# --- Requested corrections, history, and remembered rejections ------------------------------
 
 
-class FakeAssistant:
-    """Stands in for the assistant graph: only its checkpointed messages are read."""
+def test_a_correction_the_user_asked_for_needs_no_approval_and_can_be_undone() -> None:
+    store = with_profile()
+    edit = replace("- Lives in Tehran", "- Lives in Karaj (previously Tehran)").model_copy(
+        update={"user_requested": True}
+    )
 
-    def __init__(self, messages: list[Any]) -> None:
-        self.messages = messages
+    result, _ = run(make_graph(store, edit))
 
-    def get_state(self, config: dict[str, Any]) -> Any:
-        return type("Snapshot", (), {"values": {"messages": self.messages}})()
+    assert "__interrupt__" not in result
+    assert "- Lives in Karaj" in profile(store)
+    assert undo_last_change(store, "alice") == PROFILE
+    assert profile(store) == TEHRAN_PROFILE
 
 
-def test_cli_shows_the_edits_and_applies_them_after_approval(capsys: Any) -> None:
+def test_a_requested_correction_still_asks_when_the_guard_finds_it_sensitive() -> None:
+    store = with_profile()
+    edit = replace("- Likes tea", "- Has asthma").model_copy(update={"user_requested": True})
+
+    result, _ = run(make_graph(store, edit, guard=RecordingGuard("ask", category="health")))
+
+    assert "__interrupt__" in result
+
+
+def test_a_rejected_edit_is_shown_to_the_next_consolidation() -> None:
+    store = with_profile()
+    graph = make_graph(store, replace("- Likes tea", "- Likes coffee"))
+    result, config = run(graph)
+    answer(graph, result, config, "reject")
+    model = ScriptedConsolidator()
+
+    run(make_memory_consolidation_graph(store, model=RunnableLambda(model), guard=RecordingGuard("allow")), "c2")
+
+    assert f"<rejected>\n- {PROFILE}: - Likes tea -> - Likes coffee\n</rejected>" in model.inputs[0]
+
+
+def test_approved_changes_keep_the_previous_version() -> None:
     store = with_profile()
     graph = make_graph(store, replace("- Lives in Tehran", "- Lives in Karaj"))
-    consolidation = BackgroundConsolidation(FakeAssistant([HumanMessage(content="I moved to Karaj")]), graph)
+    result, config = run(graph)
+    answer(graph, result, config, "approve")
 
-    consolidation.start("alice", "t1")
-    for _, _, future in consolidation._jobs:
-        future.result()
-    consolidation.review("bob")  # another user's session never sees Alice's proposal
-    assert "[Memory]" not in capsys.readouterr().out
-    with patch("builtins.input", side_effect=["y"]):
-        consolidation.review("alice")
-    consolidation.close()
-
-    output = capsys.readouterr().out
-    assert f"  - {PROFILE}: - Lives in Tehran -> - Lives in Karaj  (The user said so.)" in output
-    assert f"[Memory] Applied {PROFILE}: - Lives in Tehran -> - Lives in Karaj." in output
-    assert "- Lives in Karaj" in profile(store)
-
-
-def test_cli_skips_an_empty_conversation() -> None:
-    model = ScriptedConsolidator()
-    graph = make_memory_consolidation_graph(InMemoryStore(), model=RunnableLambda(model), guard=RecordingGuard("allow"))
-    consolidation = BackgroundConsolidation(FakeAssistant([]), graph)
-
-    consolidation.start("alice", "t1")
-    consolidation.close()
-
-    assert consolidation._jobs == [] and model.inputs == []
+    assert [item.value["content"] for item in memory_history(store, "alice")] == [TEHRAN_PROFILE]

@@ -30,7 +30,12 @@ empty `section`.
 replaces it. Keep the history when useful: "- Product manager (previously backend developer)".
 - `remove`: `old` is the line to delete. Only for a duplicate you merged into another line, or a \
 fact the user asked to forget.
-Every edit has a `reason`: what the user said that shows it.
+Every edit has a `reason`: what the user said that shows it. Set `user_requested` only when the
+user explicitly asked, in this conversation, to change or forget that fact ("I moved, update my
+city", "forget my old job"); a fact mentioned in passing is not a request.
+
+The user already rejected the edits listed under <rejected>. Don't propose them again, in the
+same or other words, unless the user brought that fact up again in this conversation.
 
 For each fact the user stated, check every memory file, under every heading:
 - Not in memory: `add` it.
@@ -76,7 +81,10 @@ Return no edits when nothing changes.""",
         ),
         (
             "human",
-            "<memory>\n{memory}\n</memory>\n\n<conversation>\n{transcript}\n</conversation>",
+            (
+                "<memory>\n{memory}\n</memory>\n\n<rejected>\n{rejected}\n</rejected>\n\n"
+                "<conversation>\n{transcript}\n</conversation>"
+            ),
         ),
     ]
 )

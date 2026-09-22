@@ -2,13 +2,21 @@
 
 from pathlib import Path
 
-from agentlab.configs.paths_config import SKILLS_RESOURCES_DIR
+from agentlab.configs.paths_config import SKILLS_RESOURCES_DIR, STATE_DIR
 
 # Virtual filesystem routes (see utils/memory_backend_util.py).
 MEMORIES_ROUTE_PREFIX: str = "/memories/"
 DEFAULT_USER_PROFILE_PATH: str = "/memories/user_profile.md"
 SKILLS_ROUTE_PREFIX: str = "/skills/"
 SKILLS_DIR: Path = SKILLS_RESOURCES_DIR / "personal_assistant"
+
+# Durable state of the P5 app, apart from the other apps' shared checkpoint database.
+ASSISTANT_CHECKPOINT_DB_PATH: Path = STATE_DIR / "personal_assistant_checkpoints.db"
+ASSISTANT_STORE_DB_PATH: Path = STATE_DIR / "personal_assistant_store.db"
+
+# A conversation is consolidated mid-way once its unconsolidated transcript reaches this size,
+# so a long thread is consolidated in segments instead of one huge transcript.
+LONG_THREAD_CONSOLIDATION_CHARS: int = 8000
 
 # CLI session defaults.
 DEFAULT_USER_ID: str = "default_user"
