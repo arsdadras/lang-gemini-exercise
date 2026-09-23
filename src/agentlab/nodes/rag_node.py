@@ -35,7 +35,7 @@ def retrieve_node(state: RAGState) -> dict:
 def grade_documents_node(state: RAGState) -> dict:
     """Keep only documents an LLM judges relevant (one grading call per document)."""
     grader = GRADE_PROMPT | llm_model.chain(
-        "low",
+        "opensource",
         structured=GradeDocument,
     )
     relevant = [
@@ -57,7 +57,7 @@ def grade_documents_node(state: RAGState) -> dict:
 
 def query_rewrite_node(state: RAGState) -> dict:
     """Rewrite the search query after grading found nothing relevant."""
-    chain = REWRITE_PROMPT | llm_model.chain("low")
+    chain = REWRITE_PROMPT | llm_model.chain("opensource")
     query = state.get("search_query", state["question"])
     response = chain.invoke(
         {"question": state["question"], "search_query": query},
@@ -70,6 +70,7 @@ def query_rewrite_node(state: RAGState) -> dict:
 
 def generate_node(state: RAGState) -> dict:
     """Answer the question from the surviving documents."""
+    # "medium": the user-facing answer itself, not a gate (see ADR-0014).
     context = get_docs_context(state.get("documents", []))
     response = (GENERATE_PROMPT | llm_model.chain("medium")).invoke(
         {"question": state["question"], "context": context},
@@ -79,6 +80,8 @@ def generate_node(state: RAGState) -> dict:
 
 def check_hallucination_node(state: RAGState) -> dict:
     """Replace the answer with a disclaimer when the documents don't support it."""
+    # Trust gate, kept on a paid tier deliberately: this is P2's core anti-hallucination
+    # guarantee, with no live-verified opensource-tier baseline yet (ADR-0014).
     context = get_docs_context(state.get("documents", []))
     grader = HALLUCINATION_PROMPT | llm_model.chain(
         "low",
@@ -118,6 +121,7 @@ def web_search_fallback_node(state: RAGState) -> dict:
     context = "\n\n".join(
         f"[{result['url']}]\n{result['content']}" for result in results
     )
+    # "low", not "opensource": this is the user-facing answer, same reasoning as generate_node.
     answer = (GENERATE_FROM_WEB_PROMPT | llm_model.chain("low")).invoke(
         {
             "question": state["question"],

@@ -58,12 +58,14 @@ def make_finglish_output_guard(rewriter: Runnable | None = None) -> AgentMiddlew
 
     Args:
         rewriter: Runnable taking ``{"lines": ...}`` and returning ``FinglishLines``; defaults
-            to the rewrite prompt on the ``low`` tier.
+            to the rewrite prompt on the ``opensource`` tier (cheap: this is a pure formatting
+            repair that fails open, not a quality or safety gate).
     """
     chain = (
         rewriter
         if rewriter is not None
-        else FINGLISH_REWRITE_PROMPT | llm_model.chain("low", structured=FinglishLines)
+        else FINGLISH_REWRITE_PROMPT
+        | llm_model.chain("opensource", structured=FinglishLines)
     )
 
     @after_model

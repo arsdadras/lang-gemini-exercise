@@ -23,9 +23,12 @@ from langchain_core.runnables import Runnable
 from pydantic import BaseModel
 
 from agentlab.configs.models_config import (
+    DEFAULT_TEST_PROFILE,
     DEFAULT_TIER,
     MODEL_TIERS,
     TEST_MODE_ENV,
+    TEST_MODE_PROFILE_ENV,
+    TEST_MODE_PROFILES,
     TEST_TIER,
     TIER_CASCADE_ORDER,
     ModelSpec,
@@ -39,14 +42,20 @@ def is_test_mode_enabled() -> bool:
     return os.getenv(TEST_MODE_ENV, "false").strip().lower() in _TRUTHY
 
 
+def resolve_test_profile_name() -> str:
+    """Read ``LLM_TEST_PROFILE`` at call time; unset means ``DEFAULT_TEST_PROFILE``."""
+    return os.getenv(TEST_MODE_PROFILE_ENV, DEFAULT_TEST_PROFILE).strip()
+
+
 def build_chat_model(spec: ModelSpec) -> BaseChatModel:
     """Build a chat model from a spec, resolving credentials from the environment."""
     kwargs: dict[str, Any] = {
         "model": spec.model,
         "model_provider": spec.model_provider,
-        "api_key": os.getenv(spec.api_key_env),
         "temperature": spec.temperature,
     }
+    if spec.api_key_env is not None:
+        kwargs["api_key"] = os.getenv(spec.api_key_env)
     base_url = spec.base_url or (
         os.getenv(spec.base_url_env) if spec.base_url_env else None
     )
@@ -67,6 +76,8 @@ class LLMRegistry:
         default_tier: str = DEFAULT_TIER,
         cascade_order: tuple[str, ...] = TIER_CASCADE_ORDER,
         test_tier: str = TEST_TIER,
+        test_profiles: Mapping[str, str] | None = None,
+        test_profile: Callable[[], str] = resolve_test_profile_name,
         test_mode: Callable[[], bool] = is_test_mode_enabled,
         model_builder: Callable[[ModelSpec], BaseChatModel] = build_chat_model,
     ) -> None:
@@ -74,15 +85,30 @@ class LLMRegistry:
         self._default_tier = default_tier
         self._cascade_order = cascade_order
         self._test_tier = test_tier
+        # Empty by default (as in tests, which only ever inject a single test_tier): the
+        # profile system is opt-in per instance. The production singleton below passes
+        # TEST_MODE_PROFILES, so LLM_TEST_PROFILE only has an effect there.
+        self._test_profiles = test_profiles or {}
+        self._test_profile = test_profile
         self._test_mode = test_mode
         self._build = model_builder
         self._cache: dict[tuple[str, str], BaseChatModel] = {}
 
     def resolve_tier(self, tier: str | None = None) -> str:
-        """Apply test-mode substitution, then the default tier, then validate."""
-        resolved = (
-            self._test_tier if self._test_mode() else (tier or self._default_tier)
-        )
+        """Apply test-mode substitution (by profile, if any), then the default tier, validate."""
+        if not self._test_mode():
+            resolved = tier or self._default_tier
+        elif not self._test_profiles:
+            resolved = self._test_tier
+        else:
+            profile = self._test_profile()
+            if profile not in self._test_profiles:
+                msg = (
+                    f"Unknown test profile {profile!r}; expected one of "
+                    f"{sorted(self._test_profiles)}"
+                )
+                raise ValueError(msg)
+            resolved = self._test_profiles[profile]
         if resolved not in self._tiers:
             msg = f"Unknown tier {resolved!r}; expected one of {sorted(self._tiers)}"
             raise ValueError(msg)
@@ -182,4 +208,4 @@ class LLMRegistry:
         return primary.with_fallbacks(fallbacks) if fallbacks else primary
 
 
-llm_model = LLMRegistry()
+llm_model = LLMRegistry(test_profiles=TEST_MODE_PROFILES)

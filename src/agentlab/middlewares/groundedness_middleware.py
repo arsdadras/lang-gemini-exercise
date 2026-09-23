@@ -37,6 +37,8 @@ def response_groundedness(state: AgentState, runtime: Runtime) -> dict[str, Any]
     if not tool_context:
         return None
 
+    # Trust gate, kept on a paid tier deliberately: same reasoning as rag_node's
+    # hallucination check (ADR-0014).
     grader = GROUNDEDNESS_PROMPT | llm_model.chain(
         "low",
         structured=GroundednessVerdict,

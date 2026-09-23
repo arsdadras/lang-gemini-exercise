@@ -25,6 +25,8 @@ set the old one's status to `Superseded by ADR-XXXX`.
 | [0011](0011-return-pass-before-p6.md) | A return pass over P1-P5 before P6, and a fixed difficulty curve | Accepted |
 | [0012](0012-memory-consolidation-single-writer.md) | Memory has one writer: a background consolidator proposing line-level edits | Accepted |
 | [0013](0013-p5-completion.md) | Finishing P5: history and undo, durable memory, governed skills, a context provider | Accepted |
+| [0014](0014-weighted-model-tier-catalog.md) | Model catalog splits into 5 tiers, ranked by a weighted speed/power/cost score | Accepted |
+| [0015](0015-local-tier-and-test-mode-profiles.md) | A `local` Ollama tier, and named test-mode profiles switchable mid-session | Accepted |
 
 ## Template
 

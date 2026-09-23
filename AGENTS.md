@@ -68,7 +68,8 @@ that suffix too: `prompts/nodes/*_prompt.py`, `schemas/output/*_output_schema.py
    - Agents: `llm_model.get(tier, provider)` plus `make_model_fallback(tier, primary=provider)`
      ([ADR-0007](docs/adr/0007-built-in-model-fallback.md)).
    - Graph nodes and middleware: `llm_model.chain(tier, structured=Schema)`.
-   - `LLM_TEST_MODE=true` routes every tier to `TEST_TIER`.
+   - `LLM_TEST_MODE=true` routes every tier to `TEST_TIER` (`LLM_TEST_PROFILE=<name>` picks a
+     different one of the named `TEST_MODE_PROFILES`; see ADR-0015).
 4. **Identity.** Per-user data uses `context_schema=UserContext`, and every call passes
    `context=UserContext(user_id=...)`. `thread_id` stays in `config["configurable"]`
    ([ADR-0003](docs/adr/0003-runtime-context-for-user-identity.md)).
