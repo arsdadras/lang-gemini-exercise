@@ -183,10 +183,11 @@ MODEL_TIERS: dict[str, dict[str, ModelSpec]] = {
     },
     # Opt-in only, same as "free". $0 and no rate limit, but needs `ollama serve` running
     # with the model already pulled locally; nothing falls back to it automatically.
-    # Not yet live-verified in this repo (the model isn't pulled yet as of this writing) —
-    # see ADR-0015 before trusting it beyond the "local" test profile below.
+    # Order and both entries live-verified 2026-09-23 against a real `ollama serve` — see
+    # ADR-0015's follow-up for what was actually measured.
     "local": {
-        "qwen": _ollama("qwen3.5:2b"),
+        "qwen-4b": _ollama("qwen3.5:4b"),
+        "qwen-2b": _ollama("qwen3.5:2b"),
     },
 }
 

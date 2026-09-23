@@ -109,10 +109,14 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
   calls were moved onto that tier so far (see the ADR's call-site audit).
 - **A 6th tier, `local` (Ollama), and named `LLM_TEST_PROFILE` values** (`default`/`cheapest`/
   `reliable`/`local`) for switching test mode's tier mid-session without a code change
-  ([ADR-0015](adr/0015-local-tier-and-test-mode-profiles.md)). `qwen3.5:2b` isn't pulled yet, so
-  `local` is entirely unverified — not scored, not in `TEST_TIER` auto-selection, reachable only
-  by asking for it explicitly. **Follow-up once it's pulled:** call it a few times through this
-  stack, decide whether it earns a permanent score, drop it again if it doesn't pull its weight.
+  ([ADR-0015](adr/0015-local-tier-and-test-mode-profiles.md)). **Measured 2026-09-23** against a
+  real `ollama serve` with `qwen3.5:2b` and `qwen3.5:4b` pulled: both work end to end (plain
+  chat, structured output, tool-calling), `qwen-4b` is more reliable (only it passed a
+  multi-line structured-output task `qwen-2b` failed) and is the tier's primary. Both are far
+  too slow for interactive use (90-360s per structured-output call, likely CPU-bound reasoning
+  overhead, no GPU confirmed) — kept opt-in only, never in `TEST_TIER` auto-selection. Good for
+  patient offline iteration; not a fit for `rag_node`'s per-document grading or the Finglish
+  repair pass at that latency. Resolved; see the ADR's follow-up section for the full numbers.
 - **Specialist-contract status vocabulary fixed (2026-09-23).** A concurrent session's in-flight
   rename (`success`→`ok`, `failure`→`failed`) had updated every call site and the tests but not
   `SpecialistResult.status`'s `Literal` (still `success/partial/failure/timeout/error`) or
