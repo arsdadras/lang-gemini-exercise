@@ -73,7 +73,7 @@ def test_stream_agent_with_observability_delegation():
                 "name": "task",
                 "args": {"subagent": "researcher", "description": "Search web"},
                 "id": "call_01",
-            }
+            },
         ],
     )
     tool_res = ToolMessage(

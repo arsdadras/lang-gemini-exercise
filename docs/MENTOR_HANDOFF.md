@@ -115,6 +115,10 @@ trigger.
 - **N:** DeepAgents harness profiles, once a fallback model needs different prompts or tool
   descriptions than the primary.
 - **N:** Per-app checkpoint databases, or tagging threads by app. `[R]` R0.
+- **N:** Carry the typed envelope into a DeepAgents coordinator's state, not only its text:
+  extra state keys a `CompiledSubAgent` returns reach the parent (verified in
+  `deepagents/middleware/subagents.py`). Coordinator code then lists side effects and reads
+  status itself instead of the model copying the `Changed:` line. `[R]` R4.
 - **N:** One CLI approval loop (`run_with_hitl` and `stream_with_hitl` overlap). `[R]` R5.
 - **N:** Secret redaction and trace masking in every app, not only P5. `[R]` R5.
 

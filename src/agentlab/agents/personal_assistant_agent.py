@@ -27,7 +27,15 @@ from agentlab.utils.memory_backend_util import make_memory_composite_backend
 # consolidator that runs after each conversation; skills are shared by every user, and only the
 # skill designer publishes new ones.
 PERSONAL_ASSISTANT_PERMISSIONS = [
-    FilesystemPermission(operations=["write"], paths=[f"{MEMORIES_ROUTE_PREFIX}**", f"{SKILLS_ROUTE_PREFIX}**", f"{PUBLISHED_SKILLS_ROUTE_PREFIX}**"], mode="deny"),
+    FilesystemPermission(
+        operations=["write"],
+        paths=[
+            f"{MEMORIES_ROUTE_PREFIX}**",
+            f"{SKILLS_ROUTE_PREFIX}**",
+            f"{PUBLISHED_SKILLS_ROUTE_PREFIX}**",
+        ],
+        mode="deny",
+    ),
 ]
 
 
@@ -62,5 +70,8 @@ def make_personal_assistant_agent(
         checkpointer=checkpointer if checkpointer is not None else InMemorySaver(),
         store=store,
         context_schema=UserContext,
-        middleware=[make_model_fallback(tier, primary=provider), make_finglish_output_guard()],
+        middleware=[
+            make_model_fallback(tier, primary=provider),
+            make_finglish_output_guard(),
+        ],
     )

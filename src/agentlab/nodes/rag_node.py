@@ -2,6 +2,8 @@
 
 from typing import cast
 
+from langchain_core.documents import Document
+
 from agentlab.models import llm_model
 from agentlab.prompts.nodes.rag_prompt import (
     GENERATE_FROM_WEB_PROMPT,
@@ -32,13 +34,21 @@ def retrieve_node(state: RAGState) -> dict:
 
 def grade_documents_node(state: RAGState) -> dict:
     """Keep only documents an LLM judges relevant (one grading call per document)."""
-    grader = GRADE_PROMPT | llm_model.chain("low", structured=GradeDocument)
+    grader = GRADE_PROMPT | llm_model.chain(
+        "low",
+        structured=GradeDocument,
+    )
     relevant = [
         document
         for document in state.get("documents", [])
         if cast(
             GradeDocument,
-            grader.invoke({"question": state["question"], "document": document.page_content}),
+            grader.invoke(
+                {
+                    "question": state["question"],
+                    "document": document.page_content,
+                },
+            ),
         ).binary_score
         == "yes"
     ]
@@ -49,15 +59,20 @@ def query_rewrite_node(state: RAGState) -> dict:
     """Rewrite the search query after grading found nothing relevant."""
     chain = REWRITE_PROMPT | llm_model.chain("low")
     query = state.get("search_query", state["question"])
-    response = chain.invoke({"question": state["question"], "search_query": query})
-    return {"search_query": get_text(response), "retries": state.get("retries", 0) + 1}
+    response = chain.invoke(
+        {"question": state["question"], "search_query": query},
+    )
+    return {
+        "search_query": get_text(response),
+        "retries": state.get("retries", 0) + 1,
+    }
 
 
 def generate_node(state: RAGState) -> dict:
     """Answer the question from the surviving documents."""
     context = get_docs_context(state.get("documents", []))
     response = (GENERATE_PROMPT | llm_model.chain("medium")).invoke(
-        {"question": state["question"], "context": context}
+        {"question": state["question"], "context": context},
     )
     return {"generation": get_text(response)}
 
@@ -65,25 +80,59 @@ def generate_node(state: RAGState) -> dict:
 def check_hallucination_node(state: RAGState) -> dict:
     """Replace the answer with a disclaimer when the documents don't support it."""
     context = get_docs_context(state.get("documents", []))
-    grader = HALLUCINATION_PROMPT | llm_model.chain("low", structured=GradeHallucination)
+    grader = HALLUCINATION_PROMPT | llm_model.chain(
+        "low",
+        structured=GradeHallucination,
+    )
     verdict = cast(
         GradeHallucination,
-        grader.invoke({"context": context, "generation": state.get("generation", "")}),
+        grader.invoke(
+            {
+                "context": context,
+                "generation": state.get("generation", ""),
+            },
+        ),
     )
     if verdict.binary_score == "yes":
-        return {}
-    return {"generation": UNVERIFIED_ANSWER}
+        return {"answer_source": "corpus"}
+    return {
+        "generation": UNVERIFIED_ANSWER,
+        "answer_source": "unverified",
+    }
 
 
 def web_search_fallback_node(state: RAGState) -> dict:
     """Answer from a live web search when the local corpus had nothing relevant."""
-    response = make_web_search_tool().invoke({"query": state["question"]})
+
+    response = make_web_search_tool().invoke(
+        {"query": state["question"]},
+    )
     results = response.get("results", [])
     if not results:
-        return {"generation": NO_ANSWER}
+        return {
+            "generation": NO_ANSWER,
+            "answer_source": "none",
+            "documents": [],
+        }
 
-    context = "\n\n".join(f"[{result['url']}]\n{result['content']}" for result in results)
-    answer = (GENERATE_FROM_WEB_PROMPT | llm_model.chain("low")).invoke(
-        {"question": state["question"], "context": context}
+    context = "\n\n".join(
+        f"[{result['url']}]\n{result['content']}" for result in results
     )
-    return {"generation": get_text(answer)}
+    answer = (GENERATE_FROM_WEB_PROMPT | llm_model.chain("low")).invoke(
+        {
+            "question": state["question"],
+            "context": context,
+        },
+    )
+    documents = [
+        Document(
+            page_content=result["content"],
+            metadata={"source": result["url"]},
+        )
+        for result in results
+    ]
+    return {
+        "generation": get_text(answer),
+        "answer_source": "web",
+        "documents": documents,
+    }

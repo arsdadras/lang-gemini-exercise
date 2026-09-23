@@ -28,3 +28,19 @@ def new_delegation_config() -> RunnableConfig:
 def to_subagent_reply(content: str) -> dict[str, Any]:
     """Wrap a final answer as the single ``AIMessage`` a ``CompiledSubAgent`` must return."""
     return {"messages": [AIMessage(content=content)]}
+
+
+def pending_approvals(state: dict[str, Any]) -> str:
+    """Name the actions a finished ``invoke`` left waiting for approval, or ``""``.
+
+    A graph that pauses returns normally with an ``__interrupt__`` entry. A boundary that
+    ignores it silently drops the pending work, so every specialist boundary checks here.
+    """
+    names = []
+    for pending in state.get("__interrupt__", []):
+        value = pending.value if isinstance(pending.value, dict) else {}
+        requests = value.get("action_requests") or [
+            {"name": value.get("action_required", "an action")},
+        ]
+        names.extend(str(request.get("name", "an action")) for request in requests)
+    return ", ".join(names)

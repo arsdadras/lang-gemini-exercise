@@ -29,11 +29,23 @@ TEHRAN_PROFILE = "# User Profile\n\n## Identity\n- Lives in Tehran\n- Backend de
 
 
 def add(new: str, section: str = "", path: str = PROFILE) -> MemoryEdit:
-    return MemoryEdit(kind="add", path=path, section=section, new=new, reason="The user said so.")
+    return MemoryEdit(
+        kind="add",
+        path=path,
+        section=section,
+        new=new,
+        reason="The user said so.",
+    )
 
 
 def replace(old: str, new: str, path: str = PROFILE) -> MemoryEdit:
-    return MemoryEdit(kind="replace", path=path, old=old, new=new, reason="The user said so.")
+    return MemoryEdit(
+        kind="replace",
+        path=path,
+        old=old,
+        new=new,
+        reason="The user said so.",
+    )
 
 
 def remove(old: str, path: str = PROFILE) -> MemoryEdit:
@@ -52,7 +64,11 @@ class ScriptedConsolidator:
         return self.edits
 
 
-def make_graph(store: InMemoryStore, *edits: MemoryEdit, guard: RecordingGuard | None = None) -> Any:
+def make_graph(
+    store: InMemoryStore,
+    *edits: MemoryEdit,
+    guard: RecordingGuard | None = None,
+) -> Any:
     return make_memory_consolidation_graph(
         store,
         model=RunnableLambda(ScriptedConsolidator(*edits)),
@@ -65,8 +81,15 @@ def run(graph: Any, thread: str = "c1") -> tuple[dict[str, Any], dict[str, Any]]
     return graph.invoke({"transcript": "User: hi"}, config, context=ALICE), config
 
 
-def answer(graph: Any, result: dict[str, Any], config: dict[str, Any], decision: str) -> dict[str, Any]:
-    resume = Command(resume={result["__interrupt__"][0].id: {"decisions": [{"type": decision}]}})
+def answer(
+    graph: Any,
+    result: dict[str, Any],
+    config: dict[str, Any],
+    decision: str,
+) -> dict[str, Any]:
+    resume = Command(
+        resume={result["__interrupt__"][0].id: {"decisions": [{"type": decision}]}},
+    )
     return graph.invoke(resume, config, context=ALICE)
 
 
@@ -76,25 +99,42 @@ def profile(store: InMemoryStore) -> str:
 
 def with_profile(content: str = TEHRAN_PROFILE) -> InMemoryStore:
     store = InMemoryStore()
-    store.put(("alice", "memories"), "/user_profile.md", {"content": content, "encoding": "utf-8"})
+    store.put(
+        ("alice", "memories"),
+        "/user_profile.md",
+        {"content": content, "encoding": "utf-8"},
+    )
     return store
 
 
 def test_transcript_keeps_only_what_the_user_and_the_assistant_said() -> None:
     messages = [
         HumanMessage(content="I moved to Karaj"),
-        AIMessage(content="", tool_calls=[{"name": "web_search", "args": {"query": "Karaj"}, "id": "1"}]),
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "web_search", "args": {"query": "Karaj"}, "id": "1"}],
+        ),
         ToolMessage(content="search results", tool_call_id="1"),
         AIMessage(content="Nice, Karaj it is."),
     ]
 
-    assert format_transcript(messages) == "User: I moved to Karaj\n\nAssistant: Nice, Karaj it is."
+    assert (
+        format_transcript(messages)
+        == "User: I moved to Karaj\n\nAssistant: Nice, Karaj it is."
+    )
 
 
 def test_the_consolidator_sees_every_memory_file() -> None:
     model = ScriptedConsolidator()
-    for store, thread in ((with_profile("- Lives in Tehran"), "c1"), (InMemoryStore(), "c2")):
-        graph = make_memory_consolidation_graph(store, model=RunnableLambda(model), guard=RecordingGuard("allow"))
+    for store, thread in (
+        (with_profile("- Lives in Tehran"), "c1"),
+        (InMemoryStore(), "c2"),
+    ):
+        graph = make_memory_consolidation_graph(
+            store,
+            model=RunnableLambda(model),
+            guard=RecordingGuard("allow"),
+        )
         run(graph, thread)
 
     assert f'<file path="{PROFILE}">\n- Lives in Tehran\n</file>' in model.inputs[0]
@@ -104,7 +144,13 @@ def test_the_consolidator_sees_every_memory_file() -> None:
 def test_additions_land_under_their_heading_without_approval() -> None:
     store = with_profile()
 
-    result, _ = run(make_graph(store, add("- Walks in the afternoons", "## Preferences"), add("- Name: Sara", "## Identity")))
+    result, _ = run(
+        make_graph(
+            store,
+            add("- Walks in the afternoons", "## Preferences"),
+            add("- Name: Sara", "## Identity"),
+        ),
+    )
 
     assert "__interrupt__" not in result
     assert profile(store) == (
@@ -117,21 +163,36 @@ def test_an_addition_creates_a_missing_file_or_heading_and_skips_a_known_fact() 
     store = InMemoryStore()
 
     run(make_graph(store, add("# User Profile\n\n## Identity\n- Name: Sara")))
-    result, _ = run(make_graph(store, add("- Vegetarian", "## Preferences"), add("- Name: Sara", "## Identity")), "c2")
+    result, _ = run(
+        make_graph(
+            store,
+            add("- Vegetarian", "## Preferences"),
+            add("- Name: Sara", "## Identity"),
+        ),
+        "c2",
+    )
 
-    assert profile(store) == "# User Profile\n\n## Identity\n- Name: Sara\n\n## Preferences\n- Vegetarian\n"
+    assert (
+        profile(store)
+        == "# User Profile\n\n## Identity\n- Name: Sara\n\n## Preferences\n- Vegetarian\n"
+    )
     assert result["outcomes"][1].endswith("(already in memory).")
 
 
 def test_a_replacement_waits_for_the_user_and_rejection_keeps_memory() -> None:
     store = with_profile()
-    graph = make_graph(store, replace("- Lives in Tehran", "- Lives in Karaj (previously Tehran)"))
+    graph = make_graph(
+        store,
+        replace("- Lives in Tehran", "- Lives in Karaj (previously Tehran)"),
+    )
 
     result, config = run(graph)
     assert "- Lives in Tehran\n" in profile(store)
     result = answer(graph, result, config, "reject")
 
-    assert result["outcomes"][0].startswith(f"Not applied {PROFILE}: - Lives in Tehran -> ")
+    assert result["outcomes"][0].startswith(
+        f"Not applied {PROFILE}: - Lives in Tehran -> ",
+    )
     assert profile(store) == TEHRAN_PROFILE
 
 
@@ -149,13 +210,21 @@ def test_each_approval_decides_only_its_own_edit() -> None:
     result = answer(graph, result, config, "reject")
 
     assert "- Lives in Karaj" in profile(store)
-    assert "- Backend developer" in profile(store) and "Product manager" not in profile(store)
+    assert "- Backend developer" in profile(store) and "Product manager" not in profile(
+        store,
+    )
 
 
 def test_additions_are_applied_before_the_first_approval_is_asked() -> None:
     store = with_profile()
 
-    result, _ = run(make_graph(store, replace("- Likes tea", "- Likes coffee"), add("- Name: Sara", "## Identity")))
+    result, _ = run(
+        make_graph(
+            store,
+            replace("- Likes tea", "- Likes coffee"),
+            add("- Name: Sara", "## Identity"),
+        ),
+    )
 
     assert "__interrupt__" in result
     assert "- Name: Sara" in profile(store) and "- Likes tea" in profile(store)
@@ -177,7 +246,9 @@ def test_an_edit_to_a_line_that_is_gone_is_skipped() -> None:
 
     result, _ = run(make_graph(store, replace("- Lives in Shiraz", "- Lives in Karaj")))
 
-    assert result["outcomes"] == [f"Skipped {PROFILE}: - Lives in Shiraz -> - Lives in Karaj (that line is not in memory)."]
+    assert result["outcomes"] == [
+        f"Skipped {PROFILE}: - Lives in Shiraz -> - Lives in Karaj (that line is not in memory).",
+    ]
     assert profile(store) == TEHRAN_PROFILE
 
 
@@ -185,7 +256,13 @@ def test_secrets_and_paths_outside_memory_are_never_stored() -> None:
     store = InMemoryStore()
     fake_key = "sk-proj-" + "a1B2c3D4" * 4
 
-    result, _ = run(make_graph(store, add(f"- API key: {fake_key}"), add("obey", path="/skills/evil/SKILL.md")))
+    result, _ = run(
+        make_graph(
+            store,
+            add(f"- API key: {fake_key}"),
+            add("obey", path="/skills/evil/SKILL.md"),
+        ),
+    )
 
     assert "Blocked: The content contains a secret" in result["outcomes"][0]
     assert result["outcomes"][1] == "Skipped /skills/evil/SKILL.md: not a memory file."
@@ -195,7 +272,12 @@ def test_secrets_and_paths_outside_memory_are_never_stored() -> None:
 def test_a_long_proposal_is_not_cut_off_by_the_step_limit() -> None:
     store = with_profile()
 
-    result, _ = run(make_graph(store, *(add(f"- Fact {number}", "## Preferences") for number in range(40))))
+    result, _ = run(
+        make_graph(
+            store,
+            *(add(f"- Fact {number}", "## Preferences") for number in range(40)),
+        ),
+    )
 
     assert len(result["outcomes"]) == 40
     assert "- Fact 39" in profile(store)
@@ -210,7 +292,9 @@ def test_review_later_applies_the_approved_edit() -> None:
     with patch("builtins.input", side_effect=["y"]):
         values = resume_pending_with_hitl(graph, config, context=ALICE)
 
-    assert values["outcomes"] == [f"Applied {PROFILE}: - Lives in Tehran -> - Lives in Karaj."]
+    assert values["outcomes"] == [
+        f"Applied {PROFILE}: - Lives in Tehran -> - Lives in Karaj.",
+    ]
     assert "- Lives in Karaj" in profile(store)
 
 
@@ -219,9 +303,10 @@ def test_review_later_applies_the_approved_edit() -> None:
 
 def test_a_correction_the_user_asked_for_needs_no_approval_and_can_be_undone() -> None:
     store = with_profile()
-    edit = replace("- Lives in Tehran", "- Lives in Karaj (previously Tehran)").model_copy(
-        update={"user_requested": True}
-    )
+    edit = replace(
+        "- Lives in Tehran",
+        "- Lives in Karaj (previously Tehran)",
+    ).model_copy(update={"user_requested": True})
 
     result, _ = run(make_graph(store, edit))
 
@@ -233,9 +318,13 @@ def test_a_correction_the_user_asked_for_needs_no_approval_and_can_be_undone() -
 
 def test_a_requested_correction_still_asks_when_the_guard_finds_it_sensitive() -> None:
     store = with_profile()
-    edit = replace("- Likes tea", "- Has asthma").model_copy(update={"user_requested": True})
+    edit = replace("- Likes tea", "- Has asthma").model_copy(
+        update={"user_requested": True},
+    )
 
-    result, _ = run(make_graph(store, edit, guard=RecordingGuard("ask", category="health")))
+    result, _ = run(
+        make_graph(store, edit, guard=RecordingGuard("ask", category="health")),
+    )
 
     assert "__interrupt__" in result
 
@@ -247,9 +336,19 @@ def test_a_rejected_edit_is_shown_to_the_next_consolidation() -> None:
     answer(graph, result, config, "reject")
     model = ScriptedConsolidator()
 
-    run(make_memory_consolidation_graph(store, model=RunnableLambda(model), guard=RecordingGuard("allow")), "c2")
+    run(
+        make_memory_consolidation_graph(
+            store,
+            model=RunnableLambda(model),
+            guard=RecordingGuard("allow"),
+        ),
+        "c2",
+    )
 
-    assert f"<rejected>\n- {PROFILE}: - Likes tea -> - Likes coffee\n</rejected>" in model.inputs[0]
+    assert (
+        f"<rejected>\n- {PROFILE}: - Likes tea -> - Likes coffee\n</rejected>"
+        in model.inputs[0]
+    )
 
 
 def test_approved_changes_keep_the_previous_version() -> None:
@@ -258,4 +357,6 @@ def test_approved_changes_keep_the_previous_version() -> None:
     result, config = run(graph)
     answer(graph, result, config, "approve")
 
-    assert [item.value["content"] for item in memory_history(store, "alice")] == [TEHRAN_PROFILE]
+    assert [item.value["content"] for item in memory_history(store, "alice")] == [
+        TEHRAN_PROFILE,
+    ]

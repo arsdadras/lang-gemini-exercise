@@ -30,12 +30,17 @@ def response_groundedness(state: AgentState, runtime: Runtime) -> dict[str, Any]
         return None
 
     tool_context = "\n\n".join(
-        get_text(message) for message in state["messages"] if isinstance(message, ToolMessage)
+        get_text(message)
+        for message in state["messages"]
+        if isinstance(message, ToolMessage)
     )
     if not tool_context:
         return None
 
-    grader = GROUNDEDNESS_PROMPT | llm_model.chain("low", structured=GroundednessVerdict)
+    grader = GROUNDEDNESS_PROMPT | llm_model.chain(
+        "low",
+        structured=GroundednessVerdict,
+    )
     verdict = cast(
         GroundednessVerdict,
         grader.invoke({"context": tool_context, "answer": get_text(last_message)}),

@@ -31,10 +31,20 @@ def test_code_review_schemas() -> None:
         description="Index out of range",
         suggestion="Add bounds check",
     )
-    review = code_review_schemas.ReviewResult(summary="Found 1 critical bug", score=4, issues=[issue])
+    review = code_review_schemas.ReviewResult(
+        summary="Found 1 critical bug",
+        score=4,
+        issues=[issue],
+    )
     suite = code_review_schemas.TestSuite(
         test_code="def test_bounds(): assert True",
-        test_cases=[code_review_schemas.TestCase(name="test_bounds", description="bounds", target_function="get_item")],
+        test_cases=[
+            code_review_schemas.TestCase(
+                name="test_bounds",
+                description="bounds",
+                target_function="get_item",
+            ),
+        ],
     )
 
     assert review.issues[0].severity == "critical"
@@ -42,23 +52,57 @@ def test_code_review_schemas() -> None:
 
 
 def test_graph_routing() -> None:
-    with_refactor = code_review_schemas.ReviewResult(summary="ok", score=8, refactored_code="def foo(): pass")
+    with_refactor = code_review_schemas.ReviewResult(
+        summary="ok",
+        score=8,
+        refactored_code="def foo(): pass",
+    )
     without_refactor = code_review_schemas.ReviewResult(summary="ok", score=10)
-    passed = code_review_schemas.TestExecutionResult(status="passed", passed=True, exit_code=0, output="OK")
-    failed = code_review_schemas.TestExecutionResult(status="failed", passed=False, exit_code=1, output="Error")
+    passed = code_review_schemas.TestExecutionResult(
+        status="passed",
+        passed=True,
+        exit_code=0,
+        output="OK",
+    )
+    failed = code_review_schemas.TestExecutionResult(
+        status="failed",
+        passed=False,
+        exit_code=1,
+        output="Error",
+    )
 
     assert route_after_reviewer({"error": "Fatal error"}) == "__end__"
     assert route_after_reviewer({"error": None}) == "test_generator"
 
     assert route_after_test_gen({"error": "Failed", "review": None}) == "__end__"
-    assert route_after_test_gen({"error": None, "review": with_refactor}) == "refactor_gate"
-    assert route_after_test_gen({"error": None, "review": without_refactor}) == "__end__"
+    assert (
+        route_after_test_gen({"error": None, "review": with_refactor})
+        == "refactor_gate"
+    )
+    assert (
+        route_after_test_gen({"error": None, "review": without_refactor}) == "__end__"
+    )
 
-    assert route_after_execution({"test_execution": passed, "test_retries": 0}) == "__end__"
-    assert route_after_execution({"test_execution": failed, "test_retries": 1}) == "fix_tests"
-    assert route_after_execution({"test_execution": failed, "test_retries": 2}) == "__end__"
+    assert (
+        route_after_execution({"test_execution": passed, "test_retries": 0})
+        == "__end__"
+    )
+    assert (
+        route_after_execution({"test_execution": failed, "test_retries": 1})
+        == "fix_tests"
+    )
+    assert (
+        route_after_execution({"test_execution": failed, "test_retries": 2})
+        == "__end__"
+    )
     override = {"configurable": {"max_test_retries": 5}}
-    assert route_after_execution({"test_execution": failed, "test_retries": 2}, config=override) == "fix_tests"
+    assert (
+        route_after_execution(
+            {"test_execution": failed, "test_retries": 2},
+            config=override,
+        )
+        == "fix_tests"
+    )
 
     assert route_after_approval({"refactor_decision": "approve"}) == "apply_refactor"
     assert route_after_approval({"refactor_decision": "reject"}) == "__end__"
@@ -85,7 +129,9 @@ def test_sandbox_runs_passing_and_failing_tests() -> None:
     assert (failing.passed, failing.status) == (False, "failed")
 
 
-def test_sandbox_tests_cannot_read_process_secrets(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_sandbox_tests_cannot_read_process_secrets(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.setenv("AGENTLAB_FAKE_SECRET", "leaked")
     test_code = "import os\ndef test_env():\n    assert os.getenv('AGENTLAB_FAKE_SECRET') is None\n"
 

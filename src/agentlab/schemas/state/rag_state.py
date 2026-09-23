@@ -1,6 +1,6 @@
 """Graph state for the P2 RAG graph."""
 
-from typing import NotRequired, TypedDict
+from typing import Literal, NotRequired, TypedDict
 
 from langchain_core.documents import Document
 
@@ -18,3 +18,6 @@ class RAGState(TypedDict):
     documents: NotRequired[list[Document]]
     generation: NotRequired[str]
     retries: NotRequired[int]
+    answer_source: NotRequired[Literal["corpus", "web", "unverified", "none"]]
+    """Where ``generation`` came from: the corpus (checked against its documents), the web
+    fallback, a disclaimer after the check failed, or nowhere."""

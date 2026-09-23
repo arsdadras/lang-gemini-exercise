@@ -40,7 +40,7 @@ def _make_graph(checkpointer: BaseCheckpointSaver | None) -> CompiledStateGraph:
     return build_code_review_graph(
         checkpointer=checkpointer
         if checkpointer is not None
-        else get_sqlite_checkpointer()
+        else get_sqlite_checkpointer(),
     )
 
 
@@ -67,13 +67,15 @@ def _print_tests(tests: TestSuite, execution: TestExecutionResult | None) -> Non
     if execution:
         print(f"\n{'-' * 60}")
         print(
-            f"Sandbox run: {execution.status.upper()} (exit code {execution.exit_code})"
+            f"Sandbox run: {execution.status.upper()} (exit code {execution.exit_code})",
         )
         print(f"{'-' * 60}\n{execution.output}")
 
 
 def _stream_pipeline(
-    graph: CompiledStateGraph, inputs: dict[str, Any], config: dict
+    graph: CompiledStateGraph,
+    inputs: dict[str, Any],
+    config: dict,
 ) -> bool:
     """Stream node updates; return ``False`` if a stage reported a fatal error."""
     for update in graph.stream(inputs, config=config, stream_mode="updates"):
@@ -85,15 +87,15 @@ def _stream_pipeline(
                 return False
             if review := delta.get("review"):
                 print(
-                    f"  [ok] Review finished: score {review.score}/10, {len(review.issues)} issue(s)"
+                    f"  [ok] Review finished: score {review.score}/10, {len(review.issues)} issue(s)",
                 )
             if tests := delta.get("tests"):
                 print(
-                    f"  [ok] Test suite generated: {len(tests.test_cases)} test case(s)"
+                    f"  [ok] Test suite generated: {len(tests.test_cases)} test case(s)",
                 )
             if execution := delta.get("test_execution"):
                 print(
-                    f"  [ok] Sandbox run: {'PASSED' if execution.passed else 'FAILED'}"
+                    f"  [ok] Sandbox run: {'PASSED' if execution.passed else 'FAILED'}",
                 )
             if "test_retries" in delta:
                 print(f"  [retry] Self-correction attempt {delta['test_retries']}")
@@ -108,7 +110,7 @@ def _run_refactor_gate(graph: CompiledStateGraph, config: dict) -> bool:
 
     payload = snapshot.tasks[0].interrupts[0].value
     print(
-        f"\n{'!' * 60}\nHUMAN APPROVAL REQUIRED: {payload.get('action_required', 'approval').upper()}"
+        f"\n{'!' * 60}\nHUMAN APPROVAL REQUIRED: {payload.get('action_required', 'approval').upper()}",
     )
     print("!" * 60)
     if payload.get("summary"):
@@ -120,7 +122,9 @@ def _run_refactor_gate(graph: CompiledStateGraph, config: dict) -> bool:
     decision = "approve" if answer in {"y", "yes"} else "reject"
     print(f"  Resuming with decision: {decision.upper()}")
     for _ in graph.stream(
-        Command(resume=decision), config=config, stream_mode="updates"
+        Command(resume=decision),
+        config=config,
+        stream_mode="updates",
     ):
         pass
     return decision == "approve"
@@ -156,7 +160,7 @@ def run_code_review(
         else "ORIGINAL (refactor rejected or skipped)"
     )
     print(
-        f"\n{_RULE}\nFINAL CODE [{label}]\n{_RULE}\n{applied or final.get('code', '')}\n{_RULE}"
+        f"\n{_RULE}\nFINAL CODE [{label}]\n{_RULE}\n{applied or final.get('code', '')}\n{_RULE}",
     )
 
 
@@ -193,7 +197,10 @@ def main() -> None:
     else:
         print("No file argument provided. Reviewing the demo snippet.")
         run_code_review(
-            session.agent, session.config, code=_SAMPLE_CODE, file_path="demo_calc.py"
+            session.agent,
+            session.config,
+            code=_SAMPLE_CODE,
+            file_path="demo_calc.py",
         )
 
 

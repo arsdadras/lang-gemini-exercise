@@ -62,25 +62,30 @@ def test_handle_interrupt_rejection_with_reason():
     interrupt = MockInterrupt([{"name": "delete", "args": {"path": "important.db"}}])
 
     with patch(
-        "builtins.input", side_effect=["n", "Database is critical, do not drop"]
+        "builtins.input",
+        side_effect=["n", "Database is critical, do not drop"],
     ):
         res = _handle_interrupt_decisions(interrupt)
         assert res == {
             "decisions": [
-                {"type": "reject", "message": "Database is critical, do not drop"}
-            ]
+                {"type": "reject", "message": "Database is critical, do not drop"},
+            ],
         }
 
 
 def test_handle_interrupt_rejection_reason_never_carries_a_secret():
     """A typed rejection reason is user input too, so secrets are redacted from it."""
-    interrupt = MockInterrupt([{"name": "write_file", "args": {"file_path": "/memories/x.md"}}])
+    interrupt = MockInterrupt(
+        [{"name": "write_file", "args": {"file_path": "/memories/x.md"}}],
+    )
     fake_key = "sk-proj-" + "a1B2c3D4" * 4
 
     with patch("builtins.input", side_effect=["n", f"never store {fake_key}"]):
         res = _handle_interrupt_decisions(interrupt)
 
-    assert res == {"decisions": [{"type": "reject", "message": "never store [SECRET_DETECTED]"}]}
+    assert res == {
+        "decisions": [{"type": "reject", "message": "never store [SECRET_DETECTED]"}],
+    }
 
 
 def test_handle_interrupt_rejection_empty_reason():
@@ -98,11 +103,14 @@ def test_run_with_hitl_happy_path_no_interrupt():
     mock_agent.invoke.return_value = {"messages": ["Task complete"]}
 
     result = run_with_hitl(
-        mock_agent, "hello", config={"configurable": {"thread_id": "1"}}
+        mock_agent,
+        "hello",
+        config={"configurable": {"thread_id": "1"}},
     )
     assert result == {"messages": ["Task complete"]}
     mock_agent.invoke.assert_called_once_with(
-        "hello", {"configurable": {"thread_id": "1"}}
+        "hello",
+        {"configurable": {"thread_id": "1"}},
     )
 
 
@@ -110,7 +118,7 @@ def test_run_with_hitl_multi_turn_interrupt_cycle():
     """Verify run_with_hitl prompts for approval and resumes via Command."""
     mock_agent = MagicMock()
     interrupt = MockInterrupt(
-        [{"name": "execute", "args": {"command": "python script.py"}}]
+        [{"name": "execute", "args": {"command": "python script.py"}}],
     )
 
     # 1st invoke produces interrupt, 2nd invoke produces final result
@@ -155,7 +163,11 @@ def tool_messages(agent) -> list[str]:
 
 def run_note_request(agent, answers: list[str]) -> tuple[dict, int]:
     with patch("builtins.input", side_effect=answers) as prompt:
-        result = stream_with_hitl(agent, {"messages": [HumanMessage(content="write a note")]}, THREAD)
+        result = stream_with_hitl(
+            agent,
+            {"messages": [HumanMessage(content="write a note")]},
+            THREAD,
+        )
     return result, prompt.call_count
 
 

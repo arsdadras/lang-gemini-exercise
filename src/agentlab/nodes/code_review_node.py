@@ -30,7 +30,7 @@ def _format_review_summary(review: ReviewResult | None) -> str:
         for issue in review.issues:
             loc = f"Line {issue.line_number}: " if issue.line_number is not None else ""
             lines.append(
-                f"- [{issue.severity.upper()}] ({issue.category}) {loc}{issue.description}"
+                f"- [{issue.severity.upper()}] ({issue.category}) {loc}{issue.description}",
             )
             lines.append(f"  Suggestion: {issue.suggestion}")
 
@@ -44,14 +44,16 @@ def review_code_node(state: CodeReviewState) -> dict:
     """Analyze source code and produce structured review findings."""
     try:
         chain = REVIEW_PROMPT | llm_model.chain(
-            "medium", structured=ReviewResult, cascade=True
+            "medium",
+            structured=ReviewResult,
+            cascade=True,
         )
         result = chain.invoke(
             {
                 "language": state.get("language", "python"),
                 "file_path": state.get("file_path") or "<inline_code>",
                 "code": state["code"],
-            }
+            },
         )
         return {"review": cast(ReviewResult, result), "error": None}
     except Exception as e:  # noqa: BLE001
@@ -66,7 +68,9 @@ def generate_tests_node(state: CodeReviewState) -> dict:
         framework = "pytest" if language.lower() == "python" else "standard test runner"
 
         chain = TEST_GEN_PROMPT | llm_model.chain(
-            "medium", structured=TestSuite, cascade=True
+            "medium",
+            structured=TestSuite,
+            cascade=True,
         )
         result = chain.invoke(
             {
@@ -75,7 +79,7 @@ def generate_tests_node(state: CodeReviewState) -> dict:
                 "file_path": state.get("file_path") or "<inline_code>",
                 "code": state["code"],
                 "review_summary": review_summary,
-            }
+            },
         )
         return {"tests": cast(TestSuite, result), "error": None}
     except Exception as e:  # noqa: BLE001
@@ -107,7 +111,9 @@ def fix_tests_node(state: CodeReviewState) -> dict:
         )
 
         chain = TEST_FIX_PROMPT | llm_model.chain(
-            "medium", structured=TestSuite, cascade=True
+            "medium",
+            structured=TestSuite,
+            cascade=True,
         )
         result = chain.invoke(
             {
@@ -116,7 +122,7 @@ def fix_tests_node(state: CodeReviewState) -> dict:
                 "code": state["code"],
                 "failing_test_code": failing_test_code,
                 "error_output": error_output,
-            }
+            },
         )
         test_retries = state.get("test_retries", 0) + 1
 
@@ -141,7 +147,7 @@ def approved_refactor_node(state: CodeReviewState) -> dict:
             "action_required": "Refactor Approval",
             "summary": review.summary,
             "refactored_code": review.refactored_code,
-        }
+        },
     )
 
     decision = str(human_response).lower().strip()

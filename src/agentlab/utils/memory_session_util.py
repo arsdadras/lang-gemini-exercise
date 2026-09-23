@@ -74,7 +74,10 @@ class MemorySessions:
         self._consolidator = consolidator
         self._long_thread_chars = long_thread_chars
         # One worker: consolidations of the same memory run one after another, never at once.
-        self._executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="memory-consolidation")
+        self._executor = ThreadPoolExecutor(
+            max_workers=1,
+            thread_name_prefix="memory-consolidation",
+        )
         self._running: dict[str, Future] = {}
 
     # --- threads and their unconsolidated messages -----------------------------------------
@@ -89,7 +92,11 @@ class MemorySessions:
     def track(self, user_id: str, thread_id: str) -> None:
         """Record that ``thread_id`` belongs to ``user_id`` (for review, resume, and forget)."""
         if self._store.get((user_id, THREADS_KIND), thread_id) is None:
-            self._store.put((user_id, THREADS_KIND), thread_id, {"consolidated": 0, "created_at": time.time()})
+            self._store.put(
+                (user_id, THREADS_KIND),
+                thread_id,
+                {"consolidated": 0, "created_at": time.time()},
+            )
 
     def _take_segment(self, user_id: str, thread_id: str) -> str:
         """The unconsolidated part of the thread as a transcript; moves the watermark past it."""
@@ -98,7 +105,11 @@ class MemorySessions:
         transcript = format_transcript(messages[start:])
         record = self._store.get((user_id, THREADS_KIND), thread_id)
         created = record.value["created_at"] if record else time.time()
-        self._store.put((user_id, THREADS_KIND), thread_id, {"consolidated": len(messages), "created_at": created})
+        self._store.put(
+            (user_id, THREADS_KIND),
+            thread_id,
+            {"consolidated": len(messages), "created_at": created},
+        )
         return transcript
 
     # --- starting consolidation ------------------------------------------------------------
@@ -108,7 +119,11 @@ class MemorySessions:
         transcript = self._take_segment(user_id, thread_id)
         if transcript:
             run_id = f"consolidate_{thread_id}_{uuid.uuid4().hex[:6]}"
-            self._store.put((user_id, REVIEWS_KIND), run_id, {"source_thread": thread_id, "created_at": time.time()})
+            self._store.put(
+                (user_id, REVIEWS_KIND),
+                run_id,
+                {"source_thread": thread_id, "created_at": time.time()},
+            )
             self._submit(user_id, run_id, {"transcript": transcript})
 
     def start_if_long(self, user_id: str, thread_id: str) -> bool:
@@ -122,13 +137,27 @@ class MemorySessions:
 
     def queue(self, user_id: str, thread_id: str) -> None:
         """On exit: remember the thread still needs consolidating; ``resume`` starts it next time."""
-        if format_transcript(self._messages(thread_id)[self._watermark(user_id, thread_id) :]):
+        if format_transcript(
+            self._messages(thread_id)[self._watermark(user_id, thread_id) :],
+        ):
             key = f"queued_{thread_id}"
-            self._store.put((user_id, REVIEWS_KIND), key, {"queued_thread": thread_id, "created_at": time.time()})
+            self._store.put(
+                (user_id, REVIEWS_KIND),
+                key,
+                {"queued_thread": thread_id, "created_at": time.time()},
+            )
 
-    def _submit(self, user_id: str, run_id: str, payload: dict[str, Any] | None) -> None:
+    def _submit(
+        self,
+        user_id: str,
+        run_id: str,
+        payload: dict[str, Any] | None,
+    ) -> None:
         self._running[run_id] = self._executor.submit(
-            self._consolidator.invoke, payload, _config(run_id), context=UserContext(user_id=user_id)
+            self._consolidator.invoke,
+            payload,
+            _config(run_id),
+            context=UserContext(user_id=user_id),
         )
 
     def resume(self, user_id: str) -> None:
@@ -144,9 +173,16 @@ class MemorySessions:
             if "edits" in snapshot.values:
                 continue  # finished; review() presents it
             if snapshot.next:
-                self._submit(user_id, item.key, None)  # continue from the last checkpoint
+                self._submit(
+                    user_id,
+                    item.key,
+                    None,
+                )  # continue from the last checkpoint
             else:
-                self._store.delete((user_id, REVIEWS_KIND), item.key)  # nothing was recorded
+                self._store.delete(
+                    (user_id, REVIEWS_KIND),
+                    item.key,
+                )  # nothing was recorded
 
     # --- review --------------------------------------------------------------------------
 
@@ -155,18 +191,26 @@ class MemorySessions:
         for item in self._store.search((user_id, REVIEWS_KIND), limit=1000):
             run_id = item.key
             future = self._running.get(run_id)
-            if "queued_thread" in item.value or (future is not None and not future.done()):
+            if "queued_thread" in item.value or (
+                future is not None and not future.done()
+            ):
                 continue
             if future is not None:
                 self._running.pop(run_id)
                 if (error := future.exception()) is not None:
-                    print(f"\n[Memory] Could not review a conversation ({error}); memory is unchanged.")
+                    print(
+                        f"\n[Memory] Could not review a conversation ({error}); memory is unchanged.",
+                    )
                     self._store.delete((user_id, REVIEWS_KIND), run_id)
                     continue
             values = self._consolidator.get_state(_config(run_id)).values
             if "edits" not in values:
                 continue  # not finished; resume() continues it
-            self._present(user_id, run_id, [MemoryEdit.model_validate(edit) for edit in values["edits"]])
+            self._present(
+                user_id,
+                run_id,
+                [MemoryEdit.model_validate(edit) for edit in values["edits"]],
+            )
             self._store.delete((user_id, REVIEWS_KIND), run_id)
             if self._consolidator.checkpointer:
                 # The run's checkpoints hold a copy of the transcript; drop them once reviewed.
@@ -178,7 +222,11 @@ class MemorySessions:
         snapshot = self._consolidator.get_state(_config(run_id))
         if snapshot.next and not any(task.interrupts for task in snapshot.tasks):
             # Stopped between edits (the app exited mid-way): apply the rest first.
-            self._consolidator.invoke(None, _config(run_id), context=UserContext(user_id=user_id))
+            self._consolidator.invoke(
+                None,
+                _config(run_id),
+                context=UserContext(user_id=user_id),
+            )
         print("\n[Memory] From an earlier conversation:")
         for edit in edits:
             print(f"  - {edit.describe()}  ({edit.reason})")
@@ -215,12 +263,20 @@ def undo_last_change(store: BaseStore, user_id: str) -> str | None:
         return None
     latest = history[0]
     key = latest.key.rsplit("@", 1)[0]
-    store.put((user_id, MEMORIES_NAMESPACE_KIND), key, {"content": latest.value["content"], "encoding": "utf-8"})
+    store.put(
+        (user_id, MEMORIES_NAMESPACE_KIND),
+        key,
+        {"content": latest.value["content"], "encoding": "utf-8"},
+    )
     store.delete((user_id, HISTORY_KIND), latest.key)
     return latest.value["path"]
 
 
-def forget_user(store: BaseStore, checkpointer: BaseCheckpointSaver, user_id: str) -> int:
+def forget_user(
+    store: BaseStore,
+    checkpointer: BaseCheckpointSaver,
+    user_id: str,
+) -> int:
     """Delete everything kept about ``user_id``: memory, history, bookkeeping, and conversations.
 
     ``checkpointer`` must hold both the assistant's and the consolidator's threads (the app

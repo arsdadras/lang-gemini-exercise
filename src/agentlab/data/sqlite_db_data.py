@@ -28,13 +28,16 @@ def get_sqlite_store(db_path: Path) -> SqliteStore:
     store serializes access with its own lock.
     """
     db_path.parent.mkdir(parents=True, exist_ok=True)
-    store = SqliteStore(sqlite3.connect(str(db_path), check_same_thread=False, isolation_level=None))
+    store = SqliteStore(
+        sqlite3.connect(str(db_path), check_same_thread=False, isolation_level=None),
+    )
     store.setup()
     return store
 
 
 def get_recent_threads(
-    limit: int | None = None, db_path: Path = CHECKPOINT_DB_PATH
+    limit: int | None = None,
+    db_path: Path = CHECKPOINT_DB_PATH,
 ) -> list[str]:
     """Return distinct thread IDs ordered by their latest checkpoint, newest first."""
     if not db_path.exists():

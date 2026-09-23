@@ -41,17 +41,26 @@ def test_card_number_is_redacted_only_when_it_passes_luhn():
 def test_trace_view_masks_emails_but_input_redaction_keeps_them():
     text = f"mail me at sam@example.com with {FAKE_OPENAI_KEY}"
 
-    assert mask_for_trace(text) == f"mail me at {EMAIL_PLACEHOLDER} with {SECRET_PLACEHOLDER}"
+    assert (
+        mask_for_trace(text)
+        == f"mail me at {EMAIL_PLACEHOLDER} with {SECRET_PLACEHOLDER}"
+    )
     assert "sam@example.com" in redact_secrets(text)[0]
 
 
 def test_trace_anonymizer_reaches_nested_message_payloads():
     payload = {
         "messages": [
-            {"content": "hi", "tool_calls": [{"args": {"text": f"key {FAKE_OPENAI_KEY}"}}]},
-        ]
+            {
+                "content": "hi",
+                "tool_calls": [{"args": {"text": f"key {FAKE_OPENAI_KEY}"}}],
+            },
+        ],
     }
 
     masked = make_trace_anonymizer()(payload)
 
-    assert masked["messages"][0]["tool_calls"][0]["args"]["text"] == f"key {SECRET_PLACEHOLDER}"
+    assert (
+        masked["messages"][0]["tool_calls"][0]["args"]["text"]
+        == f"key {SECRET_PLACEHOLDER}"
+    )

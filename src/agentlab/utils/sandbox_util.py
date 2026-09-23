@@ -148,7 +148,9 @@ def run_tests_in_sandbox(
     )
 
 
-def list_sandbox_artifacts(sandbox_dir: Path = DEFAULT_SANDBOX_DIR) -> list[ArtifactMetadata]:
+def list_sandbox_artifacts(
+    sandbox_dir: Path = DEFAULT_SANDBOX_DIR,
+) -> list[ArtifactMetadata]:
     """List every file under the sandbox's ``artifacts/`` directory."""
     artifacts_dir = sandbox_dir / ARTIFACTS_DIRNAME
     if not artifacts_dir.is_dir():
@@ -167,7 +169,7 @@ def list_sandbox_artifacts(sandbox_dir: Path = DEFAULT_SANDBOX_DIR) -> list[Arti
                 description=f"{item.suffix.upper().lstrip('.')} artifact ({stat.st_size} bytes)",
                 size_bytes=stat.st_size,
                 modified_at=stat.st_mtime,
-            )
+            ),
         )
     return artifacts
 
@@ -176,13 +178,19 @@ ArtifactSnapshot = dict[str, tuple[int | None, float | None]]
 ArtifactChange = Literal["new", "modified"]
 
 
-def snapshot_sandbox_artifacts(sandbox_dir: Path = DEFAULT_SANDBOX_DIR) -> ArtifactSnapshot:
+def snapshot_sandbox_artifacts(
+    sandbox_dir: Path = DEFAULT_SANDBOX_DIR,
+) -> ArtifactSnapshot:
     """Capture each artifact's (size, mtime), to diff against after an agent turn."""
-    return {a.path: (a.size_bytes, a.modified_at) for a in list_sandbox_artifacts(sandbox_dir)}
+    return {
+        a.path: (a.size_bytes, a.modified_at)
+        for a in list_sandbox_artifacts(sandbox_dir)
+    }
 
 
 def diff_sandbox_artifacts(
-    before: ArtifactSnapshot, sandbox_dir: Path = DEFAULT_SANDBOX_DIR
+    before: ArtifactSnapshot,
+    sandbox_dir: Path = DEFAULT_SANDBOX_DIR,
 ) -> list[tuple[ArtifactChange, ArtifactMetadata]]:
     """Compare a prior snapshot to the current artifacts: what's new, what changed.
 
@@ -200,7 +208,10 @@ def diff_sandbox_artifacts(
     return changes
 
 
-def get_artifact_path(relative_path: str, sandbox_dir: Path = DEFAULT_SANDBOX_DIR) -> Path:
+def get_artifact_path(
+    relative_path: str,
+    sandbox_dir: Path = DEFAULT_SANDBOX_DIR,
+) -> Path:
     """Resolve an artifact path, rejecting anything outside ``artifacts/``."""
     artifacts_dir = (sandbox_dir / ARTIFACTS_DIRNAME).resolve()
     target = (sandbox_dir / relative_path).resolve()

@@ -25,7 +25,10 @@ def _print_banner(session: ResolvedSession) -> None:
     print("[Interpreter] P4 Sandbox / Interpreter Agent")
     print("Workspace: out/sandbox/   Deliverables: out/sandbox/artifacts/")
     print(f"Approval required for: {', '.join(DEFAULT_INTERRUPT_TOOLS)}")
-    print("Persistence: " + ("in-memory (secret mode)" if session.is_secret else "SQLite checkpoints"))
+    print(
+        "Persistence: "
+        + ("in-memory (secret mode)" if session.is_secret else "SQLite checkpoints"),
+    )
     print(f"Session: {session.mode_name} | thread {session.thread_id}")
     print("Type 'quit', 'exit' or 'q' to end the session.")
     print("=" * 60)
@@ -64,7 +67,11 @@ def main() -> None:
             break
 
         before = snapshot_sandbox_artifacts()
-        result = run_with_hitl(agent, {"messages": [HumanMessage(content=prompt)]}, config)
+        result = run_with_hitl(
+            agent,
+            {"messages": [HumanMessage(content=prompt)]},
+            config,
+        )
         print(f"\n{get_text(result['messages'][-1])}")
 
         changes = diff_sandbox_artifacts(before)
@@ -72,7 +79,9 @@ def main() -> None:
             print("\n[Generated Artifacts]:")
             for tag, artifact in changes:
                 size_kb = (artifact.size_bytes or 0) / 1024
-                print(f"  * [{tag.upper()}] {artifact.path} ({size_kb:.1f} KB) [{artifact.artifact_type}]")
+                print(
+                    f"  * [{tag.upper()}] {artifact.path} ({size_kb:.1f} KB) [{artifact.artifact_type}]",
+                )
 
 
 if __name__ == "__main__":

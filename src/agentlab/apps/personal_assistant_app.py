@@ -84,11 +84,18 @@ def sanitize_user_input(text: str) -> str:
     """
     redacted, found = redact_secrets(text)
     if found:
-        print(f"[Privacy] Removed {found} secret(s) before sending; secrets are never stored.")
+        print(
+            f"[Privacy] Removed {found} secret(s) before sending; secrets are never stored.",
+        )
     return redacted
 
 
-def print_user_memories(store: BaseStore, user_id: str, *, max_lines: int | None = _PREVIEW_LINES) -> None:
+def print_user_memories(
+    store: BaseStore,
+    user_id: str,
+    *,
+    max_lines: int | None = _PREVIEW_LINES,
+) -> None:
     """Print the files stored in ``user_id``'s memory namespace.
 
     Args:
@@ -112,7 +119,9 @@ def print_user_memories(store: BaseStore, user_id: str, *, max_lines: int | None
         for line in shown:
             print(f"    {line}")
         if len(shown) < len(lines):
-            print(f"    ... [{len(lines) - len(shown)} more lines, /more shows everything]")
+            print(
+                f"    ... [{len(lines) - len(shown)} more lines, /more shows everything]",
+            )
 
 
 def print_history(store: BaseStore, user_id: str, *, limit: int = 10) -> None:
@@ -121,9 +130,15 @@ def print_history(store: BaseStore, user_id: str, *, limit: int = 10) -> None:
     if not history:
         print(f"  [Memory] No previous versions for user '{user_id}'.")
         return
-    print(f"\n--- Previous versions for '{user_id}' (newest first; /undo restores the first) ---")
+    print(
+        f"\n--- Previous versions for '{user_id}' (newest first; /undo restores the first) ---",
+    )
     for item in history[:limit]:
-        saved = datetime.fromtimestamp(item.value["saved_at"]).astimezone().strftime("%Y-%m-%d %H:%M:%S")
+        saved = (
+            datetime.fromtimestamp(item.value["saved_at"])
+            .astimezone()
+            .strftime("%Y-%m-%d %H:%M:%S")
+        )
         print(f"* {saved}  {item.value['path']}")
 
 
@@ -136,17 +151,32 @@ def _frontmatter(text: str) -> dict[str, Any]:
     return data if isinstance(data, dict) else {}
 
 
-def print_available_skills(store: BaseStore | None = None, skills_dir: Path = SKILLS_DIR) -> None:
+def print_available_skills(
+    store: BaseStore | None = None,
+    skills_dir: Path = SKILLS_DIR,
+) -> None:
     """Print the name and description of each packaged skill, then each published one."""
-    skills = [(path.parent.name, _frontmatter(path.read_text(encoding="utf-8"))) for path in sorted(skills_dir.glob("*/SKILL.md"))]
-    published = store.search(PUBLISHED_SKILLS_NAMESPACE, limit=1000) if store is not None else []
-    skills += [(item.key.strip("/").split("/")[0], _frontmatter(item.value["content"])) for item in published]
+    skills = [
+        (path.parent.name, _frontmatter(path.read_text(encoding="utf-8")))
+        for path in sorted(skills_dir.glob("*/SKILL.md"))
+    ]
+    published = (
+        store.search(PUBLISHED_SKILLS_NAMESPACE, limit=1000)
+        if store is not None
+        else []
+    )
+    skills += [
+        (item.key.strip("/").split("/")[0], _frontmatter(item.value["content"]))
+        for item in published
+    ]
     if not skills:
         print(f"  [Skills] No skills found under {skills_dir}")
         return
     print(f"\n--- Available skills ({len(skills)}) ---")
     for folder, meta in skills:
-        print(f"* {meta.get('name', folder)}: {meta.get('description', 'no description')}")
+        print(
+            f"* {meta.get('name', folder)}: {meta.get('description', 'no description')}",
+        )
 
 
 def design_skill(designer: CompiledStateGraph, request: str) -> None:
@@ -154,7 +184,11 @@ def design_skill(designer: CompiledStateGraph, request: str) -> None:
     print("[Skills] Drafting...")
     config = {"configurable": {"thread_id": f"skill_{uuid.uuid4().hex[:6]}"}}
     designer.invoke({"request": request}, config)
-    values = resume_pending_with_hitl(designer, config, assistant_prompt="Publish this skill for every user? [y/n]: ")
+    values = resume_pending_with_hitl(
+        designer,
+        config,
+        assistant_prompt="Publish this skill for every user? [y/n]: ",
+    )
     print(f"[Skills] {values.get('outcome', 'Nothing was published.')}")
 
 
@@ -168,18 +202,29 @@ def main() -> None:
     checkpointer = get_sqlite_checkpointer(ASSISTANT_CHECKPOINT_DB_PATH)
     agent = make_personal_assistant_agent(store, checkpointer=checkpointer)
     consolidator = make_memory_consolidation_graph(store, checkpointer=checkpointer)
-    sessions = MemorySessions(store, agent, consolidator, long_thread_chars=LONG_THREAD_CONSOLIDATION_CHARS)
+    sessions = MemorySessions(
+        store,
+        agent,
+        consolidator,
+        long_thread_chars=LONG_THREAD_CONSOLIDATION_CHARS,
+    )
     designer = make_skill_designer_graph(store, checkpointer=checkpointer)
     user_id, thread_id = load_session(store)
     spec = llm_model.spec(DEFAULT_ASSISTANT_TIER, DEFAULT_ASSISTANT_PROVIDER)
 
     print("=" * 65)
     print("[Personal Assistant] P5 Memory-Rich Assistant")
-    print(f"Model: {spec.model} (tier {llm_model.resolve_tier(DEFAULT_ASSISTANT_TIER)})")
+    print(
+        f"Model: {spec.model} (tier {llm_model.resolve_tier(DEFAULT_ASSISTANT_TIER)})",
+    )
     print(f"Memory and conversations: SQLite under {ASSISTANT_STORE_DB_PATH.parent}")
-    print("Memory updates: proposed after each conversation, saved with your OK (/undo reverts)")
+    print(
+        "Memory updates: proposed after each conversation, saved with your OK (/undo reverts)",
+    )
     print("Privacy: secrets are removed before sending; traces mask secrets and emails")
-    print(f"Resumed: user '{user_id}' on thread '{thread_id}' (/new_thread for a fresh one)")
+    print(
+        f"Resumed: user '{user_id}' on thread '{thread_id}' (/new_thread for a fresh one)",
+    )
     print(_HELP)
     print("=" * 65)
     sessions.resume(user_id)
@@ -217,15 +262,23 @@ def main() -> None:
             continue
         if command == "/undo":
             restored = undo_last_change(store, user_id)
-            print(f"[Memory] Restored the previous version of {restored}." if restored else "[Memory] Nothing to undo.")
+            print(
+                f"[Memory] Restored the previous version of {restored}."
+                if restored
+                else "[Memory] Nothing to undo.",
+            )
             continue
         if command == "/forget":
-            answer = input(f"Delete ALL memory and conversations of '{user_id}'? Type the user id to confirm: ")
+            answer = input(
+                f"Delete ALL memory and conversations of '{user_id}'? Type the user id to confirm: ",
+            )
             if answer.strip() != user_id:
                 print("[Memory] Cancelled; nothing was deleted.")
                 continue
             deleted = forget_user(store, checkpointer, user_id)
-            print(f"[Memory] Forgot '{user_id}': memory, history, and {deleted} conversation(s) deleted.")
+            print(
+                f"[Memory] Forgot '{user_id}': memory, history, and {deleted} conversation(s) deleted.",
+            )
             switch(user_id, _new_thread_id())
             continue
         if command == "/skills":
@@ -237,7 +290,9 @@ def main() -> None:
         if command == "/new_thread":
             sessions.start(user_id, thread_id)
             switch(user_id, _new_thread_id())
-            print(f"[Thread] Now on '{thread_id}': conversation state is fresh, memories persist.")
+            print(
+                f"[Thread] Now on '{thread_id}': conversation state is fresh, memories persist.",
+            )
             continue
         if command.startswith("/user"):
             new_user = prompt[len("/user") :].strip()
@@ -260,7 +315,9 @@ def main() -> None:
         if result["last_message"]:
             print(f"\nAssistant: {get_text(result['last_message'])}")
         if sessions.start_if_long(user_id, thread_id):
-            print("[Memory] This conversation is getting long; reviewing it so far in the background.")
+            print(
+                "[Memory] This conversation is getting long; reviewing it so far in the background.",
+            )
 
     sessions.queue(user_id, thread_id)
     sessions.close()

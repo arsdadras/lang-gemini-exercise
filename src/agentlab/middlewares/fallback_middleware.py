@@ -22,6 +22,8 @@ def make_model_fallback(
     """Build fallback middleware for an agent whose model is ``llm_model.get(tier, primary)``."""
     fallbacks = llm_model.fallback_models(tier, primary=primary, cascade=cascade)
     if not fallbacks:
-        msg = f"Tier {llm_model.resolve_tier(tier)!r} has no fallback provider configured"
+        msg = (
+            f"Tier {llm_model.resolve_tier(tier)!r} has no fallback provider configured"
+        )
         raise ValueError(msg)
     return ModelFallbackMiddleware(*fallbacks)

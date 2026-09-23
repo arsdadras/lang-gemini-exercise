@@ -23,7 +23,11 @@ class RecordingFactory:
         return {"checkpointer": checkpointer}
 
 
-def resolve(arg: str | None, factory: RecordingFactory, threads: list[str] | None = None) -> ResolvedSession:
+def resolve(
+    arg: str | None,
+    factory: RecordingFactory,
+    threads: list[str] | None = None,
+) -> ResolvedSession:
     return resolve_session(
         arg,
         default_thread_id="sess_default",
@@ -44,13 +48,19 @@ def test_default_mode_uses_default_thread_and_durable_factory(arg: str | None) -
     factory = RecordingFactory()
     session = resolve(arg, factory)
 
-    assert (session.thread_id, session.mode_name, session.is_secret) == ("sess_default", "default", False)
+    assert (session.thread_id, session.mode_name, session.is_secret) == (
+        "sess_default",
+        "default",
+        False,
+    )
     assert factory.calls == [None]
 
 
 def test_new_mode_generates_prefixed_thread() -> None:
     session = resolve("new", RecordingFactory())
-    assert session.thread_id.startswith("testapp_") and len(session.thread_id) > len("testapp_")
+    assert session.thread_id.startswith("testapp_") and len(session.thread_id) > len(
+        "testapp_",
+    )
 
 
 def test_secret_mode_uses_in_memory_checkpointer() -> None:
@@ -62,7 +72,10 @@ def test_secret_mode_uses_in_memory_checkpointer() -> None:
 
 
 def test_resume_picks_latest_thread_or_falls_back() -> None:
-    assert resolve("resume", RecordingFactory(), ["t_latest", "t_old"]).thread_id == "t_latest"
+    assert (
+        resolve("resume", RecordingFactory(), ["t_latest", "t_old"]).thread_id
+        == "t_latest"
+    )
     assert resolve("resume", RecordingFactory(), []).thread_id == "sess_default"
 
 
@@ -86,7 +99,9 @@ def test_custom_mode_uses_argument_as_thread_id() -> None:
     assert (session.thread_id, session.mode_name) == ("feature_x", "custom (feature_x)")
 
 
-def test_list_mode_prints_threads_without_building_an_agent(capsys: pytest.CaptureFixture[str]) -> None:
+def test_list_mode_prints_threads_without_building_an_agent(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     factory = RecordingFactory()
     session = resolve("list", factory, ["t0"])
 
@@ -95,7 +110,10 @@ def test_list_mode_prints_threads_without_building_an_agent(capsys: pytest.Captu
 
 
 def test_format_session_list() -> None:
-    banner = format_session_list(["tid_1", "tid_2"], cli_command_hint="python test.py step[<index>]")
+    banner = format_session_list(
+        ["tid_1", "tid_2"],
+        cli_command_hint="python test.py step[<index>]",
+    )
     assert "step[0]: tid_1 (latest)" in banner
     assert "step[1]: tid_2" in banner
     assert "python test.py step[<index>]" in banner

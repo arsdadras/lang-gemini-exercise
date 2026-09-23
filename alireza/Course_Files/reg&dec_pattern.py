@@ -57,7 +57,7 @@ def make_code_interpreter(sandbox_dir: str = "out/sandbox"):
     # Inja interpreter agent sakhte mishe
     return {"name": "code_interpreter", "tools": ["write_file", "execute"]}
 #%%
-#### 3. Estefade tooye Coordinator ya App (`app.py`)
+#### 3. Estefade tooye Coordinator ya App (`p5app.py`)
 # Hala Coordinator ya CLI aslan niazi nadare bedoone `make_web_researcher` ya `make_code_interpreter` koja va chejoori tarif shodan:
 
 # from registry import agent_registry
@@ -75,5 +75,5 @@ def run_app():
     print("Loaded Agent:", selected_agent["name"])
 
 if __name__ == "__main__":
-    run_app()#### 3. Estefade tooye Coordinator ya App (`app.py`)
+    run_app()#### 3. Estefade tooye Coordinator ya App (`p5app.py`)
 # Hala Coordinator ya CLI aslan niazi nadare bedoone `make_web_researcher` ya `make_code_interpreter` koja va chejoori tarif shodan:

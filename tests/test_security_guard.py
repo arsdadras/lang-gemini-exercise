@@ -11,7 +11,11 @@ from agentlab.middlewares.security_guard_middleware import (
 from agentlab.schemas.output.middlewares_output_schema import GuardVerdict
 
 POLICY = "ask (category 'health'): any health detail."
-HEALTH = GuardVerdict(decision="ask", category="health", reason="This stores a health detail.")
+HEALTH = GuardVerdict(
+    decision="ask",
+    category="health",
+    reason="This stores a health detail.",
+)
 
 
 def recording_classifier(verdict: object, seen: list[PromptValue]) -> RunnableLambda:
@@ -48,14 +52,18 @@ def test_a_failing_classifier_fails_closed_to_ask():
 
     guard = make_security_guard(POLICY, classifier=RunnableLambda(broken))
 
-    assert guard("append to /memories/user_profile.md", "- Likes tea") == GUARD_UNAVAILABLE
+    assert (
+        guard("append to /memories/user_profile.md", "- Likes tea") == GUARD_UNAVAILABLE
+    )
     assert GUARD_UNAVAILABLE.decision == "ask"
 
 
 def test_an_unparsed_classifier_output_fails_closed_to_ask():
     guard = make_security_guard(POLICY, classifier=recording_classifier(None, []))
 
-    assert guard("append to /memories/user_profile.md", "- Likes tea") == GUARD_UNAVAILABLE
+    assert (
+        guard("append to /memories/user_profile.md", "- Likes tea") == GUARD_UNAVAILABLE
+    )
 
 
 def test_verdicts_are_immutable():

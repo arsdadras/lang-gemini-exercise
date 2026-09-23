@@ -42,9 +42,15 @@ def make_web_researcher_agent(
         model=llm_model.get(tier),
         system_prompt=build_web_researcher_prompt(),
         tools=[make_web_search_tool(), *extra_tools],
-        checkpointer=checkpointer if checkpointer is not None else get_sqlite_checkpointer(),
+        checkpointer=checkpointer
+        if checkpointer is not None
+        else get_sqlite_checkpointer(),
         response_format=ResearchReport,
-        middleware=[make_model_fallback(tier), hitl_for(WEB_SEARCH_TOOL_NAME), *extra_middleware],
+        middleware=[
+            make_model_fallback(tier),
+            hitl_for(WEB_SEARCH_TOOL_NAME),
+            *extra_middleware,
+        ],
         subagents=[make_researcher_subagent()],
         store=store,
         context_schema=context_schema,

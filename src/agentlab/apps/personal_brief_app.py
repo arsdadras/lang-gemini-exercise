@@ -34,7 +34,12 @@ PERSONAL_DATA_TYPES = ("email", "credit_card", "ip")
 def personal_data_redaction() -> list[PIIMiddleware]:
     """Redact personal data from tool results (the user context) before the model reads them."""
     return [
-        PIIMiddleware(kind, strategy="redact", apply_to_input=False, apply_to_tool_results=True)
+        PIIMiddleware(
+            kind,
+            strategy="redact",
+            apply_to_input=False,
+            apply_to_tool_results=True,
+        )
         for kind in PERSONAL_DATA_TYPES
     ]
 
@@ -73,7 +78,9 @@ def main() -> None:
         context=UserContext(user_id=user_id),
         assistant_prompt="Approve this web_search call? [y/n]: ",
     )
-    report: ResearchReport | None = agent.get_state(config).values.get("structured_response")
+    report: ResearchReport | None = agent.get_state(config).values.get(
+        "structured_response",
+    )
     print(report.model_dump_json(indent=2) if report else "No report was produced.")
 
 

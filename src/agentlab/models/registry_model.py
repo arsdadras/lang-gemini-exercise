@@ -80,13 +80,19 @@ class LLMRegistry:
 
     def resolve_tier(self, tier: str | None = None) -> str:
         """Apply test-mode substitution, then the default tier, then validate."""
-        resolved = self._test_tier if self._test_mode() else (tier or self._default_tier)
+        resolved = (
+            self._test_tier if self._test_mode() else (tier or self._default_tier)
+        )
         if resolved not in self._tiers:
             msg = f"Unknown tier {resolved!r}; expected one of {sorted(self._tiers)}"
             raise ValueError(msg)
         return resolved
 
-    def resolve_provider(self, tier: str | None = None, provider: str | None = None) -> str:
+    def resolve_provider(
+        self,
+        tier: str | None = None,
+        provider: str | None = None,
+    ) -> str:
         """Return ``provider`` if the tier offers it, else the tier's primary.
 
         Asking a tier for a provider it doesn't offer is an error, except in test
@@ -106,7 +112,11 @@ class LLMRegistry:
         resolved = self.resolve_tier(tier)
         return self._tiers[resolved][self.resolve_provider(resolved, provider)]
 
-    def get(self, tier: str | None = None, provider: str | None = None) -> BaseChatModel:
+    def get(
+        self,
+        tier: str | None = None,
+        provider: str | None = None,
+    ) -> BaseChatModel:
         """Return the cached plain model for ``tier`` (and optional ``provider``)."""
         resolved = self.resolve_tier(tier)
         name = self.resolve_provider(resolved, provider)
@@ -130,12 +140,16 @@ class LLMRegistry:
         resolved = self.resolve_tier(tier)
         primary_name = self.resolve_provider(resolved, primary)
         models = [
-            self.get(resolved, name) for name in self._tiers[resolved] if name != primary_name
+            self.get(resolved, name)
+            for name in self._tiers[resolved]
+            if name != primary_name
         ]
         if cascade and not self._test_mode() and resolved in self._cascade_order:
             start = self._cascade_order.index(resolved) + 1
             for lower_tier in self._cascade_order[start:]:
-                models.extend(self.get(lower_tier, name) for name in self._tiers[lower_tier])
+                models.extend(
+                    self.get(lower_tier, name) for name in self._tiers[lower_tier]
+                )
         return models
 
     def chain(
@@ -152,12 +166,18 @@ class LLMRegistry:
         ``RunnableWithFallbacks`` has no ``with_structured_output`` of its own.
         """
         primary: Runnable = self.get(tier, provider)
-        fallbacks: list[Runnable] = list(self.fallback_models(tier, primary=provider, cascade=cascade))
+        fallbacks: list[Runnable] = list(
+            self.fallback_models(tier, primary=provider, cascade=cascade),
+        )
         if structured is not None:
             primary = self.get(tier, provider).with_structured_output(structured)
             fallbacks = [
                 model.with_structured_output(structured)
-                for model in self.fallback_models(tier, primary=provider, cascade=cascade)
+                for model in self.fallback_models(
+                    tier,
+                    primary=provider,
+                    cascade=cascade,
+                )
             ]
         return primary.with_fallbacks(fallbacks) if fallbacks else primary
 

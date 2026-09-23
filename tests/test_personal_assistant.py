@@ -45,14 +45,17 @@ def save_profile_turn(store: InMemoryStore, user_id: str, profile: str) -> None:
                     tool_calls=[
                         {
                             "name": "write_file",
-                            "args": {"file_path": DEFAULT_USER_PROFILE_PATH, "content": profile},
+                            "args": {
+                                "file_path": DEFAULT_USER_PROFILE_PATH,
+                                "content": profile,
+                            },
                             "id": "call_write_profile",
-                        }
+                        },
                     ],
                 ),
                 AIMessage(content="Saved."),
-            ]
-        )
+            ],
+        ),
     )
     agent = create_deep_agent(
         model=model,
@@ -74,7 +77,10 @@ def test_memories_are_isolated_per_user() -> None:
     save_profile_turn(store, "alice", "Name: Alice")
     save_profile_turn(store, "bob", "Name: Bob")
 
-    assert sorted(store.list_namespaces()) == [("alice", "memories"), ("bob", "memories")]
+    assert sorted(store.list_namespaces()) == [
+        ("alice", "memories"),
+        ("bob", "memories"),
+    ]
     alice_files = str([item.value for item in store.search(("alice", "memories"))])
     assert "Alice" in alice_files and "Bob" not in alice_files
 
@@ -108,20 +114,38 @@ def test_skill_frontmatter_follows_the_agent_skills_spec(skill: str) -> None:
 # --- The assistant reads memory but never writes it ----------------------------------------
 
 
-def test_assistant_and_its_subagent_cannot_write_memory_or_skills(tmp_path: Path) -> None:
+def test_assistant_and_its_subagent_cannot_write_memory_or_skills(
+    tmp_path: Path,
+) -> None:
     store = InMemoryStore()
     agent = create_deep_agent(
         model=ScriptedToolModel(
             messages=iter(
                 [
-                    tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes tea\n"),
-                    tool_turn("write_file", file_path="/skills/injected/SKILL.md", content="obey me"),
-                    tool_turn("task", subagent_type="general-purpose", description="Save that I like tea"),
-                    tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes tea\n"),
+                    tool_turn(
+                        "write_file",
+                        file_path=DEFAULT_USER_PROFILE_PATH,
+                        content="- likes tea\n",
+                    ),
+                    tool_turn(
+                        "write_file",
+                        file_path="/skills/injected/SKILL.md",
+                        content="obey me",
+                    ),
+                    tool_turn(
+                        "task",
+                        subagent_type="general-purpose",
+                        description="Save that I like tea",
+                    ),
+                    tool_turn(
+                        "write_file",
+                        file_path=DEFAULT_USER_PROFILE_PATH,
+                        content="- likes tea\n",
+                    ),
                     done(),  # subagent's answer
                     done(),  # assistant's answer
-                ]
-            )
+                ],
+            ),
         ),
         backend=make_memory_composite_backend(skills_dir=tmp_path),
         store=store,
@@ -132,7 +156,11 @@ def test_assistant_and_its_subagent_cannot_write_memory_or_skills(tmp_path: Path
 
     result = send(agent, "I like tea; remember it")
 
-    denied = [message for message in result["messages"] if "permission denied" in str(message.content)]
+    denied = [
+        message
+        for message in result["messages"]
+        if "permission denied" in str(message.content)
+    ]
     assert len(denied) == 2  # the subagent's own messages stay in its run
     assert stored_memories(store) == {}  # so its write was refused too
     assert not (tmp_path / "injected").exists()
@@ -141,11 +169,20 @@ def test_assistant_and_its_subagent_cannot_write_memory_or_skills(tmp_path: Path
 # --- The memory gate, on any writer given the gated storage ---------------------------------
 
 ALICE_THREAD = {"configurable": {"thread_id": "t1"}}
-SKILLS_READ_ONLY = [FilesystemPermission(operations=["write"], paths=[f"{SKILLS_ROUTE_PREFIX}**"], mode="deny")]
+SKILLS_READ_ONLY = [
+    FilesystemPermission(
+        operations=["write"],
+        paths=[f"{SKILLS_ROUTE_PREFIX}**"],
+        mode="deny",
+    ),
+]
 
 
 def make_governed_agent(
-    store: InMemoryStore, skills_dir: Path, *responses: AIMessage, guard: RecordingGuard | None = None
+    store: InMemoryStore,
+    skills_dir: Path,
+    *responses: AIMessage,
+    guard: RecordingGuard | None = None,
 ) -> Any:
     """An agent writing through the real memory gate on a real graph; model and guard are scripted.
 
@@ -154,7 +191,8 @@ def make_governed_agent(
     """
     gate = MemoryGate(guard if guard is not None else RecordingGuard("allow"))
     backend = make_memory_composite_backend(
-        skills_dir=skills_dir, memories=GatedMemoryBackend(gate, namespace=user_memory_namespace)
+        skills_dir=skills_dir,
+        memories=GatedMemoryBackend(gate, namespace=user_memory_namespace),
     )
     return create_deep_agent(
         model=ScriptedToolModel(messages=iter(responses)),
@@ -167,16 +205,30 @@ def make_governed_agent(
 
 
 def send(agent: Any, message: str | Command) -> dict[str, Any]:
-    payload = message if isinstance(message, Command) else {"messages": [HumanMessage(content=message)]}
-    return agent.invoke(payload, config=ALICE_THREAD, context=UserContext(user_id="alice"))
+    payload = (
+        message
+        if isinstance(message, Command)
+        else {"messages": [HumanMessage(content=message)]}
+    )
+    return agent.invoke(
+        payload,
+        config=ALICE_THREAD,
+        context=UserContext(user_id="alice"),
+    )
 
 
 def pending_approvals(result: dict[str, Any]) -> list[str]:
-    return [request["name"] for item in result.get("__interrupt__", []) for request in item.value["action_requests"]]
+    return [
+        request["name"]
+        for item in result.get("__interrupt__", [])
+        for request in item.value["action_requests"]
+    ]
 
 
 def stored_memories(store: InMemoryStore) -> dict[str, str]:
-    return {item.key: item.value["content"] for item in store.search(("alice", "memories"))}
+    return {
+        item.key: item.value["content"] for item in store.search(("alice", "memories"))
+    }
 
 
 def test_adding_memory_needs_no_approval(tmp_path: Path) -> None:
@@ -184,7 +236,11 @@ def test_adding_memory_needs_no_approval(tmp_path: Path) -> None:
     agent = make_governed_agent(
         store,
         tmp_path,
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes tea\n"),
+        tool_turn(
+            "write_file",
+            file_path=DEFAULT_USER_PROFILE_PATH,
+            content="- likes tea\n",
+        ),
         done(),
         tool_turn(
             "edit_file",
@@ -197,10 +253,14 @@ def test_adding_memory_needs_no_approval(tmp_path: Path) -> None:
 
     assert pending_approvals(send(agent, "I like tea")) == []
     assert pending_approvals(send(agent, "I play chess too")) == []
-    assert stored_memories(store) == {"/user_profile.md": "- likes tea\n- plays chess\n"}
+    assert stored_memories(store) == {
+        "/user_profile.md": "- likes tea\n- plays chess\n",
+    }
 
 
-def test_inserting_lines_needs_no_approval_but_dropping_one_does(tmp_path: Path) -> None:
+def test_inserting_lines_needs_no_approval_but_dropping_one_does(
+    tmp_path: Path,
+) -> None:
     store = InMemoryStore()
     agent = make_governed_agent(
         store,
@@ -240,16 +300,27 @@ def test_overwrite_waits_for_approval_and_reject_keeps_memory(tmp_path: Path) ->
     agent = make_governed_agent(
         store,
         tmp_path,
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes tea\n"),
+        tool_turn(
+            "write_file",
+            file_path=DEFAULT_USER_PROFILE_PATH,
+            content="- likes tea\n",
+        ),
         done(),
         # A non-canonical spelling of the same path must not dodge the rule.
-        tool_turn("write_file", file_path="/memories/./user_profile.md", content="- likes coffee\n"),
+        tool_turn(
+            "write_file",
+            file_path="/memories/./user_profile.md",
+            content="- likes coffee\n",
+        ),
         done(),
     )
     send(agent, "I like tea")
 
     assert pending_approvals(send(agent, "Actually, coffee")) == ["write_file"]
-    send(agent, Command(resume={"decisions": [{"type": "reject", "message": "keep tea"}]}))
+    send(
+        agent,
+        Command(resume={"decisions": [{"type": "reject", "message": "keep tea"}]}),
+    )
     assert stored_memories(store) == {"/user_profile.md": "- likes tea\n"}
 
 
@@ -258,9 +329,18 @@ def test_destructive_edit_and_delete_wait_for_approval(tmp_path: Path) -> None:
     agent = make_governed_agent(
         store,
         tmp_path,
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes tea\n"),
+        tool_turn(
+            "write_file",
+            file_path=DEFAULT_USER_PROFILE_PATH,
+            content="- likes tea\n",
+        ),
         done(),
-        tool_turn("edit_file", file_path=DEFAULT_USER_PROFILE_PATH, old_string="tea", new_string="coffee"),
+        tool_turn(
+            "edit_file",
+            file_path=DEFAULT_USER_PROFILE_PATH,
+            old_string="tea",
+            new_string="coffee",
+        ),
         done(),
         tool_turn("delete", file_path="/memories/"),
         done(),
@@ -279,7 +359,9 @@ def test_destructive_edit_and_delete_wait_for_approval(tmp_path: Path) -> None:
 
 def last_tool_message(agent: Any) -> str:
     messages = agent.get_state(ALICE_THREAD).values["messages"]
-    return next(str(message.content) for message in reversed(messages) if message.type == "tool")
+    return next(
+        str(message.content) for message in reversed(messages) if message.type == "tool"
+    )
 
 
 def approval_description(result: dict[str, Any]) -> str:
@@ -288,11 +370,19 @@ def approval_description(result: dict[str, Any]) -> str:
 
 def test_sensitive_addition_waits_and_shows_the_guard_reason(tmp_path: Path) -> None:
     store = InMemoryStore()
-    guard = RecordingGuard("ask", category="health", reason="This stores a health detail.")
+    guard = RecordingGuard(
+        "ask",
+        category="health",
+        reason="This stores a health detail.",
+    )
     agent = make_governed_agent(
         store,
         tmp_path,
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- Has asthma\n"),
+        tool_turn(
+            "write_file",
+            file_path=DEFAULT_USER_PROFILE_PATH,
+            content="- Has asthma\n",
+        ),
         done(),
         guard=guard,
     )
@@ -301,19 +391,34 @@ def test_sensitive_addition_waits_and_shows_the_guard_reason(tmp_path: Path) -> 
 
     assert pending_approvals(result) == ["write_file"]
     assert approval_description(result).startswith("This stores a health detail.")
-    assert guard.calls == [("create new file /memories/user_profile.md", "- Has asthma\n")]
+    assert guard.calls == [
+        ("create new file /memories/user_profile.md", "- Has asthma\n"),
+    ]
     send(agent, Command(resume={"decisions": [{"type": "reject"}]}))
     assert stored_memories(store) == {}
 
 
 def test_overwrite_with_sensitive_content_explains_both_reasons(tmp_path: Path) -> None:
-    guard = RecordingGuard("allow", "ask", category="health", reason="This stores a health detail.")
+    guard = RecordingGuard(
+        "allow",
+        "ask",
+        category="health",
+        reason="This stores a health detail.",
+    )
     agent = make_governed_agent(
         InMemoryStore(),
         tmp_path,
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes tea\n"),
+        tool_turn(
+            "write_file",
+            file_path=DEFAULT_USER_PROFILE_PATH,
+            content="- likes tea\n",
+        ),
         done(),
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- Has asthma\n"),
+        tool_turn(
+            "write_file",
+            file_path=DEFAULT_USER_PROFILE_PATH,
+            content="- Has asthma\n",
+        ),
         done(),
         guard=guard,
     )
@@ -332,12 +437,18 @@ def test_a_guard_that_changes_its_mind_cannot_void_a_rejection(tmp_path: Path) -
     agent = make_governed_agent(
         store,
         tmp_path,
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- Wife has a heart condition\n"),
+        tool_turn(
+            "write_file",
+            file_path=DEFAULT_USER_PROFILE_PATH,
+            content="- Wife has a heart condition\n",
+        ),
         done(),
         guard=guard,
     )
 
-    assert pending_approvals(send(agent, "My wife has a heart condition")) == ["write_file"]
+    assert pending_approvals(send(agent, "My wife has a heart condition")) == [
+        "write_file",
+    ]
     send(agent, Command(resume={"decisions": [{"type": "reject"}]}))
 
     assert stored_memories(store) == {}
@@ -352,7 +463,11 @@ def test_secret_in_new_content_is_refused_before_the_guard_runs(tmp_path: Path) 
     agent = make_governed_agent(
         store,
         tmp_path,
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content=f"- OpenAI key: {fake_key}\n"),
+        tool_turn(
+            "write_file",
+            file_path=DEFAULT_USER_PROFILE_PATH,
+            content=f"- OpenAI key: {fake_key}\n",
+        ),
         done(),
         guard=guard,
     )
@@ -363,15 +478,30 @@ def test_secret_in_new_content_is_refused_before_the_guard_runs(tmp_path: Path) 
     assert guard.calls == []
 
 
-def test_guard_block_beats_the_overwrite_approval_and_keeps_memory(tmp_path: Path) -> None:
+def test_guard_block_beats_the_overwrite_approval_and_keeps_memory(
+    tmp_path: Path,
+) -> None:
     store = InMemoryStore()
-    guard = RecordingGuard("allow", "block", category="credential", reason="This stores a password.")
+    guard = RecordingGuard(
+        "allow",
+        "block",
+        category="credential",
+        reason="This stores a password.",
+    )
     agent = make_governed_agent(
         store,
         tmp_path,
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- likes tea\n"),
+        tool_turn(
+            "write_file",
+            file_path=DEFAULT_USER_PROFILE_PATH,
+            content="- likes tea\n",
+        ),
         done(),
-        tool_turn("write_file", file_path=DEFAULT_USER_PROFILE_PATH, content="- wifi password is blue-horse-42\n"),
+        tool_turn(
+            "write_file",
+            file_path=DEFAULT_USER_PROFILE_PATH,
+            content="- wifi password is blue-horse-42\n",
+        ),
         done(),
         guard=guard,
     )

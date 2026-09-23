@@ -60,7 +60,11 @@ def make_finglish_output_guard(rewriter: Runnable | None = None) -> AgentMiddlew
         rewriter: Runnable taking ``{"lines": ...}`` and returning ``FinglishLines``; defaults
             to the rewrite prompt on the ``low`` tier.
     """
-    chain = rewriter if rewriter is not None else FINGLISH_REWRITE_PROMPT | llm_model.chain("low", structured=FinglishLines)
+    chain = (
+        rewriter
+        if rewriter is not None
+        else FINGLISH_REWRITE_PROMPT | llm_model.chain("low", structured=FinglishLines)
+    )
 
     @after_model
     def finglish_output(state: AgentState, runtime: Runtime) -> dict[str, Any] | None:
@@ -75,26 +79,43 @@ def make_finglish_output_guard(rewriter: Runnable | None = None) -> AgentMiddlew
         text = get_text(last_message)
         lines = text.split("\n")
         for _ in range(_MAX_PASSES):
-            leaked = [index for index, line in enumerate(lines) if has_perso_arabic(line)]
+            leaked = [
+                index for index, line in enumerate(lines) if has_perso_arabic(line)
+            ]
             if not leaked:
                 break
-            chunks = [leaked[start : start + _CHUNK_LINES] for start in range(0, len(leaked), _CHUNK_LINES)]
+            chunks = [
+                leaked[start : start + _CHUNK_LINES]
+                for start in range(0, len(leaked), _CHUNK_LINES)
+            ]
             replies = chain.batch(
-                [{"lines": "\n".join(lines[index] for index in chunk)} for chunk in chunks],
+                [
+                    {"lines": "\n".join(lines[index] for index in chunk)}
+                    for chunk in chunks
+                ],
                 return_exceptions=True,
             )
             for chunk, reply in zip(chunks, replies, strict=True):
                 if isinstance(reply, Exception):
                     logger.warning("Finglish repair call failed: %s", reply)
                     continue
-                for index, line in zip(chunk, _accept([lines[index] for index in chunk], reply), strict=True):
+                for index, line in zip(
+                    chunk,
+                    _accept([lines[index] for index in chunk], reply),
+                    strict=True,
+                ):
                     lines[index] = line
 
         repaired_text = "\n".join(lines)
         if repaired_text == text:
             return None
         if still_leaking := sum(has_perso_arabic(line) for line in lines):
-            logger.warning("Finglish repair left %d line(s) with Perso-Arabic script", still_leaking)
-        return {"messages": [last_message.model_copy(update={"content": repaired_text})]}
+            logger.warning(
+                "Finglish repair left %d line(s) with Perso-Arabic script",
+                still_leaking,
+            )
+        return {
+            "messages": [last_message.model_copy(update={"content": repaired_text})],
+        }
 
     return finglish_output

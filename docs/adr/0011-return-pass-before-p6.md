@@ -34,6 +34,10 @@
   meet the contract; that call is made at the stage, with its reason.
 - **The contract is defined by P6's needs, not guessed.** R0 derives it from P6's Phase A-B
   plan, so the pass passes "observed, not predicted" (`docs/MENTORING.md`).
+  *Update (2026-09-23):* in practice R0 derived the envelope from the callers P1-P5 already
+  have (the P2 and P4 coordinators, the P5 brief), which is stronger evidence than a plan.
+  The contract is caller-agnostic; P6 is its first composed consumer, not its author. A
+  generic calling layer (one input shape, discovery, a catalog) stays out until P12.
 - **A fixed difficulty curve** (levels L1-L7 in the roadmap): the level rises only at project
   boundaries, a stage holds at most one hard new concept, and a steep stage is followed by a
   lighter one. Every project from P6 on is planned as named stages, each with its one hard

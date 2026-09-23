@@ -18,7 +18,10 @@ class ScriptedToolModel(GenericFakeChatModel):
 
 def tool_turn(name: str, **args: Any) -> AIMessage:
     """A model reply that calls one tool."""
-    return AIMessage(content="", tool_calls=[{"name": name, "args": args, "id": uuid.uuid4().hex}])
+    return AIMessage(
+        content="",
+        tool_calls=[{"name": name, "args": args, "id": uuid.uuid4().hex}],
+    )
 
 
 def done() -> AIMessage:
@@ -33,8 +36,16 @@ def done() -> AIMessage:
 class RecordingGuard:
     """Scripted security guard: returns its decisions in turn (repeating the last) and records calls."""
 
-    def __init__(self, *decisions: str, category: str = "test", reason: str = "Scripted verdict.") -> None:
-        self.verdicts = [GuardVerdict(decision=decision, category=category, reason=reason) for decision in decisions]
+    def __init__(
+        self,
+        *decisions: str,
+        category: str = "test",
+        reason: str = "Scripted verdict.",
+    ) -> None:
+        self.verdicts = [
+            GuardVerdict(decision=decision, category=category, reason=reason)
+            for decision in decisions
+        ]
         self.calls: list[tuple[str, str]] = []
 
     def __call__(self, action: str, content: str) -> GuardVerdict:

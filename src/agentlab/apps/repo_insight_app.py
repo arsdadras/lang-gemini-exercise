@@ -41,7 +41,9 @@ def main() -> None:
             config=session.config,
         )
         last_message = result["last_message"]
-        print(f"\n{get_text(last_message) if last_message else 'No final answer was produced.'}")
+        print(
+            f"\n{get_text(last_message) if last_message else 'No final answer was produced.'}",
+        )
 
 
 if __name__ == "__main__":

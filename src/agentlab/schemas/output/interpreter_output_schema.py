@@ -12,7 +12,7 @@ class ArtifactMetadata(BaseModel):
 
     name: str = Field(description="File name of the artifact (e.g. sales_trend.png)")
     path: str = Field(
-        description="Path relative to the sandbox root (e.g. artifacts/sales_trend.png)"
+        description="Path relative to the sandbox root (e.g. artifacts/sales_trend.png)",
     )
     artifact_type: ArtifactType = Field(
         default="other",
@@ -22,7 +22,10 @@ class ArtifactMetadata(BaseModel):
         default="",
         description="Short description of what this artifact contains",
     )
-    size_bytes: int | None = Field(default=None, description="File size in bytes, if known")
+    size_bytes: int | None = Field(
+        default=None,
+        description="File size in bytes, if known",
+    )
     modified_at: float | None = Field(
         default=None,
         description="Last modification time (epoch seconds), if known",

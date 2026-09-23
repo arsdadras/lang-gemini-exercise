@@ -29,7 +29,7 @@ REVIEW_PROMPT = ChatPromptTemplate.from_messages(
                 "```\n{code}\n```"
             ),
         ),
-    ]
+    ],
 )
 
 
@@ -57,7 +57,7 @@ TEST_GEN_PROMPT = ChatPromptTemplate.from_messages(
                 "Review Summary & Findings:\n{review_summary}"
             ),
         ),
-    ]
+    ],
 )
 
 
@@ -87,7 +87,7 @@ TEST_FIX_PROMPT = ChatPromptTemplate.from_messages(
                 "Please provide a fully corrected and complete test suite."
             ),
         ),
-    ]
+    ],
 )
 
 

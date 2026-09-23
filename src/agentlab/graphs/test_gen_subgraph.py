@@ -21,7 +21,8 @@ def route_after_test_gen(state: CodeReviewState) -> str:
 
 
 def route_after_execution(
-    state: CodeReviewState, config: RunnableConfig | None = None
+    state: CodeReviewState,
+    config: RunnableConfig | None = None,
 ) -> str:
     """Determine next step after sandbox execution: finish if passed or retries
     exhausted, else fix."""

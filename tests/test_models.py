@@ -7,12 +7,22 @@ from agentlab.configs.models_config import ModelSpec
 from agentlab.models.registry_model import LLMRegistry
 
 TIERS = {
-    "high": {"a": ModelSpec("high-a", "openai", "KEY"), "b": ModelSpec("high-b", "openai", "KEY")},
-    "low": {"c": ModelSpec("low-c", "openai", "KEY"), "d": ModelSpec("low-d", "openai", "KEY")},
+    "high": {
+        "a": ModelSpec("high-a", "openai", "KEY"),
+        "b": ModelSpec("high-b", "openai", "KEY"),
+    },
+    "low": {
+        "c": ModelSpec("low-c", "openai", "KEY"),
+        "d": ModelSpec("low-d", "openai", "KEY"),
+    },
 }
 
 
-def make_registry(*, test_mode: bool = False, built: list[str] | None = None) -> LLMRegistry:
+def make_registry(
+    *,
+    test_mode: bool = False,
+    built: list[str] | None = None,
+) -> LLMRegistry:
     def build(spec: ModelSpec) -> str:
         if built is not None:
             built.append(spec.model)
@@ -48,7 +58,9 @@ def test_fallbacks_stay_in_tier_and_skip_the_pinned_primary() -> None:
 
 def test_chain_with_a_pinned_provider_falls_back_to_the_rest_of_the_tier() -> None:
     registry = LLMRegistry(
-        TIERS, default_tier="low", model_builder=lambda spec: RunnableLambda(lambda _, name=spec.model: name)
+        TIERS,
+        default_tier="low",
+        model_builder=lambda spec: RunnableLambda(lambda _, name=spec.model: name),
     )
 
     chain = registry.chain("high", provider="b")
@@ -58,7 +70,11 @@ def test_chain_with_a_pinned_provider_falls_back_to_the_rest_of_the_tier() -> No
 
 
 def test_cascade_appends_lower_tiers_in_order() -> None:
-    assert make_registry().fallback_models("high", cascade=True) == ["high-b", "low-c", "low-d"]
+    assert make_registry().fallback_models("high", cascade=True) == [
+        "high-b",
+        "low-c",
+        "low-d",
+    ]
 
 
 def test_test_mode_routes_every_request_to_the_test_tier() -> None:

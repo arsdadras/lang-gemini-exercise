@@ -10,7 +10,7 @@ from langgraph.store.memory import InMemoryStore
 
 from agentlab.apps.personal_brief_app import personal_data_redaction
 from agentlab.schemas.context.user_context_schema import UserContext
-from agentlab.tools.user_context_tool import NO_USER_CONTEXT, make_user_context_tool
+from agentlab.tools.user_context_tool import make_user_context_tool
 from tests.fakes import done, tool_turn
 
 SEEN: list[list[BaseMessage]] = []
@@ -29,10 +29,25 @@ class SeeingModel(GenericFakeChatModel):
 
 def make_store() -> InMemoryStore:
     store = InMemoryStore()
-    profile = "- Name: Sara\n- Email: sara@example.com\n- Vegetarian\n- OpenAI key: sk-proj-" + "a1B2c3D4" * 4
-    store.put(("sara", "memories"), "/user_profile.md", {"content": profile, "encoding": "utf-8"})
-    store.put(("sara", "memories"), "/goals/walking.md", {"content": "# Goal: Walk daily", "encoding": "utf-8"})
-    store.put(("bob", "memories"), "/user_profile.md", {"content": "- Name: Bob", "encoding": "utf-8"})
+    profile = (
+        "- Name: Sara\n- Email: sara@example.com\n- Vegetarian\n- OpenAI key: sk-proj-"
+        + "a1B2c3D4" * 4
+    )
+    store.put(
+        ("sara", "memories"),
+        "/user_profile.md",
+        {"content": profile, "encoding": "utf-8"},
+    )
+    store.put(
+        ("sara", "memories"),
+        "/goals/walking.md",
+        {"content": "# Goal: Walk daily", "encoding": "utf-8"},
+    )
+    store.put(
+        ("bob", "memories"),
+        "/user_profile.md",
+        {"content": "- Name: Bob", "encoding": "utf-8"},
+    )
     return store
 
 
@@ -52,13 +67,19 @@ def ask(store: InMemoryStore, user_id: str, middleware: list[Any]) -> str:
         {"configurable": {"thread_id": user_id}},
         context=UserContext(user_id=user_id),
     )
-    return next(str(message.content) for message in result["messages"] if message.type == "tool")
+    return next(
+        str(message.content) for message in result["messages"] if message.type == "tool"
+    )
 
 
 def test_the_tool_returns_only_the_calling_users_memory_with_secrets_redacted() -> None:
     context = ask(make_store(), "sara", [])
 
-    assert '<file path="/memories/user_profile.md">' in context and "# Goal: Walk daily" in context
+    assert context.startswith("[personal_context] status: ok")
+    assert (
+        '<file path="/memories/user_profile.md">' in context
+        and "# Goal: Walk daily" in context
+    )
     assert "Bob" not in context
     assert "sk-proj-" not in context and "[SECRET_DETECTED]" in context
 
@@ -66,7 +87,8 @@ def test_the_tool_returns_only_the_calling_users_memory_with_secrets_redacted() 
 def test_a_user_without_memory_gets_a_plain_answer() -> None:
     context = ask(make_store(), "nobody", [])
 
-    assert context == NO_USER_CONTEXT
+    assert context.startswith("[personal_context] status: ok")
+    assert context.endswith("No stored context for this user.")
 
 
 def test_the_brief_redacts_personal_data_before_the_research_model_sees_it() -> None:

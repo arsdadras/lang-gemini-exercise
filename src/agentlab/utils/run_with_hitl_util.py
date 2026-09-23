@@ -83,7 +83,7 @@ def _handle_interrupt_decisions(
             decisions.append({"type": "approve"})
         else:
             reason = input(
-                "Reason for rejection (optional, press Enter to skip): "
+                "Reason for rejection (optional, press Enter to skip): ",
             ).strip()
             print(f"[Rejected] {action_name} rejected. Returning feedback to agent...")
             reject_payload: dict[str, Any] = {"type": "reject"}
@@ -156,7 +156,12 @@ def stream_with_hitl(
             interrupt.id: _handle_interrupt_decisions(interrupt, assistant_prompt)
             for interrupt in result["interrupts"]
         }
-        result = stream_agent_with_observability(agent, Command(resume=resume), config, context=context)
+        result = stream_agent_with_observability(
+            agent,
+            Command(resume=resume),
+            config,
+            context=context,
+        )
     return result
 
 
@@ -172,7 +177,12 @@ def resume_pending_with_hitl(
     For a run that paused earlier, possibly in the background, and waits for the user.
     Returns the run's final state values.
     """
-    while interrupts := [i for task in graph.get_state(config).tasks for i in task.interrupts]:
-        resume = {interrupt.id: _handle_interrupt_decisions(interrupt, assistant_prompt) for interrupt in interrupts}
+    while interrupts := [
+        i for task in graph.get_state(config).tasks for i in task.interrupts
+    ]:
+        resume = {
+            interrupt.id: _handle_interrupt_decisions(interrupt, assistant_prompt)
+            for interrupt in interrupts
+        }
         graph.invoke(Command(resume=resume), config, context=context)
     return graph.get_state(config).values

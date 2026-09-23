@@ -14,7 +14,7 @@ GRADE_PROMPT = ChatPromptTemplate.from_messages(
             "human",
             "Question: {question}\n\nDocument:\n{document}",
         ),
-    ]
+    ],
 )
 
 
@@ -32,7 +32,7 @@ GENERATE_PROMPT = ChatPromptTemplate.from_messages(
             "human",
             "Question: {question}\n\nContext:\n{context}",
         ),
-    ]
+    ],
 )
 
 
@@ -52,7 +52,7 @@ REWRITE_PROMPT = ChatPromptTemplate.from_messages(
             "human",
             "Original question: {question}\n\nPrevious search query: {search_query}",
         ),
-    ]
+    ],
 )
 
 
@@ -70,7 +70,7 @@ HALLUCINATION_PROMPT = ChatPromptTemplate.from_messages(
             "human",
             "Context:\n{context}\n\nGenerated answer:\n{generation}",
         ),
-    ]
+    ],
 )
 
 
@@ -88,5 +88,5 @@ GENERATE_FROM_WEB_PROMPT = ChatPromptTemplate.from_messages(
             "human",
             "Question: {question}\n\nWeb results:\n{context}",
         ),
-    ]
+    ],
 )

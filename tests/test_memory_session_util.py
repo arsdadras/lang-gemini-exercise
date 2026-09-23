@@ -40,7 +40,7 @@ class FakeAssistant:
     def say(self, thread_id: str, *texts: str) -> None:
         for text in texts:
             self.threads.setdefault(thread_id, []).extend(
-                [HumanMessage(content=text), AIMessage(content="ok")]
+                [HumanMessage(content=text), AIMessage(content="ok")],
             )
 
     def get_state(self, config: dict[str, Any]) -> Any:
@@ -62,7 +62,7 @@ class RecordingModel:
 @pytest.fixture
 def storage(tmp_path: Path) -> tuple[Any, Any]:
     return get_sqlite_store(tmp_path / "store.db"), get_sqlite_checkpointer(
-        tmp_path / "checkpoints.db"
+        tmp_path / "checkpoints.db",
     )
 
 
@@ -98,7 +98,9 @@ def profile(store: Any) -> str:
 
 def put_profile(store: Any, content: str) -> None:
     store.put(
-        ("alice", "memories"), PROFILE_KEY, {"content": content, "encoding": "utf-8"}
+        ("alice", "memories"),
+        PROFILE_KEY,
+        {"content": content, "encoding": "utf-8"},
     )
 
 
@@ -129,7 +131,8 @@ def test_a_long_conversation_is_consolidated_before_it_ends(
     assistant.say("t1", "short")
     assert sessions.start_if_long("alice", "t1") is False
     assistant.say(
-        "t1", "a much longer message that pushes the transcript past the limit"
+        "t1",
+        "a much longer message that pushes the transcript past the limit",
     )
     assert sessions.start_if_long("alice", "t1") is True
     finish(sessions)
@@ -139,7 +142,8 @@ def test_a_long_conversation_is_consolidated_before_it_ends(
 
 
 def test_a_review_survives_an_app_restart(
-    storage: tuple[Any, Any], capsys: pytest.CaptureFixture[str]
+    storage: tuple[Any, Any],
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     store, _ = storage
     put_profile(store, "- Lives in Tehran\n")
@@ -151,7 +155,7 @@ def test_a_review_survives_an_app_restart(
             old="- Lives in Tehran",
             new="- Lives in Karaj",
             reason="The user moved.",
-        )
+        ),
     )
     first = make_sessions(storage, assistant, model)
     assistant.say("t1", "I moved to Karaj")
@@ -192,7 +196,8 @@ def test_a_conversation_left_at_exit_is_consolidated_on_the_next_start(
 
 
 def test_another_users_session_never_sees_the_proposal(
-    storage: tuple[Any, Any], capsys: Any
+    storage: tuple[Any, Any],
+    capsys: Any,
 ) -> None:
     assistant = FakeAssistant()
     model = RecordingModel(
@@ -201,7 +206,7 @@ def test_another_users_session_never_sees_the_proposal(
             path="/memories/user_profile.md",
             new="- Plays chess",
             reason="The user said so.",
-        )
+        ),
     )
     sessions = make_sessions(storage, assistant, model)
     assistant.say("t1", "I play chess")
@@ -224,7 +229,9 @@ def test_forget_deletes_memory_bookkeeping_and_conversations(
     store, checkpointer = storage
     put_profile(store, "- Lives in Tehran\n")
     store.put(
-        ("bob", "memories"), PROFILE_KEY, {"content": "- Bob", "encoding": "utf-8"}
+        ("bob", "memories"),
+        PROFILE_KEY,
+        {"content": "- Bob", "encoding": "utf-8"},
     )
     store.put(("alice", THREADS_KIND), "t1", {"consolidated": 0, "created_at": 0})
     checkpointer.put(

@@ -19,7 +19,8 @@ def hitl_for(
     """Require human approval before the given tool(s) run."""
     names = [tool_names] if isinstance(tool_names, str) else list(tool_names)
     interrupt_on: dict[str, bool | InterruptOnConfig] = {
-        name: InterruptOnConfig(allowed_decisions=list(allowed_decisions)) for name in names
+        name: InterruptOnConfig(allowed_decisions=list(allowed_decisions))
+        for name in names
     }
     return HumanInTheLoopMiddleware(
         interrupt_on=interrupt_on,

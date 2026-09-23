@@ -30,7 +30,9 @@ def route_after_grading(
     return "web_search_fallback"
 
 
-def build_rag_graph(checkpointer: BaseCheckpointSaver | None = None) -> CompiledStateGraph:
+def build_rag_graph(
+    checkpointer: BaseCheckpointSaver | None = None,
+) -> CompiledStateGraph:
     """Compile the RAG graph (defaults to an in-memory checkpointer)."""
     graph = StateGraph(RAGState)
     graph.add_node("retrieve", retrieve_node)
@@ -47,4 +49,6 @@ def build_rag_graph(checkpointer: BaseCheckpointSaver | None = None) -> Compiled
     graph.add_edge("generate", "check_hallucination")
     graph.add_edge("web_search_fallback", END)
     graph.add_edge("check_hallucination", END)
-    return graph.compile(checkpointer=checkpointer if checkpointer is not None else InMemorySaver())
+    return graph.compile(
+        checkpointer=checkpointer if checkpointer is not None else InMemorySaver(),
+    )

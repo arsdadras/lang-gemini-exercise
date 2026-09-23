@@ -16,10 +16,15 @@ from agentlab.utils.streaming_util import stream_agent_with_observability
 def _print_banner(session: ResolvedSession) -> None:
     print("=" * 60)
     print("[Coordinator] P4 Multi-Agent Coding Coordinator")
-    print("Subagents: code_interpreter (P4), code_review_subagent (P3), researcher (P1)")
+    print(
+        "Subagents: code_interpreter (P4), code_review_subagent (P3), researcher (P1)",
+    )
     print("Sandbox: out/sandbox/ -- shell commands run WITHOUT per-command approval;")
     print("         the shell environment is allow-listed and holds no API keys.")
-    print("Persistence: " + ("in-memory (secret mode)" if session.is_secret else "SQLite checkpoints"))
+    print(
+        "Persistence: "
+        + ("in-memory (secret mode)" if session.is_secret else "SQLite checkpoints"),
+    )
     print(f"Session: {session.mode_name} | thread {session.thread_id}")
     print("Type 'quit', 'exit' or 'q' to end the session.")
     print("=" * 60)
@@ -55,7 +60,9 @@ def main() -> None:
             config=session.config,
         )
         last_message = result["last_message"]
-        answer = get_text(last_message) if last_message else "No final answer was produced."
+        answer = (
+            get_text(last_message) if last_message else "No final answer was produced."
+        )
         print(f"\n[Coordinator Response]:\n{answer}")
 
 

@@ -7,7 +7,8 @@ from langgraph.graph.state import CompiledStateGraph
 
 
 def inspect_state_history(
-    graph: CompiledStateGraph, thread_id: str
+    graph: CompiledStateGraph,
+    thread_id: str,
 ) -> list[dict[str, Any]]:
     """Inspect and return the chronological history of checkpoints for a
     given thread."""
@@ -32,7 +33,7 @@ def inspect_state_history(
                 "next_nodes": next_nodes,
                 "created_at": getattr(snapshot, "created_at", None),
                 "state_keys": list(snapshot.values.keys()),
-            }
+            },
         )
 
     return list(reversed(history))
@@ -47,6 +48,6 @@ def fork_from_checkpoint(
     """Replay or fork graph execution starting from an exact historical checkpoint."""
 
     fork_config: RunnableConfig = {
-        "configurable": {"thread_id": thread_id, "checkpoint_id": checkpoint_id}
+        "configurable": {"thread_id": thread_id, "checkpoint_id": checkpoint_id},
     }
     return graph.invoke(input=input_or_command, config=fork_config)

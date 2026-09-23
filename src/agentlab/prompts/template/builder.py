@@ -104,4 +104,3 @@ def build_system_prompt(
     if drop_empty_sections:
         prompt = _EMPTY_SECTION.sub("", prompt)
     return prompt
-

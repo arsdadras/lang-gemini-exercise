@@ -65,7 +65,10 @@ def _stored_text(value: dict[str, Any]) -> str:
 def _read_memory(runtime: Runtime[UserContext]) -> dict[str, str]:
     """Every memory file of the current user, keyed by full path."""
     items = runtime.store.search(user_memory_namespace(runtime), limit=1000)
-    return {MEMORIES_ROUTE_PREFIX.rstrip("/") + item.key: _stored_text(item.value) for item in items}
+    return {
+        MEMORIES_ROUTE_PREFIX.rstrip("/") + item.key: _stored_text(item.value)
+        for item in items
+    }
 
 
 def _read_rejections(runtime: Runtime[UserContext]) -> list[str]:
@@ -90,15 +93,31 @@ def make_consolidate_node(
     chain = MEMORY_CONSOLIDATION_PROMPT | (
         model
         if model is not None
-        else llm_model.chain(CONSOLIDATOR_TIER, structured=MemoryEdits, provider=CONSOLIDATOR_PROVIDER)
+        else llm_model.chain(
+            CONSOLIDATOR_TIER,
+            structured=MemoryEdits,
+            provider=CONSOLIDATOR_PROVIDER,
+        )
     )
 
-    def consolidate(state: MemoryConsolidationState, runtime: Runtime[UserContext]) -> dict:
+    def consolidate(
+        state: MemoryConsolidationState,
+        runtime: Runtime[UserContext],
+    ) -> dict:
         files = _read_memory(runtime)
-        memory = "\n\n".join(f'<file path="{path}">\n{text}\n</file>' for path, text in files.items())
-        rejected = "\n".join(f"- {edit}" for edit in _read_rejections(runtime)) or NO_REJECTIONS
+        memory = "\n\n".join(
+            f'<file path="{path}">\n{text}\n</file>' for path, text in files.items()
+        )
+        rejected = (
+            "\n".join(f"- {edit}" for edit in _read_rejections(runtime))
+            or NO_REJECTIONS
+        )
         proposal = chain.invoke(
-            {"memory": memory or NO_MEMORY, "rejected": rejected, "transcript": state["transcript"]}
+            {
+                "memory": memory or NO_MEMORY,
+                "rejected": rejected,
+                "transcript": state["transcript"],
+            },
         )
         # Additions first: they rarely need approval, so they land even if the user
         # never gets to the changes that do.
@@ -110,14 +129,22 @@ def make_consolidate_node(
 
 def _memory_key(path: str) -> str | None:
     """The storage key for a proposed path, or ``None`` if it isn't a memory file."""
-    if not path.startswith(MEMORIES_ROUTE_PREFIX) or not path.endswith(".md") or ".." in path:
+    if (
+        not path.startswith(MEMORIES_ROUTE_PREFIX)
+        or not path.endswith(".md")
+        or ".." in path
+    ):
         return None
     return path[len(MEMORIES_ROUTE_PREFIX) - 1 :]
 
 
 def _find_line(text: str, line: str) -> str | None:
     """The file's own spelling of ``line``, if it appears exactly once as a whole line."""
-    matches = [candidate for candidate in text.splitlines() if candidate.strip() == line.strip()]
+    matches = [
+        candidate
+        for candidate in text.splitlines()
+        if candidate.strip() == line.strip()
+    ]
     return matches[0] if len(matches) == 1 else None
 
 
@@ -128,13 +155,21 @@ def _section(text: str, heading: str) -> str | None:
         return None
     lines = text.splitlines()
     start = lines.index(heading_line)
-    end = next((i for i in range(start + 1, len(lines)) if lines[i].startswith("#")), len(lines))
+    end = next(
+        (i for i in range(start + 1, len(lines)) if lines[i].startswith("#")),
+        len(lines),
+    )
     while end > start + 1 and not lines[end - 1].strip():
         end -= 1
     return "\n".join(lines[start:end])
 
 
-def _apply(edit: MemoryEdit, key: str, current: str | None, backend: GatedMemoryBackend) -> str:
+def _apply(
+    edit: MemoryEdit,
+    key: str,
+    current: str | None,
+    backend: GatedMemoryBackend,
+) -> str:
     """Turn one edit into one gated write or edit, and say what happened."""
     result: WriteResult | EditResult
     if edit.kind == "add" and current is None:
@@ -148,12 +183,20 @@ def _apply(edit: MemoryEdit, key: str, current: str | None, backend: GatedMemory
         else:
             heading = f"\n{edit.section}\n" if edit.section else ""
             separator = "" if current.endswith("\n") else "\n"
-            result = backend.edit(key, current, f"{current}{separator}{heading}{edit.new}\n")
+            result = backend.edit(
+                key,
+                current,
+                f"{current}{separator}{heading}{edit.new}\n",
+            )
     else:
         line = _find_line(current or "", edit.old)
         if line is None:
             return f"Skipped {edit.describe()} (that line is not in memory)."
-        old = line if edit.kind == "replace" else (f"{line}\n" if f"{line}\n" in current else line)
+        old = (
+            line
+            if edit.kind == "replace"
+            else (f"{line}\n" if f"{line}\n" in current else line)
+        )
         new = edit.new if edit.kind == "replace" else ""
         result = backend.edit(key, old, new, requested=edit.user_requested)
     if result.error:
@@ -170,14 +213,22 @@ def make_apply_next_edit_node(
     top; with a single edit, it asks the same question again and nothing before it repeats.
     """
 
-    def apply_next_edit(state: MemoryConsolidationState, runtime: Runtime[UserContext]) -> dict:
+    def apply_next_edit(
+        state: MemoryConsolidationState,
+        runtime: Runtime[UserContext],
+    ) -> dict:
         edit = MemoryEdit.model_validate(state["edits"][state["cursor"]])
         key = _memory_key(edit.path)
         if key is None:
             outcome = f"Skipped {edit.path}: not a memory file."
         else:
             stored = runtime.store.get(user_memory_namespace(runtime), key)
-            outcome = _apply(edit, key, _stored_text(stored.value) if stored else None, backend)
+            outcome = _apply(
+                edit,
+                key,
+                _stored_text(stored.value) if stored else None,
+                backend,
+            )
             if REJECTION_PREFIX in outcome:
                 _remember_rejection(runtime, edit)
         return {"cursor": state["cursor"] + 1, "outcomes": [outcome]}

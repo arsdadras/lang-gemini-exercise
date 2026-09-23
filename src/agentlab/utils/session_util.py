@@ -44,7 +44,11 @@ class ResolvedSession:
         return {"configurable": {"thread_id": self.thread_id}}
 
 
-def format_session_list(threads: list[str], *, cli_command_hint: str = "step[<index>]") -> str:
+def format_session_list(
+    threads: list[str],
+    *,
+    cli_command_hint: str = "step[<index>]",
+) -> str:
     """Render recorded thread ids, most recent first."""
     if not threads:
         return "No recorded sessions found in database."
@@ -88,7 +92,11 @@ def _resolve_thread(
         index = int(step.group(1))
         threads = get_threads_fn()
         if not threads:
-            _fail("[Error] No recorded sessions found in database.", ValueError, handle_cli_exit)
+            _fail(
+                "[Error] No recorded sessions found in database.",
+                ValueError,
+                handle_cli_exit,
+            )
         if not 0 <= index < len(threads):
             recent = "\n".join(f"  step[{i}]: {t}" for i, t in enumerate(threads[:5]))
             _fail(
@@ -118,13 +126,20 @@ def resolve_session(
     """
     arg = (raw_arg or "").strip()
     mode = arg.lower()
-    hint = cli_command_hint or f"uv run python -m agentlab.apps.{app_name}_app step[<index>]"
+    hint = (
+        cli_command_hint
+        or f"uv run python -m agentlab.apps.{app_name}_app step[<index>]"
+    )
 
     if mode in {"list", "history"}:
         print(format_session_list(get_threads_fn(limit=15), cli_command_hint=hint))
         if handle_cli_exit:
             sys.exit(0)
-        return ResolvedSession(agent=None, thread_id=default_thread_id, mode_name="list")
+        return ResolvedSession(
+            agent=None,
+            thread_id=default_thread_id,
+            mode_name="list",
+        )
 
     if mode == "secret":
         return ResolvedSession(
@@ -141,4 +156,8 @@ def resolve_session(
         get_threads_fn=get_threads_fn,
         handle_cli_exit=handle_cli_exit,
     )
-    return ResolvedSession(agent=agent_factory(None), thread_id=thread_id, mode_name=mode_name)
+    return ResolvedSession(
+        agent=agent_factory(None),
+        thread_id=thread_id,
+        mode_name=mode_name,
+    )

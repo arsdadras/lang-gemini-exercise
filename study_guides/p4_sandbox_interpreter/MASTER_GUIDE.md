@@ -52,7 +52,9 @@ and code review (P3) under a coordinator.
 - **Subagent adapter** (`subagents/interpreter_subagent.py`): wraps an *injected* interpreter
   agent, built by the caller, so `subagents/` never imports `agents/`. It snapshots
   `artifacts/` before a delegation, invokes the agent on a fresh thread, and appends a
-  "Deliverables Update" listing `[NEW]` and `[MODIFIED]` files with exact paths.
+  "Deliverables Update" listing `[NEW]` and `[MODIFIED]` files with exact paths. (Since R0 the
+  same facts are the envelope's side effects, rendered as a `Changed:` line; see
+  `schemas/output/specialist_output_schema.py`.)
 - **Coordinator** (`agents/coding_coordinator_agent.py`):
   - a DeepAgent over `code_interpreter` (P4), `code_review_subagent` (P3), and `researcher` (P1);
   - `TodoListMiddleware` for planning, plus model fallback;

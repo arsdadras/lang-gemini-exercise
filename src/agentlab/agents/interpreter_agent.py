@@ -39,7 +39,9 @@ def make_interpreter_agent(
         model=llm_model.get(tier),
         system_prompt=build_interpreter_agent_prompt(),
         backend=backend if backend is not None else make_sandbox_backend(),
-        checkpointer=checkpointer if checkpointer is not None else get_sqlite_checkpointer(),
+        checkpointer=checkpointer
+        if checkpointer is not None
+        else get_sqlite_checkpointer(),
         middleware=[make_model_fallback(tier)],
         interrupt_on={tool: True for tool in interrupt_tools} or None,
         response_format=response_format,

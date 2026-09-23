@@ -7,7 +7,12 @@ class BankAccount:
     """Manages a user account with balance and transaction history."""
 
     # BUG 1: Mutable default argument! (All instances will share the same transaction list)
-    def __init__(self, account_id: str, initial_balance: float = 0.0, history: List[Dict] = []):
+    def __init__(
+        self,
+        account_id: str,
+        initial_balance: float = 0.0,
+        history: List[Dict] = [],
+    ):
         self.account_id = account_id
         # BUG 2: Float representation issue & no validation against negative initial balance
         self.balance = initial_balance

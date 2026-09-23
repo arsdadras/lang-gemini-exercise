@@ -50,15 +50,29 @@ REJECTION_PREFIX = "The user rejected this memory change"
 
 ALLOW = GuardVerdict(decision="allow", category="none", reason="Adds to memory.")
 _OVERWRITE = GuardVerdict(
-    decision="ask", category="destructive", reason="Overwrite a stored memory file (its current content is replaced)."
+    decision="ask",
+    category="destructive",
+    reason="Overwrite a stored memory file (its current content is replaced).",
 )
-_DESTRUCTIVE_EDIT = GuardVerdict(decision="ask", category="destructive", reason="Change or remove text in stored memory.")
-_DELETE = GuardVerdict(decision="ask", category="destructive", reason="Delete stored memory.")
+_DESTRUCTIVE_EDIT = GuardVerdict(
+    decision="ask",
+    category="destructive",
+    reason="Change or remove text in stored memory.",
+)
+_DELETE = GuardVerdict(
+    decision="ask",
+    category="destructive",
+    reason="Delete stored memory.",
+)
 _REQUESTED = GuardVerdict(
-    decision="allow", category="requested", reason="A correction the user asked for; the previous version is kept."
+    decision="allow",
+    category="requested",
+    reason="A correction the user asked for; the previous version is kept.",
 )
 _SECRET = GuardVerdict(
-    decision="block", category="credential", reason="The content contains a secret, and secrets are never stored."
+    decision="block",
+    category="credential",
+    reason="The content contains a secret, and secrets are never stored.",
 )
 _STRICTNESS = {"allow": 0, "ask": 1, "block": 2}
 
@@ -86,7 +100,11 @@ def _edit_removes_text(old: str, new: str) -> bool:
 
 def _stricter(code: GuardVerdict, guard: GuardVerdict) -> GuardVerdict:
     if code.decision == guard.decision == "ask":
-        return GuardVerdict(decision="ask", category=guard.category, reason=f"{code.reason} {guard.reason}")
+        return GuardVerdict(
+            decision="ask",
+            category=guard.category,
+            reason=f"{code.reason} {guard.reason}",
+        )
     return max((code, guard), key=lambda verdict: _STRICTNESS[verdict.decision])
 
 
@@ -96,31 +114,77 @@ class MemoryGate:
     def __init__(self, guard: SecurityGuard) -> None:
         self._guard = guard
 
-    def write(self, path: str, content: str, *, exists: bool, store: BaseStore, user_id: str) -> GuardVerdict:
+    def write(
+        self,
+        path: str,
+        content: str,
+        *,
+        exists: bool,
+        store: BaseStore,
+        user_id: str,
+    ) -> GuardVerdict:
         if exists:
-            return self._judge(_OVERWRITE, f"overwrite existing file {path}", content, store, user_id)
+            return self._judge(
+                _OVERWRITE,
+                f"overwrite existing file {path}",
+                content,
+                store,
+                user_id,
+            )
         return self._judge(ALLOW, f"create new file {path}", content, store, user_id)
 
     def edit(
-        self, path: str, old_string: str, new_string: str, *, store: BaseStore, user_id: str, requested: bool = False
+        self,
+        path: str,
+        old_string: str,
+        new_string: str,
+        *,
+        store: BaseStore,
+        user_id: str,
+        requested: bool = False,
     ) -> GuardVerdict:
         """``requested``: the user explicitly asked for this change, so it needs no approval of its own."""
         if _edit_removes_text(old_string, new_string):
             code = _REQUESTED if requested else _DESTRUCTIVE_EDIT
-            return self._judge(code, f"replace text in existing file {path}", new_string, store, user_id)
-        return self._judge(ALLOW, f"append to existing file {path}", new_string, store, user_id)
+            return self._judge(
+                code,
+                f"replace text in existing file {path}",
+                new_string,
+                store,
+                user_id,
+            )
+        return self._judge(
+            ALLOW,
+            f"append to existing file {path}",
+            new_string,
+            store,
+            user_id,
+        )
 
     def delete(self) -> GuardVerdict:
         """A delete adds no content to judge, so the code rule alone decides."""
         return _DELETE
 
-    def _judge(self, code: GuardVerdict, action: str, content: str, store: BaseStore, user_id: str) -> GuardVerdict:
+    def _judge(
+        self,
+        code: GuardVerdict,
+        action: str,
+        content: str,
+        store: BaseStore,
+        user_id: str,
+    ) -> GuardVerdict:
         """Detectors first (a secret blocks outright), then the guard; the stricter verdict wins."""
         if redact_secrets(content)[1]:
             return _SECRET
         return _stricter(code, self._cached_guard(action, content, store, user_id))
 
-    def _cached_guard(self, action: str, content: str, store: BaseStore, user_id: str) -> GuardVerdict:
+    def _cached_guard(
+        self,
+        action: str,
+        content: str,
+        store: BaseStore,
+        user_id: str,
+    ) -> GuardVerdict:
         namespace = (user_id, VERDICT_CACHE_KIND)
         key = hashlib.sha256(json.dumps([action, content]).encode()).hexdigest()
         if (cached := store.get(namespace, key)) is not None:
@@ -139,10 +203,17 @@ def _enforce(verdict: GuardVerdict, tool_name: str, args: dict[str, Any]) -> str
     request = HITLRequest(
         action_requests=[
             ActionRequest(
-                name=tool_name, args=args, description=f"{verdict.reason}\n\nTool: {tool_name}\nArgs: {args}"
-            )
+                name=tool_name,
+                args=args,
+                description=f"{verdict.reason}\n\nTool: {tool_name}\nArgs: {args}",
+            ),
         ],
-        review_configs=[ReviewConfig(action_name=tool_name, allowed_decisions=MEMORY_APPROVAL_DECISIONS)],
+        review_configs=[
+            ReviewConfig(
+                action_name=tool_name,
+                allowed_decisions=MEMORY_APPROVAL_DECISIONS,
+            ),
+        ],
     )
     decision = interrupt(request)["decisions"][0]
     if decision["type"] == "approve":
@@ -172,22 +243,61 @@ class GatedMemoryBackend(StoreBackend):
         if (stored := store.get(namespace, key)) is None:
             return
         content = self._convert_store_item_to_file_data(stored)["content"]
-        entry = {"path": self._full_path(key), "content": content, "saved_at": time.time()}
+        entry = {
+            "path": self._full_path(key),
+            "content": content,
+            "saved_at": time.time(),
+        }
         store.put((namespace[0], HISTORY_KIND), f"{key}@{time.time_ns()}", entry)
 
     def _check_write(self, key: str, content: str) -> str | None:
-        store, namespace, path = self._get_store(), self._get_namespace(), self._full_path(key)
+        store, namespace, path = (
+            self._get_store(),
+            self._get_namespace(),
+            self._full_path(key),
+        )
         exists = store.get(namespace, key) is not None
-        verdict = self._gate.write(path, content, exists=exists, store=store, user_id=namespace[0])
+        verdict = self._gate.write(
+            path,
+            content,
+            exists=exists,
+            store=store,
+            user_id=namespace[0],
+        )
         return _enforce(verdict, "write_file", {"file_path": path, "content": content})
 
-    def _check_edit(self, key: str, old_string: str, new_string: str, requested: bool = False) -> str | None:
-        store, namespace, path = self._get_store(), self._get_namespace(), self._full_path(key)
-        verdict = self._gate.edit(path, old_string, new_string, store=store, user_id=namespace[0], requested=requested)
-        return _enforce(verdict, "edit_file", {"file_path": path, "old_string": old_string, "new_string": new_string})
+    def _check_edit(
+        self,
+        key: str,
+        old_string: str,
+        new_string: str,
+        requested: bool = False,
+    ) -> str | None:
+        store, namespace, path = (
+            self._get_store(),
+            self._get_namespace(),
+            self._full_path(key),
+        )
+        verdict = self._gate.edit(
+            path,
+            old_string,
+            new_string,
+            store=store,
+            user_id=namespace[0],
+            requested=requested,
+        )
+        return _enforce(
+            verdict,
+            "edit_file",
+            {"file_path": path, "old_string": old_string, "new_string": new_string},
+        )
 
     def _check_delete(self, key: str) -> str | None:
-        return _enforce(self._gate.delete(), "delete", {"file_path": self._full_path(key)})
+        return _enforce(
+            self._gate.delete(),
+            "delete",
+            {"file_path": self._full_path(key)},
+        )
 
     def write(self, file_path: str, content: str) -> WriteResult:
         if refusal := self._check_write(file_path, content):
@@ -202,7 +312,13 @@ class GatedMemoryBackend(StoreBackend):
         return await super().awrite(file_path, content)
 
     def edit(
-        self, file_path: str, old_string: str, new_string: str, replace_all: bool = False, *, requested: bool = False
+        self,
+        file_path: str,
+        old_string: str,
+        new_string: str,
+        replace_all: bool = False,
+        *,
+        requested: bool = False,
     ) -> EditResult:
         """``requested`` is for callers that know the user asked for this change (the consolidator)."""
         if refusal := self._check_edit(file_path, old_string, new_string, requested):
@@ -211,7 +327,13 @@ class GatedMemoryBackend(StoreBackend):
             self._save_previous(file_path)
         return super().edit(file_path, old_string, new_string, replace_all)
 
-    async def aedit(self, file_path: str, old_string: str, new_string: str, replace_all: bool = False) -> EditResult:
+    async def aedit(
+        self,
+        file_path: str,
+        old_string: str,
+        new_string: str,
+        replace_all: bool = False,
+    ) -> EditResult:
         if refusal := self._check_edit(file_path, old_string, new_string):
             return EditResult(error=refusal)
         if _edit_removes_text(old_string, new_string):

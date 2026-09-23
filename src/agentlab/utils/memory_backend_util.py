@@ -57,8 +57,15 @@ def make_memory_composite_backend(
     return CompositeBackend(
         default=default if default is not None else StateBackend(),
         routes={
-            MEMORIES_ROUTE_PREFIX: memories if memories is not None else StoreBackend(namespace=user_memory_namespace),
-            SKILLS_ROUTE_PREFIX: FilesystemBackend(root_dir=skills_dir, virtual_mode=True),
-            PUBLISHED_SKILLS_ROUTE_PREFIX: StoreBackend(namespace=lambda _runtime: PUBLISHED_SKILLS_NAMESPACE),
+            MEMORIES_ROUTE_PREFIX: memories
+            if memories is not None
+            else StoreBackend(namespace=user_memory_namespace),
+            SKILLS_ROUTE_PREFIX: FilesystemBackend(
+                root_dir=skills_dir,
+                virtual_mode=True,
+            ),
+            PUBLISHED_SKILLS_ROUTE_PREFIX: StoreBackend(
+                namespace=lambda _runtime: PUBLISHED_SKILLS_NAMESPACE,
+            ),
         },
     )

@@ -26,7 +26,10 @@ GUARD_UNAVAILABLE = GuardVerdict(
 SecurityGuard = Callable[[str, str], GuardVerdict]
 
 
-def make_security_guard(policy: str, classifier: Runnable | None = None) -> SecurityGuard:
+def make_security_guard(
+    policy: str,
+    classifier: Runnable | None = None,
+) -> SecurityGuard:
     """Build ``guard(action, content) -> GuardVerdict`` for one policy.
 
     Args:
@@ -34,14 +37,21 @@ def make_security_guard(policy: str, classifier: Runnable | None = None) -> Secu
         classifier: Structured-output model returning ``GuardVerdict``; defaults to the
             ``low`` tier with its fallbacks.
     """
-    model = classifier if classifier is not None else llm_model.chain("low", structured=GuardVerdict)
+    model = (
+        classifier
+        if classifier is not None
+        else llm_model.chain("low", structured=GuardVerdict)
+    )
     chain = SECURITY_GUARD_PROMPT.partial(policy=policy) | model
 
     def guard(action: str, content: str) -> GuardVerdict:
         try:
             verdict = chain.invoke({"action": action, "content": content})
         except Exception:
-            logger.warning("Security guard failed; asking the user instead", exc_info=True)
+            logger.warning(
+                "Security guard failed; asking the user instead",
+                exc_info=True,
+            )
             return GUARD_UNAVAILABLE
         return verdict if isinstance(verdict, GuardVerdict) else GUARD_UNAVAILABLE
 

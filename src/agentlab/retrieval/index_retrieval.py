@@ -36,7 +36,10 @@ def _open_store() -> Chroma:
 def _load_source_documents() -> list[Document]:
     """Load the configured docs and every source file, tagged with repo-relative paths."""
     documents = [
-        Document(page_content=(PROJECT_ROOT / name).read_text(encoding="utf-8"), metadata={"source": name})
+        Document(
+            page_content=(PROJECT_ROOT / name).read_text(encoding="utf-8"),
+            metadata={"source": name},
+        )
         for name in DOC_FILES
     ]
     for path in sorted(PROJECT_ROOT.glob(CODE_GLOB)):
@@ -46,7 +49,7 @@ def _load_source_documents() -> list[Document]:
             Document(
                 page_content=path.read_text(encoding="utf-8"),
                 metadata={"source": path.relative_to(PROJECT_ROOT).as_posix()},
-            )
+            ),
         )
     return documents
 

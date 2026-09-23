@@ -34,7 +34,7 @@ def make_coding_coordinator_agent(
     """
     if interpreter_subagent is None:
         interpreter_subagent = make_interpreter_subagent(
-            make_interpreter_agent(tier=tier, interrupt_tools=())
+            make_interpreter_agent(tier=tier, interrupt_tools=()),
         )
     if code_review_subagent is None:
         code_review_subagent = make_code_review_subagent()
@@ -42,7 +42,9 @@ def make_coding_coordinator_agent(
     return create_deep_agent(
         model=llm_model.get(tier),
         system_prompt=build_coding_coordinator_prompt(),
-        checkpointer=checkpointer if checkpointer is not None else get_sqlite_checkpointer(),
+        checkpointer=checkpointer
+        if checkpointer is not None
+        else get_sqlite_checkpointer(),
         subagents=[
             interpreter_subagent,
             code_review_subagent,

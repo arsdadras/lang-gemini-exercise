@@ -36,7 +36,9 @@ def final_text(answer: str, rewriter: RunnableLambda) -> str:
         tools=[],
         middleware=[make_finglish_output_guard(rewriter)],
     )
-    messages = agent.invoke({"messages": [HumanMessage(content="barname bede")]})["messages"]
+    messages = agent.invoke({"messages": [HumanMessage(content="barname bede")]})[
+        "messages"
+    ]
     assert len(messages) == 2  # the repair replaced the answer instead of appending one
     return str(messages[-1].content)
 
@@ -54,7 +56,10 @@ def test_only_leaked_lines_are_sent_and_their_indentation_is_kept():
     text = final_text(answer, scripted_rewriter([REPAIRED_LINE], calls=calls))
 
     assert calls == [[LEAKED_LINE]]
-    assert text == "### Hafte 1\n  - 15 daghighe tamrin-e ghodrati  \n- 20 daghighe piyade-ravi"
+    assert (
+        text
+        == "### Hafte 1\n  - 15 daghighe tamrin-e ghodrati  \n- 20 daghighe piyade-ravi"
+    )
 
 
 def test_a_second_pass_repairs_lines_the_first_pass_missed():
@@ -63,7 +68,11 @@ def test_a_second_pass_repairs_lines_the_first_pass_missed():
 
     text = final_text(
         answer,
-        scripted_rewriter([REPAIRED_LINE, f"- bedav {SLOWLY}"], ["- bedav ahesteh"], calls=calls),
+        scripted_rewriter(
+            [REPAIRED_LINE, f"- bedav {SLOWLY}"],
+            ["- bedav ahesteh"],
+            calls=calls,
+        ),
     )
 
     assert calls == [[LEAKED_LINE, f"- bedav {SLOWLY}"], [f"- bedav {SLOWLY}"]]
@@ -89,7 +98,10 @@ def test_clean_answer_never_calls_the_rewriter():
 
 
 def test_a_reply_with_the_wrong_number_of_lines_is_ignored():
-    text = final_text(LEAKED_LINE, scripted_rewriter([REPAIRED_LINE, "extra"], [], calls=[]))
+    text = final_text(
+        LEAKED_LINE,
+        scripted_rewriter([REPAIRED_LINE, "extra"], [], calls=[]),
+    )
 
     assert text == LEAKED_LINE
 
@@ -103,13 +115,19 @@ def test_a_malformed_chunk_only_costs_its_own_lines():
         sizes.append(len(lines))
         if len(lines) != 20:
             return FinglishLines(lines=[])
-        return FinglishLines(lines=[line.replace(STRENGTH, "tamrin-e ghodrati") for line in lines])
+        return FinglishLines(
+            lines=[line.replace(STRENGTH, "tamrin-e ghodrati") for line in lines],
+        )
 
     answer = "\n".join(f"- rooz {day}: {STRENGTH}" for day in range(1, 26))
 
     lines = final_text(answer, RunnableLambda(rewrite)).split("\n")
 
-    assert sorted(sizes) == [5, 5, 20]  # both chunks in pass one, the 5 leftovers in pass two
+    assert sorted(sizes) == [
+        5,
+        5,
+        20,
+    ]  # both chunks in pass one, the 5 leftovers in pass two
     assert not any(has_perso_arabic(line) for line in lines[:20])
     assert all(has_perso_arabic(line) for line in lines[20:])
 

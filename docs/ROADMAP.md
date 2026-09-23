@@ -127,7 +127,8 @@ baseline before P6 composes them. Conformance work is done by the mentor directl
 stage's lesson is its upgrade. No rewrites unless a project can't meet the contract. Every
 stage ends with a before/after demo of the same scenario.
 
-**Specialist contract** (defined in R0 from P6's needs, checked in every R stage):
+**Specialist contract** (caller-agnostic: what any caller needs to decide, derived in R0 from
+the callers P1-P5 already have; P6 is its first composed consumer; checked in every R stage):
 a typed result envelope (output, provenance, status: ok / partial / failed, declared side
 effects); `UserContext` wherever user data is touched; one approval path (the standard HITL
 request, streamed by the app); secret redaction at the app boundary and trace masking in

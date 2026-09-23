@@ -94,3 +94,12 @@ class TestExecutionResult(BaseModel):
     output: str = Field(
         description="Full captured stdout and stderr from the test run.",
     )
+
+
+class CodeReviewOutcome(BaseModel):
+    """Everything the P3 pipeline produced for one piece of code."""
+
+    review: ReviewResult
+    tests: TestSuite | None = None
+    test_execution: TestExecutionResult | None = None
+    applied_code: str | None = None

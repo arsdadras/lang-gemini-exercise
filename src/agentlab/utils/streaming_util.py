@@ -59,7 +59,9 @@ def stream_agent_with_observability(
         stream_mode="updates",
         subgraphs=show_subgraphs,
     ):
-        namespace, updates = item if isinstance(item, tuple) and len(item) == 2 else ((), item)
+        namespace, updates = (
+            item if isinstance(item, tuple) and len(item) == 2 else ((), item)
+        )
         if not isinstance(updates, dict):
             continue
         if "__interrupt__" in updates:
@@ -85,26 +87,44 @@ def stream_agent_with_observability(
                         name = tool_call.get("name", "")
                         args = tool_call.get("args", {})
                         if name == "task":
-                            subagent = args.get("subagent_type") or args.get("subagent") or "subagent"
+                            subagent = (
+                                args.get("subagent_type")
+                                or args.get("subagent")
+                                or "subagent"
+                            )
                             description = args.get("description", "")
                             print(
                                 f"\n[Coordinator -> Delegating to {subagent}]: "
-                                f"{str(description)[:_PREVIEW_CHARS]}"
+                                f"{str(description)[:_PREVIEW_CHARS]}",
                             )
                             if callback:
-                                callback("delegation", {"subagent": subagent, "desc": description})
+                                callback(
+                                    "delegation",
+                                    {"subagent": subagent, "desc": description},
+                                )
                         elif name != "write_todos":
                             prefix = f"[{namespace[0]}] " if namespace else ""
-                            print(f"\n{prefix}[Tool Call -> {name}]: {str(args)[:_PREVIEW_CHARS]}")
+                            print(
+                                f"\n{prefix}[Tool Call -> {name}]: {str(args)[:_PREVIEW_CHARS]}",
+                            )
                             if callback:
                                 callback("tool_call", {"name": name, "args": args})
                 elif isinstance(message, ToolMessage) and message.name != "write_todos":
                     content = get_text(message).strip().replace("\n", " ")
-                    print(f"  [Tool Result <- {message.name}]: {content[:_PREVIEW_CHARS]}...")
+                    print(
+                        f"  [Tool Result <- {message.name}]: {content[:_PREVIEW_CHARS]}...",
+                    )
                     if callback:
-                        callback("tool_result", {"name": message.name, "content": content})
+                        callback(
+                            "tool_result",
+                            {"name": message.name, "content": content},
+                        )
 
     # An interrupt raised inside a subagent streams once per namespace; the checkpoint
     # holds each pending interrupt exactly once, so read them from there.
     interrupts = list(agent.get_state(config).interrupts) if interrupted else []
-    return {"messages": all_messages, "last_message": last_ai_message, "interrupts": interrupts}
+    return {
+        "messages": all_messages,
+        "last_message": last_ai_message,
+        "interrupts": interrupts,
+    }

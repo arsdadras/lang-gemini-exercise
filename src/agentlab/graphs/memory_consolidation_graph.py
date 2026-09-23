@@ -37,9 +37,15 @@ from agentlab.utils.memory_backend_util import user_memory_namespace
 CONSOLIDATION_RECURSION_LIMIT = 200
 
 
-def route_next_edit(state: MemoryConsolidationState) -> Literal["apply_next_edit", "__end__"]:
+def route_next_edit(
+    state: MemoryConsolidationState,
+) -> Literal["apply_next_edit", "__end__"]:
     """Loop while edits remain."""
-    return "apply_next_edit" if state.get("cursor", 0) < len(state.get("edits", [])) else END
+    return (
+        "apply_next_edit"
+        if state.get("cursor", 0) < len(state.get("edits", []))
+        else END
+    )
 
 
 def make_memory_consolidation_graph(
@@ -57,7 +63,9 @@ def make_memory_consolidation_graph(
         model: Structured-output model for the edits; defaults to ``CONSOLIDATOR_PROVIDER``.
         guard: Security guard for the memory gate; defaults to the memory write policy.
     """
-    gate = MemoryGate(guard if guard is not None else make_security_guard(MEMORY_WRITE_POLICY))
+    gate = MemoryGate(
+        guard if guard is not None else make_security_guard(MEMORY_WRITE_POLICY),
+    )
     backend = GatedMemoryBackend(gate, namespace=user_memory_namespace)
 
     graph = StateGraph(MemoryConsolidationState, context_schema=UserContext)
@@ -66,5 +74,8 @@ def make_memory_consolidation_graph(
     graph.add_edge(START, "consolidate")
     graph.add_conditional_edges("consolidate", route_next_edit)
     graph.add_conditional_edges("apply_next_edit", route_next_edit)
-    compiled = graph.compile(checkpointer=checkpointer if checkpointer is not None else InMemorySaver(), store=store)
+    compiled = graph.compile(
+        checkpointer=checkpointer if checkpointer is not None else InMemorySaver(),
+        store=store,
+    )
     return compiled.with_config(recursion_limit=CONSOLIDATION_RECURSION_LIMIT)

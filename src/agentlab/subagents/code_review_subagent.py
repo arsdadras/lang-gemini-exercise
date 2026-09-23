@@ -1,4 +1,4 @@
-"""Code review subagent: exposes the compiled P3 review pipeline to DeepAgents coordinators."""
+"""P3's boundary: ``run_code_review`` returns the specialist envelope; the adapter serves coordinators."""
 
 from typing import Any
 
@@ -7,12 +7,16 @@ from langchain_core.runnables import Runnable, RunnableLambda
 
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
 from agentlab.graphs.code_review_parentgraph import build_code_review_graph
+from agentlab.schemas.output.code_review_output_schema import CodeReviewOutcome
+from agentlab.schemas.output.specialist_output_schema import SpecialistResult
 from agentlab.utils.subagent_util import (
     new_delegation_config,
+    pending_approvals,
     task_text_from_state,
     to_subagent_reply,
 )
 
+CODE_REVIEW_SPECIALIST = "code_review"
 DEFAULT_CODE_REVIEW_NAME = "code_review_subagent"
 DEFAULT_CODE_REVIEW_DESCRIPTION = (
     "Analyzes and reviews source code, identifies bugs, security vulnerabilities, "
@@ -21,30 +25,78 @@ DEFAULT_CODE_REVIEW_DESCRIPTION = (
 )
 
 
-def _format_report(result: dict[str, Any]) -> str:
-    """Render the pipeline's final state as a report for the coordinator."""
-    parts: list[str] = []
-    review = result.get("review")
-    if review:
-        parts.append(f"### Code Review Summary (Score: {review.score}/10)")
-        parts.append(review.summary)
-        if review.issues:
-            parts.append("\n**Key Issues Found:**")
-            for issue in review.issues:
-                location = f"Line {issue.line_number}: " if issue.line_number is not None else ""
-                parts.append(f"- [{issue.severity.upper()}] {location}{issue.description}")
+def run_code_review(
+    graph: Runnable,
+    code: str,
+    *,
+    language: str = "python",
+) -> SpecialistResult[CodeReviewOutcome]:
+    """Review ``code`` with the P3 pipeline on a fresh thread, as a specialist envelope.
 
-    tests = result.get("tests")
-    if tests:
-        execution = result.get("test_execution")
-        status = "PASSED" if execution and execution.passed else "FAILED / PENDING"
-        parts.append(f"\n### Test Suite Status: {status} ({len(tests.test_cases)} test cases)")
+    Failing tests are findings, not a failed review: ``ok`` means the review, the tests, and
+    their run all happened. A refactor waiting at the approval gate makes it ``partial``.
+    """
+    state = graph.invoke(
+        {"code": code, "language": language, "file_path": None},
+        config=new_delegation_config(),
+    )
+    review = state.get("review")
+    if review is None:
+        return SpecialistResult[CodeReviewOutcome](
+            specialist=CODE_REVIEW_SPECIALIST,
+            status="failed",
+            reason=state.get("error") or "No review was produced.",
+        )
+    outcome = CodeReviewOutcome(
+        review=review,
+        tests=state.get("tests"),
+        test_execution=state.get("test_execution"),
+        applied_code=state.get("applied_code"),
+    )
+    execution = outcome.test_execution
+    if waiting := pending_approvals(state):
+        status, reason = (
+            "partial",
+            f"The suggested refactor waits for approval ({waiting}); it wasn't applied.",
+        )
+    elif execution is None or execution.status in ("error", "timed_out"):
+        status, reason = "partial", "The generated tests didn't run to completion."
+    else:
+        status, reason = "ok", ""
+    return SpecialistResult[CodeReviewOutcome](
+        specialist=CODE_REVIEW_SPECIALIST,
+        status=status,
+        reason=reason,
+        output=outcome,
+    )
 
-    refactored = result.get("applied_code") or (review.refactored_code if review else None)
+
+def render_outcome(outcome: CodeReviewOutcome) -> str:
+    """The pipeline's findings as a short report for a model caller."""
+    review = outcome.review
+    parts = [f"### Code Review Summary (Score: {review.score}/10)", review.summary]
+    if review.issues:
+        parts.append("\n**Key Issues Found:**")
+        for issue in review.issues:
+            location = (
+                f"Line {issue.line_number}: " if issue.line_number is not None else ""
+            )
+            parts.append(f"- [{issue.severity.upper()}] {location}{issue.description}")
+    if outcome.tests:
+        execution = outcome.test_execution
+        result = (
+            "PASSED"
+            if execution and execution.passed
+            else (execution.status.upper() if execution else "NOT RUN")
+        )
+        parts.append(
+            f"\n### Tests: {result} ({len(outcome.tests.test_cases)} test cases)",
+        )
+    refactored = outcome.applied_code or review.refactored_code
     if refactored:
-        parts.append(f"\n### Suggested Refactored Code:\n```python\n{refactored}\n```")
-
-    return "\n".join(parts) if parts else "Code review completed with no output."
+        label = "Applied" if outcome.applied_code else "Suggested (not applied)"
+        parts.append(f"\n### {label} Refactored Code:\n```python\n{refactored}\n```")
+    return "\n".join(parts)
 
 
 def make_code_review_subagent(
@@ -55,9 +107,8 @@ def make_code_review_subagent(
 ) -> CompiledSubAgent:
     """Wrap the compiled review pipeline as a ``CompiledSubAgent``.
 
-    Defaults to ``build_code_review_graph`` on the shared SQLite checkpointer.
-    The last coordinator message is reviewed as Python source; each delegation
-    runs on a fresh thread.
+    Defaults to ``build_code_review_graph`` on the shared SQLite checkpointer. The last
+    coordinator message is reviewed as Python source; the envelope comes back as text.
     """
     review_graph = (
         graph
@@ -66,11 +117,7 @@ def make_code_review_subagent(
     )
 
     def run(state: dict[str, Any]) -> dict[str, Any]:
-        code = task_text_from_state(state)
-        result = review_graph.invoke(
-            {"code": code, "language": "python", "file_path": None},
-            config=new_delegation_config(),
-        )
-        return to_subagent_reply(_format_report(result))
+        result = run_code_review(review_graph, task_text_from_state(state))
+        return to_subagent_reply(result.to_text(render=render_outcome))
 
     return {"name": name, "description": description, "runnable": RunnableLambda(run)}

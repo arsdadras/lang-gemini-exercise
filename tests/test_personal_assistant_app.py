@@ -19,7 +19,8 @@ def store() -> InMemoryStore:
 
 
 def test_memory_preview_truncates_long_files_and_points_to_more(
-    store: InMemoryStore, capsys: pytest.CaptureFixture[str]
+    store: InMemoryStore,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     print_user_memories(store, "alice")
 
@@ -29,7 +30,10 @@ def test_memory_preview_truncates_long_files_and_points_to_more(
     assert "[5 more lines, /more shows everything]" in output
 
 
-def test_more_prints_every_line(store: InMemoryStore, capsys: pytest.CaptureFixture[str]) -> None:
+def test_more_prints_every_line(
+    store: InMemoryStore,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     print_user_memories(store, "alice", max_lines=None)
 
     output = capsys.readouterr().out
@@ -37,7 +41,9 @@ def test_more_prints_every_line(store: InMemoryStore, capsys: pytest.CaptureFixt
     assert "more lines" not in output
 
 
-def test_secrets_are_removed_from_user_input_with_a_notice(capsys: pytest.CaptureFixture[str]) -> None:
+def test_secrets_are_removed_from_user_input_with_a_notice(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     fake_key = "sk-proj-" + "a1B2c3D4" * 4
 
     sanitized = sanitize_user_input(f"remember my key {fake_key}")
@@ -46,6 +52,11 @@ def test_secrets_are_removed_from_user_input_with_a_notice(capsys: pytest.Captur
     assert "Removed 1 secret(s)" in capsys.readouterr().out
 
 
-def test_ordinary_input_passes_through_silently(capsys: pytest.CaptureFixture[str]) -> None:
-    assert sanitize_user_input("my email is sam@example.com") == "my email is sam@example.com"
+def test_ordinary_input_passes_through_silently(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    assert (
+        sanitize_user_input("my email is sam@example.com")
+        == "my email is sam@example.com"
+    )
     assert capsys.readouterr().out == ""

@@ -19,7 +19,11 @@ from agentlab.prompts.agents_prompt import build_repo_insight_prompt
 from agentlab.subagents.rag_subagent import make_rag_subagent
 
 # The backend's virtual root is the repository, so skill paths are repo-relative.
-REPO_INSIGHT_SKILLS_PATH = "/" + (SKILLS_RESOURCES_DIR / "repo_insight").relative_to(PROJECT_ROOT).as_posix() + "/"
+REPO_INSIGHT_SKILLS_PATH = (
+    "/"
+    + (SKILLS_RESOURCES_DIR / "repo_insight").relative_to(PROJECT_ROOT).as_posix()
+    + "/"
+)
 
 # The whole repository is visible, so secrets are denied explicitly and the agent
 # may not modify anything.
@@ -39,7 +43,9 @@ def make_repo_insight_agent(
     return create_deep_agent(
         model=llm_model.get(tier),
         system_prompt=build_repo_insight_prompt(),
-        checkpointer=checkpointer if checkpointer is not None else get_sqlite_checkpointer(),
+        checkpointer=checkpointer
+        if checkpointer is not None
+        else get_sqlite_checkpointer(),
         middleware=[make_model_fallback(tier)],
         subagents=[rag_subagent if rag_subagent is not None else make_rag_subagent()],
         skills=[REPO_INSIGHT_SKILLS_PATH],
