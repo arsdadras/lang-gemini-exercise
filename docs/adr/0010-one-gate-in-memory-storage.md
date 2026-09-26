@@ -12,7 +12,8 @@
   check for `block`, which meant two enforcement points and a translation object between the
   tool-call shape and the backend shape. The mentee objected that one enforcement point should
   do both, and a spike confirmed it: a backend that calls `interrupt()` itself pauses the run,
-  works for the general-purpose subagent, and needs no CLI change.
+  works for the general-purpose subagent, and needs no CLI change
+  (`EV-2026-09-17-memory-gate-spikes`).
 - **Custom middleware doesn't reach the general-purpose subagent** (`deepagents/graph.py:776`),
   while the backend is shared by every agent.
 - **A resumed run re-runs the tool.** With a model in the decision path, a verdict computed
@@ -55,7 +56,8 @@
 - The gate runs twice per approved change (before the pause and after the resume); only the
   guard call is saved by the cache.
 - Sensitive facts reach the user as approval prompts, which is friction the C2 eval measures.
-- Script repair is partial: live runs cut leaked lines from 215 to 55 across three long plans.
+- Script repair is partial: live runs cut leaked lines from 215 to 55 across three long plans
+  (`EV-2026-09-17-finglish-line-repair`).
   The root cause is the assistant model, and choosing it is a C2 measurement.
 
 ## Alternatives considered

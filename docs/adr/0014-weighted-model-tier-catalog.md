@@ -57,7 +57,7 @@
       `generate_node`, `groundedness_middleware`, `security_guard_middleware`,
       `code_review_node`'s three chains, `skill_designer_node`, `memory_consolidation_node`
       (the last pinned to `claude-sonnet-5` on a 6/6-vs-4/6 result already recorded in
-      ADR-0012). These are the specific things each project's lessons demonstrate working, or a
+      ADR-0012; see the erratum below). These are the specific things each project's lessons demonstrate working, or a
       security boundary; none has a live-verified opensource-tier baseline to fall back to.
 
 ## Consequences
@@ -88,3 +88,9 @@
   3: verify before handing over).
 - **Keep hand-ordered tiers and only refresh model ids:** rejected; it satisfies "update" but
   not "optimize the selection system," which the mentee asked for explicitly and separately.
+
+## Erratum (2026-09-26)
+
+The consolidator comparison cited above is 3/3 vs 0/3 in ADR-0012, not 6/6 vs 4/6; the two
+records of that run disagree (`EV-2026-09-19-consolidator-model-comparison`). The pin and this
+decision are unchanged; research is reconciling the records (LD-005).

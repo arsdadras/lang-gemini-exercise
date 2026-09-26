@@ -1,0 +1,94 @@
+# Backlog
+
+Every candidate that isn't a stage's hard concept, triaged by the lead. **E** = essential,
+**N** = nice-to-have. An item is either scheduled into a named stage (the Definition of Ready
+pulls it in) or parked behind a concrete trigger. The mentor's live code issues stay in its
+[state](../mentor/STATE.md); new ideas arrive as request or notice messages and are triaged here.
+
+Re-triaged from the handoff backlog on 2026-09-26 under [principles](../../library/governance/principles.md) 2-3:
+priorities were re-judged at production load, and items that are already a stage's hard concept
+were dropped from this list (the roadmap owns them).
+
+## Scheduled
+
+**Lead, now**
+- **E:** Design cards for P1-P4 with point 16 (production path), each before its R stage: P1
+  before R1, P2 before R2, P3 before R3, P4 before R4 (DEC-006).
+- **E:** Record the R0 specialist contract as an ADR when R0 closes, from the mentor's state.
+- **N:** Add point 16 (production path) to the P5 design card.
+
+**R0, the specialist contract** (mentor-direct)
+- **E:** Shared eval-lite harness; first consumer R1.
+- **E:** Chat prompts split from worker prompts (the chat template reaches every agent today).
+- **E:** Per-app checkpoint databases, so `list` stops mixing apps' threads.
+- **E:** Untrack and delete the old `src/data/dbs/checkpoints.db` (needs the user's OK: deleting
+  data).
+- **E:** An explicit timeout on every external call: models, embeddings, search, HTTP. A call
+  that can hang forever never produces a failure the contract can classify (LD-006).
+- **E:** Evidence IDs in code comments that carry measurements (LD-008).
+
+**R1, P1**
+- **E:** The unused groundedness middleware wired in for citation checks.
+- **E:** A search budget replaces approving every search.
+- **N:** Finglish repair on P1's report (Perso-Arabic leaked in a `lab-brief` run).
+- **N:** Decide whether the coordinator's `researcher` becomes a `CompiledSubAgent` over
+  `run_research`, once the budget exists.
+
+**R2, P2**
+- **E:** Incremental re-index with stale-source detection; rebuild the stale index; index the
+  agents and apps as well.
+- **E:** Ungrounded answers rerouted to query rewrite or web search instead of a disclaimer.
+- **E:** The groundedness check on the web fallback path too.
+- **N:** Batch document grading.
+- **E:** Hybrid retrieval (BM25 + vector + reranker) as the first change judged by R2's metrics
+  (DEC-013).
+
+**R3, P3**
+- **E:** Diff and multi-file input.
+
+**R4, P4**
+- **N:** Carry the typed envelope into a DeepAgents coordinator's state, not only its text (extra
+  state keys from a `CompiledSubAgent` reach the parent).
+
+**P5 teaching pass**
+- **E:** Compare assistant models in C2: script leakage per line, false "saved" claims, guard
+  agreement. The Finglish repair only mitigates the leak.
+
+**R5, close**
+- **E:** Secret redaction and trace masking in every app, and one LangSmith project per app.
+- **E:** One CLI approval loop (`run_with_hitl` and `stream_with_hitl` overlap).
+- **N:** Remove `utils/time_travel_util.py` unless a consumer appears.
+- **N:** Clearer approval prompts; the approved tool call printed twice after an HITL resume.
+- **N:** Study guides for P1 and P2.
+
+**P6-B2, failure by error class**
+- **N:** A typed failure class on the envelope (`transient | permanent`), once a caller branches
+  on it.
+- **N:** Model-output errors (structured output failing validation) as a recoverable class.
+- **N:** Model callers of `web_search` still get Tavily errors as text; revisit with the
+  recoverable class.
+
+## Parked
+
+| Item | Priority | Trigger |
+| :--- | :--- | :--- |
+| Measure the `opensource` tier on this repo's structured-output schemas and tool calling | E | Requested from research (LD-005); required before any more call sites move to that tier |
+| A TypeSafe API key, so Jev can be measured against the other deciders | N | Before P8-C2 closes; a user action (research's OB-07) |
+| Embedding-provider failover (Gemini 3072-dim vs OpenAI 1536-dim collections) | N | A composed workflow must survive an embeddings outage (review at P6-B2) |
+| Grow the P5 security guard into a policy-parameterized security agent | N | A second consumer needs tools in its judgment: documents in P7, action permissions in P8 or P11 |
+| DeepAgents harness profiles | N | A fallback model needs different prompts or tool descriptions than the primary |
+| Semantic search over memory (per fact, index kept in sync on every write) | N | Memory that can't load whole: episodic memory, or customer context at support scale (P8-B1); plan it as its own stage then |
+| HITL "edit" decision for sandbox commands | N | A stage whose approvals need argument edits rather than approve/reject |
+| Sandbox filesystem snapshots alongside checkpoints | N | Time travel over side effects is taught (Term E, E1) |
+| Session-scoped or remote sandbox workspaces | N | Term E, E1 |
+
+## Deep-dive candidates
+
+None yet ([PEDAGOGY.md](PEDAGOGY.md#digressions-and-deep-dives)).
+
+## Closed in triage
+
+- **Wire `rag_subagent` into the researcher:** superseded by P6-A1, where the workflow composes P1
+  and P2 instead.
+- **System-1 decision layer:** now a planned stage, P8-C3 (DEC-004).
+- **Surface approvals raised inside subagents:** the hard concept of P6-B3.
