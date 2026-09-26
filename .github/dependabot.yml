@@ -1,0 +1,19 @@
+# Keeps the stack current (library/engineering/dependency-policy.md).
+version: 2
+updates:
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 5
+    groups:
+      langchain:
+        patterns: ["langchain*", "langgraph*", "deepagents", "langsmith"]
+      python:
+        patterns: ["*"]
+        # ruff is pinned exactly: each bump arrives as its own reviewed pull request.
+        exclude-patterns: ["ruff"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
