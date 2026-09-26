@@ -131,7 +131,9 @@ TIER_WEIGHTS: dict[str, ModelScore] = {
     "high": ModelScore(speed=0.15, power=0.60, cost=0.25),  # capability leads
     "medium": ModelScore(speed=0.25, power=0.25, cost=0.50),  # cost leads
     "low": ModelScore(speed=0.55, power=0.10, cost=0.35),  # speed leads
-    "opensource": ModelScore(speed=0.25, power=0.30, cost=0.45),  # cost leads, power over speed
+    "opensource": ModelScore(
+        speed=0.25, power=0.30, cost=0.45
+    ),  # cost leads, power over speed
 }
 
 
@@ -213,9 +215,9 @@ _TEST_MODE_WEIGHT = ModelScore(speed=0.35, power=0.15, cost=0.50)
 _TEST_TIER_CANDIDATES = ("free", "opensource", "low")
 TEST_TIER = max(
     _TEST_TIER_CANDIDATES,
-    key=lambda tier: _CANDIDATE_SCORES[tier][
-        next(iter(MODEL_TIERS[tier]))
-    ].weighted(_TEST_MODE_WEIGHT),
+    key=lambda tier: _CANDIDATE_SCORES[tier][next(iter(MODEL_TIERS[tier]))].weighted(
+        _TEST_MODE_WEIGHT
+    ),
 )
 
 # Test-mode profiles: with LLM_TEST_MODE=true, ``LLM_TEST_PROFILE=<name>`` picks which cheap
