@@ -23,3 +23,4 @@ Only the retiring file's owner archives it ([ownership.md](../library/governance
 | [docs/MENTORING.md](docs/MENTORING.md) | 2026-09-27 | mentor | [offices/mentor/README.md](../offices/mentor/README.md) and [library/governance/](../library/governance/principles.md) |
 | [docs/MENTOR_HANDOFF.md](docs/MENTOR_HANDOFF.md) | 2026-09-27 | mentor | [offices/mentor/STATE.md](../offices/mentor/STATE.md) and [LOG.md](../offices/mentor/LOG.md) |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | 2026-09-27 | lead | [offices/lead/ROADMAP.md](../offices/lead/ROADMAP.md) |
+| [HANDOFF_LOCAL.md](HANDOFF_LOCAL.md) | 2026-09-27 | lead | [offices/lead/STATE.md](../offices/lead/STATE.md); the snapshot branch is the tag `archive/handoff-local-snapshot` |
