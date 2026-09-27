@@ -73,7 +73,6 @@ were dropped from this list (the roadmap owns them).
 | Item | Priority | Trigger |
 | :--- | :--- | :--- |
 | Measure the `opensource` tier on this repo's structured-output schemas and tool calling | E | Requested from research (LD-005); required before any more call sites move to that tier |
-| A TypeSafe API key, so Jev can be measured against the other deciders | N | Before P8-C2 closes; a user action (research's OB-07) |
 | Embedding-provider failover (Gemini 3072-dim vs OpenAI 1536-dim collections) | N | A composed workflow must survive an embeddings outage (review at P6-B2) |
 | Grow the P5 security guard into a policy-parameterized security agent | N | A second consumer needs tools in its judgment: documents in P7, action permissions in P8 or P11 |
 | DeepAgents harness profiles | N | A fallback model needs different prompts or tool descriptions than the primary |
@@ -83,7 +82,7 @@ were dropped from this list (the roadmap owns them).
 | Session-scoped or remote sandbox workspaces | N | Term E, E1 |
 | A guard against direct pushes to `main`: a pre-push hook through `core.hooksPath`, installed by `scripts/setup_worktrees.py` (GitHub can't protect a private repo's branch on the Free plan) | N | A direct push to `main` happens |
 | A weekly cloud routine running research's upstream watch on branch `research` (DEC-020) | E | Research replies to LD-015 with its watch procedure |
-| Library placement of research's `library/engineering/decision-models.md` (written outside its office, not in the index; its content is untouched until then) | E | The user opens the Jev file ("parvande-ye Jev ro shoru konim"); the placement is a lead decision |
+| Library placement of research's decision-model design guide (now `offices/research/landscape/decision-models/design-guide.md`; RS-011 withdrawn) | E | The Jev file's joint review with the user ([dossier](artifacts/jev-dossier.md), item 7 of its joint-review list) |
 
 ## Deep-dive candidates
 
@@ -91,6 +90,8 @@ None yet ([PEDAGOGY.md](PEDAGOGY.md#digressions-and-deep-dives)).
 
 ## Closed in triage
 
+- **A TypeSafe API key to measure Jev:** obsolete 2026-09-27; the user's OpenRouter key reaches
+  Jev, and research measured it that way (RS-007 withdrawn, `EV-2026-09-27-jev-openrouter`).
 - **Automatic message awareness (item e):** built 2026-09-27: prompt hook, `/inbox` and `/loop`,
   the Messages workflow (DEC-020, ADR-0020); the research routine is parked above.
 - **Per-role worktrees, identity in role files, session hooks, `/handoff` (items a-d):** built

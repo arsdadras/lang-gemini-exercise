@@ -57,7 +57,7 @@ DeepAgents, and LangSmith releases, docs, and announcements. Start from what the
 Managed Deep Agents, the LLM Gateway. For each change that touches an API the curriculum teaches
 or plans, send the lead a notice naming the stage it affects.
 
-### LD-004 | to research | notice | open
+### LD-004 | to research | notice | closed
 
 Issued 2026-09-26.
 
@@ -154,7 +154,7 @@ Move into your worktree ([ADR-0019](../../docs/adr/0019-role-worktrees-hooks-and
 Accepted when: your reply names the commit that updates the charter, and `out/state/` exists in
 the mentor's worktree.
 
-### LD-011 | to research | directive | open
+### LD-011 | to research | directive | closed
 
 Issued 2026-09-27 · Timing: **blocking**, at your next session start.
 Move into your worktree ([ADR-0019](../../docs/adr/0019-role-worktrees-hooks-and-handoff.md),
@@ -211,6 +211,32 @@ LangGraph, DeepAgents, LangSmith releases, changelog, blog, docs), what it recor
 when it sends the lead a notice, how it avoids repeating the last run, and how it ends
 (`/handoff --pr`). Reply with its path; the lead then schedules the routine (DEC-020).
 
+### LD-016 | to mentor | directive | open
+
+Issued 2026-09-28 · Timing: **R0 topic 3** (the shared eval-lite harness), before its design is
+fixed.
+
+The harness's first consumer, R1's claim check, is a decision point: one yes or no per claim,
+answered today by an LLM (`response_groundedness`). Every later decision point (R2's graders,
+the P5 guard, routing) is measured the same way, whatever backend answers it (research's BR-003
+A10; the lead's [Jev dossier](artifacts/jev-dossier.md), section 2, row d). Make a decision point
+a first-class dataset in the harness:
+
+- a case carries the expected label, which errors are unsafe (less strict than the label), and a
+  Finglish flag;
+- a result carries the predicted label, the probability or margin when the backend gives one,
+  which backend or path answered, latency, and cost;
+- the report gives accuracy per class, unsafe errors, p50 and p95 latency, cost, and coverage at a
+  threshold when probabilities exist;
+- the harness holds no backend-specific code: a scenario injects its decider.
+
+Research's labeled cases can seed the first set
+(`EV-2026-09-26-laya-all-checkpoints/artifacts/cases.json`: relevance, groundedness, intent,
+guard).
+
+Accepted when: the harness runs one decision-point set with the current LLM decider and prints
+those metrics, and unit tests cover it with a scripted fake decider.
+
 ## Closed
 
 - LD-001 (2026-09-27): verified; the mentor's office, archive, and study-guide moves merged in
@@ -218,6 +244,9 @@ when it sends the lead a notice, how it avoids repeating the last run, and how i
 - LD-002 (2026-09-27): verified; research's office is at `offices/research/`, reply RS-013.
 - LD-007 (2026-09-27): verified; `failure_util` classifies `httpx2`, with tests, reply MN-004.
 - LD-009 (2026-09-27): superseded by LD-012.
+- LD-004 (2026-09-28): read and matched against research's records, reply RS-016.
+- LD-011 (2026-09-28): verified; research's charter has its Sessions section (`4c67a0e`, merged
+  in pull request #7), reply RS-015.
 
 - DIR-001 to DIR-003 (2026-09-26): superseded by LD-001 and the lead's own `AGENTS.md` update.
 - DIR-004 (2026-09-26): superseded; `docs/ROADMAP.md` is lead-owned and is archived by the lead
