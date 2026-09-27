@@ -13,7 +13,8 @@ Read first in every lead session; rewrite it, don't append. Program status in on
   green). Local `main` still holds the mentor's uncommitted R0 topic 2 work (suite red on
   purpose: an exercise state) and research's uncommitted office under `docs/research/` plus
   `library/engineering/decision-models.md`; all stay theirs to commit (RSK-11). Dependabot
-  pull request #2 (`setuptools>=84` in `build-system.requires`) is open.
+  pull request #2 (`setuptools>=84` in `build-system.requires`) was merged after `uv build`
+  was verified (`60af073`).
 
 ## Open messages
 
@@ -22,7 +23,12 @@ LD-008 (mentor, R0 close), LD-009 (all). Details in [OUTBOX.md](OUTBOX.md).
 
 ## Reserved for the user
 
-- Research's Jev investigation: the lead reviews it only when the user opens that file.
+- Research's Jev investigation: the lead reviews it only when the user opens that file
+  ("parvande-ye Jev ro shoru konim"). Until then research's untracked
+  `library/engineering/decision-models.md` is neither touched nor committed; its library
+  placement is a lead decision at that point ([BACKLOG.md](BACKLOG.md), Parked).
+- The go-ahead for the per-role worktrees, hooks, and `/handoff` (backlog items a-d): the user
+  says the working tree is clean.
 - Archive `docs/ROADMAP.md` (superseded v3): the local lead's attempt was blocked, so it waits
   for the user's word.
 - Local machine: rebuild the broken main `.venv` with the IDE closed (`uv sync`); keep one `uv`
@@ -38,7 +44,10 @@ LD-008 (mentor, R0 close), LD-009 (all). Details in [OUTBOX.md](OUTBOX.md).
 4. Write the P1 design card (point 16 included) before R1 opens; then P2-P4 before their stages.
 5. When R0 closes: record the specialist contract as an ADR, update
    [ARCHITECTURE.md](ARCHITECTURE.md) "Current system", and make R1 ready.
-6. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
+6. On the user's word that the tree is clean: build backlog items a-d (worktrees, hooks,
+   `/handoff`), write the ADR and DECISIONS entry, update the policies, `AGENTS.md`, and
+   `CLAUDE.md`, send the move-in messages, verify on Windows, and report once.
+7. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
 
 ## Session log
 
@@ -51,3 +60,7 @@ LD-008 (mentor, R0 close), LD-009 (all). Details in [OUTBOX.md](OUTBOX.md).
   knowledge-graph findings decided (DEC-011 to DEC-013); research's outbox dispositioned
   (DEC-014); messages LD-001 to LD-009. Moved mid-session from the local machine to a cloud
   session.
+- **2026-09-27, session 3 (local).** Synced local `main` with the cloud merge; kept the mentor's
+  `AGENTS.md` hunk; fixed `check_docs.py` paths on Windows; merged Dependabot #2 after verifying
+  `uv build`; recorded the per-role worktree, hooks, and `/handoff` plan (backlog items a-e) for
+  the user's go-ahead, and the Jev-related library placement as a held decision.

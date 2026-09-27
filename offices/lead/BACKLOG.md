@@ -17,6 +17,40 @@ were dropped from this list (the roadmap owns them).
 - **E:** Record the R0 specialist contract as an ADR when R0 closes, from the mentor's state.
 - **N:** Add point 16 (production path) to the P5 design card.
 
+**Lead, when the user says the working tree is clean** (user direction 2026-09-27; the mentor
+and research have committed their current work first; recorded in DECISIONS.md with an ADR when
+implemented; then `git-policy.md`, `dev-environment.md`, `protocol.md` "Sessions", `AGENTS.md`,
+and `CLAUDE.md` follow, and LD messages tell the mentor and research how to move in; verified on
+Windows)
+- **E: (a) One worktree and branch per role.** `../lce-lead`, `../lce-mentor`, `../lce-research`
+  on branches `lead`, `mentor`, `research`, each with its own `.venv`; every role reaches `main`
+  by pull request, CI gates, the lead merges. Removes the shared working tree (RSK-01, RSK-11)
+  and the shared-`.venv` breakage. To settle while building it:
+  - `.env` is copied into each worktree (gitignored); never a parent-directory `.env`, which
+    `load_dotenv()`'s upward search would also hand to sibling projects.
+  - Runtime data is per checkout (`out/`, `.chroma_index/`, P5's SQLite): the mentor's worktree
+    takes over the current `out/state/` and index; lead and research start empty.
+  - The learner types exercises in the mentor's worktree, so the IDE opens it; `alireza/`
+    stays in the main checkout, which stays on a clean `main` and runs no session.
+  - `scripts/inbox.py` reads every role's outbox from `origin/<role>` as well as `main`, so a
+    message doesn't wait for a merge.
+  - Verify in the Claude Code docs whether auto-memory is shared across a repo's worktrees or
+    keyed by path; the mentor's memories must stay reachable from its worktree.
+  - Shared files with more than one writer (`AGENTS.md` sections, `uv.lock`) are the only
+    expected merge conflicts; keep role paths disjoint.
+- **E: (b) Identity in role files, not sessions.** Sessions are short and disposable; each
+  starts with `/lead`, `/research`, or the mentor default and rebuilds context from its
+  `STATE.md` and inbox, instead of one long session compacted again and again.
+- **E: (c) Hooks in `.claude/settings.json`** (verify the hook API in the Claude Code docs; test
+  on Windows). SessionStart prints `git status`, the head of the role's `STATE.md`, and its
+  inbox, taking the role from the worktree's branch; Stop warns about uncommitted changes and
+  never blocks (the mentor's exercise state is uncommitted on purpose). Hook commands run a
+  Python script through `uv run` so they behave the same on every shell.
+- **E: (d) A `/handoff` skill** for a session's end: update `STATE.md`, commit (a `wip:` commit on
+  the role branch if unfinished), push, and print a three-line summary. Pull requests are
+  squash-merged, so `wip:` commits never reach `main`. Switching between local and cloud then
+  needs only a pull.
+
 **R0, the specialist contract** (mentor-direct)
 - **E:** Shared eval-lite harness; first consumer R1.
 - **E:** Chat prompts split from worker prompts (the chat template reaches every agent today).
@@ -81,6 +115,8 @@ were dropped from this list (the roadmap owns them).
 | HITL "edit" decision for sandbox commands | N | A stage whose approvals need argument edits rather than approve/reject |
 | Sandbox filesystem snapshots alongside checkpoints | N | Time travel over side effects is taught (Term E, E1) |
 | Session-scoped or remote sandbox workspaces | N | Term E, E1 |
+| (e) Automatic awareness of new messages: the SessionStart inbox hook; a `/loop` in a long-running session that checks the inbox every N minutes; scheduled cloud routines (research's upstream watch); a GitHub Actions job listing new open messages on each push to `main` | N | (a)-(d) have run for a week without coordination trouble |
+| Library placement of research's `library/engineering/decision-models.md` (written outside its office, not in the index; its content is untouched until then) | E | The user opens the Jev file ("parvande-ye Jev ro shoru konim"); the placement is a lead decision |
 
 ## Deep-dive candidates
 
