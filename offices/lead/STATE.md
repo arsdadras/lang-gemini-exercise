@@ -4,13 +4,16 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 [ROADMAP.md](ROADMAP.md) "Now, next, later". Live teaching status: the mentor's
 [state](../mentor/STATE.md).
 
-- **Last lead session:** 2026-09-26 (session 2), run in a cloud session on branch
-  `main-1le51z`, after the local session was stopped and handed off (`handoff/local-snapshot`).
+- **Last lead session:** 2026-09-27 (session 3, local): synced local `main` after session 2,
+  which ran in a cloud session on branch `main-1le51z` (`handoff/local-snapshot`).
 - **Repo:** the stack upgrade (`0d27fa8`) and the three-offices restructure were merged into
-  `main` by pull request on 2026-09-27, with CI green. The lead role continues in the local
-  session from here. Local `main` holds the mentor's uncommitted R0 topic 2 work (suite red on
-  purpose: an exercise state) and research's uncommitted office under `docs/research/`; both
-  are preserved on `handoff/local-snapshot` and stay theirs to commit (RSK-11).
+  `main` by pull request on 2026-09-27, with CI green. On 2026-09-27 the local lead
+  fast-forwarded local `main` to it, kept the mentor's convention-11 hunk in `AGENTS.md`
+  uncommitted, and fixed `scripts/check_docs.py` to print POSIX paths on Windows (`439b62f`, CI
+  green). Local `main` still holds the mentor's uncommitted R0 topic 2 work (suite red on
+  purpose: an exercise state) and research's uncommitted office under `docs/research/` plus
+  `library/engineering/decision-models.md`; all stay theirs to commit (RSK-11). Dependabot
+  pull request #2 (`setuptools>=84` in `build-system.requires`) is open.
 
 ## Open messages
 
@@ -19,7 +22,6 @@ LD-008 (mentor, R0 close), LD-009 (all). Details in [OUTBOX.md](OUTBOX.md).
 
 ## Reserved for the user
 
-- Local `main` pulls the merged `main` before any local session commits again (RSK-11).
 - Research's Jev investigation: the lead reviews it only when the user opens that file.
 - Archive `docs/ROADMAP.md` (superseded v3): the local lead's attempt was blocked, so it waits
   for the user's word.
