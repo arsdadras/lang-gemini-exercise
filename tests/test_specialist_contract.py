@@ -8,12 +8,14 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
+import httpx
+import pytest
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage
 from langgraph.store.memory import InMemoryStore
 from langgraph.types import Interrupt
 
-from agentlab.nodes import rag_node
+from agentlab.nodes import code_review_node, rag_node
 from agentlab.schemas.output import code_review_output_schema as review_schemas
 from agentlab.schemas.output.research_output_schema import ResearchReport, Source
 from agentlab.schemas.output.specialist_output_schema import (
@@ -26,6 +28,7 @@ from agentlab.subagents.interpreter_subagent import run_interpreter
 from agentlab.subagents.rag_subagent import run_rag
 from agentlab.subagents.research_subagent import run_research
 from agentlab.tools.user_context_tool import read_user_context
+from agentlab.tools.web_search_tool import WebSearchError
 from agentlab.utils.subagent_util import pending_approvals
 
 
@@ -46,6 +49,28 @@ class Returns:
         if self.effect:
             self.effect()
         return self.state
+
+
+class Raises:
+    """A graph or agent stand-in whose ``invoke`` raises ``error``, after an optional side effect."""
+
+    def __init__(self, error: Exception, effect: Any = None) -> None:
+        self.error = error
+        self.effect = effect
+
+    def invoke(
+        self, payload: Any, config: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        if self.effect:
+            self.effect()
+        raise self.error
+
+
+def rejected(status: int) -> httpx.HTTPStatusError:
+    """A real HTTP error with ``status``, as a provider SDK's transport raises it."""
+    request = httpx.Request("POST", "https://api.example/v1")
+    response = httpx.Response(status, request=request)
+    return httpx.HTTPStatusError(f"HTTP {status}", request=request, response=response)
 
 
 def approval_interrupt(name: str) -> Interrupt:
@@ -163,23 +188,43 @@ def test_rag_without_a_supported_answer_fails_without_output() -> None:
     assert (nothing.status, nothing.output) == ("failed", None)
 
 
-def test_the_web_fallback_records_its_source_and_urls() -> None:
+def test_the_web_search_keeps_its_urls_and_the_answer_records_its_source() -> None:
     results = {"results": [{"url": "https://a.example", "content": "A"}]}
-    with (
-        patch.object(rag_node, "make_web_search_tool") as tool,
-        patch.object(
-            rag_node.llm_model,
-            "chain",
-            return_value=lambda _: AIMessage(content="From A."),
-        ),
-    ):
+    with patch.object(rag_node, "make_web_search_tool") as tool:
         tool.return_value.invoke.return_value = results
-        update = rag_node.web_search_fallback_node({"question": "q"})
+        searched = rag_node.web_search_node({"question": "q"})
+    with patch.object(
+        rag_node.llm_model,
+        "chain",
+        return_value=lambda _: AIMessage(content="From A."),
+    ):
+        answered = rag_node.generate_from_web_node({"question": "q", **searched})
 
-    assert update["answer_source"] == "web"
-    assert [document.metadata["source"] for document in update["documents"]] == [
+    assert [document.metadata["source"] for document in searched["documents"]] == [
         "https://a.example",
     ]
+    assert answered == {"generation": "From A.", "answer_source": "web"}
+
+
+def test_a_web_search_outage_is_raised_not_reported_as_no_results() -> None:
+    outage = {"error": ValueError("Error 503: Service Unavailable")}
+    with patch.object(rag_node, "make_web_search_tool") as tool:
+        tool.return_value.invoke.return_value = outage
+        with pytest.raises(WebSearchError) as raised:
+            rag_node.web_search_node({"question": "q"})
+
+    assert raised.value.status_code == 503
+
+
+def test_rag_fails_on_an_outage_but_raises_a_bug() -> None:
+    down = httpx.ConnectError("connection refused")
+
+    result = run_rag(Raises(down), "q")
+
+    assert (result.status, result.output) == ("failed", None)
+    assert result.reason.startswith("An external service was unavailable")
+    with pytest.raises(KeyError):
+        run_rag(Raises(KeyError("generation")), "q")
 
 
 # --- P1 -------------------------------------------------------------------------------------
@@ -220,6 +265,12 @@ def test_research_with_a_cited_report_is_ok() -> None:
 
 def test_research_without_a_report_fails() -> None:
     assert run_research(Returns({"messages": []}), "topic").status == "failed"
+
+
+def test_research_fails_when_every_provider_is_down() -> None:
+    result = run_research(Raises(rejected(503)), "topic")
+
+    assert result.status == "failed" and "unavailable" in result.reason
 
 
 # --- P3 -------------------------------------------------------------------------------------
@@ -289,6 +340,31 @@ def test_a_review_that_never_happened_fails_with_the_pipeline_error() -> None:
     assert (result.status, result.reason) == ("failed", "LLM unavailable")
 
 
+def test_a_review_node_reports_an_external_failure_and_raises_a_bug() -> None:
+    def failing(error: Exception) -> Any:
+        def invoke(_: Any) -> Any:
+            raise error
+
+        return invoke
+
+    state = {"code": "x = 1"}
+    with patch.object(
+        code_review_node.llm_model, "chain", return_value=failing(rejected(401))
+    ):
+        update = code_review_node.review_code_node(state)
+    with (
+        patch.object(
+            code_review_node.llm_model, "chain", return_value=failing(TypeError("bug"))
+        ),
+        pytest.raises(TypeError),
+    ):
+        code_review_node.review_code_node(state)
+
+    assert update["error"].startswith(
+        "Review node failed: An external service rejected"
+    )
+
+
 # --- P4 -------------------------------------------------------------------------------------
 
 
@@ -311,6 +387,22 @@ def test_files_the_interpreter_writes_become_side_effects(tmp_path: Path) -> Non
     ]
 
 
+def test_an_artifact_changed_in_place_is_a_modified_side_effect(tmp_path: Path) -> None:
+    (tmp_path / "artifacts").mkdir()
+    report = tmp_path / "artifacts" / "report.md"
+    report.write_text("v1", encoding="utf-8")
+    agent = Returns(
+        {"messages": [AIMessage(content="Updated.")]},
+        effect=lambda: report.write_text("v2, longer", encoding="utf-8"),
+    )
+
+    result = run_interpreter(agent, "update the report", sandbox_dir=tmp_path)
+
+    assert [(effect.action, effect.target) for effect in result.side_effects] == [
+        ("modified", "artifacts/report.md"),
+    ]
+
+
 def test_an_interpreter_waiting_to_run_a_command_is_partial(tmp_path: Path) -> None:
     state = {
         "messages": [AIMessage(content="")],
@@ -320,6 +412,23 @@ def test_an_interpreter_waiting_to_run_a_command_is_partial(tmp_path: Path) -> N
     result = run_interpreter(Returns(state), "compute", sandbox_dir=tmp_path)
 
     assert result.status == "partial" and "execute" in result.reason
+
+
+def test_files_written_before_a_failure_are_still_reported(tmp_path: Path) -> None:
+    (tmp_path / "artifacts").mkdir()
+    agent = Raises(
+        httpx.ReadTimeout("model timed out"),
+        effect=lambda: (tmp_path / "artifacts" / "half.csv").write_text(
+            "a,b", encoding="utf-8"
+        ),
+    )
+
+    result = run_interpreter(agent, "compute", sandbox_dir=tmp_path)
+
+    assert result.status == "failed" and result.output is None
+    assert [(effect.action, effect.target) for effect in result.side_effects] == [
+        ("created", "artifacts/half.csv"),
+    ]
 
 
 # --- P5 -------------------------------------------------------------------------------------

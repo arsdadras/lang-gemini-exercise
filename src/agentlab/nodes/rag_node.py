@@ -15,7 +15,7 @@ from agentlab.prompts.nodes.rag_prompt import (
 from agentlab.retrieval.index_retrieval import get_retriever
 from agentlab.schemas.output.rag_output_schema import GradeDocument, GradeHallucination
 from agentlab.schemas.state.rag_state import RAGState
-from agentlab.tools.web_search_tool import make_web_search_tool
+from agentlab.tools.web_search_tool import make_web_search_tool, search_results
 from agentlab.utils.get_docs_context_util import get_docs_context
 from agentlab.utils.get_text_util import get_text
 
@@ -104,39 +104,31 @@ def check_hallucination_node(state: RAGState) -> dict:
     }
 
 
-def web_search_fallback_node(state: RAGState) -> dict:
-    """Answer from a live web search when the local corpus had nothing relevant."""
+def web_search_node(state: RAGState) -> dict:
+    """Search the web when the local corpus had nothing relevant; results become documents.
 
-    response = make_web_search_tool().invoke(
-        {"query": state["question"]},
+    Only the search happens here, so a retry policy on this node retries the search alone.
+    """
+    results = search_results(
+        make_web_search_tool().invoke({"query": state["question"]})
     )
-    results = response.get("results", [])
     if not results:
-        return {
-            "generation": NO_ANSWER,
-            "answer_source": "none",
-            "documents": [],
-        }
+        return {"generation": NO_ANSWER, "answer_source": "none", "documents": []}
+    documents = [
+        Document(page_content=result["content"], metadata={"source": result["url"]})
+        for result in results
+    ]
+    return {"documents": documents}
 
+
+def generate_from_web_node(state: RAGState) -> dict:
+    """Answer from the web search results."""
     context = "\n\n".join(
-        f"[{result['url']}]\n{result['content']}" for result in results
+        f"[{document.metadata['source']}]\n{document.page_content}"
+        for document in state.get("documents", [])
     )
     # "low", not "opensource": this is the user-facing answer, same reasoning as generate_node.
     answer = (GENERATE_FROM_WEB_PROMPT | llm_model.chain("low")).invoke(
-        {
-            "question": state["question"],
-            "context": context,
-        },
+        {"question": state["question"], "context": context},
     )
-    documents = [
-        Document(
-            page_content=result["content"],
-            metadata={"source": result["url"]},
-        )
-        for result in results
-    ]
-    return {
-        "generation": get_text(answer),
-        "answer_source": "web",
-        "documents": documents,
-    }
+    return {"generation": get_text(answer), "answer_source": "web"}
