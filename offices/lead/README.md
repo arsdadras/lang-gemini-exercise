@@ -67,15 +67,18 @@ The lead plans ahead of the mentor: a stage starts only when it meets the Defini
 
 ## Session protocol
 
-- **Start.** [STATE.md](STATE.md), then `uv run python scripts/inbox.py lead`, then `git log`
-  and `git status` since the last session.
-- **During.** Decide autonomously (Principle 10) and work to completion (Principle 11). Don't
-  touch files with another role's uncommitted changes.
-- **Every session:** verify replies and close messages; triage requests; check dependency drift
-  and open Dependabot pull requests ([dependency policy](../../library/engineering/dependency-policy.md));
-  run `scripts/check_docs.py`.
-- **End.** Update [STATE.md](STATE.md), commit and push the lead's paths
-  ([git policy](../../library/engineering/git-policy.md)), then report once.
+- **Where.** Lead sessions run in the lead's worktree, `../lce-lead`, on branch `lead`
+  ([git policy](../../library/engineering/git-policy.md)).
+- **Start.** Read the session hook's summary; merge `origin/main` when it says `main` has
+  moved; then [STATE.md](STATE.md) and the inbox (`python scripts/inbox.py lead --fetch`).
+- **During.** Decide autonomously (Principle 10) and work to completion (Principle 11). Keep a
+  session to one body of work; hand off and start fresh rather than let it grow long.
+- **Every session:** merge green pull requests from the role branches and Dependabot, then
+  fast-forward the main checkout; verify replies and close messages; triage requests; check
+  dependency drift ([dependency policy](../../library/engineering/dependency-policy.md)); run
+  `scripts/check_docs.py`.
+- **End.** `/handoff`: update [STATE.md](STATE.md), commit, push, and open or update the pull
+  request for what is ready; then report once.
 
 ## Reports
 

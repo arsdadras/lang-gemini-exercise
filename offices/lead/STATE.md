@@ -4,50 +4,43 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 [ROADMAP.md](ROADMAP.md) "Now, next, later". Live teaching status: the mentor's
 [state](../mentor/STATE.md).
 
-- **Last lead session:** 2026-09-27 (session 3, local): synced local `main` after session 2,
-  which ran in a cloud session on branch `main-1le51z` (`handoff/local-snapshot`).
-- **Repo:** the stack upgrade (`0d27fa8`) and the three-offices restructure were merged into
-  `main` by pull request on 2026-09-27, with CI green. On 2026-09-27 the local lead
-  fast-forwarded local `main` to it, kept the mentor's convention-11 hunk in `AGENTS.md`
-  uncommitted, and fixed `scripts/check_docs.py` to print POSIX paths on Windows (`439b62f`, CI
-  green). Local `main` still holds the mentor's uncommitted R0 topic 2 work (suite red on
-  purpose: an exercise state) and research's uncommitted office under `docs/research/` plus
-  `library/engineering/decision-models.md`; all stay theirs to commit (RSK-11). Dependabot
-  pull request #2 (`setuptools>=84` in `build-system.requires`) was merged after `uv build`
-  was verified (`60af073`).
+- **Last lead session:** 2026-09-27 (session 4, local, run from the main checkout while the lead
+  worktree was being built).
+- **Repo:** each role now has its own worktree and branch (ADR-0019): `D:/Repos/lce-lead`,
+  `lce-mentor`, `lce-research`, each with its own `.venv` and `.env`. The main checkout is a
+  clean `main`. The mentor's R0 topic 2 work and office migration merged as pull request #3
+  (`9ca81da`); the worktree setup merged as the lead's pull request (see the session log).
+  Branch protection isn't available on GitHub Free for a private repo, so "main only by pull
+  request" is policy ([BACKLOG.md](BACKLOG.md), Parked).
 
 ## Open messages
 
-LD-001 (mentor, blocking), LD-002 (research, blocking), LD-003 to LD-005 (research), LD-006 to
-LD-008 (mentor, R0 close), LD-009 (all). Details in [OUTBOX.md](OUTBOX.md).
+LD-003 to LD-005 (research), LD-006 and LD-008 (mentor, R0 close), LD-010 (mentor, blocking:
+move in), LD-011 (research, blocking: move in), LD-012 (all). Held, not triaged: research's
+RS-014 (BR-003, the Jev file). Details in [OUTBOX.md](OUTBOX.md).
 
 ## Reserved for the user
 
-- Research's Jev investigation: the lead reviews it only when the user opens that file
-  ("parvande-ye Jev ro shoru konim"). Until then research's untracked
-  `library/engineering/decision-models.md` is neither touched nor committed; its library
-  placement is a lead decision at that point ([BACKLOG.md](BACKLOG.md), Parked).
-- The go-ahead for the per-role worktrees, hooks, and `/handoff` (backlog items a-d): the user
-  says the working tree is clean.
-- Archive `docs/ROADMAP.md` (superseded v3): the local lead's attempt was blocked, so it waits
-  for the user's word.
-- Local machine: rebuild the broken main `.venv` with the IDE closed (`uv sync`); keep one `uv`
-  install on `PATH`.
+- Research's Jev investigation (RS-014, BR-003): the lead reviews it only when the user opens
+  that file ("parvande-ye Jev ro shoru konim"); the library placement of research's design guide
+  is decided then ([BACKLOG.md](BACKLOG.md), Parked).
+- Archive `docs/ROADMAP.md` (superseded v3): waits for the user's word.
+- Delete `handoff/local-snapshot` (not merged; its content is now on `main` through the
+  mentor's and research's own commits): needs the user's OK under the git policy.
 - A TypeSafe API key before P8-C2 closes (backlog).
+- Trust the project's hooks once when Claude Code asks; open each role's sessions in its
+  worktree.
 
 ## Agenda for the next lead session
 
-1. Verify replies to LD-001 and LD-002 against the repo; close them or send what is missing.
-   Then retire the precedence line in `CLAUDE.md` and close RSK-03.
-2. Once research has moved, make `scripts/check_docs.py` pass on the whole tree locally.
+1. Run in `D:/Repos/lce-lead`. Verify the replies to LD-010 and LD-011 (charters updated, runtime
+   data in the mentor's worktree); close them.
+2. Merge the role branches' green pull requests; fast-forward the main checkout.
 3. Triage research's upstream notices (LD-003) and briefs; decide on LD-005's results.
 4. Write the P1 design card (point 16 included) before R1 opens; then P2-P4 before their stages.
 5. When R0 closes: record the specialist contract as an ADR, update
    [ARCHITECTURE.md](ARCHITECTURE.md) "Current system", and make R1 ready.
-6. On the user's word that the tree is clean: build backlog items a-d (worktrees, hooks,
-   `/handoff`), write the ADR and DECISIONS entry, update the policies, `AGENTS.md`, and
-   `CLAUDE.md`, send the move-in messages, verify on Windows, and report once.
-7. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
+6. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
 
 ## Session log
 
@@ -64,3 +57,7 @@ LD-008 (mentor, R0 close), LD-009 (all). Details in [OUTBOX.md](OUTBOX.md).
   `AGENTS.md` hunk; fixed `check_docs.py` paths on Windows; merged Dependabot #2 after verifying
   `uv build`; recorded the per-role worktree, hooks, and `/handoff` plan (backlog items a-e) for
   the user's go-ahead, and the Jev-related library placement as a held decision.
+- **2026-09-27, session 4 (local).** Merged the mentor's pull request #3 (R0 topic 2, mentor
+  office). Built ADR-0019: one worktree and branch per role, `scripts/setup_worktrees.py`,
+  session hooks, `/handoff`, and an inbox that reads role branches; decided MN-002 (DEC-018);
+  closed LD-001, LD-002, LD-007, LD-009; sent LD-010 to LD-013.

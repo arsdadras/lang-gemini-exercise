@@ -11,6 +11,9 @@ dependencies = [
     # Lower bounds only: uv.lock pins exact versions, and Dependabot keeps both current
     # (dependency policy: library/engineering/dependency-policy.md).
     "deepagents>=0.7.19",
+    # HTTP stacks utils/failure_util.py imports by name to classify network failures (MN-002).
+    "httpx>=0.28.1",
+    "httpx2>=2.13.1",
     "langchain>=1.4.2",
     "langchain-core>=1.6.5",
     "langchain-chroma>=1.1.0",
@@ -25,6 +28,7 @@ dependencies = [
     "pydantic>=2.13.5",
     "python-dotenv>=1.2.3",
     "pyyaml>=6.0.3",
+    "requests>=2.34.2",
 ]
 
 [project.scripts]

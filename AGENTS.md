@@ -2,7 +2,8 @@
 
 Repo mechanics for any coding agent. Roles and rules: `CLAUDE.md` and `library/`
 ([index](library/README.md)). Plan: `offices/lead/ROADMAP.md`. Teaching state:
-`offices/mentor/STATE.md`.
+`offices/mentor/STATE.md`. Each role works in its own worktree and branch (`../lce-<role>`,
+[dev environment](library/engineering/dev-environment.md)).
 
 ## Project
 
@@ -34,12 +35,14 @@ src/agentlab/
   configs/         plain constants: paths, model catalog, one module per project
   resources/       packaged non-code files (agent skills)
 tests/             pytest suite
-scripts/           repo tooling: docs lint, inbox, live smoke, and their tests
+scripts/           repo tooling: docs lint, inbox, session hooks, handoff, worktree setup,
+                   live smoke, and their tests
 offices/           one office per role (lead, mentor, research): charter, state, outbox
 library/           shared canonical knowledge: principles, protocol, ownership, policies
 archive/           retired documents, frozen
 docs/              ADRs, design cards, and study guides (write-ups of finished projects)
 .github/           CI and Dependabot
+.claude/           Claude Code skills (/lead, /research, /handoff) and session hooks
 examples/          sample inputs (e.g. code to review)
 evals/             live eval-lite scenario sets (real models, run by hand, not by pytest)
 out/               runtime output, gitignored: sandbox/, state/checkpoints.db
@@ -115,7 +118,9 @@ uv run pytest                                   # tests
 uv run ruff check src tests scripts             # lint
 uv run ruff format src tests scripts            # format
 uv run python scripts/check_docs.py             # docs lint: links, anchors, library, outboxes
-uv run python scripts/inbox.py <role>           # open messages for lead, mentor, or research
+python scripts/inbox.py <role> --fetch          # open messages for lead, mentor, or research
+python scripts/handoff.py -m "<subject>" [--wip] [--pr]  # end a session (the /handoff skill)
+python scripts/setup_worktrees.py               # create or complete the role worktrees
 uv run python scripts/smoke_live.py             # live smoke of every integration (test mode)
 uv run lab-research                             # P1 web researcher (approve each search)
 uv run lab-rag                                  # P2 raw RAG graph (history / replay <i>)
@@ -166,9 +171,11 @@ Policy: [ADR-0004](docs/adr/0004-testing-and-evaluation-policy.md).
   directory.
 - Low-tier models sometimes claim a tool action they never took, and delegation reliability
   depends on explicit tool-choice guidance in the system prompt.
-- Never delete or recreate the shared `.venv` while a session or the IDE may be using it: on
-  Windows a held `ruff.exe` made a recreate fail halfway and left it broken
+- Never delete or recreate a `.venv` while a session or the IDE may be using it: on Windows a
+  held `ruff.exe` made a recreate fail halfway and left it broken. Each worktree has its own
   ([dev environment](library/engineering/dev-environment.md)).
+- A worktree's `CLAUDE.local.md` must stay ignored: tracked, it would give every checkout the
+  same role.
 
 ## Ask before
 

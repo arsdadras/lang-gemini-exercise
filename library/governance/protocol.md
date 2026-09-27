@@ -2,7 +2,7 @@
 title: Coordination protocol
 maintainer: lead
 status: current
-updated: 2026-09-26
+updated: 2026-09-27
 summary: How the offices and the user coordinate through outboxes, inboxes, and state files.
 related: [principles.md, ownership.md, ../../scripts/inbox.py]
 ---
@@ -17,7 +17,7 @@ office, and the offices talk only through files, never through memory.
 | **User** | none (`alireza/` is private scratch) | Sponsor, product owner, and learner; final authority |
 | **Lead** | [`offices/lead/`](../../offices/lead/README.md) | Decides and executes: direction, roadmap, architecture, technology, governance, git and GitHub |
 | **Mentor** | [`offices/mentor/`](../../offices/mentor/README.md) | Teaches the learner and implements the plan in lesson code |
-| **Research** | `offices/research/` (at `docs/research/` until it moves, LD-002) | Investigates, measures, and advises; decides nothing |
+| **Research** | [`offices/research/`](../../offices/research/README.md) | Investigates, measures, and advises; decides nothing |
 
 ## Files every office has
 
@@ -77,22 +77,31 @@ execution; investigation and analysis go to research, and the lead decides on it
 
 ## Sessions
 
-`CLAUDE.md` routes every session. It always loads `AGENTS.md`, [principles.md](principles.md),
-this protocol, and the mentor's charter, because the mentor is the default role. The other
-roles start with a user-invoked skill:
+Identity lives in files, not in sessions: a session is short and disposable, and every one of
+them rebuilds its context from its office's `STATE.md` and its inbox
+([ADR-0019](../../docs/adr/0019-role-worktrees-hooks-and-handoff.md)). A session plays one
+role; switching roles means a new session, in the other role's worktree.
 
-| Role | Starts with | First reads |
+| Role | Where its sessions run | Loads its charter through |
 | :--- | :--- | :--- |
-| Mentor | Any session (default) | [`offices/mentor/STATE.md`](../../offices/mentor/STATE.md), then its inbox |
-| Lead | `/lead` | [`offices/lead/README.md`](../../offices/lead/README.md), its `STATE.md`, then its inbox |
-| Research | `/research` | Its charter and `STATE.md`, then its inbox |
+| Mentor | `../lce-mentor` (branch `mentor`) | `CLAUDE.local.md` in its worktree |
+| Lead | `../lce-lead` (branch `lead`) | `CLAUDE.local.md`, or `/lead` |
+| Research | `../lce-research` (branch `research`) | `CLAUDE.local.md`, or `/research` |
 
-A session plays one role; switching roles means a new session.
+`CLAUDE.md` loads `AGENTS.md`, [principles.md](principles.md), and this protocol into every
+session. The session hook tells each session its role (from the worktree, or the branch name in
+a cloud session), what `main` has that its branch lacks, its uncommitted work, the head of its
+`STATE.md`, and its inbox ([dev-environment.md](../engineering/dev-environment.md)).
 
 ## Session rhythm
 
-- **Start:** your `STATE.md`, then your inbox.
-- **End:** update `STATE.md`, reply to what you acted on, and commit and push your own paths
+- **Start:** read the hook's summary. Merge `origin/main` into your branch when it says `main`
+  has moved, then read your `STATE.md` and act on your inbox.
+- **During:** keep sessions short; when one grows long, hand off and start a fresh one rather
+  than compacting the same session again and again.
+- **End:** `/handoff`: update `STATE.md`, reply to what you acted on, commit, push, and open a
+  pull request when the work is ready for `main`
   ([git-policy.md](../engineering/git-policy.md)).
-- **Lead, every session:** verify replies and close messages, triage requests, check dependency
-  drift and open Dependabot pull requests, run `scripts/check_docs.py`.
+- **Lead, every session:** merge green pull requests and fast-forward the main checkout, verify
+  replies and close messages, triage requests, check dependency drift and Dependabot, run
+  `scripts/check_docs.py`.

@@ -1,6 +1,7 @@
 # ADR-0018: Three offices, a shared library, an archive, and one message protocol
 
-- Status: Accepted. Amends [ADR-0016](0016-project-office-and-document-governance.md).
+- Status: Accepted. Amends [ADR-0016](0016-project-office-and-document-governance.md); its shared
+  working tree is replaced by one worktree per role ([ADR-0019](0019-role-worktrees-hooks-and-handoff.md)).
 - Date: 2026-09-26
 - Origin: user direction; design by the lead
 - Revisit when: a fourth role appears, or messages start being lost between offices
