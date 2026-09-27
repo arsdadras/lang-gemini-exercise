@@ -37,6 +37,8 @@ def make_draft_node(
     model: Runnable | None = None,
 ) -> Callable[[SkillDesignerState], dict]:
     """Build the node that drafts a skill from the request."""
+    # "medium": generative content feeding a HITL-approved published skill, low call
+    # volume (user-triggered), so quality outweighs the cost saving (ADR-0014).
     chain = SKILL_DESIGNER_PROMPT | (
         model if model is not None else llm_model.chain("medium", structured=SkillDraft)
     )

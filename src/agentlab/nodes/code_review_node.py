@@ -1,4 +1,9 @@
-"""Node functions for P3 Code Review & Test Generation graph."""
+"""Node functions for P3 Code Review & Test Generation graph.
+
+All three chains stay on the "medium" tier (see ADR-0014): this is P3's core deliverable
+quality (review findings, generated/fixed tests), with no live-verified opensource-tier
+baseline to fall back to.
+"""
 
 from typing import cast
 

@@ -8,19 +8,23 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "deepagents==0.7.10",
-    "langchain==1.4.0a1",
-    "langchain-core>=1.6.1",
+    # Lower bounds only: uv.lock pins exact versions, and Dependabot keeps both current
+    # (dependency policy: library/engineering/dependency-policy.md).
+    "deepagents>=0.7.19",
+    "langchain>=1.4.2",
+    "langchain-core>=1.6.5",
     "langchain-chroma>=1.1.0",
-    "langchain-google-genai>=4.3.2",
-    "langchain-openai==1.6.0",
+    "langchain-google-genai>=4.4.0",
+    "langchain-ollama>=1.1.0",
+    "langchain-openai>=1.6.6",
     "langchain-tavily>=0.2.18",
     "langchain-text-splitters>=1.1.2",
-    "langgraph>=1.2.10",
+    "langgraph>=1.2.12",
     "langgraph-checkpoint-sqlite>=3.1.1",
-    "pydantic>=2.13.4",
-    "python-dotenv==1.2.3",
-    "pyyaml>=6.0",
+    "langsmith>=0.14.1",
+    "pydantic>=2.13.5",
+    "python-dotenv>=1.2.3",
+    "pyyaml>=6.0.3",
 ]
 
 [project.scripts]
@@ -48,8 +52,9 @@ agentlab = ["resources/**/*"]
 dev = [
     "ipykernel>=7.3.0",
     "pytest>=9.1.1",
-    "ruff==0.16.5",
+    # Exact pin: a ruff release can add lint rules, so each bump is its own reviewed change.
+    "ruff==0.16.9",
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "scripts/tests"]

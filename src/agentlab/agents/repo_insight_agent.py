@@ -36,7 +36,7 @@ REPO_INSIGHT_PERMISSIONS = [
 def make_repo_insight_agent(
     checkpointer: BaseCheckpointSaver | None = None,
     *,
-    tier: str = "low",
+    tier: str = "low",  # paid tier only: tool-calling loop, not opensource/free (ADR-0014)
     rag_subagent: CompiledSubAgent | None = None,
 ) -> CompiledStateGraph:
     """Build the repo-insight coordinator (read-only view of the repository)."""

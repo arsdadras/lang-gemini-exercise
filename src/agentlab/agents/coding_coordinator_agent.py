@@ -20,7 +20,7 @@ from agentlab.subagents.research_subagent import make_researcher_subagent
 def make_coding_coordinator_agent(
     checkpointer: BaseCheckpointSaver | None = None,
     *,
-    tier: str = "low",
+    tier: str = "low",  # paid tier only: tool-calling loop, not opensource/free (ADR-0014)
     interpreter_subagent: CompiledSubAgent | None = None,
     code_review_subagent: CompiledSubAgent | None = None,
     extra_subagents: Sequence[SubAgent | CompiledSubAgent] = (),

@@ -1,17 +1,19 @@
 # Specialist Design Cards
 
-A design card is the contract for one specialist agent. It is written at the project's
-Session 0, before any implementation code. When the contract changes, edit the card and note
-why. Progress is recorded in `docs/MENTOR_HANDOFF.md`, not here.
+A design card is the contract for one specialist agent. The lead writes it before the
+project's Session 0 (or before the specialist's return-pass stage), and the mentor teaches from
+it; the mentor proposes changes as request messages to the lead. When the contract changes, the
+lead edits the card and notes why ([DEC-006](../../offices/lead/DECISIONS.md)). Progress is
+recorded in the mentor's [state](../../offices/mentor/STATE.md), not here.
 
 ## Index
 
 | Project | Card |
 | :--- | :--- |
-| P1-P4 | None (built before design cards existed; see `study_guides/` for P3 and P4) |
+| P1-P4 | Planned: written by the lead before R1-R4 respectively (built before design cards existed; `study_guides/` covers P3 and P4) |
 | P5 Memory-rich personal assistant | [P5_memory_assistant.md](P5_memory_assistant.md) |
 
-## Template (15 points)
+## Template (16 points)
 
 1. **User job:** the concrete problem it solves.
 2. **Role boundary:** what it owns, and what it refuses or delegates.
@@ -28,3 +30,6 @@ why. Progress is recorded in `docs/MENTOR_HANDOFF.md`, not here.
 13. **Cost and latency:** model tiers.
 14. **Privacy boundary:** what it may read, store, or transmit.
 15. **Phase C output:** the reusable artifact it hands to later projects.
+16. **Production path:** what changes at production load (concurrent users, tenants, data
+    volume, cost, failure rates) and the seam that makes each change a swap, not a rewrite
+    ([ARCHITECTURE.md](../../offices/lead/ARCHITECTURE.md#scale-seams) "Scale seams").

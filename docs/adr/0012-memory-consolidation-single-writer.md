@@ -8,7 +8,8 @@
 - **Hot-path writes dropped facts.** A live run of six conversations (2026-09-19) left the
   profile with a conflicting job, a duplicated diet fact, and a stale city and gym goal. Facts
   mentioned in passing ("recommend a restaurant in Karaj, I live here now") were never saved:
-  the assistant was busy with the actual request.
+  the assistant was busy with the actual request
+  (`EV-2026-09-19-hot-path-memory-writes`).
 - **The mentee proposed** that the assistant stop writing altogether, and that consolidation
   run in the background with its approvals asked the next time the user is back, instead of
   making the user wait at the end of a conversation.
@@ -19,7 +20,7 @@
 - **Skipping an `interrupt()` on re-run shifts resume values** (verified by spike, LangGraph
   1.2.11). Resume values are matched to `interrupt()` calls by order within a node. The first
   build skipped files already stored before a pause, so the second question received the
-  first answer: a rejected change was stored.
+  first answer: a rejected change was stored (`EV-2026-09-22-interrupt-resume-order`).
 
 ## Decision
 
@@ -36,7 +37,8 @@
   one approval and a resumed run asks exactly the question it paused on.
 - **Additions run first,** so ordinary facts land even if the user never reviews the rest.
 - **The consolidator model is pinned to `claude-sonnet-5`** (medium tier): it resolved an
-  implicit diet conflict 3/3 where `gpt-5.6-terra` resolved it 0/3.
+  implicit diet conflict 3/3 where `gpt-5.6-terra` resolved it 0/3
+  (`EV-2026-09-19-consolidator-model-comparison`).
 
 ## Consequences
 

@@ -1,7 +1,8 @@
 # AGENTS.md
 
-Repo mechanics for any coding agent. Mentoring rules: `docs/MENTORING.md`.
-Current state: `docs/MENTOR_HANDOFF.md`. Curriculum: `docs/ROADMAP.md`.
+Repo mechanics for any coding agent. Roles and rules: `CLAUDE.md` and `library/`
+([index](library/README.md)). Plan: `offices/lead/ROADMAP.md`. Teaching state:
+`offices/mentor/STATE.md`.
 
 ## Project
 
@@ -33,8 +34,13 @@ src/agentlab/
   configs/         plain constants: paths, model catalog, one module per project
   resources/       packaged non-code files (agent skills)
 tests/             pytest suite
-docs/              roadmap, handoff, mentoring contract, ADRs, design cards
+scripts/           repo tooling: docs lint, inbox, live smoke, and their tests
+offices/           one office per role (lead, mentor, research): charter, state, outbox
+library/           shared canonical knowledge: principles, protocol, ownership, policies
+archive/           retired documents, frozen
+docs/              ADRs and design cards
 study_guides/      write-ups of finished projects
+.github/           CI and Dependabot
 examples/          sample inputs (e.g. code to review)
 evals/             live eval-lite scenario sets (real models, run by hand, not by pytest)
 out/               runtime output, gitignored: sandbox/, state/checkpoints.db
@@ -68,7 +74,8 @@ that suffix too: `prompts/nodes/*_prompt.py`, `schemas/output/*_output_schema.py
    - Agents: `llm_model.get(tier, provider)` plus `make_model_fallback(tier, primary=provider)`
      ([ADR-0007](docs/adr/0007-built-in-model-fallback.md)).
    - Graph nodes and middleware: `llm_model.chain(tier, structured=Schema)`.
-   - `LLM_TEST_MODE=true` routes every tier to `TEST_TIER`.
+   - `LLM_TEST_MODE=true` routes every tier to `TEST_TIER` (`LLM_TEST_PROFILE=<name>` picks a
+     different one of the named `TEST_MODE_PROFILES`; see ADR-0015).
 4. **Identity.** Per-user data uses `context_schema=UserContext`, and every call passes
    `context=UserContext(user_id=...)`. `thread_id` stays in `config["configurable"]`
    ([ADR-0003](docs/adr/0003-runtime-context-for-user-identity.md)).
@@ -84,19 +91,23 @@ that suffix too: `prompts/nodes/*_prompt.py`, `schemas/output/*_output_schema.py
    and reuse existing schemas instead of passing loose dicts.
 9. **Abstractions.** Reach for LangChain and DeepAgents built-ins before custom code. For
    shared abstractions, follow the rule of three: one consumer, keep it local; two, extract
-   carefully; three, formalize.
+   carefully; three, formalize
+   ([principles](library/governance/principles.md#3-scale-ready-seams-observed-abstractions)).
 10. **Console output.** Keep CLI output ASCII. Apps call `configure_utf8_stdout()` so model
     text can't crash a cp1252 Windows console.
 11. **Top-level packages.** Adding a new package under `src/agentlab/` needs a reason recorded
-    in an ADR or the handoff.
+    in an ADR by the lead.
 
 ## Commands
 
 ```bash
 uv sync                                         # install (editable) with dev tools
 uv run pytest                                   # tests
-uv run ruff check src tests                     # lint
-uv run ruff format src tests                    # format
+uv run ruff check src tests scripts             # lint
+uv run ruff format src tests scripts            # format
+uv run python scripts/check_docs.py             # docs lint: links, anchors, library, outboxes
+uv run python scripts/inbox.py <role>           # open messages for lead, mentor, or research
+uv run python scripts/smoke_live.py             # live smoke of every integration (test mode)
 uv run lab-research                             # P1 web researcher (approve each search)
 uv run lab-rag                                  # P2 raw RAG graph (history / replay <i>)
 uv run lab-repo-insight                         # P2 repo coordinator
@@ -119,7 +130,8 @@ Policy: [ADR-0004](docs/adr/0004-testing-and-evaluation-policy.md).
 - Deterministic code gets unit tests in the same change.
 - Framework boundaries are tested with real framework objects and a scripted fake model
   (see `tests/test_personal_assistant.py`).
-- Done means `uv run pytest` and `uv run ruff check src tests` are green, with real output shown.
+- Done means `uv run pytest` and `uv run ruff check src tests scripts` are green, with real
+  output shown. CI runs the same checks on every push.
 - Never weaken or skip an existing test to get a change through.
 - Verify library APIs before relying on them: the `docs-langchain` MCP server for
   LangChain/LangGraph/DeepAgents/LangSmith, Context7 or web search for other libraries, and the
@@ -145,8 +157,12 @@ Policy: [ADR-0004](docs/adr/0004-testing-and-evaluation-policy.md).
   directory.
 - Low-tier models sometimes claim a tool action they never took, and delegation reliability
   depends on explicit tool-choice guidance in the system prompt.
+- Never delete or recreate the shared `.venv` while a session or the IDE may be using it: on
+  Windows a held `ruff.exe` made a recreate fail halfway and left it broken
+  ([dev environment](library/engineering/dev-environment.md)).
 
 ## Ask before
 
-Schema or data migrations, `git push --force` or history rewrites, branch deletion, changes to
-secrets or deployment config, and deleting or truncating data (tests included).
+Schema or data migrations, changes to secrets or deployment config, and deleting or truncating
+data (tests included). Git follows the [git policy](library/engineering/git-policy.md): force
+pushes and history rewrites are never done.

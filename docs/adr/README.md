@@ -1,9 +1,17 @@
 # Architecture Decision Records
 
 An ADR records one significant decision: the forces behind it, what was decided, what it
-costs, and what else was considered. Write one whenever a stage settles a design or process
-question that future work depends on, and whenever the mentee overrides the mentor
-(record the dissent too).
+costs, and what else was considered. Write one when a decision is hard to reverse,
+cross-cutting, or sets a convention, and whenever the user overrides a decision (record the
+dissent too). Smaller decisions go only in the lead's
+[decision register](../../offices/lead/DECISIONS.md).
+
+**Owner:** the lead writes every ADR, so numbers and quality stay consistent across concurrent
+sessions ([ADR-0016](0016-project-office-and-document-governance.md),
+[ADR-0018](0018-three-offices-library-and-archive.md)). Other roles send decision and record
+requests as messages ([protocol](../../library/governance/protocol.md)). ADRs up to 0015 were
+written by mentors, before the office existed. Evidence is cited by research record ID
+(`EV-...`, `BR-...`), not by path.
 
 Keep ADRs short. Never rewrite an accepted ADR's decision: supersede it with a new ADR and
 set the old one's status to `Superseded by ADR-XXXX`.
@@ -25,14 +33,21 @@ set the old one's status to `Superseded by ADR-XXXX`.
 | [0011](0011-return-pass-before-p6.md) | A return pass over P1-P5 before P6, and a fixed difficulty curve | Accepted |
 | [0012](0012-memory-consolidation-single-writer.md) | Memory has one writer: a background consolidator proposing line-level edits | Accepted |
 | [0013](0013-p5-completion.md) | Finishing P5: history and undo, durable memory, governed skills, a context provider | Accepted |
+| [0014](0014-weighted-model-tier-catalog.md) | Model catalog splits into 5 tiers, ranked by a weighted speed/power/cost score | Accepted |
+| [0015](0015-local-tier-and-test-mode-profiles.md) | A `local` Ollama tier, and named test-mode profiles switchable mid-session | Accepted |
+| [0016](0016-project-office-and-document-governance.md) | A project office owns direction; the mentor teaches; one writer per file | Accepted |
+| [0017](0017-production-standards-as-design-yardstick.md) | Production engineering standards are the design yardstick | Accepted |
+| [0018](0018-three-offices-library-and-archive.md) | Three offices, a shared library, an archive, and one message protocol | Accepted |
 
 ## Template
 
 ```markdown
 # ADR-NNNN: Title
 
-- Status: Proposed | Accepted | Superseded by ADR-XXXX
+- Status: Proposed | Accepted | Rejected | Superseded by ADR-XXXX | Deprecated
 - Date: YYYY-MM-DD
+- Origin: lead | mentor or research request | user override (dissent under Alternatives)
+- Revisit when: (optional) the concrete trigger that reopens this decision
 
 ## Context
 ## Decision

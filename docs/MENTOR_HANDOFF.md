@@ -98,7 +98,32 @@ Full history before 2026-09-13 (Claude and Gemini logs): `git show 85f714d:docs/
 - **Perso-Arabic script in long P5 replies.** `gpt-5.6-luna` writes Perso-Arabic in 30-50% of
   the lines of a long plan. B3's repair cuts that by about three quarters (215 leaked lines to
   55 across three plans), but some lines survive two repair passes. The root cause is the
-  assistant model itself.
+  assistant model itself. Since 2026-09-23 the repair pass itself runs on the `opensource` tier
+  (`glm-5.3`, [ADR-0014](adr/0014-weighted-model-tier-catalog.md)); that repair rate hasn't been
+  re-measured against the new model. Repair still fails open, so worst case is unchanged.
+- **Model catalog restructured (2026-09-23).** 5 tiers now (`high`/`medium`/`low`/`opensource`/
+  `free`), a tier's provider order comes from a weighted speed/power/cost score instead of a
+  hand-picked one, and OpenRouter is deferred out entirely. [ADR-0014](adr/0014-weighted-model-tier-catalog.md).
+  The `opensource` entries (GLM, Qwen, DeepSeek via GapGPT) have no live-verified
+  structured-output or function-calling track record in this repo yet; only two low-stakes node
+  calls were moved onto that tier so far (see the ADR's call-site audit).
+- **A 6th tier, `local` (Ollama), and named `LLM_TEST_PROFILE` values** (`default`/`cheapest`/
+  `reliable`/`local`) for switching test mode's tier mid-session without a code change
+  ([ADR-0015](adr/0015-local-tier-and-test-mode-profiles.md)). **Measured 2026-09-23** against a
+  real `ollama serve` with `qwen3.5:2b` and `qwen3.5:4b` pulled: both work end to end (plain
+  chat, structured output, tool-calling), `qwen-4b` is more reliable (only it passed a
+  multi-line structured-output task `qwen-2b` failed) and is the tier's primary. Both are far
+  too slow for interactive use (90-360s per structured-output call, likely CPU-bound reasoning
+  overhead, no GPU confirmed) — kept opt-in only, never in `TEST_TIER` auto-selection. Good for
+  patient offline iteration; not a fit for `rag_node`'s per-document grading or the Finglish
+  repair pass at that latency. Resolved; see the ADR's follow-up section for the full numbers.
+- **Specialist-contract status vocabulary fixed (2026-09-23).** A concurrent session's in-flight
+  rename (`success`→`ok`, `failure`→`failed`) had updated every call site and the tests but not
+  `SpecialistResult.status`'s `Literal` (still `success/partial/failure/timeout/error`) or
+  `to_text()`'s `render` param (no default, but called with none at one call site) — 13 tests
+  failed on import/validation. Fixed: `Literal["ok", "partial", "failed"]`, `render: ... | None
+  = None`, and `rag_subagent.py`'s wiped `"Answered from the indexed corpus."` reason string
+  restored. 139/139 pass now.
 
 ## Backlog
 

@@ -19,7 +19,7 @@ from agentlab.utils.sandbox_util import make_sandbox_backend
 def make_interpreter_agent(
     checkpointer: BaseCheckpointSaver | None = None,
     *,
-    tier: str = "medium",
+    tier: str = "medium",  # paid tier only: tool-calling loop, not opensource/free (ADR-0014)
     backend: LocalShellBackend | None = None,
     interrupt_tools: Sequence[str] = DEFAULT_INTERRUPT_TOOLS,
     response_format: type[BaseModel] | None = None,

@@ -29,18 +29,18 @@ class SideEffect(BaseModel):
 
 class SpecialistResult[T](BaseModel):
     """What a Specialist returns: how its work ended, the answer, its sources, and its changes.
-    ``status`` is decideded by code from facts in the specialist's final state, never by the model's opinion of its own work.
-    - ``success``: the job is done.
-    - ``partial``: the job is done, but there are some issues.
-    - ``failure``: the job is not done, and there are some issues.
-    - ``timeout``: the job is not done, and there are some issues.
-    - ``error``: the job is not done, and there are some issues.
+    ``status`` is decided by code from facts in the specialist's final state, never by the
+    model's opinion of its own work.
+    - ``ok``: the job is done, no caveats.
+    - ``partial``: the job stopped early (an approval gate) or the answer has a caveat
+      (uncited, unverified, or reused a weaker source) that the caller should know about.
+    - ``failed``: no usable output; ``reason`` says why.
     """
 
     specialist: str = Field(
         description="The name of the specialist that returned the result.",
     )
-    status: Literal["success", "partial", "failure", "timeout", "error"]
+    status: Literal["ok", "partial", "failed"]
     reason: str = Field(description="The reason for the status.", default="")
     output: T | None = Field(
         description="The output of the specialist, if any.",
@@ -55,7 +55,7 @@ class SpecialistResult[T](BaseModel):
         default_factory=list,
     )
 
-    def to_text(self, render: Callable[[T], str]) -> str:
+    def to_text(self, render: Callable[[T], str] | None = None) -> str:
         """The envelope as text for a model caller: Status and Sources first, then the Answer."""
 
         status = self.status + (f" ({self.reason})" if self.reason else "")

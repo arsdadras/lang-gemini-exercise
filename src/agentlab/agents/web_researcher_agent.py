@@ -23,7 +23,7 @@ from agentlab.tools.web_search_tool import WEB_SEARCH_TOOL_NAME, make_web_search
 def make_web_researcher_agent(
     checkpointer: BaseCheckpointSaver | None = None,
     *,
-    tier: str = "low",
+    tier: str = "low",  # paid tier only: tool-calling loop, not opensource/free (ADR-0014)
     extra_tools: Sequence[BaseTool] = (),
     extra_middleware: Sequence[AgentMiddleware] = (),
     store: BaseStore | None = None,

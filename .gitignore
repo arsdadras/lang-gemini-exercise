@@ -43,3 +43,11 @@ last_threads.txt
 .agents/
 .gemini/
 .antigravity/
+
+# Office sandboxes: scratch, never committed (library/engineering/dev-environment.md)
+offices/*/sandbox/*
+!offices/*/sandbox/README.md
+
+# Claude Code local state
+.claude/settings.local.json
+.claude/*.lock

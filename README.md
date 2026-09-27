@@ -8,18 +8,19 @@ capstones then compose the specialists into workflows.
 
 ## Curriculum
 
-| Project | Focus | Status |
-| :--- | :--- | :--- |
-| P1 Research agent | DeepAgents orchestration, structured cited reports, HITL, subagents | Done |
-| P2 RAG agent | Raw StateGraph, corrective retrieval, checkpoints, time travel, CompiledSubAgent | Done |
-| P3 Code review and test generation | Subgraphs, sandboxed tests, self-correction, `interrupt()` approval | Done |
-| P4 Sandbox interpreter | Shell backend, artifacts, durable sessions, multi-agent coordinator | Done |
-| P5 Memory-rich assistant | Per-user durable memory with governed, reviewed writes; governed shared skills; context provider | Complete; taught again from B4 after R4 |
-| Return pass | P1-P5 brought to one specialist contract, one upgrade each, before P6 | Planned |
-| P6-P12 | Capstone I, documents (with vision), support ops, analytics, business actions, capstone II (P10 folded into P7) | Planned |
+| Project | Focus |
+| :--- | :--- |
+| P1 Research agent | DeepAgents orchestration, structured cited reports, HITL, subagents |
+| P2 RAG agent | Raw StateGraph, corrective retrieval, checkpoints, time travel, CompiledSubAgent |
+| P3 Code review and test generation | Subgraphs, sandboxed tests, self-correction, `interrupt()` approval |
+| P4 Sandbox interpreter | Shell backend, artifacts, durable sessions, multi-agent coordinator |
+| P5 Memory-rich assistant | Per-user durable memory with governed, reviewed writes; governed shared skills; context provider |
+| Return pass | P1-P5 brought to one specialist contract, one upgrade each, before P6 |
+| P6-P12 | Capstone I, documents (with vision), support ops, analytics, business actions, capstone II (P10 folded into P7) |
+| Term E | Production platform: shared runtime, distributed execution, one vertical product |
 
-Full plan: [`docs/ROADMAP.md`](docs/ROADMAP.md). Live status:
-[`docs/MENTOR_HANDOFF.md`](docs/MENTOR_HANDOFF.md).
+Plan and order: [`offices/lead/ROADMAP.md`](offices/lead/ROADMAP.md). Live teaching status:
+[`offices/mentor/STATE.md`](offices/mentor/STATE.md).
 
 ## Quickstart
 
@@ -30,11 +31,13 @@ uv run pytest
 
 Create a `.env` in the repo root with the keys the apps use:
 
-- `GOOGLE_API_KEY`
-- `GAPGPT_API_KEY` and `GAPGPT_BASE_URL`
-- `OPENROUTER_API_KEY`
+- `GOOGLE_API_KEY` (also powers the `free` model tier directly, no GapGPT)
+- `GAPGPT_API_KEY` and `GAPGPT_BASE_URL` (the `low`/`medium`/`high`/`opensource` model tiers)
 - `TAVILY_API_KEY`
-- optionally `LANGSMITH_TRACING`, `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT`, and `LLM_TEST_MODE`
+- optionally `LANGSMITH_TRACING`, `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT`, `LLM_TEST_MODE`, and
+  `LLM_TEST_PROFILE` (`default`/`cheapest`/`reliable`/`local`, see ADR-0015)
+- optionally `OLLAMA_HOST` (defaults to `http://127.0.0.1:11434`) for the `local` model tier —
+  needs `ollama serve` running with the model already pulled
 
 Then run any app:
 
@@ -47,12 +50,17 @@ uv run lab-coordinator       # P4 multi-agent
 uv run lab-assistant         # P5
 ```
 
+Every app and command, with session modes: [`AGENTS.md`](AGENTS.md#commands).
+
 ## Documentation
 
+- [`CLAUDE.md`](CLAUDE.md): session roles (mentor, lead, research) and what every session loads
 - [`AGENTS.md`](AGENTS.md): layout, conventions, commands, gotchas
-- [`docs/ROADMAP.md`](docs/ROADMAP.md): curriculum
-- [`docs/MENTOR_HANDOFF.md`](docs/MENTOR_HANDOFF.md): current state and backlog
-- [`docs/MENTORING.md`](docs/MENTORING.md): how mentoring sessions run
-- [`docs/adr/`](docs/adr/): architecture decisions
-- [`docs/design_cards/`](docs/design_cards/): specialist contracts
+- [`library/`](library/README.md): shared knowledge: principles, coordination protocol,
+  ownership, git and dependency policies, development environment
+- [`offices/lead/`](offices/lead/README.md): roadmap, pedagogy, architecture, technology radar,
+  decisions, risks, backlog
+- [`offices/mentor/`](offices/mentor/README.md): how teaching sessions run, and the teaching state
+- [`docs/adr/`](docs/adr/README.md): architecture decisions
+- [`docs/design_cards/`](docs/design_cards/README.md): specialist contracts
 - [`study_guides/`](study_guides/): write-ups of finished projects
