@@ -34,8 +34,8 @@ What gets built and taught, in which order, and the gates between. Lead-owned.
 | :--- | :--- | :--- |
 | P1 Research agent | One DeepAgents agent with search, a structured cited report, fallback, approval before search, a researcher subagent | Handoff history |
 | P2 RAG agent | Raw `StateGraph` with grading, a corrective loop, checkpoints, streaming, time travel, web fallback, a hallucination check; a coordinator with a retrieval skill | Handoff history |
-| P3 Code review | Three compiled subgraphs, sandboxed tests, a self-correcting loop, an `interrupt()` gate | [Study guide](../../study_guides/p3_code_review/MASTER_GUIDE.md) |
-| P4 Sandbox interpreter | Shell workspace with approval, artifacts, durable sessions, the first mini-workflow (coding coordinator) | [Study guide](../../study_guides/p4_sandbox_interpreter/MASTER_GUIDE.md) |
+| P3 Code review | Three compiled subgraphs, sandboxed tests, a self-correcting loop, an `interrupt()` gate | [Study guide](../../docs/study_guides/p3_code_review/MASTER_GUIDE.md) |
+| P4 Sandbox interpreter | Shell workspace with approval, artifacts, durable sessions, the first mini-workflow (coding coordinator) | [Study guide](../../docs/study_guides/p4_sandbox_interpreter/MASTER_GUIDE.md) |
 | Stage 0 stabilization | One package, composition root, identity as runtime context, secret isolation | ADR-0001 to ADR-0007 |
 | P5 Memory assistant | Governed per-user memory with one writer, guards, undo, durable SQLite, eval-lite, governed skills, a context provider. Built by the mentor; taught again from B4 after R4 | [ADR-0013](../../docs/adr/0013-p5-completion.md), [design card](../../docs/design_cards/P5_memory_assistant.md) |
 

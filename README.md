@@ -63,4 +63,4 @@ Every app and command, with session modes: [`AGENTS.md`](AGENTS.md#commands).
 - [`offices/mentor/`](offices/mentor/README.md): how teaching sessions run, and the teaching state
 - [`docs/adr/`](docs/adr/README.md): architecture decisions
 - [`docs/design_cards/`](docs/design_cards/README.md): specialist contracts
-- [`study_guides/`](study_guides/): write-ups of finished projects
+- [`docs/study_guides/`](docs/study_guides/): write-ups of finished projects

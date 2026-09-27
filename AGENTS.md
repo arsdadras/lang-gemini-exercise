@@ -38,8 +38,7 @@ scripts/           repo tooling: docs lint, inbox, live smoke, and their tests
 offices/           one office per role (lead, mentor, research): charter, state, outbox
 library/           shared canonical knowledge: principles, protocol, ownership, policies
 archive/           retired documents, frozen
-docs/              ADRs and design cards
-study_guides/      write-ups of finished projects
+docs/              ADRs, design cards, and study guides (write-ups of finished projects)
 .github/           CI and Dependabot
 examples/          sample inputs (e.g. code to review)
 evals/             live eval-lite scenario sets (real models, run by hand, not by pytest)
