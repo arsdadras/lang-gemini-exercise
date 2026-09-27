@@ -9,6 +9,7 @@ from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
 from agentlab.graphs.code_review_parentgraph import build_code_review_graph
 from agentlab.schemas.output.code_review_output_schema import CodeReviewOutcome
 from agentlab.schemas.output.specialist_output_schema import SpecialistResult
+from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import (
     new_delegation_config,
     pending_approvals,
@@ -36,10 +37,19 @@ def run_code_review(
     Failing tests are findings, not a failed review: ``ok`` means the review, the tests, and
     their run all happened. A refactor waiting at the approval gate makes it ``partial``.
     """
-    state = graph.invoke(
-        {"code": code, "language": language, "file_path": None},
-        config=new_delegation_config(),
-    )
+    try:
+        state = graph.invoke(
+            {"code": code, "language": language, "file_path": None},
+            config=new_delegation_config(),
+        )
+    except Exception as error:
+        if failure_kind(error) is None:
+            raise
+        return SpecialistResult[CodeReviewOutcome](
+            specialist=CODE_REVIEW_SPECIALIST,
+            status="failed",
+            reason=failure_reason(error),
+        )
     review = state.get("review")
     if review is None:
         return SpecialistResult[CodeReviewOutcome](

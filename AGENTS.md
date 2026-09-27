@@ -38,8 +38,7 @@ scripts/           repo tooling: docs lint, inbox, live smoke, and their tests
 offices/           one office per role (lead, mentor, research): charter, state, outbox
 library/           shared canonical knowledge: principles, protocol, ownership, policies
 archive/           retired documents, frozen
-docs/              ADRs and design cards
-study_guides/      write-ups of finished projects
+docs/              ADRs, design cards, and study guides (write-ups of finished projects)
 .github/           CI and Dependabot
 examples/          sample inputs (e.g. code to review)
 evals/             live eval-lite scenario sets (real models, run by hand, not by pytest)
@@ -95,7 +94,17 @@ that suffix too: `prompts/nodes/*_prompt.py`, `schemas/output/*_output_schema.py
    ([principles](library/governance/principles.md#3-scale-ready-seams-observed-abstractions)).
 10. **Console output.** Keep CLI output ASCII. Apps call `configure_utf8_stdout()` so model
     text can't crash a cp1252 Windows console.
-11. **Top-level packages.** Adding a new package under `src/agentlab/` needs a reason recorded
+11. **Failures and retries** (`utils/failure_util.py`). One retry layer per call, chosen by
+    what the call is:
+    - Model calls are never wrapped in another retry: the provider SDK retries (honoring
+      `Retry-After`), and the model fallback switches providers.
+    - Any other external call (embeddings, web search, an HTTP API) gets exactly one retry
+      layer with `retry_on=is_transient`: `TRANSIENT_RETRY` on its graph node, or
+      `ToolRetryMiddleware` on an agent's tool.
+    - One external dependency per node, so a node's retry never re-runs a model call.
+    - A specialist boundary (`run_*`) turns an external failure into a `failed` envelope
+      with `failure_reason`; anything `failure_kind` can't classify is a bug and raises.
+12. **Top-level packages.** Adding a new package under `src/agentlab/` needs a reason recorded
     in an ADR by the lead.
 
 ## Commands

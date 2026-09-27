@@ -11,61 +11,54 @@ from pydantic import BaseModel, Field
 
 
 class Provenance(BaseModel):
+    """Where part of an answer came from."""
+
     kind: Literal["web", "corpus", "memory", "sandbox"]
     ref: str = Field(description="A URL, or a path in the corpus, memory, or sandbox.")
-    title: str = Field(description="The title of the source document.", default="")
+    title: str = ""
 
 
 class SideEffect(BaseModel):
-    """Side effects are the changes made to the environment by the specialist outside its own run."""
+    """Something the specialist changed outside its own run."""
 
-    action: Literal["created", "updated", "deleted"]
-    target: str = Field(description="The path of the target file or directory.")
-    description: str = Field(
-        description="A brief description of the change.",
-        default="",
-    )
+    action: Literal["created", "modified", "deleted"]
+    target: str
+    description: str = ""
 
 
 class SpecialistResult[T](BaseModel):
-    """What a Specialist returns: how its work ended, the answer, its sources, and its changes.
+    """What a specialist returns: how its work ended, the answer, its sources, and its changes.
+
     ``status`` is decided by code from facts in the specialist's final state, never by the
     model's opinion of its own work.
-    - ``ok``: the job is done, no caveats.
-    - ``partial``: the job stopped early (an approval gate) or the answer has a caveat
-      (uncited, unverified, or reused a weaker source) that the caller should know about.
-    - ``failed``: no usable output; ``reason`` says why.
+
+    - ``ok``: the job is done.
+    - ``partial``: the job isn't fully done, and ``reason`` says what's missing: the answer came
+      from a fallback, or the run stopped at an approval. ``output`` holds whatever is usable.
+    - ``failed``: no usable answer; ``reason`` says why.
     """
 
-    specialist: str = Field(
-        description="The name of the specialist that returned the result.",
-    )
+    specialist: str
     status: Literal["ok", "partial", "failed"]
-    reason: str = Field(description="The reason for the status.", default="")
-    output: T | None = Field(
-        description="The output of the specialist, if any.",
-        default=None,
-    )
-    provenance: list[Provenance] = Field(
-        description="The sources of the answer.",
-        default_factory=list,
-    )
-    side_effects: list[SideEffect] = Field(
-        description="The side effects of the work.",
-        default_factory=list,
-    )
+    reason: str = ""
+    output: T | None = None
+    provenance: list[Provenance] = Field(default_factory=list)
+    side_effects: list[SideEffect] = Field(default_factory=list)
 
     def to_text(self, render: Callable[[T], str] | None = None) -> str:
-        """The envelope as text for a model caller: Status and Sources first, then the Answer."""
-
+        """The envelope as text for a model caller: status and sources first, then the answer."""
         status = self.status + (f" ({self.reason})" if self.reason else "")
         lines = [f"[{self.specialist}] status: {status}"]
         if self.provenance:
-            sources = [f"{p.kind}: {p.title or p.ref}" for p in self.provenance]
-            lines.append("Sources: " + "; ".join(sources))
+            lines.append(
+                "Sources: "
+                + "; ".join(f"{p.kind}: {p.title or p.ref}" for p in self.provenance)
+            )
         if self.side_effects:
-            side_effects = [f"{e.action} {e.target}" for e in self.side_effects]
-            lines.append("Changed: " + "; ".join(side_effects))
+            lines.append(
+                "Changed: "
+                + "; ".join(f"{e.action} {e.target}" for e in self.side_effects)
+            )
         if self.output is not None:
             if render is not None:
                 body = render(self.output)

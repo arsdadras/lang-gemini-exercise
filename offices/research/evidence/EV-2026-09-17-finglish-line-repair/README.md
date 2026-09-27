@@ -6,7 +6,7 @@
 | Label | **[R]**: reconstructed from ADR and handoff prose; no raw data; not re-run |
 | Ran | During P5 B3, recorded with [ADR-0010](../../../../docs/adr/0010-one-gate-in-memory-storage.md) (2026-09-17) |
 | Question | How often does the assistant model write Perso-Arabic script in long replies, and which repair strategy fixes it? |
-| Cited by | [ADR-0010](../../../../docs/adr/0010-one-gate-in-memory-storage.md) (decision and alternatives), `src/agentlab/middlewares/finglish_output_middleware.py` (design), [MENTOR_HANDOFF.md](../../../../docs/MENTOR_HANDOFF.md) (known issue), [BR-002](../../briefs/BR-002-model-catalog-evidence-map/README.md) |
+| Cited by | [ADR-0010](../../../../docs/adr/0010-one-gate-in-memory-storage.md) (decision and alternatives), `src/agentlab/middlewares/finglish_output_middleware.py` (design), [MENTOR_HANDOFF.md](../../../../archive/docs/MENTOR_HANDOFF.md) (known issue), [BR-002](../../briefs/BR-002-model-catalog-evidence-map/README.md) |
 
 ## Results
 

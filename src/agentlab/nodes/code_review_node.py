@@ -17,6 +17,7 @@ from agentlab.prompts.nodes.code_review_prompt import (
 )
 from agentlab.schemas.output.code_review_output_schema import ReviewResult, TestSuite
 from agentlab.schemas.state.code_review_state import CodeReviewState
+from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.sandbox_util import run_tests_in_sandbox
 
 
@@ -61,8 +62,10 @@ def review_code_node(state: CodeReviewState) -> dict:
             },
         )
         return {"review": cast(ReviewResult, result), "error": None}
-    except Exception as e:  # noqa: BLE001
-        return {"error": f"Review node failed: {e}"}
+    except Exception as e:
+        if failure_kind(e) is None:
+            raise
+        return {"error": f"Review node failed: {failure_reason(e)}"}
 
 
 def generate_tests_node(state: CodeReviewState) -> dict:
@@ -87,8 +90,10 @@ def generate_tests_node(state: CodeReviewState) -> dict:
             },
         )
         return {"tests": cast(TestSuite, result), "error": None}
-    except Exception as e:  # noqa: BLE001
-        return {"error": f"Test generation node failed: {e}"}
+    except Exception as e:
+        if failure_kind(e) is None:
+            raise
+        return {"error": f"Test generation node failed: {failure_reason(e)}"}
 
 
 def execute_tests_node(state: CodeReviewState) -> dict:
@@ -137,8 +142,10 @@ def fix_tests_node(state: CodeReviewState) -> dict:
             "error": None,
         }
 
-    except Exception as e:  # noqa: BLE001
-        return {"error": f"Test fix node failed: {e}"}
+    except Exception as e:
+        if failure_kind(e) is None:
+            raise
+        return {"error": f"Test fix node failed: {failure_reason(e)}"}
 
 
 def approved_refactor_node(state: CodeReviewState) -> dict:

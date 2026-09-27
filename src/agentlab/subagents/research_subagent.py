@@ -14,6 +14,7 @@ from agentlab.schemas.output.specialist_output_schema import (
     SpecialistResult,
 )
 from agentlab.tools.web_search_tool import make_web_search_tool
+from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import new_delegation_config, pending_approvals
 
 RESEARCH_SPECIALIST = "research"
@@ -22,10 +23,19 @@ RESEARCHER_SUBAGENT_NAME = "researcher"
 
 def run_research(agent: Runnable, topic: str) -> SpecialistResult[ResearchReport]:
     """Research ``topic`` with an injected P1 agent (``make_web_researcher_agent``) on a fresh thread."""
-    state = agent.invoke(
-        {"messages": [HumanMessage(content=topic)]},
-        config=new_delegation_config(),
-    )
+    try:
+        state = agent.invoke(
+            {"messages": [HumanMessage(content=topic)]},
+            config=new_delegation_config(),
+        )
+    except Exception as error:
+        if failure_kind(error) is None:
+            raise
+        return SpecialistResult[ResearchReport](
+            specialist=RESEARCH_SPECIALIST,
+            status="failed",
+            reason=failure_reason(error),
+        )
     if waiting := pending_approvals(state):
         return SpecialistResult[ResearchReport](
             specialist=RESEARCH_SPECIALIST,

@@ -10,6 +10,7 @@ from agentlab.schemas.output.specialist_output_schema import (
     Provenance,
     SpecialistResult,
 )
+from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import (
     new_delegation_config,
     task_text_from_state,
@@ -26,7 +27,7 @@ DEFAULT_RAG_SUBAGENT_DESCRIPTION = (
 # answer_source -> (status, reason): the graph records where its answer came from; the
 # boundary turns that fact into what a caller needs to decide.
 _OUTCOMES = {
-    "corpus": ("ok", "Answered from the indexed corpus."),
+    "corpus": ("ok", ""),
     "web": ("partial", "The local corpus had nothing relevant; answered from the web."),
     "unverified": ("failed", "The corpus answer wasn't supported by its documents."),
     "none": ("failed", "Nothing relevant in the corpus or on the web."),
@@ -34,11 +35,23 @@ _OUTCOMES = {
 
 
 def run_rag(graph: Runnable, question: str) -> SpecialistResult[str]:
-    """Answer ``question`` with the RAG graph, on a fresh thread, as a specialist envelope."""
-    state = graph.invoke(
-        {"question": question, "search_query": question, "retries": 0},
-        config=new_delegation_config(),
-    )
+    """Answer ``question`` with the RAG graph, on a fresh thread, as a specialist envelope.
+
+    An external failure that outlasted the graph's retries becomes ``failed``; a bug raises.
+    """
+    try:
+        state = graph.invoke(
+            {"question": question, "search_query": question, "retries": 0},
+            config=new_delegation_config(),
+        )
+    except Exception as error:
+        if failure_kind(error) is None:
+            raise
+        return SpecialistResult[str](
+            specialist=RAG_SPECIALIST,
+            status="failed",
+            reason=failure_reason(error),
+        )
     source = state.get("answer_source", "none")
     status, reason = _OUTCOMES[source]
     kind = "web" if source == "web" else "corpus"
@@ -74,4 +87,8 @@ def make_rag_subagent(
             run_rag(rag_graph, task_text_from_state(state)).to_text()
         )
 
-    return {"name": name, "description": description, "runnable": RunnableLambda(run)}
+    return {
+        "name": name,
+        "description": description,
+        "runnable": RunnableLambda(run),
+    }

@@ -20,4 +20,5 @@ Only the retiring file's owner archives it ([ownership.md](../library/governance
 
 | Archived path | Date | By | Superseded by |
 | :--- | :--- | :--- | :--- |
-| None yet | | | |
+| [docs/MENTORING.md](docs/MENTORING.md) | 2026-09-27 | mentor | [offices/mentor/README.md](../offices/mentor/README.md) and [library/governance/](../library/governance/principles.md) |
+| [docs/MENTOR_HANDOFF.md](docs/MENTOR_HANDOFF.md) | 2026-09-27 | mentor | [offices/mentor/STATE.md](../offices/mentor/STATE.md) and [LOG.md](../offices/mentor/LOG.md) |

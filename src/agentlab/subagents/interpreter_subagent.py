@@ -12,6 +12,7 @@ from agentlab.schemas.output.specialist_output_schema import (
     SideEffect,
     SpecialistResult,
 )
+from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.get_text_util import get_text
 from agentlab.utils.sandbox_util import (
     diff_sandbox_artifacts,
@@ -42,13 +43,19 @@ def run_interpreter(
     """Run ``task`` with an injected P4 agent on a fresh thread; files it wrote become side effects.
 
     The artifact diff compares ``artifacts/`` before and after the run, so the caller learns
-    exactly which deliverables were created or changed.
+    exactly which deliverables were created or changed, even when the run failed midway.
     """
     before = snapshot_sandbox_artifacts(sandbox_dir)
-    state = agent.invoke(
-        {"messages": [HumanMessage(content=task)]},
-        config=new_delegation_config(),
-    )
+    failure: Exception | None = None
+    try:
+        state = agent.invoke(
+            {"messages": [HumanMessage(content=task)]},
+            config=new_delegation_config(),
+        )
+    except Exception as error:
+        if failure_kind(error) is None:
+            raise
+        state, failure = {}, error
     side_effects = [
         SideEffect(
             action="created" if change == "new" else "modified",
@@ -57,6 +64,13 @@ def run_interpreter(
         )
         for change, artifact in diff_sandbox_artifacts(before, sandbox_dir)
     ]
+    if failure is not None:
+        return SpecialistResult[str](
+            specialist=INTERPRETER_SPECIALIST,
+            status="failed",
+            reason=failure_reason(failure),
+            side_effects=side_effects,
+        )
     answer = get_text(state["messages"][-1]) if state.get("messages") else None
     waiting = pending_approvals(state)
     return SpecialistResult[str](

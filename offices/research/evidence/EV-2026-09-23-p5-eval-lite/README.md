@@ -6,7 +6,7 @@
 | Label | **[R]** for the result (only the score survives); the harness itself is live code |
 | Ran | 2026-09-23, P5 C2 ([ADR-0013](../../../../docs/adr/0013-p5-completion.md)) |
 | Question | Do the real models behave as P5's design assumes: recall, isolation between users, honest "saved" claims, consolidation quality, and guard decisions? |
-| Cited by | [MENTOR_HANDOFF.md](../../../../docs/MENTOR_HANDOFF.md) (P5 status), [ADR-0013](../../../../docs/adr/0013-p5-completion.md) |
+| Cited by | [MENTOR_HANDOFF.md](../../../../archive/docs/MENTOR_HANDOFF.md) (P5 status), [ADR-0013](../../../../docs/adr/0013-p5-completion.md) |
 
 ## Setup
 
