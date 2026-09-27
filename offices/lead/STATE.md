@@ -6,8 +6,9 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 
 - **Last lead session:** 2026-09-26 (session 2), run in a cloud session on branch
   `main-1le51z`, after the local session was stopped and handed off (`handoff/local-snapshot`).
-- **Repo:** the stack upgrade (`0d27fa8`) and the three-offices restructure are on `main-1le51z`,
-  not yet on `main`. Local `main` holds the mentor's uncommitted R0 topic 2 work (suite red on
+- **Repo:** the stack upgrade (`0d27fa8`) and the three-offices restructure were merged into
+  `main` by pull request on 2026-09-27, with CI green. The lead role continues in the local
+  session from here. Local `main` holds the mentor's uncommitted R0 topic 2 work (suite red on
   purpose: an exercise state) and research's uncommitted office under `docs/research/`; both
   are preserved on `handoff/local-snapshot` and stay theirs to commit (RSK-11).
 
@@ -18,8 +19,8 @@ LD-008 (mentor, R0 close), LD-009 (all). Details in [OUTBOX.md](OUTBOX.md).
 
 ## Reserved for the user
 
-- Merge `main-1le51z` into `main` (a pull request), then local `main` pulls it before any
-  local session commits again (RSK-11).
+- Local `main` pulls the merged `main` before any local session commits again (RSK-11).
+- Research's Jev investigation: the lead reviews it only when the user opens that file.
 - Archive `docs/ROADMAP.md` (superseded v3): the local lead's attempt was blocked, so it waits
   for the user's word.
 - Local machine: rebuild the broken main `.venv` with the IDE closed (`uv sync`); keep one `uv`
