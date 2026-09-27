@@ -27,7 +27,6 @@ numbers free of collisions. Everyone else reads, links, or sends the owner a mes
 | `offices/research/` | Research office: landscape, evidence, briefs, catalog, outbox | Research |
 | `docs/adr/` | Architecture decision records | Lead |
 | `docs/design_cards/` | Specialist contracts | Lead |
-| `docs/ROADMAP.md` | Roadmap v3, superseded by [`offices/lead/ROADMAP.md`](../../offices/lead/ROADMAP.md); to be archived | Lead |
 | `docs/study_guides/` | Write-ups of finished projects | Mentor |
 | `archive/` | Retired documents, frozen ([archive/README.md](../../archive/README.md)) | The retiring file's owner moves it in; nobody edits it after |
 | `src/`, `tests/`, `evals/`, `examples/` | The `agentlab` package, its tests, live eval sets, sample inputs | Mentor |

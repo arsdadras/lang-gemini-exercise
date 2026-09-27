@@ -39,7 +39,6 @@ Three roles work here, each in its own session, worktree, and branch
 - The user's explicit instruction overrides any document; state an objection first
   (Principle 1), and the lead records the dissent.
 - The lead's records (`offices/lead/`, `docs/adr/`, `docs/design_cards/`) and the library decide
-  direction, architecture, and policy. `docs/ROADMAP.md` is superseded by
-  `offices/lead/ROADMAP.md`.
+  direction, architecture, and policy.
 - Every path has one writing role; write only inside yours
   ([ownership](library/governance/ownership.md)).
