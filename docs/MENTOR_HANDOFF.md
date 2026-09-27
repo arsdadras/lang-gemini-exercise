@@ -134,6 +134,14 @@ trigger.
 
 **Cross-project**
 - **E:** Surface approvals raised inside subagents through composition. P6-B.
+- **N:** A typed failure class on the envelope (`failure: transient | permanent`), once a
+  caller branches on it (R0 puts it only in `reason`). P6-B2.
+- **N:** Model-output errors (structured output that fails validation) as a "recoverable"
+  class: today they're indistinguishable from our own bugs by type, so they crash after the
+  model fallback. P6-B2.
+- **N:** Model callers of `web_search` (P1, the coordinator's researcher) still get Tavily's
+  errors as `{"error": ...}` text; `search_results` is used only where code reads results.
+  Revisit with the recoverable class. P6-B2.
 - **N:** Grow the P5 security guard from a classifier into a generic, policy-parameterized
   security agent once a second consumer needs it (triggers: document prompt injection in P7,
   action permissions in P8/P11), and add tools only if that consumer's judgment needs them.
@@ -164,6 +172,9 @@ trigger.
 - **N:** P1's report can leak Perso-Arabic script (seen in the `lab-brief` live run); P1 has no
   Finglish repair. `[R]` R1.
 - **N:** Check citation groundedness with the `response_groundedness` middleware. `[R]` R1.
+- **N:** Decide whether the coordinator's `researcher` spec becomes a `CompiledSubAgent` over
+  `run_research`, once a search budget replaces per-search approval (until then every
+  delegation would stop at its first search). `[R]` R1.
 - **N:** Wire `rag_subagent` into the researcher as a local-knowledge overlay. P6-A (the
   workflow composes P1 and P2 instead).
 

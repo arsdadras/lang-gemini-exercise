@@ -7,12 +7,23 @@ Read first every mentor session; rewrite it, don't append. Seeded by the lead on
 ## Now
 
 - **Stage:** R0, the specialist contract ([ROADMAP](../lead/ROADMAP.md#return-pass-r0-r5)).
-  Topic 2, the failure contract, is in progress: `utils/failure_util.py`, the `failed` envelope
-  with `failure_reason`, and `AGENTS.md` convention 11 were built in the local working tree, and
-  `nodes/rag_node.py` was reset for the learner to type Code 2 (`generate_from_web_node`).
-  None of it is committed yet.
+  Topic 1 (the envelope) is integrated; its tests-and-demo step was skipped at the learner's
+  request. Topic 2 (the failure contract) is built, verified, and committed on branch `mentor`:
+  `utils/failure_util.py`, the `failed` envelope with `failure_reason` in every `run_*`,
+  `TRANSIENT_RETRY` on P2's `retrieve` and `web_search` nodes, the `search_results` adapter
+  for Tavily, P3's nodes re-raising bugs, and `AGENTS.md` convention 11. Teaching position:
+  Code 1 typed and integrated; Code 2 (P2) sent, the learner hasn't typed it yet; Code 3 (P1,
+  P3, P4 boundaries, links only) and tests-and-demo remain.
+- **Next:** once the lead builds the `mentor` worktree, reset `nodes/rag_node.py`,
+  `graphs/rag_graph.py`, and `subagents/rag_subagent.py` there for the learner to type Code 2
+  (the verified version is the `mentor` commit; restore it with `git checkout HEAD -- <files>`).
+  Then LD-001 (blocking), then Topic 3.
 - **Order after R0:** R1 -> R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
-- **Stack:** upgraded by the lead (LD-007); re-verify R0 against it.
+- **Stack:** upgraded by the lead (LD-007); R0 re-verified against it on 2026-09-27. Found and
+  fixed: openai 3.x and anthropic 1.x raise timeouts and refusals from `httpx2`, which
+  `failure_util` classified as bugs; now covered by tests against real SDK clients on a local
+  silent server and a closed port. `failure_util` imports `httpx`, `httpx2`, and `requests`,
+  none declared in `pyproject.toml`: send the lead a request at R0 close.
 
 ## Working agreements
 
