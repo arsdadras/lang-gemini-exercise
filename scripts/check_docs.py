@@ -93,7 +93,7 @@ def anchors(path: Path) -> set[str]:
 
 def check_links(path: Path, root: Path) -> list[str]:
     problems = []
-    rel = path.relative_to(root)
+    rel = path.relative_to(root).as_posix()
     for number, line in prose_lines(path.read_text(encoding="utf-8")):
         for target in LINK.findall(line):
             if re.match(r"^[a-z][a-z0-9+.-]*:", target, re.IGNORECASE):
@@ -139,7 +139,7 @@ def check_library(root: Path) -> list[str]:
     for path in sorted(library.rglob("*.md")):
         if path.parent == library and path.name in LIBRARY_UNINDEXED:
             continue
-        rel = path.relative_to(root)
+        rel = path.relative_to(root).as_posix()
         fields = front_matter(path.read_text(encoding="utf-8"))
         if fields is None:
             problems.append(f"{rel}: missing front matter")
@@ -177,7 +177,7 @@ def parse_heading(heading: str) -> tuple[str, list[str], str, str] | None:
 def check_outbox(path: Path, root: Path) -> list[str]:
     office = path.parent.name
     prefix = OFFICE_PREFIX.get(office)
-    rel = path.relative_to(root)
+    rel = path.relative_to(root).as_posix()
     if prefix is None:
         return [f"{rel}: outbox of unknown office '{office}'"]
     problems, seen = [], set()
@@ -227,7 +227,7 @@ def run(root: Path, prefixes: list[str]) -> list[str]:
     if not prefixes or any(p.startswith("library") for p in prefixes):
         problems += check_library(root)
     for path in sorted((root / "offices").glob("*/OUTBOX.md")):
-        rel = str(path.relative_to(root))
+        rel = path.relative_to(root).as_posix()
         if not prefixes or any(rel.startswith(p.rstrip("/")) for p in prefixes):
             problems += check_outbox(path, root)
     return problems
