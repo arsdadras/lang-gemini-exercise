@@ -15,29 +15,31 @@ Rules for every role, in every session, and how the roles coordinate:
 
 ## Session roles
 
-Three roles work here, each in its own session, never two in one
-([ADR-0018](docs/adr/0018-three-offices-library-and-archive.md)). Each has an office under
+Three roles work here, each in its own session, worktree, and branch
+([ADR-0018](docs/adr/0018-three-offices-library-and-archive.md),
+[ADR-0019](docs/adr/0019-role-worktrees-hooks-and-handoff.md)). Each has an office under
 `offices/`; shared knowledge lives in `library/` ([index](library/README.md)).
 
-| Role | Job | Opens when | First reads |
-| :--- | :--- | :--- | :--- |
-| **Mentor** (default) | Teaches the learner and implements the plan in lesson code | Every session not opened as another role | `offices/mentor/STATE.md`, then `uv run python scripts/inbox.py mentor` |
-| **Lead** | Decides and executes direction, curriculum, architecture, technology, governance, git and GitHub | The user runs `/lead`, or opens the session as a lead session | `offices/lead/README.md`, `offices/lead/STATE.md`, then its inbox |
-| **Research** | Investigates, measures, and advises; decides nothing | The user runs `/research`, or opens the session as a research session | Its charter and state, then its inbox |
+| Role | Job | Worktree, branch |
+| :--- | :--- | :--- |
+| **Lead** | Decides and executes direction, curriculum, architecture, technology, governance, git and GitHub | `../lce-lead`, `lead` |
+| **Mentor** | Teaches the learner and implements the plan in lesson code | `../lce-mentor`, `mentor` |
+| **Research** | Investigates, measures, and advises; decides nothing | `../lce-research`, `research` |
 
-In a lead or research session, the mentor charter loaded below does not apply.
+- **The role comes from where the session runs.** The session hook states it (the worktree's
+  config, or the branch name in a cloud session), and each worktree's `CLAUDE.local.md` loads
+  that role's charter, `offices/<role>/README.md`. Where no `CLAUDE.local.md` exists, read the
+  charter first; `/lead` and `/research` load theirs explicitly.
+- **The main checkout plays no role:** do only what the user asks there.
+- **Every session** starts from the hook's summary, its `STATE.md`, and its inbox, and ends with
+  `/handoff`.
 
 ## Precedence and ownership
 
 - The user's explicit instruction overrides any document; state an objection first
   (Principle 1), and the lead records the dissent.
 - The lead's records (`offices/lead/`, `docs/adr/`, `docs/design_cards/`) and the library decide
-  direction, architecture, and policy. Until LD-001 and LD-002 are applied, where
-  `docs/MENTORING.md`, `docs/MENTOR_HANDOFF.md`, or `docs/research/` disagree with them, the
-  offices and the library win. `docs/ROADMAP.md` is superseded by `offices/lead/ROADMAP.md`.
+  direction, architecture, and policy. `docs/ROADMAP.md` is superseded by
+  `offices/lead/ROADMAP.md`.
 - Every path has one writing role; write only inside yours
   ([ownership](library/governance/ownership.md)).
-
-## Mentor charter
-
-@offices/mentor/README.md

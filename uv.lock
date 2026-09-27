@@ -13,6 +13,8 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "deepagents" },
+    { name = "httpx" },
+    { name = "httpx2" },
     { name = "langchain" },
     { name = "langchain-chroma" },
     { name = "langchain-core" },
@@ -27,6 +29,7 @@ dependencies = [
     { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
+    { name = "requests" },
 ]
 
 [package.dev-dependencies]
@@ -39,6 +42,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "deepagents", specifier = ">=0.7.19" },
+    { name = "httpx", specifier = ">=0.28.1" },
+    { name = "httpx2", specifier = ">=2.13.1" },
     { name = "langchain", specifier = ">=1.4.2" },
     { name = "langchain-chroma", specifier = ">=1.1.0" },
     { name = "langchain-core", specifier = ">=1.6.5" },
@@ -53,6 +58,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.13.5" },
     { name = "python-dotenv", specifier = ">=1.2.3" },
     { name = "pyyaml", specifier = ">=6.0.3" },
+    { name = "requests", specifier = ">=2.34.2" },
 ]
 
 [package.metadata.requires-dev]

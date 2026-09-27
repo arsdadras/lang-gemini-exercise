@@ -48,6 +48,9 @@ last_threads.txt
 offices/*/sandbox/*
 !offices/*/sandbox/README.md
 
-# Claude Code local state
+# Claude Code local state: per-worktree role file (scripts/setup_worktrees.py) and plugin data
+CLAUDE.local.md
 .claude/settings.local.json
 .claude/*.lock
+.claude/advisor-data/
+.enola/

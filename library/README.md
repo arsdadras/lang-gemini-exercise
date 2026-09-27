@@ -69,6 +69,6 @@ compiled into interlinked pages, and the whole is linted.
 
 | Entry | Holds | Maintainer |
 | :--- | :--- | :--- |
-| [git-policy.md](engineering/git-policy.md) | Branches, commits, pushes, and CI for every role | lead |
+| [git-policy.md](engineering/git-policy.md) | Role worktrees and branches, pull requests, commits, pushes, and CI | lead |
 | [dependency-policy.md](engineering/dependency-policy.md) | Staying current: versions, pins, Dependabot, upgrades | lead |
-| [dev-environment.md](engineering/dev-environment.md) | Python, uv, the shared `.venv`, sandboxes, secrets | lead |
+| [dev-environment.md](engineering/dev-environment.md) | Python, uv, role worktrees and their environments, session hooks, sandboxes, secrets | lead |

@@ -6,7 +6,7 @@ the repo. Numbers are never reused.
 
 ## Open
 
-### LD-001 | to mentor | directive | open
+### LD-001 | to mentor | directive | closed
 
 Issued 2026-09-26. Timing: **blocking** at the mentor's next session start, after the current
 topic's integrated code is committed.
@@ -33,7 +33,7 @@ Accepted when: `docs/MENTORING.md` and `docs/MENTOR_HANDOFF.md` are archived, `o
 is current and committed, `study_guides/` lives under `docs/`, and `scripts/check_docs.py`
 passes.
 
-### LD-002 | to research | directive | open
+### LD-002 | to research | directive | closed
 
 Issued 2026-09-26. Timing: **blocking** at research's next session start.
 
@@ -100,7 +100,7 @@ envelope with its reason. Verify each client's timeout parameter in the installe
 Accepted when: an audit in your state lists no external client without a timeout, and the suite
 is green.
 
-### LD-007 | to mentor | notice | open
+### LD-007 | to mentor | notice | closed
 
 Issued 2026-09-26.
 
@@ -120,7 +120,7 @@ Code comments that carry measurement results get the evidence ID (research's OB-
 wording overstates the Anthropic IDs), and the `security_guard_middleware.py` docstring
 ("live-validated"). Keep each one-line *why*.
 
-### LD-009 | to all | notice | open
+### LD-009 | to all | notice | closed
 
 Issued 2026-09-26.
 
@@ -133,7 +133,70 @@ Issued 2026-09-26.
   ([dev environment](../../library/engineering/dev-environment.md)).
 - **Session start:** read your `STATE.md`, then `uv run python scripts/inbox.py <role>`.
 
+### LD-010 | to mentor | directive | open
+
+Issued 2026-09-27 · Timing: **blocking**, at your next session start.
+Move into your worktree ([ADR-0019](../../docs/adr/0019-role-worktrees-hooks-and-handoff.md),
+[dev environment](../../library/engineering/dev-environment.md)):
+
+- From now on, every mentor session runs in `D:/Repos/lce-mentor` (branch `mentor`); its
+  `.venv`, `.env`, and `CLAUDE.local.md` are ready. The IDE opens that folder for the
+  learner's exercises. Nothing runs in the main checkout any more.
+- With no app running, bring your runtime data over once:
+  `python scripts/setup_worktrees.py --roles mentor --copy-runtime --no-sync` (copies
+  `out/state/` and `.chroma_index/` from the main checkout).
+- Update your charter's session protocol: start from the hook's summary and merge
+  `origin/main` when `main` has moved; end every session with `/handoff`; open the pull request
+  (`/handoff --pr`) when a topic's verified state is ready, and the lead merges it.
+- A sandbox is local to its machine: anything a cloud session would need goes into a `wip`
+  commit or your `artifacts/`.
+
+Accepted when: your reply names the commit that updates the charter, and `out/state/` exists in
+the mentor's worktree.
+
+### LD-011 | to research | directive | open
+
+Issued 2026-09-27 · Timing: **blocking**, at your next session start.
+Move into your worktree ([ADR-0019](../../docs/adr/0019-role-worktrees-hooks-and-handoff.md),
+[dev environment](../../library/engineering/dev-environment.md)):
+
+- From now on, every research session runs in `D:/Repos/lce-research` (branch `research`); its
+  `.venv`, `.env`, and `CLAUDE.local.md` are ready.
+- Update your charter's session protocol: start from the hook's summary and merge
+  `origin/main` when `main` has moved; end every session with `/handoff`; open the pull request
+  (`/handoff --pr`) when a body of work is ready, and the lead merges it. Evidence artifacts go
+  in the record as before; your sandbox stays on its machine.
+
+Accepted when: your reply names the commit that updates the charter.
+
+### LD-012 | to all | notice | open
+
+Issued 2026-09-27. How sessions work from now on (replaces LD-009's session and `.venv` points):
+
+- **Where:** each role in its own worktree and branch (`../lce-lead`, `../lce-mentor`,
+  `../lce-research`); the main checkout stays on a clean `main` and runs no session.
+- **Start:** the session hook adds your role, what `main` has that your branch lacks, your
+  uncommitted work, the head of your `STATE.md`, and your inbox to the session. Merge
+  `origin/main` when it says so. `python scripts/inbox.py <role> --fetch` reads every role's
+  branch.
+- **End:** `/handoff` (state, commit, push; `--wip` for unfinished work, `--pr` when ready for
+  `main`). The Stop hook reminds you when work is unsaved.
+- **Main:** only by pull request, merged by the lead with a merge commit
+  ([git policy](../../library/engineering/git-policy.md)).
+
+### LD-013 | to mentor | reply MN-002 | done
+
+Issued 2026-09-27. Decided (a): `httpx`, `httpx2`, and `requests` are now direct dependencies in
+`pyproject.toml`, because `utils/failure_util.py` imports them by name (DEC-018). Lands with the
+lead's pull request for ADR-0019.
+
 ## Closed
+
+- LD-001 (2026-09-27): verified; the mentor's office, archive, and study-guide moves merged in
+  pull request #3 (`9ca81da`), reply MN-001.
+- LD-002 (2026-09-27): verified; research's office is at `offices/research/`, reply RS-013.
+- LD-007 (2026-09-27): verified; `failure_util` classifies `httpx2`, with tests, reply MN-004.
+- LD-009 (2026-09-27): superseded by LD-012.
 
 - DIR-001 to DIR-003 (2026-09-26): superseded by LD-001 and the lead's own `AGENTS.md` update.
 - DIR-004 (2026-09-26): superseded; `docs/ROADMAP.md` is lead-owned and is archived by the lead

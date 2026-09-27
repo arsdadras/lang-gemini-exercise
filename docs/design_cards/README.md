@@ -10,7 +10,7 @@ recorded in the mentor's [state](../../offices/mentor/STATE.md), not here.
 
 | Project | Card |
 | :--- | :--- |
-| P1-P4 | Planned: written by the lead before R1-R4 respectively (built before design cards existed; `study_guides/` covers P3 and P4) |
+| P1-P4 | Planned: written by the lead before R1-R4 respectively (built before design cards existed; `docs/study_guides/` covers P3 and P4) |
 | P5 Memory-rich personal assistant | [P5_memory_assistant.md](P5_memory_assistant.md) |
 
 ## Template (16 points)

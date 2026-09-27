@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/session_hooks.py\" start 2>/dev/null || python3 \"$CLAUDE_PROJECT_DIR/scripts/session_hooks.py\" start",
+            "timeout": 60,
+            "statusMessage": "Loading the role's state and inbox"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/session_hooks.py\" stop 2>/dev/null || python3 \"$CLAUDE_PROJECT_DIR/scripts/session_hooks.py\" stop",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
