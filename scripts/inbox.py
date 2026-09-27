@@ -1,7 +1,7 @@
 """Show a role's inbox: open messages addressed to it, and replies to its own open messages.
 
 Usage:
-    python scripts/inbox.py <lead|mentor|research> [--fetch]
+    python scripts/inbox.py [lead|mentor|research] [--fetch]   # no role: this checkout's
 
 Messages live in each office's OUTBOX.md (library/governance/protocol.md). Each role writes on
 its own branch (ADR-0019), so an outbox is read from `origin/main`, from the sender's branch
@@ -109,10 +109,12 @@ def main() -> int:
     args = sys.argv[1:]
     do_fetch = "--fetch" in args
     args = [a for a in args if a != "--fetch"]
-    if len(args) != 1 or args[0] not in ROLES:
-        print(f"usage: inbox.py <{'|'.join(ROLES)}> [--fetch]")
+    role = args[0] if args else detect_role(ROOT)
+    if len(args) > 1 or role not in ROLES:
+        print(
+            f"usage: inbox.py [{'|'.join(ROLES)}] [--fetch] (no role: this checkout's own)"
+        )
         return 2
-    role = args[0]
     if do_fetch and not fetch(ROOT):
         print("(fetch failed: remote copies may be stale)")
     incoming, replies = inbox(load(ROOT), role)

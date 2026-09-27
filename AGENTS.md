@@ -42,7 +42,8 @@ library/           shared canonical knowledge: principles, protocol, ownership, 
 archive/           retired documents, frozen
 docs/              ADRs, design cards, and study guides (write-ups of finished projects)
 .github/           CI and Dependabot
-.claude/           Claude Code skills (/lead, /research, /handoff) and session hooks
+.claude/           Claude Code skills (/lead, /mentor, /research, /handoff, /inbox) and the
+                   session hooks (start, prompt, ownership guard, stop)
 examples/          sample inputs (e.g. code to review)
 evals/             live eval-lite scenario sets (real models, run by hand, not by pytest)
 out/               runtime output, gitignored: sandbox/, state/checkpoints.db
@@ -118,9 +119,10 @@ uv run pytest                                   # tests
 uv run ruff check src tests scripts             # lint
 uv run ruff format src tests scripts            # format
 uv run python scripts/check_docs.py             # docs lint: links, anchors, library, outboxes
-python scripts/inbox.py <role> --fetch          # open messages for lead, mentor, or research
+python scripts/inbox.py [role] --fetch          # open messages (default: this worktree's role)
 python scripts/handoff.py -m "<subject>" [--wip] [--pr]  # end a session (the /handoff skill)
 python scripts/setup_worktrees.py               # create or complete the role worktrees
+python scripts/pr_report.py --summary           # open messages per role (the Messages workflow)
 uv run python scripts/smoke_live.py             # live smoke of every integration (test mode)
 uv run lab-research                             # P1 web researcher (approve each search)
 uv run lab-rag                                  # P2 raw RAG graph (history / replay <i>)
@@ -176,6 +178,9 @@ Policy: [ADR-0004](docs/adr/0004-testing-and-evaluation-policy.md).
   ([dev environment](library/engineering/dev-environment.md)).
 - A worktree's `CLAUDE.local.md` must stay ignored: tracked, it would give every checkout the
   same role.
+- The ownership guard refuses edits outside your role's paths and in any checkout that plays no
+  role; it reads the Roles column of `library/governance/ownership.md`, so keep that table's
+  shape. A denial says where the work belongs: move the session there, don't work around it.
 
 ## Ask before
 

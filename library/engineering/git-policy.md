@@ -3,7 +3,7 @@ title: Git policy
 maintainer: lead
 status: current
 updated: 2026-09-27
-summary: One worktree and branch per role, pull requests to main, what CI guards, and what is never done to history.
+summary: One worktree and branch per role, pull requests to main merged by the lead without asking, branch retirement, CI, and what is never done to history.
 related: [dependency-policy.md, dev-environment.md, ../governance/ownership.md, ../../.github/workflows/ci.yml, ../../docs/adr/0019-role-worktrees-hooks-and-handoff.md]
 ---
 
@@ -27,6 +27,9 @@ Each role works in its own git worktree, on its own long-lived branch
 - **`main`** is the integration branch, and nobody commits to it directly. Every change reaches
   it by pull request: the role opens one from its branch (`/handoff --pr`), CI runs, and the
   lead merges when CI is green, its own pull requests included.
+- **The lead merges whenever it judges a pull request ready, and never asks first** (the user's
+  standing direction, 2026-09-27). Readiness means CI green, the Messages report read, and any
+  file outside the branch's role accounted for.
 - **Merge commits** for role branches: they keep every commit's SHA valid on `main`, so the
   SHAs that office records cite stay true, and the role branch never diverges from `main`.
   Dependabot's single-commit updates are squash-merged.
@@ -37,18 +40,19 @@ Each role works in its own git worktree, on its own long-lived branch
 - **Cloud sessions** work on the branch their session was given (a role's branch, or one the
   platform names) and reach `main` the same way.
 - **Short-lived branches** (a Dependabot update, a handoff, a spike) are deleted by the lead
-  once merged. Deleting a branch that isn't merged needs the user's OK. Role branches are never
-  deleted; GitHub's automatic head-branch deletion stays off.
+  once merged. A branch retired without merging is first kept as an annotated tag
+  `archive/<branch>` pushed to `origin`, so nothing is lost; then the branch goes. Role branches
+  are never deleted; GitHub's automatic head-branch deletion stays off.
 
 `scripts/setup_worktrees.py` creates or completes the worktrees
 ([dev-environment.md](dev-environment.md)).
 
 ## Commits
 
-- **Your worktree holds only your work.** Check `git status` before committing: every path must
-  be yours ([ownership.md](../governance/ownership.md)). The one exception is a link repair
-  your own move made necessary; mention it in the commit. Anything else goes to its owner as a
-  message.
+- **Your worktree holds only your work.** Every path you change must list your role in
+  [ownership.md](../governance/ownership.md)'s Roles column; the session guard refuses other
+  edits, and the Messages report on each pull request lists any that slipped through a shell
+  command. When your own move breaks another role's links, send the lead a request listing them.
 - **End every session with `/handoff`:** it updates your state, commits everything in your
   worktree, pushes your branch, and prints a three-line summary. Unfinished work is committed
   as `wip(<role>): ...`; a role branch may be red between sessions.

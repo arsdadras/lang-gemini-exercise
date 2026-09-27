@@ -62,7 +62,7 @@ compiled into interlinked pages, and the whole is linted.
 | :--- | :--- | :--- |
 | [principles.md](governance/principles.md) | The rules every role follows in every session | lead |
 | [protocol.md](governance/protocol.md) | How the roles coordinate: offices, outboxes, sessions | lead |
-| [ownership.md](governance/ownership.md) | Repository map: every path and its one writer | lead |
+| [ownership.md](governance/ownership.md) | Repository map: every path, its one writer, and the Roles the guard enforces | lead |
 | [glossary.md](governance/glossary.md) | Terms with a specific meaning in this repo | lead |
 
 ### Engineering

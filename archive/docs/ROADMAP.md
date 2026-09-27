@@ -1,3 +1,5 @@
+> Archived 2026-09-27 by lead. Superseded by [offices/lead/ROADMAP.md](../../offices/lead/ROADMAP.md).
+
 # Curriculum Roadmap (v3)
 
 Adopted 2026-09-13, refined 2026-09-14 ([ADR-0009](adr/0009-stage-admission-rule.md)) and

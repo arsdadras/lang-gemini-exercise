@@ -82,7 +82,7 @@ were dropped from this list (the roadmap owns them).
 | Sandbox filesystem snapshots alongside checkpoints | N | Time travel over side effects is taught (Term E, E1) |
 | Session-scoped or remote sandbox workspaces | N | Term E, E1 |
 | A guard against direct pushes to `main`: a pre-push hook through `core.hooksPath`, installed by `scripts/setup_worktrees.py` (GitHub can't protect a private repo's branch on the Free plan) | N | A direct push to `main` happens |
-| (e) Automatic awareness of new messages: the SessionStart inbox hook; a `/loop` in a long-running session that checks the inbox every N minutes; scheduled cloud routines (research's upstream watch); a GitHub Actions job listing new open messages on each push to `main` | N | The worktree setup (ADR-0019) has run for a week without coordination trouble |
+| A weekly cloud routine running research's upstream watch on branch `research` (DEC-020) | E | Research replies to LD-015 with its watch procedure |
 | Library placement of research's `library/engineering/decision-models.md` (written outside its office, not in the index; its content is untouched until then) | E | The user opens the Jev file ("parvande-ye Jev ro shoru konim"); the placement is a lead decision |
 
 ## Deep-dive candidates
@@ -91,6 +91,8 @@ None yet ([PEDAGOGY.md](PEDAGOGY.md#digressions-and-deep-dives)).
 
 ## Closed in triage
 
+- **Automatic message awareness (item e):** built 2026-09-27: prompt hook, `/inbox` and `/loop`,
+  the Messages workflow (DEC-020, ADR-0020); the research routine is parked above.
 - **Per-role worktrees, identity in role files, session hooks, `/handoff` (items a-d):** built
   2026-09-27 (DEC-017, ADR-0019).
 - **Wire `rag_subagent` into the researcher:** superseded by P6-A1, where the workflow composes P1

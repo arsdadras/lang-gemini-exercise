@@ -52,9 +52,10 @@ other work), **next topic boundary**, **stage close**, or a named stage. A direc
 ## Flow
 
 1. **Send.** The sender appends the message to its own outbox with status `open`.
-2. **Receive.** At session start every role runs `uv run python scripts/inbox.py <role>`,
-   which lists open messages addressed to it that it hasn't replied to, and replies to its own
-   open messages.
+2. **Receive.** Every session hears its inbox without asking: the start hook lists the open
+   messages addressed to the role that it hasn't replied to, and the replies to its own open
+   messages; the prompt hook announces anything that arrives later. `python scripts/inbox.py
+   --fetch` (or `/inbox`) shows it on demand, read from every role's branch.
 3. **Act and reply.** The recipient acts at the stated timing (the mentor never breaks a topic
    for a non-blocking message), then appends `reply <ID>` to its own outbox: `done` with the
    commit, `partial` with what remains, or `declined` with the reason (Principle 1).

@@ -30,7 +30,11 @@ Three roles work here, each in its own session, worktree, and branch
   config, or the branch name in a cloud session), and each worktree's `CLAUDE.local.md` loads
   that role's charter, `offices/<role>/README.md`. Where no `CLAUDE.local.md` exists, read the
   charter first; `/lead` and `/research` load theirs explicitly.
-- **The main checkout plays no role:** do only what the user asks there.
+- **Work only where your role lives.** The main checkout plays no role, and the ownership guard
+  refuses edits there, in another role's worktree, and outside your role's paths. When a request
+  needs a role and the session isn't in its worktree, move the session there first (the desktop
+  app's `change_directory` tool, or a new `claude` in that folder); `/lead`, `/mentor`, and
+  `/research` do this for you.
 - **Every session** starts from the hook's summary, its `STATE.md`, and its inbox, and ends with
   `/handoff`.
 
@@ -39,7 +43,6 @@ Three roles work here, each in its own session, worktree, and branch
 - The user's explicit instruction overrides any document; state an objection first
   (Principle 1), and the lead records the dissent.
 - The lead's records (`offices/lead/`, `docs/adr/`, `docs/design_cards/`) and the library decide
-  direction, architecture, and policy. `docs/ROADMAP.md` is superseded by
-  `offices/lead/ROADMAP.md`.
+  direction, architecture, and policy.
 - Every path has one writing role; write only inside yours
   ([ownership](library/governance/ownership.md)).

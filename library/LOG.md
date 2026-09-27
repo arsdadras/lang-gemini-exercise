@@ -14,3 +14,7 @@ Append-only: one line per change to the library, newest last. Format:
 - 2026-09-27 | lead | engineering/dev-environment.md | Role worktrees, per-worktree `.venv` and `.env`, session hooks, shared auto-memory
 - 2026-09-27 | lead | governance/protocol.md | Sessions: identity in files, role from the worktree, hook summary at start, `/handoff` at end
 - 2026-09-27 | lead | governance/ownership.md | Map updated for worktrees, `.claude/settings.json`, `CLAUDE.local.md`, the archived and moved docs
+- 2026-09-27 | lead | governance/ownership.md | Roles column added; the session guard and the pull-request report read it (ADR-0020)
+- 2026-09-27 | lead | engineering/git-policy.md | The lead merges without asking; unmerged branches retire as `archive/<branch>` tags
+- 2026-09-27 | lead | engineering/dev-environment.md | Prompt hook, ownership guard, worktree routing, `/inbox` and `/loop`, the Messages workflow
+- 2026-09-27 | lead | governance/protocol.md | Receiving: hooks announce messages; `inbox.py` defaults to the worktree's role
