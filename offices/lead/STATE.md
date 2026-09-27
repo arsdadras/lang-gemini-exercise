@@ -4,8 +4,7 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 [ROADMAP.md](ROADMAP.md) "Now, next, later". Live teaching status: the mentor's
 [state](../mentor/STATE.md).
 
-- **Last lead session:** 2026-09-27 (session 5, local; the session moved from the main checkout
-  to `D:/Repos/lce-lead` at its end).
+- **Last lead session:** 2026-09-27 to 28 (session 6, local, in `D:/Repos/lce-lead`).
 - **Repo:** each role has its own worktree and branch (ADR-0019): `D:/Repos/lce-lead`,
   `lce-mentor`, `lce-research`, each with its own `.venv` and `.env`; the main checkout is a
   clean `main` that takes no edits. The ownership guard, worktree routing, and message
@@ -17,27 +16,41 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 
 ## Open messages
 
-LD-003 to LD-005 and LD-015 (research), LD-006 and LD-008 (mentor, R0 close), LD-010 (mentor,
-blocking: move in), LD-011 (research, blocking: move in), LD-012 and LD-014 (all). Held until
-the Jev file opens: research's RS-014 (BR-003). Details in [OUTBOX.md](OUTBOX.md).
+LD-003, LD-005, and LD-015 (research); LD-006 and LD-008 (mentor, R0 close); LD-010 (mentor,
+blocking: move in); LD-016 (mentor, R0 topic 3: decision points in the eval harness); LD-012 and
+LD-014 (all: research has acknowledged both, the mentor hasn't yet). Received and under review:
+research's RS-020 (BR-003 version 3). Details in [OUTBOX.md](OUTBOX.md).
+
+## The Jev file
+
+Open since 2026-09-27. The lead read research's whole dossier and wrote its own:
+[artifacts/jev-dossier.md](artifacts/jev-dossier.md). The user asked to think it through together
+before anything is decided, so its positions are leanings until the joint review settles its
+seven questions. Then: DECISIONS entries and an ADR, the records they touch, the reply to
+RS-020, and a directive to the mentor for R1.
 
 ## Reserved for the user
 
-- Trust the project's hooks once when Claude Code asks. The guard makes a misplaced session
-  harmless, and it moves itself to the right worktree.
-- A TypeSafe API key before P8-C2 closes (backlog).
+- The Jev file's joint review (the dossier's section 13).
+- Consent for the development-loop hooks' data flow: session content sent to a hosted decider,
+  and past transcripts read for a replay (dossier, section 11).
+- Trust the project's hooks once when Claude Code asks.
 
 ## Agenda for the next lead session
 
-1. Open the Jev file (the user's go-ahead, 2026-09-27): review research's RS-014 (BR-003 v2) and
-   decide its proposals, including the design guide's library placement.
-2. Verify the replies to LD-010 and LD-011 (charters updated, runtime data in the mentor's
-   worktree); close them. When research answers LD-015, create the weekly routine.
+1. The Jev file: the joint review with the user; then record and execute the decisions, and
+   reply to RS-020.
+2. Verify the mentor's replies to LD-010, LD-012, LD-014, and LD-016; close them. When research
+   answers LD-015, create the weekly routine.
 3. Merge the role branches' green pull requests; fast-forward the main checkout.
-4. Write the P1 design card (point 16 included) before R1 opens; then P2-P4 before their stages.
+4. Write the P1 design card before R1 opens, naming its decision points; then P2-P4 before their
+   stages.
 5. When R0 closes: record the specialist contract as an ADR, update
-   [ARCHITECTURE.md](ARCHITECTURE.md) "Current system", and make R1 ready.
-6. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
+   [ARCHITECTURE.md](ARCHITECTURE.md) "Current system", and make R1 ready (with the decision seam,
+   if the Jev file accepts it).
+6. When the user defines the fourth role: its office, ownership rows, worktree, and the hooks'
+   role list.
+7. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
 
 ## Session log
 
@@ -63,3 +76,8 @@ the Jev file opens: research's RS-014 (BR-003). Details in [OUTBOX.md](OUTBOX.md
   handoff record; built ADR-0020 (ownership guard over a machine-read Roles column, worktree
   routing and `/mentor`, a prompt hook, `/inbox`, the Messages workflow; DEC-019 to DEC-021);
   sent LD-014 and LD-015. The lead now merges without asking.
+- **2026-09-27 to 28, session 6 (local).** Opened the Jev file: read research's whole dossier
+  (BR-003 version 3, its landscape, and six evidence records with their scripts) and the user's
+  sources; wrote the lead's dossier. Merged research's pull request #7 (BR-003 version 3, its
+  charter's Sessions section); closed LD-004 and LD-011; sent LD-016; corrected the radar's Jev
+  and OpenRouter rows and closed the obsolete TypeSafe-key backlog item.
