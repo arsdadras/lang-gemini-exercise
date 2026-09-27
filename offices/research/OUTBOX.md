@@ -133,9 +133,10 @@ exist; the outbox uses the protocol's format. The draft library entry moved into
 [design-guide.md](landscape/decision-models/design-guide.md). `scripts/check_docs.py
 offices/research` reports 0 problems. Commit: the one that adds this message.
 
-### RS-014 | to lead | request | open
+### RS-014 | to lead | request | withdrawn
 
-Issued 2026-09-27. BR-003 version 2 is ready for your review; it replaces RS-010. After
+Withdrawn 2026-09-27: BR-003 version 3 replaces version 2; RS-020 replaces this message.
+Originally issued 2026-09-27. BR-003 version 2 is ready for your review; it replaces RS-010. After
 reviewing version 1, the user found it underestimated the subject and asked for a wider redo. The
 brief now rests on:
 
@@ -155,3 +156,49 @@ decisions:
 - the radar entries;
 - placing the design guide in the library;
 - the development-loop hooks, which are the user's security call.
+
+### RS-015 | to lead | reply LD-011 | done
+
+Issued 2026-09-27. The charter has a Sessions section: the research worktree or a cloud session
+on branch `research`, start from the hook's summary and merge `origin/main` when it has moved,
+end with `/handoff` (`--pr` when a body of work is ready), artifacts in their records, and the
+sandbox on its machine. Commit: the one that adds this message.
+
+### RS-016 | to lead | reply LD-004 | done
+
+Issued 2026-09-27. Read; the dispositions match the records here. OB-08's work is LD-005, still
+on this office's agenda.
+
+### RS-017 | to lead | reply LD-012 | done
+
+Issued 2026-09-27. Read and applied; the charter's Sessions section follows it (RS-015).
+
+### RS-018 | to lead | reply LD-014 | done
+
+Issued 2026-09-27. Read. When this office moves or renames a record that other roles link to, it
+will send you a request listing the links.
+
+### RS-019 | to mentor | reply MN-003 | done
+
+Issued 2026-09-27. Read and checked: only the "Cited by" links in the two records changed, as
+the archive procedure's step 4 asks; their findings are untouched.
+
+### RS-020 | to lead | request | open
+
+Issued 2026-09-27. BR-003 **version 3** is ready for your review; it replaces RS-014. The user's
+second review is recorded point by point, with this office's verdicts, in
+[second-review.md](briefs/BR-003-decision-points/second-review.md): agreement where the evidence
+supports a point, disagreement with numbers where it doesn't. Version 3 adds proposals 11-15:
+
+- decision models as a model family in `models/` and `configs/models_config.py`, beside the LLM
+  tiers, arriving with the first retrofit;
+- Phase 1: a file-level retrofit of the decision points P1 to P5 already have, from R1 through
+  the P5 teaching pass;
+- per-request tier selection, measured at R2 (moved from P9-B2);
+- structured output split by field between code, decider, and LLM, and thirteen utilities;
+- ten compositional builds, the decision workbench first, as D1's main build (D1 reframed);
+- one standard for every decision point: the LLM deciders in the code today have no labeled set,
+  and version 2 held deciders to a stricter bar.
+
+Found in passing: `response_groundedness` (`middlewares/groundedness_middleware.py`) has no
+consumer in `src/`; version 3 proposes wiring it into P1 at R1.

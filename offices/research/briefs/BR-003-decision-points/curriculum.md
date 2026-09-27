@@ -1,6 +1,7 @@
 # BR-003 › Curriculum: teach it, teach with it, teach by building it
 
-Supports [BR-003](README.md) version 2. A proposal against the lead's
+Supports [BR-003](README.md) version 2; version 3's amendments are in
+[second-review.md](second-review.md). A proposal against the lead's
 [PEDAGOGY](../../../lead/PEDAGOGY.md):
 
 - backward design;
@@ -50,6 +51,11 @@ or a supporting lesson.
 | P7 | Typed extraction; human review of ambiguous fields | *Practice:* candidates plus a `choice` plus "none"; the review band | An LLM extractor inventing an invoice number that isn't in the document |
 | P8 | Triage; approvals; the cascade at scale (C3) | C3 stays its hard concept, now at production scale on feedback data | As planned |
 | P11, P12 | Actions; routing | *Practice:* gates that escalate; routing over typed contracts | As planned |
+
+**Amended by version 3** ([A8](second-review.md#a8-the-curriculum)): calling a decider is not
+taught as a subject. From R1 the learner writes decision calls inside each stage's own work.
+D1 keeps its place, with the compositional layer as its hard concept: the decision workbench is
+its main build ([A7](second-review.md#a7-the-compositional-layer-the-triangle)).
 
 **Why a dedicated stage, D1, and why there:**
 

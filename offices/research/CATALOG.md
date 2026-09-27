@@ -2,7 +2,7 @@
 
 Back to the [research office](README.md). **The one index of everything here.** Every record
 appears once, with a stable ID or path. Updated whenever a record is added or its status
-changes. As of 2026-09-26.
+changes. As of 2026-09-27.
 
 ## Landscape
 
@@ -49,8 +49,8 @@ prose.
 | :--- | :--- | :--- |
 | [BR-001-decision-model-adoption](briefs/BR-001-decision-model-adoption/README.md) | superseded by BR-003 | Should we adopt AI decision models? (2026-09-26: the pattern yes, at P8-C3; no member in today's call sites) |
 | [BR-002-model-catalog-evidence-map](briefs/BR-002-model-catalog-evidence-map/README.md) | current | Which model choices in code rest on evidence? 3 on direct measurement, 5 partial, 3 on none, including the tier-ranking scores themselves |
-| [BR-003-decision-points](briefs/BR-003-decision-points/README.md) | current, version 2 | What should decision models change in this repo, its development, and its teaching? A System-1 layer of measured, escalating decision points across the product, development, and learning loops; no big-bang rewrite; a curriculum thread with its own stage (D1); every record outside this office proposed, not written |
+| [BR-003-decision-points](briefs/BR-003-decision-points/README.md) | current, version 3 | What should decision models change in this repo, its development, and its teaching? Decision models as a second model family beside the LLM tiers, deciding a measured System-1 layer across the product, development, and learning loops; a Phase 1 retrofit of P1 to P5's decision points from R1; field-level structured output; tier selection at R2; utilities and compositional builds; one standard for every decision point; gates escalate, never approve. Version 3's verdicts on the user's second review: [second-review.md](briefs/BR-003-decision-points/second-review.md) |
 
 ## Outbox
 
-Messages to other roles, in the protocol's format: [OUTBOX.md](OUTBOX.md) (RS-001 to RS-014).
+Messages to other roles, in the protocol's format: [OUTBOX.md](OUTBOX.md) (RS-001 to RS-020).

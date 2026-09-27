@@ -1,6 +1,7 @@
 # BR-003 › Plan: the System-1 layer, its migration, and the records it touches
 
-Supports [BR-003](README.md) version 2. Everything here is a proposal for the lead. The mentor
+Supports [BR-003](README.md) version 2; version 3's amendments are in
+[second-review.md](second-review.md). Everything here is a proposal for the lead. The mentor
 implements whatever the lead accepts; code conventions are `AGENTS.md`'s.
 
 ## 1. The perspective
@@ -97,6 +98,12 @@ policy (ADR-0010).
    - send low-confidence cases to labeling.
 
 ## Schedule
+
+**Amended by version 3** ([second-review.md](second-review.md)): Phase 1 retrofits the decision
+points P1 to P5 already have, starting at R1 (A2); decision models enter the models layer with
+that first retrofit (A1); per-request tier selection is measured at R2 (A5); and every decision
+point, whatever its backend, is held to the same standard (A10). The rows below are otherwise
+unchanged.
 
 | When | What changes | Evidence gate |
 | :--- | :--- | :--- |
