@@ -11,7 +11,11 @@ Read first in every lead session; rewrite it, don't append. Program status in on
   clean `main`. The mentor's R0 topic 2 work and office migration merged as pull request #3
   (`9ca81da`); the worktree setup merged as the lead's pull request (see the session log).
   Branch protection isn't available on GitHub Free for a private repo, so "main only by pull
-  request" is policy ([BACKLOG.md](BACKLOG.md), Parked).
+  request" is policy ([BACKLOG.md](BACKLOG.md), Parked). After the merge (`b6edcc2`) all three
+  role branches were fast-forwarded to `main` and pushed, and the hooks were verified in every
+  checkout on Windows. Merged branches were deleted (`chore/upgrade-deps`,
+  `backup-before-file-rename-refactor`, remote `handoff/chore/upgrade-deps` and `main-1le51z`)
+  and the `lce-upgrade` worktree removed.
 
 ## Open messages
 
