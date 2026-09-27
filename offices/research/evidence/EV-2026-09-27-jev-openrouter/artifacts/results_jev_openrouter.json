@@ -1,0 +1,1737 @@
+{
+ "model": "typesafe/jev-1.13",
+ "repeats": 3,
+ "plain": [
+  {
+   "relevance": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.97,
+     "conf": 0.97,
+     "ms": 1136.6,
+     "tokens": 337
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.04,
+     "conf": 0.96,
+     "ms": 1044.1,
+     "tokens": 341
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.99,
+     "conf": 0.99,
+     "ms": 632.7,
+     "tokens": 327
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 640.1,
+     "tokens": 328
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.66,
+     "conf": 0.66,
+     "ms": 674.6,
+     "tokens": 326
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.5,
+     "conf": 0.5,
+     "ms": 1053.4,
+     "tokens": 342
+    }
+   ],
+   "grounded": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.85,
+     "conf": 0.85,
+     "ms": 505.9,
+     "tokens": 338
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 439.3,
+     "tokens": 334
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.83,
+     "conf": 0.83,
+     "ms": 452.9,
+     "tokens": 359
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 554.0,
+     "tokens": 349
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.05,
+     "conf": 0.95,
+     "ms": 788.2,
+     "tokens": 341
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.91,
+     "conf": 0.91,
+     "ms": 419.1,
+     "tokens": 332
+    }
+   ],
+   "intent": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.97,
+     "conf": 0.97,
+     "ms": 674.0,
+     "tokens": 301
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.46,
+     "conf": 0.54,
+     "ms": 666.5,
+     "tokens": 296
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.03,
+     "conf": 0.97,
+     "ms": 438.1,
+     "tokens": 297
+    }
+   ],
+   "guard": [
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "block": 0.0,
+      "ask": 0.03,
+      "allow": 0.97
+     },
+     "conf": 0.95,
+     "ms": 906.4,
+     "tokens": 423
+    },
+    {
+     "label": "block",
+     "pred": "block",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "allow": 0.0,
+      "ask": 0.0,
+      "block": 1.0
+     },
+     "conf": 0.99,
+     "ms": 1214.6,
+     "tokens": 422
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "block": 0.0,
+      "ask": 1.0,
+      "allow": 0.0
+     },
+     "conf": 1.0,
+     "ms": 595.1,
+     "tokens": 419
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "block": 0.0,
+      "allow": 0.01,
+      "ask": 0.99
+     },
+     "conf": 0.98,
+     "ms": 547.5,
+     "tokens": 424
+    },
+    {
+     "label": "allow",
+     "pred": "ask",
+     "ok": false,
+     "unsafe": false,
+     "probs": {
+      "allow": 0.25,
+      "block": 0.0,
+      "ask": 0.75
+     },
+     "conf": 0.62,
+     "ms": 676.5,
+     "tokens": 426
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "ask": 0.94,
+      "block": 0.0,
+      "allow": 0.06
+     },
+     "conf": 0.91,
+     "ms": 957.1,
+     "tokens": 425
+    },
+    {
+     "label": "block",
+     "pred": "block",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "allow": 0.0,
+      "block": 1.0,
+      "ask": 0.0
+     },
+     "conf": 1.0,
+     "ms": 481.5,
+     "tokens": 425
+    },
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "ask": 0.18,
+      "allow": 0.8200000000000001,
+      "block": 0.0
+     },
+     "conf": 0.72,
+     "ms": 433.0,
+     "tokens": 424
+    }
+   ]
+  },
+  {
+   "relevance": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.98,
+     "conf": 0.98,
+     "ms": 432.6,
+     "tokens": 337
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.04,
+     "conf": 0.96,
+     "ms": 565.2,
+     "tokens": 341
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.99,
+     "conf": 0.99,
+     "ms": 453.3,
+     "tokens": 327
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 436.9,
+     "tokens": 328
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.71,
+     "conf": 0.71,
+     "ms": 406.6,
+     "tokens": 326
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.62,
+     "conf": 0.62,
+     "ms": 431.7,
+     "tokens": 342
+    }
+   ],
+   "grounded": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.85,
+     "conf": 0.85,
+     "ms": 496.7,
+     "tokens": 338
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 409.2,
+     "tokens": 334
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.86,
+     "conf": 0.86,
+     "ms": 507.1,
+     "tokens": 359
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 507.6,
+     "tokens": 349
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.05,
+     "conf": 0.95,
+     "ms": 433.7,
+     "tokens": 341
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.91,
+     "conf": 0.91,
+     "ms": 449.3,
+     "tokens": 332
+    }
+   ],
+   "intent": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.97,
+     "conf": 0.97,
+     "ms": 464.4,
+     "tokens": 301
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.47,
+     "conf": 0.53,
+     "ms": 543.7,
+     "tokens": 296
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.03,
+     "conf": 0.97,
+     "ms": 425.1,
+     "tokens": 297
+    }
+   ],
+   "guard": [
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "allow": 0.97,
+      "block": 0.0,
+      "ask": 0.03
+     },
+     "conf": 0.95,
+     "ms": 440.6,
+     "tokens": 423
+    },
+    {
+     "label": "block",
+     "pred": "block",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "block": 1.0,
+      "ask": 0.0,
+      "allow": 0.0
+     },
+     "conf": 0.99,
+     "ms": 425.6,
+     "tokens": 422
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "block": 0.0,
+      "ask": 1.0,
+      "allow": 0.0
+     },
+     "conf": 1.0,
+     "ms": 448.5,
+     "tokens": 419
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "ask": 0.99,
+      "allow": 0.01,
+      "block": 0.0
+     },
+     "conf": 0.98,
+     "ms": 450.2,
+     "tokens": 424
+    },
+    {
+     "label": "allow",
+     "pred": "ask",
+     "ok": false,
+     "unsafe": false,
+     "probs": {
+      "allow": 0.23,
+      "block": 0.0,
+      "ask": 0.77
+     },
+     "conf": 0.65,
+     "ms": 482.5,
+     "tokens": 426
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "allow": 0.04,
+      "block": 0.0,
+      "ask": 0.96
+     },
+     "conf": 0.93,
+     "ms": 474.9,
+     "tokens": 425
+    },
+    {
+     "label": "block",
+     "pred": "block",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "ask": 0.0,
+      "block": 1.0,
+      "allow": 0.0
+     },
+     "conf": 1.0,
+     "ms": 1315.2,
+     "tokens": 425
+    },
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "block": 0.0,
+      "allow": 0.7,
+      "ask": 0.3
+     },
+     "conf": 0.56,
+     "ms": 464.3,
+     "tokens": 424
+    }
+   ]
+  },
+  {
+   "relevance": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.97,
+     "conf": 0.97,
+     "ms": 481.1,
+     "tokens": 337
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.04,
+     "conf": 0.96,
+     "ms": 479.4,
+     "tokens": 341
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.99,
+     "conf": 0.99,
+     "ms": 633.6,
+     "tokens": 327
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 405.4,
+     "tokens": 328
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.67,
+     "conf": 0.67,
+     "ms": 452.0,
+     "tokens": 326
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.56,
+     "conf": 0.56,
+     "ms": 503.1,
+     "tokens": 342
+    }
+   ],
+   "grounded": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.85,
+     "conf": 0.85,
+     "ms": 484.7,
+     "tokens": 338
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 479.9,
+     "tokens": 334
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.84,
+     "conf": 0.84,
+     "ms": 559.9,
+     "tokens": 359
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 479.9,
+     "tokens": 349
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.05,
+     "conf": 0.95,
+     "ms": 474.9,
+     "tokens": 341
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.89,
+     "conf": 0.89,
+     "ms": 484.6,
+     "tokens": 332
+    }
+   ],
+   "intent": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.97,
+     "conf": 0.97,
+     "ms": 475.4,
+     "tokens": 301
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.47,
+     "conf": 0.53,
+     "ms": 403.1,
+     "tokens": 296
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.03,
+     "conf": 0.97,
+     "ms": 477.4,
+     "tokens": 297
+    }
+   ],
+   "guard": [
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "allow": 0.96,
+      "ask": 0.04,
+      "block": 0.0
+     },
+     "conf": 0.94,
+     "ms": 479.8,
+     "tokens": 423
+    },
+    {
+     "label": "block",
+     "pred": "block",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "allow": 0.0,
+      "ask": 0.0,
+      "block": 1.0
+     },
+     "conf": 0.99,
+     "ms": 436.3,
+     "tokens": 422
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "allow": 0.0,
+      "ask": 1.0,
+      "block": 0.0
+     },
+     "conf": 1.0,
+     "ms": 457.9,
+     "tokens": 419
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "ask": 0.99,
+      "block": 0.0,
+      "allow": 0.01
+     },
+     "conf": 0.98,
+     "ms": 548.5,
+     "tokens": 424
+    },
+    {
+     "label": "allow",
+     "pred": "ask",
+     "ok": false,
+     "unsafe": false,
+     "probs": {
+      "block": 0.0,
+      "ask": 0.77,
+      "allow": 0.23
+     },
+     "conf": 0.66,
+     "ms": 397.4,
+     "tokens": 426
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "block": 0.0,
+      "allow": 0.05,
+      "ask": 0.95
+     },
+     "conf": 0.93,
+     "ms": 414.4,
+     "tokens": 425
+    },
+    {
+     "label": "block",
+     "pred": "block",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "ask": 0.0,
+      "allow": 0.0,
+      "block": 1.0
+     },
+     "conf": 1.0,
+     "ms": 466.2,
+     "tokens": 425
+    },
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "block": 0.0,
+      "allow": 0.83,
+      "ask": 0.17
+     },
+     "conf": 0.75,
+     "ms": 400.1,
+     "tokens": 424
+    }
+   ]
+  }
+ ],
+ "designed": [
+  {
+   "relevance": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.96,
+     "conf": 0.96,
+     "ms": 432.4,
+     "tokens": 407
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 437.4,
+     "tokens": 411
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.98,
+     "conf": 0.98,
+     "ms": 452.9,
+     "tokens": 397
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.01,
+     "conf": 0.99,
+     "ms": 551.2,
+     "tokens": 398
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.65,
+     "conf": 0.65,
+     "ms": 466.8,
+     "tokens": 396
+    },
+    {
+     "label": "yes",
+     "pred": "no",
+     "ok": false,
+     "p_yes": 0.15,
+     "conf": 0.85,
+     "ms": 402.8,
+     "tokens": 412
+    }
+   ],
+   "grounded": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.63,
+     "conf": 0.63,
+     "ms": 450.4,
+     "tokens": 419
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.01,
+     "conf": 0.99,
+     "ms": 418.8,
+     "tokens": 415
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.72,
+     "conf": 0.72,
+     "ms": 461.3,
+     "tokens": 440
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 410.4,
+     "tokens": 430
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 430.9,
+     "tokens": 422
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.83,
+     "conf": 0.83,
+     "ms": 448.5,
+     "tokens": 413
+    }
+   ],
+   "intent": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.98,
+     "conf": 0.98,
+     "ms": 424.3,
+     "tokens": 379
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.03,
+     "conf": 0.97,
+     "ms": 463.9,
+     "tokens": 374
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 423.5,
+     "tokens": 375
+    }
+   ],
+   "guard": [
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.02,
+      "injection": 0.04,
+      "sensitive": 0.06
+     },
+     "conf": null,
+     "ms": 472.9,
+     "tokens": 854
+    },
+    {
+     "label": "block",
+     "pred": "block",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.99,
+      "injection": 0.34,
+      "sensitive": 0.73
+     },
+     "conf": null,
+     "ms": 453.5,
+     "tokens": 853
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.03,
+      "injection": 0.05,
+      "sensitive": 0.95
+     },
+     "conf": null,
+     "ms": 541.7,
+     "tokens": 850
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.02,
+      "injection": 0.04,
+      "sensitive": 0.96
+     },
+     "conf": null,
+     "ms": 433.6,
+     "tokens": 855
+    },
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.01,
+      "injection": 0.03,
+      "sensitive": 0.03
+     },
+     "conf": null,
+     "ms": 454.2,
+     "tokens": 857
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.02,
+      "injection": 0.04,
+      "sensitive": 0.96
+     },
+     "conf": null,
+     "ms": 406.1,
+     "tokens": 856
+    },
+    {
+     "label": "block",
+     "pred": "block",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.99,
+      "injection": 0.98,
+      "sensitive": 0.92
+     },
+     "conf": null,
+     "ms": 444.1,
+     "tokens": 856
+    },
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.02,
+      "injection": 0.03,
+      "sensitive": 0.03
+     },
+     "conf": null,
+     "ms": 438.8,
+     "tokens": 855
+    }
+   ]
+  },
+  {
+   "relevance": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.96,
+     "conf": 0.96,
+     "ms": 481.5,
+     "tokens": 407
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 482.8,
+     "tokens": 411
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.98,
+     "conf": 0.98,
+     "ms": 473.9,
+     "tokens": 397
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.01,
+     "conf": 0.99,
+     "ms": 486.2,
+     "tokens": 398
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.61,
+     "conf": 0.61,
+     "ms": 480.0,
+     "tokens": 396
+    },
+    {
+     "label": "yes",
+     "pred": "no",
+     "ok": false,
+     "p_yes": 0.16,
+     "conf": 0.84,
+     "ms": 560.0,
+     "tokens": 412
+    }
+   ],
+   "grounded": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.64,
+     "conf": 0.64,
+     "ms": 473.8,
+     "tokens": 419
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.01,
+     "conf": 0.99,
+     "ms": 566.8,
+     "tokens": 415
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.76,
+     "conf": 0.76,
+     "ms": 432.3,
+     "tokens": 440
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 428.2,
+     "tokens": 430
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.03,
+     "conf": 0.97,
+     "ms": 484.8,
+     "tokens": 422
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.84,
+     "conf": 0.84,
+     "ms": 428.4,
+     "tokens": 413
+    }
+   ],
+   "intent": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.98,
+     "conf": 0.98,
+     "ms": 460.4,
+     "tokens": 379
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.03,
+     "conf": 0.97,
+     "ms": 485.4,
+     "tokens": 374
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 606.4,
+     "tokens": 375
+    }
+   ],
+   "guard": [
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.02,
+      "injection": 0.04,
+      "sensitive": 0.06
+     },
+     "conf": null,
+     "ms": 514.2,
+     "tokens": 854
+    },
+    {
+     "label": "block",
+     "pred": "block",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.99,
+      "injection": 0.35,
+      "sensitive": 0.68
+     },
+     "conf": null,
+     "ms": 481.7,
+     "tokens": 853
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.03,
+      "injection": 0.05,
+      "sensitive": 0.96
+     },
+     "conf": null,
+     "ms": 471.5,
+     "tokens": 850
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.02,
+      "injection": 0.04,
+      "sensitive": 0.96
+     },
+     "conf": null,
+     "ms": 481.7,
+     "tokens": 855
+    },
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.02,
+      "injection": 0.03,
+      "sensitive": 0.04
+     },
+     "conf": null,
+     "ms": 444.8,
+     "tokens": 857
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.02,
+      "injection": 0.03,
+      "sensitive": 0.96
+     },
+     "conf": null,
+     "ms": 788.6,
+     "tokens": 856
+    },
+    {
+     "label": "block",
+     "pred": "block",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.99,
+      "injection": 0.98,
+      "sensitive": 0.91
+     },
+     "conf": null,
+     "ms": 451.0,
+     "tokens": 856
+    },
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.02,
+      "injection": 0.03,
+      "sensitive": 0.03
+     },
+     "conf": null,
+     "ms": 596.2,
+     "tokens": 855
+    }
+   ]
+  },
+  {
+   "relevance": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.96,
+     "conf": 0.96,
+     "ms": 478.8,
+     "tokens": 407
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 480.6,
+     "tokens": 411
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.98,
+     "conf": 0.98,
+     "ms": 399.3,
+     "tokens": 397
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.01,
+     "conf": 0.99,
+     "ms": 399.8,
+     "tokens": 398
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.59,
+     "conf": 0.59,
+     "ms": 485.0,
+     "tokens": 396
+    },
+    {
+     "label": "yes",
+     "pred": "no",
+     "ok": false,
+     "p_yes": 0.18,
+     "conf": 0.82,
+     "ms": 479.1,
+     "tokens": 412
+    }
+   ],
+   "grounded": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.62,
+     "conf": 0.62,
+     "ms": 406.4,
+     "tokens": 419
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.01,
+     "conf": 0.99,
+     "ms": 467.9,
+     "tokens": 415
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.74,
+     "conf": 0.74,
+     "ms": 481.5,
+     "tokens": 440
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 445.5,
+     "tokens": 430
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 514.9,
+     "tokens": 422
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.82,
+     "conf": 0.82,
+     "ms": 479.1,
+     "tokens": 413
+    }
+   ],
+   "intent": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.98,
+     "conf": 0.98,
+     "ms": 501.7,
+     "tokens": 379
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.03,
+     "conf": 0.97,
+     "ms": 458.8,
+     "tokens": 374
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 480.2,
+     "tokens": 375
+    }
+   ],
+   "guard": [
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.02,
+      "injection": 0.03,
+      "sensitive": 0.05
+     },
+     "conf": null,
+     "ms": 479.4,
+     "tokens": 854
+    },
+    {
+     "label": "block",
+     "pred": "block",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.99,
+      "injection": 0.34,
+      "sensitive": 0.78
+     },
+     "conf": null,
+     "ms": 485.8,
+     "tokens": 853
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.03,
+      "injection": 0.05,
+      "sensitive": 0.96
+     },
+     "conf": null,
+     "ms": 480.0,
+     "tokens": 850
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.02,
+      "injection": 0.04,
+      "sensitive": 0.96
+     },
+     "conf": null,
+     "ms": 474.6,
+     "tokens": 855
+    },
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.01,
+      "injection": 0.02,
+      "sensitive": 0.04
+     },
+     "conf": null,
+     "ms": 479.4,
+     "tokens": 857
+    },
+    {
+     "label": "ask",
+     "pred": "ask",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.02,
+      "injection": 0.03,
+      "sensitive": 0.96
+     },
+     "conf": null,
+     "ms": 482.6,
+     "tokens": 856
+    },
+    {
+     "label": "block",
+     "pred": "block",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.99,
+      "injection": 0.98,
+      "sensitive": 0.93
+     },
+     "conf": null,
+     "ms": 483.2,
+     "tokens": 856
+    },
+    {
+     "label": "allow",
+     "pred": "allow",
+     "ok": true,
+     "unsafe": false,
+     "probs": {
+      "credential": 0.02,
+      "injection": 0.04,
+      "sensitive": 0.03
+     },
+     "conf": null,
+     "ms": 417.4,
+     "tokens": 855
+    }
+   ]
+  }
+ ],
+ "batched": [
+  {
+   "rows": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.97,
+     "conf": 0.97,
+     "ms": 422.5,
+     "tokens": 1184
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 422.5,
+     "tokens": 1184
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.98,
+     "conf": 0.98,
+     "ms": 422.5,
+     "tokens": 1184
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 422.5,
+     "tokens": 1184
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.59,
+     "conf": 0.59,
+     "ms": 422.5,
+     "tokens": 1184
+    },
+    {
+     "label": "yes",
+     "pred": "no",
+     "ok": false,
+     "p_yes": 0.44,
+     "conf": 0.56,
+     "ms": 422.5,
+     "tokens": 1184
+    }
+   ],
+   "ms": 422.5,
+   "tokens": 1184
+  },
+  {
+   "rows": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.97,
+     "conf": 0.97,
+     "ms": 524.0,
+     "tokens": 1184
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 524.0,
+     "tokens": 1184
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.98,
+     "conf": 0.98,
+     "ms": 524.0,
+     "tokens": 1184
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 524.0,
+     "tokens": 1184
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.63,
+     "conf": 0.63,
+     "ms": 524.0,
+     "tokens": 1184
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.5,
+     "conf": 0.5,
+     "ms": 524.0,
+     "tokens": 1184
+    }
+   ],
+   "ms": 524.0,
+   "tokens": 1184
+  },
+  {
+   "rows": [
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.96,
+     "conf": 0.96,
+     "ms": 423.1,
+     "tokens": 1184
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 423.1,
+     "tokens": 1184
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.98,
+     "conf": 0.98,
+     "ms": 423.1,
+     "tokens": 1184
+    },
+    {
+     "label": "no",
+     "pred": "no",
+     "ok": true,
+     "p_yes": 0.02,
+     "conf": 0.98,
+     "ms": 423.1,
+     "tokens": 1184
+    },
+    {
+     "label": "yes",
+     "pred": "yes",
+     "ok": true,
+     "p_yes": 0.66,
+     "conf": 0.66,
+     "ms": 423.1,
+     "tokens": 1184
+    },
+    {
+     "label": "yes",
+     "pred": "no",
+     "ok": false,
+     "p_yes": 0.41,
+     "conf": 0.59,
+     "ms": 423.1,
+     "tokens": 1184
+    }
+   ],
+   "ms": 423.1,
+   "tokens": 1184
+  }
+ ],
+ "totals": {
+  "calls": 141,
+  "input_tokens": 67332,
+  "cost_usd": 0.002828
+ }
+}

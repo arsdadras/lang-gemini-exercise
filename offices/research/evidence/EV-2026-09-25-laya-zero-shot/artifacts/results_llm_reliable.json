@@ -1,0 +1,125 @@
+{
+ "relevance": [
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ms": 3195.8
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ms": 1452.7
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ms": 1707.7
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ms": 3282.8
+  },
+  {
+   "pred": "no",
+   "label": "yes",
+   "ms": 1774.4
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ms": 1379.3
+  }
+ ],
+ "grounded": [
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ms": 1427.0
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ms": 1319.5
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ms": 1379.7
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ms": 1317.4
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ms": 1398.8
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ms": 1282.8
+  }
+ ],
+ "intent": [
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ms": 1301.8
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ms": 1294.5
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ms": 1331.9
+  }
+ ],
+ "guard": [
+  {
+   "pred": "allow",
+   "label": "allow",
+   "ms": 1468.7
+  },
+  {
+   "pred": "block",
+   "label": "block",
+   "ms": 1650.0
+  },
+  {
+   "pred": "ask",
+   "label": "ask",
+   "ms": 1608.1
+  },
+  {
+   "pred": "ask",
+   "label": "ask",
+   "ms": 1444.3
+  },
+  {
+   "pred": "allow",
+   "label": "allow",
+   "ms": 1552.9
+  },
+  {
+   "pred": "ask",
+   "label": "ask",
+   "ms": 1988.7
+  },
+  {
+   "pred": "block",
+   "label": "block",
+   "ms": 1645.7
+  },
+  {
+   "pred": "allow",
+   "label": "allow",
+   "ms": 1518.1
+  }
+ ]
+}

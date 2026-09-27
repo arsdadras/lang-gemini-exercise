@@ -1,0 +1,53 @@
+# Catalog
+
+Back to the [research office](README.md). **The one index of everything here.** Every record
+appears once, with a stable ID or path. Updated whenever a record is added or its status
+changes. As of 2026-09-26.
+
+## Landscape
+
+Living pages, edited in place. Each carries its "as of" date.
+
+| Domain | Page | Covers | As of |
+| :--- | :--- | :--- | :--- |
+| decision-models | [README.md](landscape/decision-models/README.md) | What decision models are; the comparison with LLM judges; calibration; the cascade pattern; weaknesses the class shares; members side by side | 2026-09-27 |
+| decision-models | [capabilities.md](landscape/decision-models/capabilities.md) | What the class changes in software: precursors, the control-plane view, capabilities today, published patterns, potential, limits, hype check | 2026-09-27 |
+| decision-models | [design-guide.md](landscape/decision-models/design-guide.md) | Guidance for any role designing an AI step: the backend rubric, question design, recurring policies, calling Jev here. Drafted as a library entry; moved here at the lead's request (placement is the lead's call) | 2026-09-27 |
+| decision-models | [jev.md](landscape/decision-models/jev.md) | TypeSafe's Jev: access through OpenRouter, API, limits, pricing, data policy, failure modes, measurements (ours included), reception | 2026-09-27 |
+| decision-models | [laya.md](landscape/decision-models/laya.md) | Laya 0.3.20: checkpoints, the maintainers' benchmarks, known bugs, operating facts | 2026-09-26 |
+| decision-models | [open-jev.md](landscape/decision-models/open-jev.md) | Open-Jev: models, serving, audited results | 2026-09-26 |
+| decision-models | [langchain-integrations.md](landscape/decision-models/langchain-integrations.md) | `langchain-typesafe` and Laya's integration, read from source; the OpenRouter path; the dependency check; the shared protocol | 2026-09-27 |
+| decision-models | [sources.md](landscape/decision-models/sources.md) | Every source used for the domain, with its type; background papers | 2026-09-27 |
+
+## Evidence
+
+Immutable records. **[V]** verified here with artifacts; **[R]** reconstructed from earlier
+prose.
+
+| ID | Label | Status | Question, and the answer in one line |
+| :--- | :-: | :--- | :--- |
+| [EV-2026-08-26-gapgpt-model-ids](evidence/EV-2026-08-26-gapgpt-model-ids/README.md) | R | partial | Were the catalog's IDs checked against the gateway? Six carried from this check; the others never were |
+| [EV-2026-09-17-finglish-line-repair](evidence/EV-2026-09-17-finglish-line-repair/README.md) | R | current, model since changed | How much does line-level repair cut Perso-Arabic leakage? 215 → 55 lines; a whole-answer rewrite was worse |
+| [EV-2026-09-17-memory-gate-spikes](evidence/EV-2026-09-17-memory-gate-spikes/README.md) | R | current | Where can a memory write be both approved and refused? In the storage backend, via `interrupt()`; a resume re-runs the tool |
+| [EV-2026-09-19-hot-path-memory-writes](evidence/EV-2026-09-19-hot-path-memory-writes/README.md) | R | current | Does in-conversation memory writing keep the profile accurate? No: conflicts, duplicates, stale and missing facts after 6 conversations |
+| [EV-2026-09-19-consolidator-model-comparison](evidence/EV-2026-09-19-consolidator-model-comparison/README.md) | R | current, **inconsistent** | Which model catches conflicting facts? `claude-sonnet-5`; its two records don't agree on the numbers |
+| [EV-2026-09-22-interrupt-resume-order](evidence/EV-2026-09-22-interrupt-resume-order/README.md) | R | current | How are resume values matched to `interrupt()` calls? By order within a node, so skipping one misroutes answers |
+| [EV-2026-09-23-p5-eval-lite](evidence/EV-2026-09-23-p5-eval-lite/README.md) | R | current, catalog since changed | Do real models meet P5's assumptions? 13/13 scenarios, one run |
+| [EV-2026-09-23-local-ollama-qwen](evidence/EV-2026-09-23-local-ollama-qwen/README.md) | V | current | Is local Qwen via Ollama usable here? It works end to end, the 4B is more reliable, and it's far too slow for interactive use |
+| [EV-2026-09-25-laya-zero-shot](evidence/EV-2026-09-25-laya-zero-shot/README.md) | V | current | Laya zero-shot vs our LLM tiers on 23 cases: 18/23 vs 23/23; the guard never answered "ask" |
+| [EV-2026-09-26-jev-wire-compat](evidence/EV-2026-09-26-jev-wire-compat/README.md) | V | current | Does the official Jev LangChain client work against another backend? Yes, 8/8 checks |
+| [EV-2026-09-26-laya-all-checkpoints](evidence/EV-2026-09-26-laya-all-checkpoints/README.md) | V | current | All 3 Laya checkpoints on our 23 cases: fine-tuned `typed-decisions` 20/23 (guard 7/8), english 18, multilingual 17; LLM 23/23 |
+| [EV-2026-09-27-jev-openrouter](evidence/EV-2026-09-27-jev-openrouter/README.md) | V | current | Jev through OpenRouter on our 23 cases, and the LangChain path: 22/23 in both question variants, no unsafe guard error, no label change over 3 runs, ~0.5 s and ~$0.00002 per decision; the client passed 11/11 checks |
+| [EV-undated-flash-lite-false-memory-claims](evidence/EV-undated-flash-lite-false-memory-claims/README.md) | R | current, possibly stale | Which low-tier model calls the memory tool reliably? `gpt-5.6-luna`; Gemini claimed writes it never made |
+
+## Briefs
+
+| ID | Status | Question, and the short answer |
+| :--- | :--- | :--- |
+| [BR-001-decision-model-adoption](briefs/BR-001-decision-model-adoption/README.md) | superseded by BR-003 | Should we adopt AI decision models? (2026-09-26: the pattern yes, at P8-C3; no member in today's call sites) |
+| [BR-002-model-catalog-evidence-map](briefs/BR-002-model-catalog-evidence-map/README.md) | current | Which model choices in code rest on evidence? 3 on direct measurement, 5 partial, 3 on none, including the tier-ranking scores themselves |
+| [BR-003-decision-points](briefs/BR-003-decision-points/README.md) | current | What should decision models change here? No big-bang rewrite; decision points become measured components now; code migrates stage by stage from R2; a curriculum thread; one library entry for every role |
+
+## Outbox
+
+Messages to other roles, in the protocol's format: [OUTBOX.md](OUTBOX.md) (RS-001 to RS-012).

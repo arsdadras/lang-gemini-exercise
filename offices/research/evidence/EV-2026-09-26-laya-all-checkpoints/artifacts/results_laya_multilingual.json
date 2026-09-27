@@ -1,0 +1,320 @@
+{
+ "relevance_plain": [
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 101.2,
+   "conf": 0.504,
+   "model": "multilingual"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 104.6,
+   "conf": 0.757,
+   "model": "multilingual"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 99.6,
+   "conf": 0.945,
+   "model": "multilingual"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 89.2,
+   "conf": 0.876,
+   "model": "multilingual"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 89.8,
+   "conf": 0.753,
+   "model": "multilingual"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 122.3,
+   "conf": 0.825,
+   "model": "multilingual"
+  }
+ ],
+ "grounded_plain": [
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 99.8,
+   "conf": 0.977,
+   "model": "multilingual"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 105.0,
+   "conf": 0.968,
+   "model": "multilingual"
+  },
+  {
+   "pred": "no",
+   "label": "yes",
+   "ok": false,
+   "ms": 130.8,
+   "conf": 0.988,
+   "model": "multilingual"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 121.6,
+   "conf": 0.999,
+   "model": "multilingual"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 103.0,
+   "conf": 0.997,
+   "model": "multilingual"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 93.6,
+   "conf": 0.986,
+   "model": "multilingual"
+  }
+ ],
+ "intent_plain": [
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 79.7,
+   "conf": 1.0,
+   "model": "multilingual"
+  },
+  {
+   "pred": "yes",
+   "label": "no",
+   "ok": false,
+   "ms": 76.2,
+   "conf": 1.0,
+   "model": "multilingual"
+  },
+  {
+   "pred": "yes",
+   "label": "no",
+   "ok": false,
+   "ms": 73.9,
+   "conf": 0.659,
+   "model": "multilingual"
+  }
+ ],
+ "relevance_ab": [
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 89.6,
+   "conf": 0.557,
+   "model": "multilingual"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 89.5,
+   "conf": 0.874,
+   "model": "multilingual"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 89.0,
+   "conf": 0.898,
+   "model": "multilingual"
+  },
+  {
+   "pred": "yes",
+   "label": "no",
+   "ok": false,
+   "ms": 87.2,
+   "conf": 0.758,
+   "model": "multilingual"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 87.5,
+   "conf": 0.756,
+   "model": "multilingual"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 98.3,
+   "conf": 0.793,
+   "model": "multilingual"
+  }
+ ],
+ "grounded_ab": [
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 86.9,
+   "conf": 0.9,
+   "model": "multilingual"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 101.1,
+   "conf": 0.743,
+   "model": "multilingual"
+  },
+  {
+   "pred": "no",
+   "label": "yes",
+   "ok": false,
+   "ms": 151.7,
+   "conf": 0.946,
+   "model": "multilingual"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 106.9,
+   "conf": 0.996,
+   "model": "multilingual"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 93.2,
+   "conf": 0.988,
+   "model": "multilingual"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 88.5,
+   "conf": 0.89,
+   "model": "multilingual"
+  }
+ ],
+ "intent_ab": [
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 89.3,
+   "conf": 0.864,
+   "model": "multilingual"
+  },
+  {
+   "pred": "yes",
+   "label": "no",
+   "ok": false,
+   "ms": 73.9,
+   "conf": 0.951,
+   "model": "multilingual"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 67.0,
+   "conf": 0.815,
+   "model": "multilingual"
+  }
+ ],
+ "guard": [
+  {
+   "pred": "allow",
+   "label": "allow",
+   "ok": true,
+   "ms": 138.7,
+   "conf": 0.488,
+   "model": "multilingual"
+  },
+  {
+   "pred": "block",
+   "label": "block",
+   "ok": true,
+   "ms": 135.8,
+   "conf": 0.967,
+   "model": "multilingual"
+  },
+  {
+   "pred": "block",
+   "label": "ask",
+   "ok": false,
+   "ms": 132.4,
+   "conf": 0.468,
+   "model": "multilingual"
+  },
+  {
+   "pred": "allow",
+   "label": "ask",
+   "ok": false,
+   "ms": 137.0,
+   "conf": 0.439,
+   "model": "multilingual"
+  },
+  {
+   "pred": "block",
+   "label": "allow",
+   "ok": false,
+   "ms": 137.5,
+   "conf": 0.499,
+   "model": "multilingual"
+  },
+  {
+   "pred": "ask",
+   "label": "ask",
+   "ok": true,
+   "ms": 135.2,
+   "conf": 0.949,
+   "model": "multilingual"
+  },
+  {
+   "pred": "block",
+   "label": "block",
+   "ok": true,
+   "ms": 136.6,
+   "conf": 0.997,
+   "model": "multilingual"
+  },
+  {
+   "pred": "allow",
+   "label": "allow",
+   "ok": true,
+   "ms": 138.7,
+   "conf": 0.464,
+   "model": "multilingual"
+  }
+ ]
+}

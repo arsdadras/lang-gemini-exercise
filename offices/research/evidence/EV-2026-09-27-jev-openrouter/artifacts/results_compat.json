@@ -1,0 +1,166 @@
+{
+ "invoke: string state, 3 primitives": {
+  "ok": true,
+  "ms": 1549.0,
+  "value": {
+   "model": "typesafe/jev-1.13-20260917",
+   "refund_noul": 0.99,
+   "dept": "billing",
+   "dept_conf": 1.0,
+   "urgency": 1.05,
+   "usage": {
+    "input_tokens": 377,
+    "output_tokens": 62
+   },
+   "request_id": null
+  }
+ },
+ "invoke: LangChain messages as state": {
+  "ok": true,
+  "ms": 451.1,
+  "value": {
+   "model": "typesafe/jev-1.13-20260917",
+   "refund_noul": 0.99,
+   "dept": "billing",
+   "dept_conf": 1.0,
+   "urgency": 1.05,
+   "usage": {
+    "input_tokens": 433,
+    "output_tokens": 62
+   },
+   "request_id": null
+  }
+ },
+ "ainvoke (async path)": {
+  "ok": true,
+  "ms": 1107.4,
+  "value": {
+   "model": "typesafe/jev-1.13-20260917",
+   "refund_noul": 0.99,
+   "dept": "billing",
+   "dept_conf": 1.0,
+   "urgency": 1.06,
+   "usage": {
+    "input_tokens": 377,
+    "output_tokens": 62
+   },
+   "request_id": null
+  }
+ },
+ "batch of 2": {
+  "ok": true,
+  "ms": 975.1,
+  "value": [
+   {
+    "model": "typesafe/jev-1.13-20260917",
+    "refund_noul": 0.99,
+    "dept": "billing",
+    "dept_conf": 1.0,
+    "urgency": 1.04,
+    "usage": {
+     "input_tokens": 377,
+     "output_tokens": 62
+    },
+    "request_id": null
+   },
+   {
+    "model": "typesafe/jev-1.13-20260917",
+    "refund_noul": 0.01,
+    "dept": "technical",
+    "dept_conf": 1.0,
+    "urgency": 1.55,
+    "usage": {
+     "input_tokens": 372,
+     "output_tokens": 62
+    },
+    "request_id": null
+   }
+  ]
+ },
+ "error mapping: wrong key": {
+  "ok": true,
+  "ms": 1050.1,
+  "value": "raised TypeSafeAuthenticationError status=401 (expected 401)"
+ },
+ "error mapping: 300-option choice": {
+  "ok": true,
+  "ms": 385.0,
+  "value": "raised TypeSafeBadRequestError status=400"
+ },
+ "AutoMode: destructive, unauthorized": {
+  "ok": true,
+  "ms": 1078.7,
+  "value": "BLOCKED: The tool call `delete_all_files` was blocked because it was classified as risky (probabili"
+ },
+ "AutoMode: read, authorized": {
+  "ok": true,
+  "ms": 433.9,
+  "value": "EXECUTED: EXECUTED"
+ },
+ "raw System One body (/api/v1/systemone)": {
+  "ok": true,
+  "ms": 938.5,
+  "value": {
+   "status": 200,
+   "ms": 938.4,
+   "id": "gen-dec-1790462858-zqIDowkfbP8di53zGNLb",
+   "model": "typesafe/jev-1.13-20260917",
+   "provider": "TypeSafe",
+   "usage": {
+    "input_tokens": 288,
+    "output_tokens": 20,
+    "cost": 1.2096e-05
+   },
+   "answers": {
+    "refund": {
+     "type": "noul",
+     "noul": 0.99
+    }
+   }
+  }
+ },
+ "raw Decisions API (/api/alpha/decisions)": {
+  "ok": true,
+  "ms": 1067.1,
+  "value": {
+   "status": 200,
+   "ms": 1067.0,
+   "id": "gen-dec-1790462859-EWQe1tQnKntk1NH1xHYU",
+   "model": "typesafe/jev-1.13-20260917",
+   "provider": "TypeSafe",
+   "usage": {
+    "input_tokens": 288,
+    "output_tokens": 20,
+    "cost": 1.2096e-05
+   },
+   "answers": {
+    "refund": {
+     "type": "noul",
+     "noul": 0.99
+    }
+   }
+  }
+ },
+ "bare model id jev-1.13 is mapped": {
+  "ok": true,
+  "ms": 950.1,
+  "value": {
+   "status": 200,
+   "ms": 950.1,
+   "id": "gen-dec-1790462860-618X6vouhZhwoy7MuqlQ",
+   "model": "typesafe/jev-1.13-20260917",
+   "provider": "TypeSafe",
+   "usage": {
+    "input_tokens": 288,
+    "output_tokens": 20,
+    "cost": 1.2096e-05
+   },
+   "answers": {
+    "refund": {
+     "type": "noul",
+     "noul": 0.99
+    }
+   }
+  }
+ }
+}

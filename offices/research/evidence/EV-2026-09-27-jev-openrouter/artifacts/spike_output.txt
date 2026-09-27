@@ -1,0 +1,20 @@
+repeat 1/3 done
+repeat 2/3 done
+repeat 3/3 done
+plain     relevance  correct per run=[6, 6, 6]/6 flips=0 p50=503ms
+plain     grounded   correct per run=[6, 6, 6]/6 flips=0 p50=485ms
+plain     intent     correct per run=[3, 3, 3]/3 flips=0 p50=475ms
+plain     guard      correct per run=[7, 7, 7]/8 flips=0 p50=475ms unsafe=[0, 0, 0]
+plain     TOTAL      correct per run=[22, 22, 22]/23
+designed  relevance  correct per run=[5, 5, 5]/6 flips=0 p50=479ms
+designed  grounded   correct per run=[6, 6, 6]/6 flips=0 p50=450ms
+designed  intent     correct per run=[3, 3, 3]/3 flips=0 p50=464ms
+designed  guard      correct per run=[8, 8, 8]/8 flips=0 p50=479ms unsafe=[0, 0, 0]
+designed  TOTAL      correct per run=[22, 22, 22]/23
+batched   relevance  run 1: 5/6 in one request, 422ms, 1184 tokens
+batched   relevance  run 2: 6/6 in one request, 524ms, 1184 tokens
+batched   relevance  run 3: 5/6 in one request, 423ms, 1184 tokens
+  MISS run1 plain/guard[4] expected=allow got=ask conf=0.62 detail={'allow': 0.25, 'block': 0.0, 'ask': 0.75}
+  MISS run1 designed/relevance[5] expected=yes got=no conf=0.85 detail=0.15
+totals: {'calls': 141, 'input_tokens': 67332, 'cost_usd': 0.002828}
+median ms per single-decision call: 475.15
