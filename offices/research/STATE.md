@@ -12,6 +12,20 @@ Read first in every research session; rewrite it, don't append. The index of rec
   text.
 - **Standing request from the user (2026-09-27):** reports to the user are fuller and more
   detailed than a short summary, with the reasons and the numbers behind each point.
+- **Standing guidance from the user (2026-09-27, later):**
+  - Judge decision models on the long run. Today's bugs and security gaps in a product this
+    young are not limiting factors; don't lead advice with them. (ARCHITECTURE principle 4
+    still applies to every model, LLMs included: no model is the only gate on a consequential
+    action.)
+  - What matters now: techniques that raise decision accuracy through the semantics of the
+    state and the question text; weaving decisions into the spirit of the repo; creative paths
+    to build remarkable systems. Decision engineering should be practiced early; it will trend
+    like prompt, context, graph, and harness engineering. Sources must stay reliable.
+  - Records may stay as long as agents need, when writing them isn't costly. The user gets a
+    separate report: what happened, what was found, which ideas, presented like a design and
+    advisory briefing.
+  - A further role will soon take part of this office's research, analysis, strategy, and
+    advisory scope.
 - **Open messages sent:** RS-020 (BR-003 version 3 awaits the lead's review; replaces RS-014).
 - **Open requests received:** LD-005 (BR-002's measurements; LangSmith Sandboxes for P4), LD-003
   and LD-015 (the upstream watch, written as a weekly procedure). Not started.
@@ -24,7 +38,9 @@ Read first in every research session; rewrite it, don't append. The index of rec
 2. LD-005, then LD-003 with LD-015.
 3. If the lead accepts A2's Phase 1, offer the mentor labeled seed sets for R1's claim check and
    R2's graders (the research office's cases can seed them).
-4. If the user allows it, replay our own Claude Code sessions to measure the development-loop
+4. Propose a study of decision-accuracy techniques (state shaping, question wording,
+   decomposition, answer-set design) measured on our labeled sets: the user's stated priority.
+5. If the user allows it, replay our own Claude Code sessions to measure the development-loop
    gates ([agent-guidance.md](briefs/BR-003-decision-points/agent-guidance.md#the-development-loop)).
 
 ## Session log

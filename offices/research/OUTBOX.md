@@ -200,5 +200,5 @@ supports a point, disagreement with numbers where it doesn't. Version 3 adds pro
 - one standard for every decision point: the LLM deciders in the code today have no labeled set,
   and version 2 held deciders to a stricter bar.
 
-Found in passing: `response_groundedness` (`middlewares/groundedness_middleware.py`) has no
-consumer in `src/`; version 3 proposes wiring it into P1 at R1.
+`response_groundedness` (`middlewares/groundedness_middleware.py`) has no consumer in `src/`;
+BACKLOG already schedules wiring it in at R1, and version 3's A2 builds on that item.
