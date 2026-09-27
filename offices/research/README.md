@@ -5,8 +5,22 @@ builds on, and what it **advises** as a result. It records, analyzes, and recomm
 decides, approves, and sets nothing: the lead reads its reports and decides what is done and
 how ([`offices/lead/`](../../offices/lead/README.md)), and the user has the final word. The roles
 and how they talk are in [`library/governance/protocol.md`](../../library/governance/protocol.md).
-A research session starts with `/research`: this charter, then [STATE.md](STATE.md), then
-`uv run python scripts/inbox.py research`.
+
+## Sessions
+
+Per [ADR-0019](../../docs/adr/0019-role-worktrees-hooks-and-handoff.md) and LD-011:
+
+- **Where.** Every research session runs in the research worktree, `../lce-research` on branch
+  `research`, or in a cloud session on that branch. `/research` moves a session there and loads
+  this charter.
+- **Start.** Read the session hook's summary. When it says `main` has moved, merge `origin/main`
+  into `research` first. Then read [STATE.md](STATE.md) and act on the inbox
+  (`python scripts/inbox.py research --fetch`, or `/inbox`).
+- **End.** Every session ends with `/handoff`: `STATE.md` updated, replies sent, committed, and
+  pushed (`--wip` for unfinished work). When a body of work is ready for `main`, `/handoff --pr`
+  opens the pull request, and the lead merges it.
+- **Files.** Evidence artifacts go in their record as before. The [sandbox](sandbox/README.md)
+  stays on its machine and is never committed.
 
 ## Charter
 

@@ -1,6 +1,8 @@
 # BR-003 › Use cases: three loops, and where a decider doesn't belong
 
-Supports [BR-003](README.md) version 2. Code read on 2026-09-27; roadmap per the lead's
+Supports [BR-003](README.md) version 2. Version 3 adds a file-level list of the decision points
+in today's code, and a field-by-field reading of the output schemas:
+[second-review.md](second-review.md). Code read on 2026-09-27; roadmap per the lead's
 [ROADMAP](../../../lead/ROADMAP.md) v4. Everything is judged at production load, with the rubric
 in the [design guide](../../landscape/decision-models/design-guide.md#choose-the-backend).
 Verdicts are advice; the lead decides, and each stage's measurement settles it.
