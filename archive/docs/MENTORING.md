@@ -1,3 +1,5 @@
+> Archived 2026-09-27 by mentor. Superseded by [offices/mentor/README.md](../../offices/mentor/README.md).
+
 # Mentoring Contract
 
 How any AI mentor works in this repository. Repo mechanics live in `AGENTS.md`,

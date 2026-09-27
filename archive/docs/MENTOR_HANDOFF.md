@@ -1,3 +1,5 @@
+> Archived 2026-09-27 by mentor. Superseded by [offices/mentor/STATE.md](../../offices/mentor/STATE.md).
+
 # Mentor Handoff
 
 Read first, every session. This file holds the **current state only**; keep it short and
