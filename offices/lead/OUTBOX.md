@@ -190,6 +190,27 @@ Issued 2026-09-27. Decided (a): `httpx`, `httpx2`, and `requests` are now direct
 `pyproject.toml`, because `utils/failure_util.py` imports them by name (DEC-018). Lands with the
 lead's pull request for ADR-0019.
 
+### LD-014 | to all | notice | open
+
+Issued 2026-09-27. New safeguards and awareness ([ADR-0020](../../docs/adr/0020-ownership-guard-routing-and-message-awareness.md)):
+
+- **Ownership guard:** an edit is refused when the session's checkout plays no role, when the
+  file is in another checkout, or when [ownership.md](../../library/governance/ownership.md)'s
+  Roles column doesn't list your role. The denial names the owner: send a message instead. When
+  your own move breaks another role's links, send the lead a request listing them.
+- **Routing:** a session that opens in the wrong place moves itself to the right worktree
+  (`change_directory` in the desktop app); `/mentor` joins `/lead` and `/research`.
+- **Awareness:** new messages are announced on your next prompt; `/inbox` shows the inbox now;
+  in a long session, `/loop 15m /inbox`. Pull requests get a Messages report on GitHub.
+
+### LD-015 | to research | request | open
+
+Issued 2026-09-27 · Timing: with LD-003. Write the upstream watch (LD-003) as a procedure an
+unattended cloud session can run on branch `research` once a week: sources (LangChain,
+LangGraph, DeepAgents, LangSmith releases, changelog, blog, docs), what it records and where,
+when it sends the lead a notice, how it avoids repeating the last run, and how it ends
+(`/handoff --pr`). Reply with its path; the lead then schedules the routine (DEC-020).
+
 ## Closed
 
 - LD-001 (2026-09-27): verified; the mentor's office, archive, and study-guide moves merged in

@@ -10,9 +10,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import handoff
 import inbox
+import pr_report
 import session_hooks
 import setup_worktrees
 import workspace
+
+OWNERSHIP = (
+    "# Ownership\n\n| Path | Holds | Writer | Roles |\n| :--- | :--- | :--- | :--- |\n"
+    "| `offices/lead/` | lead office | Lead | lead |\n"
+    "| `offices/mentor/`, `src/` | mentor office; code | Mentor | mentor |\n"
+    "| `archive/` | retired | owner | all |\n"
+)
 
 OUTBOX = (
     "# Lead Outbox\n\n## Open\n\n"
@@ -53,6 +61,7 @@ def project(tmp_path, monkeypatch):
     write(main, ".gitignore", ".env\nCLAUDE.local.md\n")  # as in the repo's .gitignore
     write(main, "offices/lead/OUTBOX.md", OUTBOX.format(status="open"))
     write(main, "offices/mentor/STATE.md", "# Mentor State\n\nR0 topic 3 next.\n")
+    write(main, "library/governance/ownership.md", OWNERSHIP)
     git(main, "add", "-A")
     git(main, "commit", "--quiet", "-m", "init")
     git(main, "remote", "add", "origin", str(origin))
@@ -156,3 +165,95 @@ def test_setup_ignores_claude_local_on_branches_without_the_gitignore(project):
     mentor = worktree(project, "mentor")
     assert (mentor / "CLAUDE.local.md").exists()
     assert workspace.status_lines(mentor) == []
+
+
+def test_the_repositorys_ownership_map_parses():
+    rules = workspace.ownership_rules(workspace.ROOT)
+    assert workspace.owners("src/agentlab/apps/rag_app.py", rules) == {"mentor"}
+    assert workspace.owners("AGENTS.md", rules) == {"lead", "mentor"}
+    assert workspace.owners("offices/research/STATE.md", rules) == {"research"}
+    assert workspace.owners("archive/docs/ROADMAP.md", rules) == {"all"}
+    assert workspace.owners("alireza/notes.ipynb", rules) == {"none"}
+    assert workspace.owners("a-new-top-level-file.txt", rules) == {"lead"}
+
+
+def edit(path: Path, tool: str = "Edit") -> dict:
+    return {"tool_name": tool, "tool_input": {"file_path": str(path)}}
+
+
+def test_guard_keeps_each_role_inside_its_own_paths(project, monkeypatch):
+    monkeypatch.delenv(session_hooks.GUARD_OFF_ENV, raising=False)
+    mentor, lead = worktree(project, "mentor"), worktree(project, "lead")
+    assert session_hooks.guard_reason(mentor, edit(mentor / "src" / "a.py")) is None
+    assert session_hooks.guard_reason(mentor, edit(mentor / "archive" / "x.md")) is None
+    owned = session_hooks.guard_reason(mentor, edit(mentor / "offices/lead/STATE.md"))
+    assert "offices/lead/STATE.md belongs to lead" in owned
+    foreign = session_hooks.guard_reason(mentor, edit(lead / "offices/lead/STATE.md"))
+    assert "another checkout" in foreign
+    assert (
+        session_hooks.guard_reason(mentor, edit(project.parent / "outside.txt")) is None
+    )
+    assert (
+        session_hooks.guard_reason(mentor, {"tool_name": "Read", "tool_input": {}})
+        is None
+    )
+    relative = {"tool_name": "Write", "tool_input": {"file_path": "offices/lead/x.md"}}
+    reason = session_hooks.guard_reason(mentor, {**relative, "cwd": str(mentor)})
+    assert "belongs to lead" in reason
+
+
+def test_guard_refuses_edits_in_a_checkout_with_no_role(project, monkeypatch):
+    monkeypatch.delenv(session_hooks.GUARD_OFF_ENV, raising=False)
+    worktree(project, "lead")
+    reason = session_hooks.guard_reason(project, edit(project / "offices/lead/x.md"))
+    assert "plays no role" in reason
+    assert "change_directory" in reason
+    monkeypatch.setenv(session_hooks.GUARD_OFF_ENV, "off")
+    assert (
+        session_hooks.guard_reason(project, edit(project / "offices/lead/x.md")) is None
+    )
+
+
+def test_prompt_hook_announces_each_new_message_once(project):
+    mentor, lead = worktree(project, "mentor"), worktree(project, "lead")
+    session_hooks.start_report(mentor, online=False, session_id="s1")
+    assert session_hooks.prompt_report(mentor, "s1", online_check=False) is None
+
+    notice = "\n### LD-002 | to mentor | notice | open\n\nIssued 2026-09-27. Hooks are live.\n"
+    write(lead, "offices/lead/OUTBOX.md", OUTBOX.format(status="open") + notice)
+    git(lead, "commit", "--quiet", "-am", "docs(lead): LD-002")
+    git(lead, "push", "--quiet", "origin", "lead")
+    assert workspace.fetch(mentor)
+    report = session_hooks.prompt_report(mentor, "s1", online_check=False)
+    assert "LD-002 from lead | notice | Issued 2026-09-27. Hooks are live." in report
+    assert "LD-001" not in report
+    assert session_hooks.prompt_report(mentor, "s1", online_check=False) is None
+
+
+def test_pr_report_lists_new_messages_and_foreign_files(project):
+    mentor = worktree(project, "mentor")
+    base = git(mentor, "rev-parse", "HEAD")
+    write(mentor, "src/a.py", "x = 1\n")
+    write(mentor, "offices/lead/STATE.md", "# edited by the wrong role\n")
+    outbox = "# Mentor Outbox\n\n### MN-001 | to lead | request | open\n\nIssued 2026-09-27. Decide.\n"
+    write(mentor, "offices/mentor/OUTBOX.md", outbox)
+    git(mentor, "add", "-A")
+    git(mentor, "commit", "--quiet", "-m", "wip(mentor): mixed")
+    head = git(mentor, "rev-parse", "HEAD")
+
+    report = pr_report.pr_report(base, head, "mentor", root=mentor)
+    assert (
+        "**MN-001** new, mentor to lead, request, open: Issued 2026-09-27. Decide."
+        in report
+    )
+    assert "offices/lead/STATE.md (owner: lead)" in report
+    assert "src/a.py" not in report
+    assert "not a role branch" in pr_report.pr_report(
+        base, head, "dependabot/x", root=mentor
+    )
+
+
+def test_summary_lists_open_messages_by_recipient(project):
+    text = pr_report.summary(project)
+    assert "### mentor: 1 open" in text
+    assert "**LD-001** from lead, directive" in text

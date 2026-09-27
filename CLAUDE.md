@@ -30,7 +30,11 @@ Three roles work here, each in its own session, worktree, and branch
   config, or the branch name in a cloud session), and each worktree's `CLAUDE.local.md` loads
   that role's charter, `offices/<role>/README.md`. Where no `CLAUDE.local.md` exists, read the
   charter first; `/lead` and `/research` load theirs explicitly.
-- **The main checkout plays no role:** do only what the user asks there.
+- **Work only where your role lives.** The main checkout plays no role, and the ownership guard
+  refuses edits there, in another role's worktree, and outside your role's paths. When a request
+  needs a role and the session isn't in its worktree, move the session there first (the desktop
+  app's `change_directory` tool, or a new `claude` in that folder); `/lead`, `/mentor`, and
+  `/research` do this for you.
 - **Every session** starts from the hook's summary, its `STATE.md`, and its inbox, and ends with
   `/handoff`.
 
