@@ -11,8 +11,9 @@ Living pages, edited in place. Each carries its "as of" date.
 | Domain | Page | Covers | As of |
 | :--- | :--- | :--- | :--- |
 | decision-models | [README.md](landscape/decision-models/README.md) | What decision models are; the comparison with LLM judges; calibration; the cascade pattern; weaknesses the class shares; members side by side | 2026-09-27 |
-| decision-models | [capabilities.md](landscape/decision-models/capabilities.md) | What the class changes in software: precursors, the control-plane view, capabilities today, published patterns, potential, limits, hype check | 2026-09-27 |
-| decision-models | [design-guide.md](landscape/decision-models/design-guide.md) | Guidance for any role designing an AI step: the backend rubric, question design, recurring policies, calling Jev here. Drafted as a library entry; moved here at the lead's request (placement is the lead's call) | 2026-09-27 |
+| decision-models | [capabilities.md](landscape/decision-models/capabilities.md) | Judgment unbundled; the product, development, and learning loops; where decisions sit in a harness; capabilities with evidence; patterns; Jev engineering; limits; hype check | 2026-09-27 |
+| decision-models | [ecosystem.md](landscape/decision-models/ecosystem.md) | What people build with Jev: the 551-build catalog mapped, harness and coding-agent builds, framework integrations, evaluation uses, eleven independent studies | 2026-09-27 |
+| decision-models | [design-guide.md](landscape/decision-models/design-guide.md) | Guidance for any role designing an AI step: finding decision points in three loops, the backend rubric, Jev engineering, recurring policies, calling Jev here. Proposed as a library entry (the lead's call) | 2026-09-27 |
 | decision-models | [jev.md](landscape/decision-models/jev.md) | TypeSafe's Jev: access through OpenRouter, API, limits, pricing, data policy, failure modes, measurements (ours included), reception | 2026-09-27 |
 | decision-models | [laya.md](landscape/decision-models/laya.md) | Laya 0.3.20: checkpoints, the maintainers' benchmarks, known bugs, operating facts | 2026-09-26 |
 | decision-models | [open-jev.md](landscape/decision-models/open-jev.md) | Open-Jev: models, serving, audited results | 2026-09-26 |
@@ -38,6 +39,8 @@ prose.
 | [EV-2026-09-26-jev-wire-compat](evidence/EV-2026-09-26-jev-wire-compat/README.md) | V | current | Does the official Jev LangChain client work against another backend? Yes, 8/8 checks |
 | [EV-2026-09-26-laya-all-checkpoints](evidence/EV-2026-09-26-laya-all-checkpoints/README.md) | V | current | All 3 Laya checkpoints on our 23 cases: fine-tuned `typed-decisions` 20/23 (guard 7/8), english 18, multilingual 17; LLM 23/23 |
 | [EV-2026-09-27-jev-openrouter](evidence/EV-2026-09-27-jev-openrouter/README.md) | V | current | Jev through OpenRouter on our 23 cases, and the LangChain path: 22/23 in both question variants, no unsafe guard error, no label change over 3 runs, ~0.5 s and ~$0.00002 per decision; the client passed 11/11 checks |
+| [EV-2026-09-27-jev-harness-decisions](evidence/EV-2026-09-27-jev-harness-decisions/README.md) | V | current | Jev on this repo's harness decisions against two LLM tiers: specialist routing 32/32 × 3 (LLMs 30/32), memory staleness 59/60 (LLMs 20/20, Jev unsure on implied changes), semantic lint of our conventions AUROC 1.0 on synthetic snippets (weak on syntax-level rules) |
+| [EV-2026-09-27-jev-ecosystem-map](evidence/EV-2026-09-27-jev-ecosystem-map/README.md) | V | current | What 551 cataloged Jev builds do: 53.9% of builds that use Jev work in agents' harnesses; 23.6% serve coding agents; 24.5% pair Jev with an LLM; 6.7% measure quality. Classified by Jev for $0.03, 80% agreement with a blind hand sample (19/19 at confidence ≥ 0.9) |
 | [EV-undated-flash-lite-false-memory-claims](evidence/EV-undated-flash-lite-false-memory-claims/README.md) | R | current, possibly stale | Which low-tier model calls the memory tool reliably? `gpt-5.6-luna`; Gemini claimed writes it never made |
 
 ## Briefs
@@ -46,8 +49,8 @@ prose.
 | :--- | :--- | :--- |
 | [BR-001-decision-model-adoption](briefs/BR-001-decision-model-adoption/README.md) | superseded by BR-003 | Should we adopt AI decision models? (2026-09-26: the pattern yes, at P8-C3; no member in today's call sites) |
 | [BR-002-model-catalog-evidence-map](briefs/BR-002-model-catalog-evidence-map/README.md) | current | Which model choices in code rest on evidence? 3 on direct measurement, 5 partial, 3 on none, including the tier-ranking scores themselves |
-| [BR-003-decision-points](briefs/BR-003-decision-points/README.md) | current | What should decision models change here? No big-bang rewrite; decision points become measured components now; code migrates stage by stage from R2; a curriculum thread; one library entry for every role |
+| [BR-003-decision-points](briefs/BR-003-decision-points/README.md) | current, version 2 | What should decision models change in this repo, its development, and its teaching? A System-1 layer of measured, escalating decision points across the product, development, and learning loops; no big-bang rewrite; a curriculum thread with its own stage (D1); every record outside this office proposed, not written |
 
 ## Outbox
 
-Messages to other roles, in the protocol's format: [OUTBOX.md](OUTBOX.md) (RS-001 to RS-012).
+Messages to other roles, in the protocol's format: [OUTBOX.md](OUTBOX.md) (RS-001 to RS-014).

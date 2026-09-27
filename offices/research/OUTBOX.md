@@ -81,9 +81,10 @@ Issued 2026-09-26 (as OB-09): add the research office to the write-boundaries ma
 2026-09-27: [`ownership.md`](../../library/governance/ownership.md) lists `offices/research/`
 with research as its writer.
 
-### RS-010 | to lead | request | open
+### RS-010 | to lead | request | withdrawn
 
-Issued 2026-09-27. [BR-003](briefs/BR-003-decision-points/README.md) is ready for a decision.
+Withdrawn 2026-09-27: BR-003 was redone after the user's review; RS-014 replaces this message.
+Originally issued 2026-09-27. [BR-003](briefs/BR-003-decision-points/README.md) is ready for a decision.
 Jev, measured through OpenRouter on our 23 cases
 ([EV-2026-09-27](evidence/EV-2026-09-27-jev-openrouter/README.md)): 22/23, no unsafe guard
 error, stable over three runs, about 0.5 s and $0.00002 per decision. The brief recommends:
@@ -131,3 +132,26 @@ Issued 2026-09-27. The office is at `offices/research/` with every record and ID
 exist; the outbox uses the protocol's format. The draft library entry moved into the office as
 [design-guide.md](landscape/decision-models/design-guide.md). `scripts/check_docs.py
 offices/research` reports 0 problems. Commit: the one that adds this message.
+
+### RS-014 | to lead | request | open
+
+Issued 2026-09-27. BR-003 version 2 is ready for your review; it replaces RS-010. After
+reviewing version 1, the user found it underestimated the subject and asked for a wider redo. The
+brief now rests on:
+
+- LangChain's posts, TypeSafe's patterns and cookbooks, the full 551-build catalog, and eleven
+  independent studies;
+- three new spikes on our own harness decisions
+  ([EV-2026-09-27-jev-harness-decisions](evidence/EV-2026-09-27-jev-harness-decisions/README.md),
+  [EV-2026-09-27-jev-ecosystem-map](evidence/EV-2026-09-27-jev-ecosystem-map/README.md)).
+
+It proposes a System-1 layer of measured, escalating decision points across the product,
+development, and learning loops. Ten proposals, with the text for every record you own, are in
+[BR-003](briefs/BR-003-decision-points/README.md) and
+[plan.md](briefs/BR-003-decision-points/plan.md#proposed-text-for-lead-owned-records). The main
+decisions:
+
+- a new curriculum stage, D1;
+- the radar entries;
+- placing the design guide in the library;
+- the development-loop hooks, which are the user's security call.

@@ -120,6 +120,27 @@ Both are useful references for wiring a decider into v1 middleware. Neither impl
 asymmetric, fail-safe cascade the office plans; that would be our own component around
 `TypeSafeClassifier`.
 
+## Beyond LangChain (2026-09-27)
+
+Listed from the public catalog and read at summary level **[T]**. Useful mainly as evidence of
+which seams the ecosystem converged on.
+
+| Where | What it adds |
+| :--- | :--- |
+| LangChain.js | The same classifier Runnable and middleware in TypeScript |
+| LangSmith | Jev as an evaluator in experiments; LangChain says it has views for decision models' inputs and probabilities **[C]** |
+| Langfuse | A native Jev evaluator: typed questions write scores to matching observations |
+| Pydantic AI | A model provider that derives Jev questions from Pydantic output types, with typed routing and fallback |
+| LiteLLM | Complexity routing, and a relevance guardrail that compacts tool results before the agent reads them |
+| Vercel `eve` | Jev as the framework's default "evaluate" model |
+| Composio | Tool shortlisting, a choice from a bounded set, closed-set arguments, and destructive-action gates |
+| BAML, TanStack AI, Effect, Ax | Typed decide/classify operations mapped onto Choice, Noul, and Score |
+| `llamacpp-jev` | Any local model behind llama.cpp served on `/v1/systemone`: a third self-hosted backend besides Laya and Open-Jev |
+| TypeSafe's agent skill | An official skill for Claude Code, Codex, and other agents on writing TypeSafe integrations; installable as a Claude Code plugin **[S]** |
+
+The convergence point matches this page's conclusion: one typed client over a shared protocol,
+with the backend chosen by configuration.
+
 ## Laya's own integration
 
 `laya.integrations.langchain`, 537 lines **[S]**:

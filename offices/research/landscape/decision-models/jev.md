@@ -1,7 +1,9 @@
 # Jev (TypeSafe AI)
 
 [Decision models](README.md) › Jev. As of **2026-09-27**. **Tested in this repo** through
-OpenRouter ([EV-2026-09-27-jev-openrouter](../../evidence/EV-2026-09-27-jev-openrouter/README.md)).
+OpenRouter ([EV-2026-09-27-jev-openrouter](../../evidence/EV-2026-09-27-jev-openrouter/README.md),
+[EV-2026-09-27-jev-harness-decisions](../../evidence/EV-2026-09-27-jev-harness-decisions/README.md)).
+What people build with it, and eleven independent studies: [ecosystem.md](ecosystem.md).
 Labels: [V] verified here, [S] primary source, [T] third-party, [C] vendor or partner claim.
 
 ## At a glance
@@ -48,7 +50,7 @@ exercised in EV-2026-09-27.
   - **Jev Router** (`typesafe/jev-router`, listed 2026-09-25): picks a model and reasoning
     effort per request, running on Jev.
 
-  The patterns are catalogued in [capabilities.md](capabilities.md#patterns-in-use).
+  The patterns are catalogued in [capabilities.md](capabilities.md#patterns).
 
 ## Using the API directly (TypeSafe)
 
@@ -136,15 +138,29 @@ failure modes:
 
 **Partner-published [C]:** OpenRouter's captured runs report 350/400 on TweetTopic, with
 confidence bands that separate errors, and a verified cascade with no wrong answers on 50
-questions ([capabilities.md](capabilities.md#patterns-in-use)).
+questions ([capabilities.md](capabilities.md#patterns)). LangChain's LangSmith experiment reports
+100% agreement with human labels on five agent traces judged 100 times each, with 92-913x lower
+variance than LLM judges.
+
+**More independent studies since 2026-09-26 [T]:** tool selection and abstention (MetaTool,
+When2Call, BFCL), reranking over 14 datasets, a Spanish audit, a 123,805-request pre-registered
+evaluation, decomposition (62.6% → 95.0%), sort-order defensibility, and framing sensitivity. All
+are tabulated in [ecosystem.md](ecosystem.md#independent-studies).
+
+**This repo, harness decisions [V]:** specialist routing 32/32 in three runs (two LLM tiers:
+30/32), memory staleness 59/60 (LLMs 20/20), and semantic lint of our conventions at AUROC 1.0 on
+synthetic snippets ([EV-2026-09-27-jev-harness-decisions](../../evidence/EV-2026-09-27-jev-harness-decisions/README.md)).
 
 **Overall:**
 
 - **Speed and cost:** the fastest and cheapest option measured.
-- **Accuracy:** close to our LLM tiers on narrow binary checks, our own included, and mid-pack
-  on hard many-class tasks.
-- **Calibration:** contested. It was worst in the one independent study, and useful in the
-  partner's run and ours.
+- **Where it is strongest:** bounded choices (tools, actions, routes), abstention, and
+  consistency.
+- **Where it is close to LLMs:** well-phrased binary checks, ours included.
+- **Where it is weaker:** hard many-class intent asked as one question, implied conditions,
+  non-English text, and authority-claiming injection.
+- **Calibration:** good on its training distribution and poor off it. Decomposition is the lever
+  that moves accuracy most.
 
 ## Reception
 
@@ -174,13 +190,17 @@ What it would mean here, and our position:
 - typed answers with probabilities;
 - flat latency however many options, and parallel questions;
 - the lowest cost per decision;
-- near-LLM accuracy on our narrow checks;
+- near-LLM accuracy on our narrow checks, and better routing and abstention than our LLM tiers;
 - the client already works through the gateway key we have.
+
+**Where it fits:** most of the harness decisions our agents and our own development sessions
+make, not only the graders ([capabilities.md](capabilities.md#where-the-decisions-sit)).
 
 **Concerns:**
 
-- It is mid-pack on hard many-class tasks, and its calibration is contested.
-- Adversarial content is a known weakness, so it must never be a security gate on its own.
-- Finglish is barely tested (3 cases).
+- It is weaker on implied conditions and hard many-class tasks, and its calibration fails off
+  its training distribution.
+- Authority-claiming injection succeeds often, so it must never be a security gate on its own.
+- Finglish is barely tested (18 cases across our sets), and Spanish costs 3-6 points.
 - The hosted API sends the state to third parties, as our LLM tiers already do.
 - It is twelve days old, and the LangChain client is still alpha.

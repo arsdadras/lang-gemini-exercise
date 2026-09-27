@@ -1,0 +1,39 @@
+sample: conf>=0.6: 34/40 items, agreement 30/34
+sample: conf>=0.8: 26/40 items, agreement 24/26
+sample: conf>=0.9: 19/40 items, agreement 19/19
+
+all 551 builds; roles (all | conf>=0.8, n=341):
+  action_selection          132  24.0% | 104
+  about_jev                 109  19.8% | 57
+  content_scoring            83  15.1% | 53
+  search_and_ranking         51   9.3% | 31
+  triage                     41   7.4% | 25
+  verification               33   6.0% | 22
+  safety_gate                27   4.9% | 15
+  model_or_agent_routing     25   4.5% | 16
+  other                      17   3.1% | 0
+  analysis_at_scale          12   2.2% | 8
+  context_management         12   2.2% | 8
+  extraction                  9   1.6% | 2
+coding_agent: 130 (23.6%)
+llm_fallback: 135 (24.5%)
+measured: 37 (6.7%)
+
+coding-agent builds by role: [('action_selection', 24), ('verification', 21), ('safety_gate', 20), ('about_jev', 17), ('model_or_agent_routing', 15), ('search_and_ranking', 10), ('context_management', 10), ('content_scoring', 9), ('analysis_at_scale', 2), ('triage', 1), ('other', 1)]
+agent-harness roles total: 229 (41.6%); excluding about_jev/other base: 53.9%
+measured by role: [('about_jev', 14), ('action_selection', 5), ('search_and_ranking', 5), ('content_scoring', 4), ('triage', 3), ('safety_gate', 2), ('context_management', 2), ('model_or_agent_routing', 1), ('verification', 1)]
+by site category x role (top):
+  Tools & apps         about_jev                54
+  Agents & browsers    action_selection         49
+  Games & real time    action_selection         46
+  Research & data      about_jev                36
+  Content & growth     content_scoring          36
+  Tools & apps         verification             28
+  Tools & apps         content_scoring          27
+  Triage & routing     triage                   26
+  Tools & apps         action_selection         25
+  Tools & apps         search_and_ranking       22
+  Tools & apps         safety_gate              17
+  Tools & apps         model_or_agent_routing   12
+  Research & data      search_and_ranking       12
+  Tools & apps         triage                   10

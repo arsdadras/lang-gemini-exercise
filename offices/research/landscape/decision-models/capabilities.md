@@ -1,188 +1,240 @@
-# What Decision Models Change: Capabilities Today and Potential
+# What Decision Models Change: Capabilities, Patterns, Limits
 
-[Decision models](README.md) › capabilities. As of **2026-09-27**. Labels: [V] verified here,
-[S] primary source, [T] third-party, [C] vendor or partner claim. Unlabeled analysis is the
-research office's own. What this means for this repo is in
+[Decision models](README.md) › capabilities. As of **2026-09-27** (rewritten the same day after
+a wider source sweep). Labels: [V] verified here, [S] primary source, [T] third-party, [C]
+vendor or partner claim. Unlabeled analysis is the research office's own. Who builds what:
+[ecosystem.md](ecosystem.md). What it means for this repo:
 [BR-003](../../briefs/BR-003-decision-points/README.md).
 
-## The idea
+## The idea: judgment, unbundled
 
-A decision model is a building block beside the LLM and the embedding model. It reads a
-**state** and answers **typed questions** about it: pick one option, say how likely a
-statement is, or place the state on an ordered scale. It never writes text. In practice it's an
-`if` whose condition is a judgment about unstructured data, and it costs about $0.00002 and a
-few hundred milliseconds ([EV-2026-09-27-jev-openrouter](../../evidence/EV-2026-09-27-jev-openrouter/README.md))
-**[V]**.
+For three years, most AI systems sent every fuzzy step to one frontier LLM:
+
+- writing;
+- extraction;
+- ranking;
+- routing;
+- checking.
+
+A decision model pulls one capability out of that bundle, **judgment**. It reads a state and
+answers typed questions (pick one, how likely, how much) with probabilities, and it never writes
+text.
+
+- LangChain calls the result "prod, not god". A frontier model is expensive and slow, and "you
+  pay for that generality on every call, even when all you needed was a yes or no" **[S]**.
+- Jaya Gupta calls the next phase "cheap by default, frontier on exception" **[T]**. As quoted by
+  LangChain, that means a decision model makes the bounded calls it's sure about and hands the
+  rest to an LLM.
+- **What this changes: a judgment becomes a primitive,** like a function call. At about
+  $0.00002 and half a second here **[V]**, you can put one at every step instead of rationing
+  it.
 
 ## What is new, and what isn't
 
-Each part of the idea has a precursor:
-
 | Idea | Earlier form | What changed in 2026 |
 | :--- | :--- | :--- |
-| Zero-shot classification without generation | NLI-based zero-shot classifiers (Yin, Hay, and Roth, EMNLP 2019); cross-encoder rerankers | One instruction-following model answers arbitrary questions over arbitrary state (text, JSON, conversations) |
-| Safety classification | Guard models such as Llama Guard (Inan et al., 2023), each with a fixed taxonomy | Any question you can write, not one taxonomy |
-| Cascades | Viola and Jones's boosted cascade (2001) in vision; [FrugalGPT](https://arxiv.org/abs/2305.05176) (Chen, Zaharia, and Zou, 2023) for LLMs | The cheap stage returns probabilities by default and is priced per input token only |
-| Routing between models | [RouteLLM](https://arxiv.org/abs/2406.18665) (Ong et al., ICLR 2025) | A general decider sold as a router: Jev Router on OpenRouter, listed 2026-09-25 **[S]** |
-| Thresholds and abstention | Selective classification (Geifman and El-Yaniv, NeurIPS 2017); calibration and temperature scaling (Guo et al., ICML 2017) | A probability on every answer, and a ready-made "confidence" for `choice` and `score` |
+| Classification without generation | NLI zero-shot classifiers (Yin, Hay, and Roth, 2019); cross-encoder rerankers; guard models such as Llama Guard (2023) | One instruction-following model answers any typed question over any state, zero-shot |
+| Cascades and routing | Viola and Jones (2001); [FrugalGPT](https://arxiv.org/abs/2305.05176) (2023); [RouteLLM](https://arxiv.org/abs/2406.18665) (2025) | The cheap stage is general, returns probabilities by default, and is priced on input only |
+| Thresholds and abstention | Selective classification (Geifman and El-Yaniv, 2017); calibration (Guo et al., 2017) | Probabilities on every answer, and a trained "admit uncertainty" objective (RLCD) **[C]** |
+| Workflows with narrow AI steps | Anthropic's "workflows vs agents"; LangGraph's code-owned control flow | The AI step at a branch is now fast and cheap enough to sit at every branch |
 
-The name comes from Kahneman's System 1, the fast and intuitive mode (*Thinking, Fast and Slow*,
-2011).
+The ideas have precursors; the change is economic and ergonomic. That is why the ecosystem grew
+to 551 cataloged builds in twelve days **[V]**.
 
-So the idea isn't new. The packaging is:
+## Three loops it changes
 
-- one general model for arbitrary decisions, zero-shot;
-- typed primitives with probabilities;
-- many independent questions over one state in one call, with latency flat up to 255 options
-  **[S][T]**;
-- input-only pricing;
-- an ecosystem around it:
-  - a wire protocol, `/v1/systemone`, served by TypeSafe, OpenRouter, and `laya-serve`
-    **[V]**;
-  - a LangChain client;
-  - access through a general gateway.
+**1. The product loop: agents inside software.**
 
-## The architecture it makes cheap
+- **Around the model.** An agent loop makes dozens of small decisions around each model call:
+  - which model or specialist takes the turn;
+  - which skills, rules, or memories to load;
+  - which tool to call, and whether that call may run;
+  - which tool results to keep;
+  - when to compact;
+  - whether the task is really done.
+- **Offloading them.** Today each small decision is another LLM call or a hand-written rule. A
+  decider takes the bounded ones, and the LLM keeps the writing and the open reasoning. Half the
+  cataloged builds that use Jev do exactly this **[V]**.
+- **Graphs.** In graph frameworks like LangGraph, every conditional edge is a decision point.
+  LangChain's example is a litigation review graph: three questions per page decide the route,
+  to set aside, to LLM redaction, or to a human interrupt. Jev was 5-6x faster than the LLMs
+  tried on the classification step **[S][C]**.
 
-TypeSafe describes three ways to build software with AI **[S]**:
+**2. The development loop: coding agents building software.**
 
-1. **Traditional code:** a decision tree built from reliable primitives.
-2. **Agents:** the model picks its own next step, so "every loop introduces another opportunity
-   to go off the rails".
-3. **AI-powered software:** code owns the control flow, side effects, and deterministic rules.
-   The model appears only where the system needs programmable common sense, and each AI task is
-   atomic and constrained.
+Coding agents fail in known ways:
 
-Decision models are built for the third. One way to see what they add is to split the AI in a
-system into two planes:
+- claiming "done" without running checks;
+- breaking project rules no linter can express;
+- wandering out of scope;
+- loading the wrong context.
 
-| Plane | Its jobs | What the jobs need | Served today by | Could be served by |
-| :--- | :--- | :--- | :--- | :--- |
-| **Control** | Route, gate, grade, verify, escalate, stop | Fast, cheap, typed, thresholdable, auditable, measurable | LLM structured output: slow, costly, with no native probabilities | A decision model, escalating to an LLM or a person when unsure |
-| **Data** | Write, summarize, plan, explain, open-ended extraction | Generation | LLMs | LLMs |
+Hooks that ask a decider at those moments are the densest cluster in the ecosystem: one build in
+four serves coding agents **[V]**.
 
-An LLM can do both jobs, but the control plane then inherits generation's latency, cost, and
-parsing risk. A cheap decider makes a separate control plane affordable at every step.
+- A Stop hook that checks for evidence behind "done" reported **AUROC 0.976**. Judging the
+  wording alone reached 0.777 **[T]**.
+- A rule checker replaying 93 real sessions against their own `AGENTS.md` reported a finding
+  that matters for honesty: **10 of 39** flagged edits were confirmed **[T]**. The gates work,
+  but only as escalations, never as verdicts.
 
-**LLM as compiler, decision model as runtime.** OpenRouter's "Prompt to questions" lab has an LLM
-rewrite a prose classification prompt into typed questions once. The decider then answers them
-for every row **[S]**. The questions become an artifact you can version and test against
-labeled data, like code.
+**3. The learning loop: people learning a craft.** Cheap, consistent, typed judgments allow:
 
-## Capabilities today
+- formative feedback on every attempt, with the misconception named;
+- item analysis across a cohort;
+- noticing when a learner is stuck;
+- training calibration itself, where the learner answers with a probability.
+
+A decider can't write explanations, so it decides *which* feedback or hint applies, and an LLM or
+a template words it. Summative grades stay human **[T]**.
+
+## Where the decisions sit
+
+**TypeSafe's ten decision shapes** **[S]**:
+
+- classification;
+- detection;
+- scoring;
+- routing;
+- search;
+- retrieval;
+- ranking;
+- verification;
+- ML feature extraction;
+- structured data extraction.
+
+**Harness decision points,** in the order an agent loop meets them:
+
+| When | Decision | Shape | Evidence |
+| :--- | :--- | :--- | :--- |
+| Before a turn | Which model, effort, specialist, or subagent | Routing | Our routing spike: 32/32 × 3, better abstention than two LLM tiers **[V]**; MetaTool abstention 87.0% vs 50.4% **[T]** |
+| Before a turn | Which skills, rules, memories, or documents to load | Retrieval, ranking | Skill suggestion: wrong loads 16.8% → 7.3% **[C]**; jev-rules; FyleContext **[T]** |
+| During | Which tool or UI action next, from a finite menu | Classification over candidates | Stagehand 1.97 → 0.46 s **[T]**; MetaTool 77.8% vs 69.1% **[T]** |
+| During | May this call run: allow, ask a person, or block | Verification, detection | OpenRouter gate cookbook **[S]**; Vercel's fx safety reviewer **[T]** |
+| During | Which tool results or turns stay in context | Scoring | fast-jev-compaction; LiteLLM's tool-result guardrail **[T]** |
+| After | Is the task really done; do claims have evidence | Verification | jev-belay AUROC 0.976 **[T]** |
+| After | Does the output follow the rules or the spec | Verification | Our lint spike: AUROC 1.0 on synthetic snippets, weak on syntax-only rules **[V]**; Abide 10/39 **[T]** |
+| Around | Is a remembered fact stale; is it worth recalling | Detection | Our staleness spike: 59/60, thin margins on implied changes **[V]**; invalidate **[T]** |
+| Around | Evals on saved traces, and the same checks live | Scoring, verification | LangSmith, Langfuse (91.5% agreement with Claude) **[C][T]** |
+
+## Capabilities, with the evidence
 
 | Capability | What it gives a program | Evidence |
 | :--- | :--- | :--- |
-| **Typed answers by construction** | No parse step and no malformed output; the label is always one you defined | **[S]**. The contrast: a local 2B LLM failed our JSON schema ([EV-2026-09-23-local-ollama-qwen](../../evidence/EV-2026-09-23-local-ollama-qwen/README.md)) **[V]** |
-| **A probability on every answer** | Thresholds, abstention, review bands, and ranking by risk | **[S]**. Bands on TweetTopic: 114/122 right at confidence ≥ 0.8, 9/18 at 0.5-0.8, 4/10 below 0.5 **[C]**. On our cases, the plain variant's one error sat below most correct answers **[V]** |
-| **Many independent questions per request** | Fan-out over one state: tags, checks, or one question per item | **[S]**. Six relevance checks in one request, ~0.45 s in all **[V]** |
-| **Low latency** | Inline use in request paths and interfaces | 92-276 ms p50 hosted **[T]**; 475 ms end to end from this machine **[V]** |
-| **Low cost** | A decision at every step | $0.042 per million input tokens, output free **[S][V]**. About $0.00002 per decision on our cases **[V]**; $0.07 per 1,000 on Banking77 **[T]** |
-| **Accuracy near LLMs on narrow checks** | Can replace or pre-screen an LLM judge where a narrow check is enough | 22/23 against `glm-5.3`'s 23/23 on our cases **[V]**. Below LLMs on hard many-class tasks: Banking77 76.3% vs 80.4% **[T]** |
-| **Easy access** | One gateway key, two API surfaces, a LangChain client | **[S][V]** ([Jev](jev.md#access-through-openrouter)) |
+| **Typed answers by construction** | No parsing, no malformed output, no invented label | **[S]**; a local 2B LLM failed our JSON schema **[V]** |
+| **A probability per answer** | Thresholds, review bands, ranking by risk | Useful ranking: our plain variant **[V]**, TweetTopic bands **[C]**, a 0.99 band at 100% accuracy covering 60% of traffic **[T]** |
+| **Many questions per request** | Fan-out over one state for almost the price of one | 200 questions matched single-question accuracy at nearly flat latency **[T]**; batching was 12.2x cheaper and 10x faster **[C]** |
+| **Consistency** | Stable decisions, reproducible evals | Per-question standard deviation 0.0102 over 15 repeats **[C]**; 92-913x lower variance than LLM judges **[C]**; our runs: 0-3 label flips in hundreds of decisions **[V]** |
+| **Abstention** | "None of these" as a real answer | MetaTool abstention 87.0% vs 50.4% **[T]**; vague requests routed to "clarify" where LLMs weren't **[V]** |
+| **Latency** | Inline use, even real time | 92-276 ms hosted **[T]**; 440-480 ms end to end from here **[V]**; games at about 10 decisions a second **[T]** |
+| **Cost** | Judgment on all traffic, not samples | $0.042 per million input tokens, output free **[S][V]**; $160 per million verdicts vs $33,000 for Claude Fable 5.1 **[T]** |
 
-## Patterns in use
+## Patterns
 
-Recipes published by TypeSafe and OpenRouter, each with runnable code. OpenRouter distributes
-Jev, so its results count as partner claims.
+**From TypeSafe** **[S]**:
 
-| Pattern | Shape | Source | Reported result |
-| :--- | :--- | :--- | :--- |
-| **Decomposition** | Replace one broad question ("is this spam?") with atomic checks, and combine them in code. TypeSafe calls this "probably the most important concept" | TypeSafe, *How to build with System One* **[S]** | Every check becomes inspectable, tunable, and a named reason |
-| **Thresholds that scale with risk** | A floor for "unsure", and a higher bar for costly actions: in a banking example, 0.6 to read a balance and above 0.85 to approve a transfer | TypeSafe, *Confidence-gated routing* **[S]** | n/a |
-| **Three-way gate** | Deterministic checks first, then named `noul`s: all ≥ 0.9 → approve, any ≤ 0.1 → block, anything else → a person. Errors fail closed | OpenRouter cookbook, *Gate agent tool calls* **[S]** | Under $0.0001 per call **[C]** |
-| **Auto-approving agent permission prompts** | A static risk list in code is the security boundary. Jev clears only commands it rates ≥ 0.9 on "reversible" and "serves the task"; everything else still prompts | OpenRouter cookbook, *Auto-approve coding agent permission prompts* (Claude Code, Codex, Cursor, OpenCode) **[S]** | $0.0000168 per check **[C]** |
-| **Draft, verify, escalate** | A cheap LLM drafts from retrieved context, Jev labels the draft supported, unsupported, or declined, and only failures go to a frontier model or a person | OpenRouter cookbook, *Jev-verified cascade* **[S]** | 50 questions: 0 wrong for $0.012, against 2 wrong for $0.175 with the frontier model alone **[C]** |
-| **Extraction without guessing** | Code finds candidates (regular expressions); a `choice` picks among them plus "none", so no value can be invented | Jev Lab, *Extract* **[S]** | n/a |
-| **Batch labeling** | One `choice` per exclusive category and one `noul` per tag; per-tag thresholds fitted on 100-200 labeled items | OpenRouter cookbook, *Classify and tag text at scale* **[S]** | TweetTopic: 350/400 correct, $0.0256 per 1,000 items **[C]** |
-| **Compile, then run** | An LLM writes the typed questions; the decider runs them per row | Jev Lab, *Prompt to questions* **[S]** | n/a |
-| **Model routing** | Pick the model and reasoning effort per request | Jev Router on OpenRouter **[S]**; a routing benchmark by LiteLLM **[T]** | 95% vs 74% for Haiku, against the authors' own labels **[T]** |
+| Pattern | Shape | Reported result |
+| :--- | :--- | :--- |
+| Speculative fan-out | Ask every question the flow might need in one call; code ignores what doesn't apply | n/a |
+| Confidence-gated routing | Confidence as a second axis, with thresholds that scale with risk | n/a |
+| Composite scoring | Atomic scores combined with weights in code | n/a |
+| Intent routing | Classify, then route to code, a specialist LLM, or a person | n/a |
+| Skill suggestion (cookbook) | Rank 182 skills, re-check the top 3, suggest at most one | Wrong loads 16.8% → 7.3% **[C]** |
+| Reranking (cookbook) | BM25 shortlist, then one question per candidate | Top-1 5% → 18%, top-10 38% → 62% on CLERC **[C]** |
+| Citation check, classifying RAG passages, guardrails, SDE cascade, pre-parsed extraction, hierarchical classification, feature discovery (cookbooks) | As named | See the cookbooks |
+
+**From OpenRouter and the ecosystem:**
+
+| Pattern | Shape | Reported result |
+| :--- | :--- | :--- |
+| Draft, verify, escalate | A cheap LLM drafts, the decider checks support, a frontier model handles failures | 0 wrong at 7% of the cost **[C]** |
+| Menu-constrained action | Code lists the candidates, the decider picks one, and low confidence falls back to an LLM | 4.3x faster browser actions **[T]** |
+| Escalate, never approve | Gates that can stop a coding agent and ask a person, but never grant anything | jev-gates **[T]** |
+| Done gate | Verify evidence before accepting "done" | AUROC 0.976 **[T]** |
+| Rule selection | Load only the rules that apply to this prompt | jev-rules **[T]** |
+| Verbatim compaction | Drop or keep whole tool results instead of summarizing | fast-jev-compaction **[T]** |
+| Memory leases | A remembered fact expires when new evidence ends it | invalidate **[T]** |
+| Evals that are guardrails | The same typed checks run offline on traces and live at runtime | jevals **[T]** |
+| Decision cache | Key on (model, schema, state) for cheap repeats and deterministic replay | jevcache **[T]** |
+| Compile, then run | An LLM writes the questions once; the decider runs them per row | Jev Lab **[S]** |
+
+## Jev engineering: the skill it demands
+
+A community guide names the craft "Jev engineering" **[T]**: turning a task into closed,
+operational questions a decision model answers consistently. Its five principles:
+
+1. **Operational questions only.** "Could a new hire answer this consistently on day one?"
+2. **Decompose ruthlessly:** one judgment per question.
+3. **Close the answer set honestly,** with an "unclear" option. Otherwise the model launders
+   uncertainty into your categories.
+4. **Legislate the edges inside the question:** "cosmetic damage counts; disliking the color does
+   not".
+5. **Calibrate, then version.** Measure against 50-100 known cases, and treat any rewording as an
+   API change.
+
+**The evidence that it matters:**
+
+- **Decomposition.** On one phishing task, one broad question scored 62.6%. Five atomic
+  questions combined by a fitted logistic regression scored 95.0%, matching Haiku (93.2%) at
+  12-27x lower cost **[T]**.
+- **Wording.** On our own cases, wording alone moved answers in both directions **[V]**.
+- **A pre-registered prompting guide** (thirteen rules from 123,805 requests) exists **[T]**.
+
+This is a distinct engineering skill: decomposing judgment and measuring it. It isn't prompt
+engineering, and it's teachable.
 
 ## Potential
 
-These follow from the capabilities above; none has been shown at scale.
+None of this is shown at scale yet; it follows from the capabilities above.
 
-- **Soft predicates in ordinary code.** Judgments over free text replace brittle regular
-  expressions and heuristics:
-  - log and CI-failure triage;
-  - labels on pull requests and issues;
-  - validating free-text input;
-  - deduplication and entity matching as a choice among candidates.
-- **Evaluation on all traffic, not samples.** Groundedness, relevance, and policy checks run as
-  always-on telemetry. Drift shows up in the probability distributions before it shows up in
-  complaints.
-- **Active learning.** Low-confidence items go to people, and their labels fit thresholds or
-  small classifiers.
-- **Policy as tested code.** A prose policy becomes typed questions with a labeled test set, so a
-  policy change is a reviewable diff with a measured effect.
-- **Oversight of autonomous agents at every step.** Every step is checked, not samples, and
-  people see only the ambiguous band.
-- **Control-plane services in a platform.** Routing, gating, and grading run as shared services
-  with one telemetry stream.
-- **Private, local deciders** for data that can't leave. The encoder class (Laya) runs on CPU
-  today; it doesn't yet reach the accuracy
-  ([EV-2026-09-26-laya-all-checkpoints](../../evidence/EV-2026-09-26-laya-all-checkpoints/README.md))
-  **[V]**.
-- **Semantic checks over documentation.** Embeddings find candidate pairs; a `noul` asks "does A
-  restate B?".
+- **Every harness decision measured and swappable.** Routing, gating, context, and verification
+  become typed components with labeled sets, instead of prompt text inside one agent.
+- **Development discipline enforced cheaply.** "Done means verified", scope, conventions, and
+  commit honesty become checks that escalate. That is today's human review, moved earlier and
+  run on every turn.
+- **Evaluation on all traffic.** The same questions serve as the eval suite, the online monitor,
+  and the guardrail.
+- **Memory that forgets correctly.** Facts carry leases, and new evidence retires them.
+- **Policy as tested code.** A prose policy compiles into questions with a labeled test set.
+- **Learning environments that respond to every attempt.** Formative feedback, stuck detection,
+  and calibration training all become affordable.
+- **Semantic features for classical models.** Probabilities become columns for ordinary ML;
+  autoresearch loops find the questions that predict **[S]**.
 
 ## Limits
 
-- **Hard tasks.** Accuracy falls on many-class tasks and on sealed test sets: Banking77 76.3%,
-  and about 35% on JevBench's sealed tier **[T]**.
-- **Documented failure modes [S]:**
-  - literal reading of negations;
-  - numbers, dates, and multi-hop questions;
-  - irrelevant context;
-  - adversarial content in the state;
-  - conflicting instructions;
-  - broken structural invariants.
-
-  Details: [Jev](jev.md#where-it-breaks-by-its-own-account).
-- **Calibration is disputed.**
-  - The one independent study found the worst ECE among its contenders, 0.246 **[T]**.
-  - A partner's run and our small run found confidence that separates errors **[C][V]**.
-  - The two can both hold. A threshold needs *discrimination*, meaning confidence ranks errors
-    below correct answers, more than it needs a low ECE. Either way, fit thresholds per question
-    on labeled data.
-- **Not fully deterministic.** Probabilities "differ slightly from run to run" **[S]**, by up to
-  0.12 on our cases **[V]**. Leave a margin around thresholds, and never assert exact
-  probabilities in tests.
-- **Sensitive to wording.** On our cases, wording alone moved one answer from barely right to
-  confidently right, and another to confidently wrong **[V]**.
-- **Size limits:** 32k tokens of context through OpenRouter (64k at TypeSafe), and 255 options
-  per `choice` **[S][V]**.
-- **English first.** Other languages work "not equally well" **[S]**. Our three Finglish cases
-  passed **[V]**, which proves little.
-- **No explanations.** Any reason comes from named checks or from an LLM **[S]**.
+- **Reasoning and generation:** none. Implied conditions and multi-hop questions are weak **[S]**;
+  our implicit staleness cases were right but unsure **[V]**.
+- **Off-distribution calibration fails.** On 3-SAT it said "satisfiable" almost always, and on
+  unknowable questions it was right 44.7% of the time at a mean probability of 0.74 **[T]**.
+  Fit thresholds per question on your own labels.
+- **Framing and position.** Performance depends on exact framing **[T]**. Unnamed items in a batch
+  decayed from 1.000 to 0.150 accuracy **[T]**. Name every item a question is about.
+- **Injection.** Direct injection failed on 199/200 tickets, but **authority-claiming text
+  succeeded on 147/200** **[T]**. Never let it be the only security gate.
+- **Languages.** Spanish cost 3-6 points and doubled ECE on harder tasks **[T]**. Persian and
+  Finglish are untested beyond our small sets **[V]**; expect a gap.
+- **Syntax is code's job.** Rules a parser can decide were our lint spike's weak spots **[V]**.
+- **Gate precision on real work** can be low (10 of 39 edits confirmed) **[T]**. Gates escalate;
+  people or LLMs decide.
 - **Concentration:**
-  - closed weights, served by one provider behind OpenRouter;
-  - aliases that move to new versions;
-  - an alpha LangChain client.
-
-  All **[S]**.
-- **Data leaves your infrastructure.** Zero retention is offered to enterprise customers only
-  **[S]**. The same is true of any hosted LLM.
-- **Commoditization.** The idea has precursors, and the price floor of the layer trends to zero
-  **[T]**.
+  - closed weights, one provider;
+  - aliases that move;
+  - an alpha LangChain client;
+  - data leaving your infrastructure, as with any hosted model **[S]**.
+- **Evidence is thin:** 6.7% of cataloged builds measure quality **[V]**.
 
 ## Separating hype from substance
 
-**Durable**, and it will outlive any vendor:
-
-- decision points as typed, thresholded, measured components;
-- cascades, and gates with a review band;
-- control flow owned by code;
-- decomposition into atomic questions;
-- a backend-neutral protocol.
-
-**Perishable:** one model's accuracy, price, and latency, and any single vendor.
-
-**Is it a gamechanger?**
-
-- **For how AI systems are designed: largely yes.** It makes a separate control plane cheap
-  enough to put at every step.
-- **For replacing LLM judges wholesale: no.** The accuracy gap on hard tasks and the calibration
-  dispute both point to cascading, not replacing.
-
-Sources: [sources.md](sources.md).
+- **Durable:**
+  - judgment as a cheap, typed primitive;
+  - code-owned control flow with decisions at the branches;
+  - cascades, and gates that escalate;
+  - decomposition, and measurement against labeled sets;
+  - a backend-neutral protocol, already served by TypeSafe, OpenRouter, `laya-serve`, and a
+    llama.cpp adapter.
+- **Perishable:** any one model's scores and prices, and any one vendor.
+- **Is it a gamechanger?**
+  - **For how agent harnesses, development workflows, and learning loops are designed: yes.** It
+    changes which designs are affordable.
+  - **For replacing LLMs: no.** The best builds cascade to an LLM or a person.

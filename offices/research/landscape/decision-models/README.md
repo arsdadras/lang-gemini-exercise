@@ -4,9 +4,10 @@ Part of the research office's [landscape](../../README.md#how-its-organized). As
 Labels: [V] verified here, [R] reconstructed, [S] primary source, [T] third-party, [C] vendor
 claim.
 
-What the class changes in software, today and potentially, with the published patterns:
-[capabilities.md](capabilities.md). Our position:
-[BR-003](../../briefs/BR-003-decision-points/README.md).
+What the class changes (the product, development, and learning loops), with the patterns:
+[capabilities.md](capabilities.md). What people build, and eleven independent studies:
+[ecosystem.md](ecosystem.md). How to design with it: [design-guide.md](design-guide.md). Our
+position: [BR-003](../../briefs/BR-003-decision-points/README.md).
 
 ## What they are
 
@@ -139,6 +140,8 @@ and GLiNER2.5, a local zero-shot encoder used as a baseline **[T]**.
 
 - [capabilities.md](capabilities.md): what the class changes in software, its precursors, the
   published patterns, and its limits.
+- [ecosystem.md](ecosystem.md): the 551-build catalog mapped, the harness and coding-agent
+  builds, the framework integrations, and the independent studies.
 - [langchain-integrations.md](langchain-integrations.md): how each member plugs into LangChain
   and LangGraph, read from source.
 - [sources.md](sources.md): every source, with its type.

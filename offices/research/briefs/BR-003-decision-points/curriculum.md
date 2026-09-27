@@ -1,86 +1,121 @@
-# BR-003 › Curriculum: teaching decision points
+# BR-003 › Curriculum: teach it, teach with it, teach by building it
 
-Supports [BR-003](README.md). A proposal against the lead's
-[PEDAGOGY](../../../../offices/lead/PEDAGOGY.md): backward design, one hard concept per stage,
-the problem before the theory. The lead decides; the mentor teaches.
+Supports [BR-003](README.md) version 2. A proposal against the lead's
+[PEDAGOGY](../../../lead/PEDAGOGY.md):
 
-## What the learner should be able to do
+- backward design;
+- one hard concept per stage;
+- the problem before the theory;
+- the learner types the core architecture code.
 
-| Outcome | Competencies |
+The lead decides; the mentor teaches.
+
+## Why this belongs in this curriculum
+
+The curriculum's product is an engineer who can design production-grade agent systems. In
+September 2026 the production pattern for controlling agents became:
+
+- typed, cheap judgments at every step;
+- escalation to an LLM or a person;
+- measurement against labeled data.
+
+Decomposing judgment and measuring it, "decision engineering", is a skill of its own. It isn't
+prompt engineering, and the evidence shows it matters: one task went from 62.6% to 95.0% by
+decomposition alone. Learning it here, across the stages the learner builds anyway, is exactly
+the "production-level skill" the mission names.
+
+## Outcomes
+
+| The learner can… | Competencies |
 | :--- | :--- |
-| Tell a decision point from a generation point, and choose per step between code, a decision model, an LLM, or a cascade, with reasons | C9, C10 |
-| Break a broad judgment into atomic typed questions, and measure wordings against each other | C8 |
-| Set thresholds from the cost of each mistake, asymmetric on security | C6, C9 |
-| Build a labeled set, then measure a decision: accuracy per class, unsafe errors, coverage at an error budget, latency, cost | C8 |
-| Build a cascade, and a gate with a review band that fails closed on errors | C5, C6 |
-| Keep backends swappable behind a protocol | C10 |
-| Explain why a decider may tighten a security verdict, and what evidence would allow it to loosen one | C6 |
+| Find the decision points in any agent or graph, and tell them from generation points | C10, C9 |
+| Decompose a judgment into operational, atomic questions with an honest answer set, and measure wordings against each other | C8 |
+| Choose per point between code, a decider, an LLM, or a cascade, with evidence | C9 |
+| Set thresholds from the cost of each mistake, and design gates that escalate but never approve | C6, C9 |
+| Build and run a labeled set: accuracy per class, unsafe errors, coverage at an error budget, cost, latency | C8 |
+| Put a decider behind a seam, so the backend is swappable and testable with a fake | C10, C5 |
+| Explain where deciders fail (injection, implied conditions, off-distribution, language) and design around it | C6 |
 
-## The thread
+## Teach it: the thread
 
-The thread is one hard concept at a time. Only P8-C3, already planned, makes decision models the
-stage's hard concept. Everywhere else, the decision-point lesson is a supporting lesson built on
-things the learner already knows: typed output and eval sets.
+Only one stage carries decision engineering as its hard concept; everywhere else it is practice
+or a supporting lesson.
 
-| Stage | Hard concept (unchanged) | Supporting decision-point lesson | Evidence of learning |
+| Stage | Hard concept (unchanged unless noted) | Decision-point lesson | Opening demo (problem first) |
 | :--- | :--- | :--- | :--- |
-| R2 | Retrieval evaluation | The grader measured on the same labeled set, LLM against a decision model, one call per document against one batched request | Before and after: grading time and accuracy on the same questions |
-| P5 teaching pass, C2 | As planned | Guard agreement, counting unsafe errors apart from accuracy | The guard set |
-| P6-C1 | Deterministic against model-directed control | Typed decisions as the workflow's branch conditions | The control comparison |
-| P7-A1, B2 | Typed extraction; review of ambiguous fields | Candidates, a `choice`, and "none"; the review band | Per-field accuracy |
-| P8-B3, C1 | Approval for sensitive actions | Gates with a review band, and the evidence a loosening needs | The red-team set and labels |
-| P8-C3 | The calibrated cascade (DEC-004) | n/a | Coverage at an error budget; cost and latency against the LLM alone |
-| P12, E2 | Routing; platform services | Confidence-gated routing; a routing service | Per stage |
+| R2 | Retrieval evaluation | *Supporting:* the grader measured LLM against decider on the same labeled set; one call per document against one batched request | Time a four-document question: several seconds of sequential grading, against about 0.45 s batched |
+| P5 teaching pass | As planned | *Supporting:* memory staleness as a decision, with the implied cases escalated; the guard as a tightening ensemble | A remembered "vegetarian" survives "had a steak dinner last night" |
+| **D1** (new, proposed) | **Decision engineering:** decomposition, thresholds from error costs, the cascade and the gate, the seam | This stage *is* the lesson. Material: our routing, staleness, and grader sets | The same phishing-style task asked as one broad question, then as five atomic ones (the 62.6% → 95.0% story, rebuilt on our own data) |
+| P6 | Deterministic workflows (A1); control styles compared (C1) | *Practice:* branches decided by typed decisions; three control styles on one eval set | A supervisor agent that takes a dozen LLM calls to route what three typed decisions settle |
+| P7 | Typed extraction; human review of ambiguous fields | *Practice:* candidates plus a `choice` plus "none"; the review band | An LLM extractor inventing an invoice number that isn't in the document |
+| P8 | Triage; approvals; the cascade at scale (C3) | C3 stays its hard concept, now at production scale on feedback data | As planned |
+| P11, P12 | Actions; routing | *Practice:* gates that escalate; routing over typed contracts | As planned |
 
-**R2's opening demo, the problem before the theory:** today's grader makes one LLM call per
-document, one after another. The learner times a question with four documents, sees several
-seconds go to grading, and predicts what one batched decision request would take (about 0.45 s
-for six documents, measured).
+**Why a dedicated stage, D1, and why there:**
 
-## Teaching practices that decision models make cheap
+- The skill has many consumers, and teaching it piecemeal would add a second hard concept to
+  several stages.
+- After R2 and the P5 teaching pass, the learner has labeled sets and two concrete decision
+  points in hand.
+- Right before P6, the capstone that uses it most.
 
-Each check costs about $0.00002 and returns in under a second, so these can run live in any
-lesson:
+If the lead prefers no new stage, the fallback is to widen R2's scope, with evaluation of
+retrieval *and* decisions as one concept. That makes R2 heavier.
 
-1. **Prediction questions with live probabilities.** "What will the model say to this negated
-   Finglish sentence, and how sure will it be?" Then run it. Each one builds intuition for the
-   documented failure modes.
-2. **A question-design lab.** Two wordings, one labeled set, and a comparison. Our own evidence is
-   the first case: the same cases moved in both directions with wording alone
-   ([EV-2026-09-27 §3](../../evidence/EV-2026-09-27-jev-openrouter/README.md#3-wording-moves-answers-in-both-directions)).
-3. **Decision-point hunts.** At each design card review, the learner lists the AI steps and
-   marks, for each one:
-   - decision or generation;
-   - its error direction;
-   - whether plain code could decide it.
-4. **Error-direction drills.** The recorded case: two guards that both scored 7/8 on our set,
-   one with no unsafe error (Jev) and one that let a fact about a third person through (Laya).
-   The learner explains why the first is better.
-5. **Case studies from our own records.** Laya failing open, the simulated cascade, and the
-   wording flip. Real data from this repo beats textbook examples.
-6. **Cost and latency literacy:**
-   - input-only pricing;
-   - batching;
-   - end-to-end latency against the model's own (475 ms here against about 260 ms reported).
-7. **Evidence before loosening a control.** At P8-B3, the learner must produce the red-team
-   numbers before an auto-approve path ships: production change control in miniature.
-8. **Compile, then run.** The learner has an LLM turn `MEMORY_WRITE_POLICY` into typed questions,
-   then measures the result: policy treated as tested code.
+## Teach with it: the learning loop
 
-## Assessment
+Uses of decision models inside the teaching itself. All are formative, the learner owns every
+judgment about their own work, and there are no grades. The learner's private scratch area is
+never read; only in-session messages and repo code are used.
 
-- **Teach-back questions** (DEC-008) wherever a project has a decision point:
-  - Why does this gate fail closed?
-  - How did you choose the threshold?
-  - What would make you loosen it?
-- **Stage evidence:** every decision-point lesson ends with a before-and-after table of accuracy,
-  unsafe errors, latency, and cost.
+1. **Misconception routing.** When the learner's typed component or answer is wrong, the decider
+   picks which known misconception it matches from a list the mentor wrote for that topic. The
+   mentor then words the hint. The catalog's grading essay describes the same "verdict battery"
+   design, and cites fluency bias and gaming as the risks.
+2. **Stuck and fatigue signals.** The charter already asks the mentor to offer a stop point when
+   the learner signals fatigue. A consistent check on recent messages makes that reliable. The
+   pattern is the Rubik's-cube coach: quiet during progress, and stepping in on mistakes.
+3. **Calibration training.** The learner attaches a probability to each prediction question.
+   The mentor tracks calibration over the curriculum, and the learner can compare with a
+   decider's own probability on the same question, like the ecosystem's "confidence trivia"
+   game. It trains the very judgment the curriculum asks of an engineer.
+4. **Teach-back checklists** (DEC-008). The design card's key decisions become atomic questions
+   ("did the learner explain why the gate fails closed?"). They give the mentor a consistent
+   coverage checklist, and the mentor still judges.
+5. **Item analysis.** Across stages, the recorded misconceptions show which concepts keep
+   returning, and those become review items (PEDAGOGY's assessment rules).
+
+**Safeguards:**
+
+- versioned question sets;
+- logged probabilities;
+- anything uncertain goes to the mentor's own judgment;
+- the learner sees what was judged and can dispute it;
+- no use of the decider on anything that affects stage closure, which stays the learner's own
+  gate.
+
+## Teach by building it: labs
+
+Short, hands-on exercises inside the stages above, each ending in a measured before and after:
+
+- **A router lab** (D1): our 32 routing requests, a decider against the coordinator's LLM choice.
+- **A gate lab** (P6-B3, P8-B3): escalate-only command gates, with a red-team set that includes
+  authority-claiming injections. The learner watches the gate be fooled, and shows why static
+  rules come first.
+- **A done-gate lab** (D1 or R5): verify a specialist's `ok` against its evidence.
+- **A question-design lab** (D1): two wordings on one labeled set. Our own record shows wording
+  moving answers both ways.
+- **A compile-then-run lab** (D1): an LLM turns `MEMORY_WRITE_POLICY` into typed questions, and
+  the learner measures and fixes them.
 
 ## Keeping it honest
 
-- **Show the non-uses as deliberately as the uses.** The Finglish repair is code plus
-  generation, consolidation needs inference, and the guard's user-facing sentence is generation.
-- **Keep every exercise's backend swappable,** so the lesson is the pattern, not a vendor.
-- **No deep-dive session is needed.** The concept has natural stages, and PEDAGOGY reserves
-  deep-dives for techniques that have none. The library entry doubles as a 20-minute reading
-  before R2.
+- **The non-uses are taught as deliberately as the uses:**
+  - generation;
+  - syntax-level checks;
+  - sole security gates;
+  - implied conditions without escalation.
+- **Every exercise's backend stays swappable** (Jev, an LLM, Laya), so the lesson is the pattern,
+  not a vendor.
+- **The evidence is taught with its labels.** Most ecosystem numbers are builder-reported; the
+  learner learns to ask for the labeled set.

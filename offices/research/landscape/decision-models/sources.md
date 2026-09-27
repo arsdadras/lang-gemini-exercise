@@ -23,6 +23,25 @@ marked.
 | [OpenRouter LangChain guide](https://openrouter.ai/docs/guides/community/langchain) | [S] *summary* | `langchain-openrouter`'s `ChatOpenRouter`; no Jev content |
 | [`langchain-typesafe` on PyPI](https://pypi.org/pypi/langchain-typesafe/json) | [S] | Latest release and requirements, on 2026-09-27 |
 
+## The wider sweep (2026-09-27)
+
+Added when the dossier was redone. The LangChain posts, the TypeSafe pages, and the catalog were
+read in full or in a browser; the rest were read through a summarizing fetch.
+
+| Source | Type | Used for |
+| :--- | :--- | :--- |
+| LangChain, [*Building a harness with Jev*](https://www.langchain.com/blog/building-a-harness-with-jev) (2026-09-17) | [S] for the API, [C] for claims | The agent-loop framing; model routing and auto-mode middlewares; early builds |
+| LangChain, [*Building prod with Jev and LangGraph*](https://www.langchain.com/blog/building-prod-with-jev-and-langgraph) (2026-09-25) | [S]/[C] | "Prod, not god"; the three architectures; the litigation graph; the unbundling of judgment; Stagehand |
+| LangChain, [*Jev as an agent evaluator in LangSmith*](https://www.langchain.com/blog/jev-agent-evals-langsmith) (2026-09-20) | [C] *summary* | Agreement, variance, and cost against three LLM judges on five traces |
+| [TypeSafe manifesto](https://typesafe.ai/manifesto); [*Introducing System One models and Jev*](https://typesafe.ai/blog/introducing-system-one-models-and-jev) | [C] *summary* | Positioning, RLCD, vendor benchmarks |
+| TypeSafe docs, every page in the [index](https://docs.typesafe.ai/llms.txt) on 2026-09-27: patterns, 20 cookbooks, the use-case map, *Jev with coding agents*, the agent skill | [S] for the method, [C] for the results | Decision shapes, patterns, cookbook results, the official skill |
+| [Browserbase, *What is Jev*](https://www.browserbase.com/blog/what-is-jev) | [T] *summary* | Stagehand's candidate-menu design and latency |
+| [shipwithjev.com](https://www.shipwithjev.com/): all 551 build pages (sitemap), the guides, the blog index, and the *Jev use cases*, *review*, *limitations*, *AI grading*, and *Jev for developers* posts | [T] | The ecosystem map; Jev engineering; education and developer uses |
+| Langfuse, [*Using TypeSafe's Jev for evals*](https://langfuse.com/blog/2026-09-18-using-typesafes-jev-for-evals) | [T] *summary* | The native evaluator; 91.5% agreement; cost per million verdicts |
+| [beri.net on decomposition and shadow evals](https://www.beri.net/article/typesafe-jev-typed-decision-model-calibration-decomposition-shadow-eval) | [T] *summary* | 62.6% → 95.0%; out-of-distribution calibration |
+| Independent repositories: [jev-decision-benchmarks](https://github.com/baibizhe/jev-decision-benchmarks), [jev-eval](https://github.com/4esv/jev-eval), [jev-evaluation](https://github.com/willkelly/jev-evaluation), [jev-acento](https://github.com/marcosmartinez/jev-acento); plus jev-rerank-bench, jev-orderby-bench, Jev-vs-ML, and jev-behavior-study, via their catalog pages | [T] | [ecosystem.md](ecosystem.md#independent-studies) |
+| YouTube: *7 Jev Repos That 10x Claude Code* (AI Edge, 15 min); *Master ALL Jev Design Patterns* (The AI Automators, 2026-09-25, 14 min) | [T], title, description, and chapters only | Where attention is (coding-agent add-ons; decision types, shapes, and patterns). The transcripts couldn't be loaded without signing in, so nothing specific is cited from them |
+
 ## Background: the ideas' precursors
 
 Cited in [capabilities.md](capabilities.md#what-is-new-and-what-isnt). The two linked papers

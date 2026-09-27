@@ -1,0 +1,320 @@
+{
+ "profile": "reliable",
+ "tier": "low",
+ "routing": [
+  {
+   "label": "web_research",
+   "pred": "web_research",
+   "ok": true,
+   "ms": 3677.5
+  },
+  {
+   "label": "repo_docs",
+   "pred": "repo_docs",
+   "ok": true,
+   "ms": 1202.8
+  },
+  {
+   "label": "code_review",
+   "pred": "code_review",
+   "ok": true,
+   "ms": 1649.0
+  },
+  {
+   "label": "run_code",
+   "pred": "run_code",
+   "ok": true,
+   "ms": 1861.7
+  },
+  {
+   "label": "memory",
+   "pred": "memory",
+   "ok": true,
+   "ms": 2324.8
+  },
+  {
+   "label": "direct_answer",
+   "pred": "direct_answer",
+   "ok": true,
+   "ms": 2140.5
+  },
+  {
+   "label": "clarify",
+   "pred": "clarify",
+   "ok": true,
+   "ms": 1766.3
+  },
+  {
+   "label": "web_research",
+   "pred": "web_research",
+   "ok": true,
+   "ms": 1624.1
+  },
+  {
+   "label": "repo_docs",
+   "pred": "repo_docs",
+   "ok": true,
+   "ms": 1500.3
+  },
+  {
+   "label": "code_review",
+   "pred": "code_review",
+   "ok": true,
+   "ms": 2014.6
+  },
+  {
+   "label": "run_code",
+   "pred": "run_code",
+   "ok": true,
+   "ms": 9115.2
+  },
+  {
+   "label": "memory",
+   "pred": "memory",
+   "ok": true,
+   "ms": 1058.9
+  },
+  {
+   "label": "direct_answer",
+   "pred": "direct_answer",
+   "ok": true,
+   "ms": 1409.0
+  },
+  {
+   "label": "clarify",
+   "pred": "memory",
+   "ok": false,
+   "ms": 2113.9
+  },
+  {
+   "label": "web_research",
+   "pred": "web_research",
+   "ok": true,
+   "ms": 1292.6
+  },
+  {
+   "label": "repo_docs",
+   "pred": "repo_docs",
+   "ok": true,
+   "ms": 1810.3
+  },
+  {
+   "label": "run_code",
+   "pred": "run_code",
+   "ok": true,
+   "ms": 1694.9
+  },
+  {
+   "label": "memory",
+   "pred": "memory",
+   "ok": true,
+   "ms": 1495.8
+  },
+  {
+   "label": "direct_answer",
+   "pred": "direct_answer",
+   "ok": true,
+   "ms": 1538.0
+  },
+  {
+   "label": "direct_answer",
+   "pred": "direct_answer",
+   "ok": true,
+   "ms": 2299.0
+  },
+  {
+   "label": "code_review",
+   "pred": "code_review",
+   "ok": true,
+   "ms": 2077.8
+  },
+  {
+   "label": "web_research",
+   "pred": "web_research",
+   "ok": true,
+   "ms": 1450.9
+  },
+  {
+   "label": "repo_docs",
+   "pred": "repo_docs",
+   "ok": true,
+   "ms": 1296.7
+  },
+  {
+   "label": "code_review",
+   "pred": "code_review",
+   "ok": true,
+   "ms": 1735.7
+  },
+  {
+   "label": "run_code",
+   "pred": "run_code",
+   "ok": true,
+   "ms": 1610.4
+  },
+  {
+   "label": "memory",
+   "pred": "memory",
+   "ok": true,
+   "ms": 1725.4
+  },
+  {
+   "label": "direct_answer",
+   "pred": "direct_answer",
+   "ok": true,
+   "ms": 1624.3
+  },
+  {
+   "label": "clarify",
+   "pred": "memory",
+   "ok": false,
+   "ms": 1431.9
+  },
+  {
+   "label": "code_review",
+   "pred": "code_review",
+   "ok": true,
+   "ms": 1383.9
+  },
+  {
+   "label": "memory",
+   "pred": "memory",
+   "ok": true,
+   "ms": 1659.5
+  },
+  {
+   "label": "web_research",
+   "pred": "web_research",
+   "ok": true,
+   "ms": 1578.9
+  },
+  {
+   "label": "repo_docs",
+   "pred": "repo_docs",
+   "ok": true,
+   "ms": 1388.4
+  }
+ ],
+ "staleness": [
+  {
+   "label": "yes",
+   "pred": "yes",
+   "ok": true,
+   "ms": 1102.8
+  },
+  {
+   "label": "yes",
+   "pred": "yes",
+   "ok": true,
+   "ms": 1250.1
+  },
+  {
+   "label": "yes",
+   "pred": "yes",
+   "ok": true,
+   "ms": 1460.3
+  },
+  {
+   "label": "no",
+   "pred": "no",
+   "ok": true,
+   "ms": 1451.2
+  },
+  {
+   "label": "no",
+   "pred": "no",
+   "ok": true,
+   "ms": 1390.7
+  },
+  {
+   "label": "yes",
+   "pred": "yes",
+   "ok": true,
+   "ms": 1434.5
+  },
+  {
+   "label": "yes",
+   "pred": "yes",
+   "ok": true,
+   "ms": 1265.7
+  },
+  {
+   "label": "yes",
+   "pred": "yes",
+   "ok": true,
+   "ms": 1386.4
+  },
+  {
+   "label": "no",
+   "pred": "no",
+   "ok": true,
+   "ms": 1491.1
+  },
+  {
+   "label": "yes",
+   "pred": "yes",
+   "ok": true,
+   "ms": 1331.8
+  },
+  {
+   "label": "yes",
+   "pred": "yes",
+   "ok": true,
+   "ms": 1485.6
+  },
+  {
+   "label": "yes",
+   "pred": "yes",
+   "ok": true,
+   "ms": 1341.2
+  },
+  {
+   "label": "no",
+   "pred": "no",
+   "ok": true,
+   "ms": 1277.0
+  },
+  {
+   "label": "no",
+   "pred": "no",
+   "ok": true,
+   "ms": 1342.0
+  },
+  {
+   "label": "no",
+   "pred": "no",
+   "ok": true,
+   "ms": 1292.0
+  },
+  {
+   "label": "yes",
+   "pred": "yes",
+   "ok": true,
+   "ms": 1360.5
+  },
+  {
+   "label": "no",
+   "pred": "no",
+   "ok": true,
+   "ms": 1459.6
+  },
+  {
+   "label": "yes",
+   "pred": "yes",
+   "ok": true,
+   "ms": 1319.0
+  },
+  {
+   "label": "no",
+   "pred": "no",
+   "ok": true,
+   "ms": 1390.2
+  },
+  {
+   "label": "yes",
+   "pred": "yes",
+   "ok": true,
+   "ms": 1418.5
+  }
+ ]
+}
