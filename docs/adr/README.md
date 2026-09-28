@@ -37,9 +37,11 @@ set the old one's status to `Superseded by ADR-XXXX`.
 | [0015](0015-local-tier-and-test-mode-profiles.md) | A `local` Ollama tier, and named test-mode profiles switchable mid-session | Accepted |
 | [0016](0016-project-office-and-document-governance.md) | A project office owns direction; the mentor teaches; one writer per file | Accepted |
 | [0017](0017-production-standards-as-design-yardstick.md) | Production engineering standards are the design yardstick | Accepted |
-| [0018](0018-three-offices-library-and-archive.md) | Three offices, a shared library, an archive, and one message protocol | Accepted; amended by ADR-0019 |
+| [0018](0018-three-offices-library-and-archive.md) | Three offices, a shared library, an archive, and one message protocol | Accepted; amended by ADR-0019 and ADR-0022 |
 | [0019](0019-role-worktrees-hooks-and-handoff.md) | One worktree and branch per role, session hooks, and a /handoff skill | Accepted |
 | [0020](0020-ownership-guard-routing-and-message-awareness.md) | An ownership guard, worktree routing, and automatic message awareness | Accepted |
+| [0021](0021-decision-models-as-a-second-model-family.md) | Decision models as a second model family, and one standard for every decision point | Accepted |
+| [0022](0022-engineer-role-and-division-of-labor.md) | An engineer role: building apart from teaching, research, and review | Accepted |
 
 ## Template
 

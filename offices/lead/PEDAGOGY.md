@@ -30,8 +30,8 @@ What a production AI-systems engineer can do at the end of Term P (C1-C10) and T
 | C5 | Reliability: failure classes, timeouts, retries, fallbacks, resume, idempotency, compensation | R0, P6, P11, P12 | A failure replayed and analyzed |
 | C6 | Safety and security: sandboxing, secret isolation, approval gates, guards, injection defense, authorization, tenancy | P3-P5, P7, P8, P11 | Red-team scenario set |
 | C7 | Memory and state governance: durable per-user memory, single writer, approval, undo, privacy | P5 | P5 eval-lite |
-| C8 | Evaluation and observability: boundary tests, eval sets, trace reading, regression gates, feedback loops | Every project; P5-C, R2, P6-C, P8-C | Eval sets under `evals/`, CI |
-| C9 | Model strategy: tiers, fallbacks, cascades, routing, measured cost and latency | P5, P8, P9, E2 | Cost and accuracy per decision, measured |
+| C8 | Evaluation and observability: boundary tests, eval sets, trace reading, regression gates, feedback loops | Every project; P5-C, R2, D1, P6-C, P8-C | Eval sets under `evals/`, labeled sets per decision point, CI |
+| C9 | Model strategy: tiers, fallbacks, cascades, routing, decision models and decision engineering, measured cost and latency | P5, R1-R2, D1, P8, P9, E2 | Accuracy, coverage at an error budget, and cost per decision point, measured |
 | C10 | Software architecture: layering, composition root, contracts, decision records, CI, designing for scale | Every project | The learner defends a design (teach-back) |
 | C11 | Production platform: serving, async runs, queues, distributed execution, multi-tenancy | P12, Term E | A deployed service |
 
@@ -118,7 +118,9 @@ The lead makes a stage ready before the mentor opens it:
 - the specialist's design card is current;
 - acceptance is concrete: the before/after demo scenario, and the tests or eval cases;
 - dependencies (earlier stages, library versions, directives) are in place;
-- it passes the admission rule.
+- it passes the admission rule;
+- the stage's verified reference implementation is merged by the engineer, or the engineer is
+  at least one topic ahead of the lesson ([ADR-0022](../../docs/adr/0022-engineer-role-and-division-of-labor.md)).
 
 ## Definition of Done
 
@@ -132,9 +134,9 @@ Whatever the mentor's procedure looks like, it keeps these true:
 
 - Each topic is a vertical slice that ends in code the learner has watched run.
 - The problem is shown before the theory.
-- Core agent-architecture code is typed by the learner; plumbing is integrated for them, with a
-  link to every changed file.
-- The repo is always the mentor's verified, clean version.
+- Core agent-architecture code is typed by the learner; plumbing is built by the engineer and
+  shown with a link to every changed file.
+- The repo is always the engineer's verified, clean version; an exercise state is never committed.
 - Messages to the learner teach, one idea at a time in full sentences; working notes stay out.
 - Each step waits for the learner's OK, carries a position marker, and ends with the next step.
 

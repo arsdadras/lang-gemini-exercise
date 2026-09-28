@@ -123,3 +123,20 @@ def test_outbox_grammar(repo):
         "offices/lead/OUTBOX.md:17: heading is not 'ID | to <role> | <type> | <status>'",
         "offices/mentor/OUTBOX.md:1: only the lead sends directives",
     ]
+
+
+def test_engineer_outbox_and_recipient(repo):
+    write(
+        repo,
+        "offices/lead/OUTBOX.md",
+        "### LD-001 | to engineer, mentor | directive | open\n",
+    )
+    write(
+        repo,
+        "offices/engineer/OUTBOX.md",
+        "### EN-001 | to lead | reply LD-001 | done\n\n### LD-002 | to mentor | notice | open\n",
+    )
+    problems = check_docs.run(repo, ["offices"])
+    assert problems == [
+        "offices/engineer/OUTBOX.md:3: ID LD-002 must be EN-### in the engineer outbox"
+    ]

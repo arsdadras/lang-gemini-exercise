@@ -1,6 +1,6 @@
 ---
 name: lead
-description: Open a lead session (the project-lead role for direction, curriculum and roadmap, architecture, technology, governance, and git). Invoked by the user only.
+description: Open a lead session (the project-lead role that decides, coordinates, and reviews: direction, curriculum and roadmap, architecture, technology, governance, and git). Invoked by the user only.
 disable-model-invocation: true
 ---
 

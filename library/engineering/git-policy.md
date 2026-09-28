@@ -9,8 +9,8 @@ related: [dependency-policy.md, dev-environment.md, ../governance/ownership.md, 
 
 # Git Policy
 
-Git and GitHub belong to the lead: it sets this policy, owns `.github/`, merges pull requests,
-and keeps `main` green. Under this policy every role commits and pushes its own work without
+Git and GitHub belong to the lead: it sets this policy, merges pull requests, and keeps `main`
+green. The engineer implements CI and the workflows in `.github/` as the lead decides. Under this policy every role commits and pushes its own work without
 asking (Principle 10).
 
 ## Branches and worktrees
@@ -21,6 +21,7 @@ Each role works in its own git worktree, on its own long-lived branch
 | Role | Worktree | Branch |
 | :--- | :--- | :--- |
 | Lead | `../lce-lead` | `lead` |
+| Engineer | `../lce-engineer` | `engineer` |
 | Mentor | `../lce-mentor` | `mentor` |
 | Research | `../lce-research` | `research` |
 
@@ -57,8 +58,8 @@ Each role works in its own git worktree, on its own long-lived branch
   worktree, pushes your branch, and prints a three-line summary. Unfinished work is committed
   as `wip(<role>): ...`; a role branch may be red between sessions.
 - **Only verified states reach `main`.** A pull request is opened when the suite and the linters
-  pass. The mentor never opens one on an exercise state (lesson files reset for the learner to
-  type); it commits the verified version first.
+  pass. The mentor never commits an exercise state: the learner types in the mentor's worktree,
+  and the engineer's verified version is restored with git.
 - **Conventional commits:** `type(scope): summary` in English, imperative, at most 72
   characters. Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `ci`. Documentation
   from an office uses the role as scope (`docs(lead): ...`, `docs(research): ...`).

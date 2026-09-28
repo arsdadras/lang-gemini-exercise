@@ -20,12 +20,12 @@ ROOT = Path(__file__).resolve().parent.parent
 
 SKIPPED_TOP_DIRS = {"alireza", "archive"}
 LIBRARY_FIELDS = ("title", "maintainer", "status", "updated", "summary")
-LIBRARY_ROLES = {"lead", "mentor", "research"}
+LIBRARY_ROLES = {"lead", "engineer", "mentor", "research"}
 LIBRARY_STATUSES = {"current", "draft", "superseded"}
 LIBRARY_UNINDEXED = {"README.md", "LOG.md"}
 
-OFFICE_PREFIX = {"lead": "LD", "mentor": "MN", "research": "RS"}
-RECIPIENTS = {"lead", "mentor", "research", "user", "all"}
+OFFICE_PREFIX = {"lead": "LD", "engineer": "EN", "mentor": "MN", "research": "RS"}
+RECIPIENTS = {"lead", "engineer", "mentor", "research", "user", "all"}
 OPEN_STATUSES = {"open", "closed", "withdrawn"}
 REPLY_STATUSES = {"done", "partial", "declined"}
 
@@ -34,7 +34,7 @@ INLINE_CODE = re.compile(r"`[^`]*`")
 LINK = re.compile(r"!?\[[^\]]*\]\(\s*<?([^)\s>]+)>?(?:\s+\"[^\"]*\")?\s*\)")
 HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$")
 MESSAGE_HEADING = re.compile(r"^###\s+(.*)$")
-MESSAGE_ID = re.compile(r"^(LD|MN|RS)-\d{3}$")
+MESSAGE_ID = re.compile(r"^(LD|EN|MN|RS)-\d{3}$")
 
 
 def markdown_files(root: Path, prefixes: list[str]) -> list[Path]:

@@ -1,4 +1,4 @@
-# Roadmap (v4.1)
+# Roadmap (v4.2)
 
 What gets built and taught, in which order, and the gates between. Lead-owned.
 
@@ -9,13 +9,14 @@ What gets built and taught, in which order, and the gates between. Lead-owned.
   [state](../mentor/STATE.md).
 - v4 (2026-09-26) supersedes v3 (`git show 8ffbf09:docs/ROADMAP.md`); the changes are
   DEC-003 and DEC-004 in [DECISIONS.md](DECISIONS.md). v4.1 (the same day) adds P7-C2 and the
-  E2 context registry (DEC-011, DEC-013). Stages are re-cut at each phase start when
+  E2 context registry (DEC-011, DEC-013). v4.2 (2026-09-28) weaves decision points through the
+  return pass and adds D1 (DEC-024, [ADR-0021](../../docs/adr/0021-decision-models-as-a-second-model-family.md)). Stages are re-cut at each phase start when
   the build shows a better split; the difficulty rules still apply.
 
 ## Now, next, later
 
 - **Now:** R0, the specialist contract (topic 2, the failure contract, in progress).
-- **Next:** R1 -> R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
+- **Next:** R1 -> R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> D1 -> P6.
 - **Later:** P7 -> P8 -> P9 -> P11 -> P12 -> Term E.
 
 ## Program shape
@@ -49,7 +50,8 @@ checked in every R stage:
 - `UserContext` wherever user data is touched;
 - one approval path: the standard HITL request, streamed by the app;
 - secret redaction at the app boundary and trace masking, in every app;
-- a design card, written by the lead before the specialist's R stage;
+- a design card, written by the lead before the specialist's R stage, naming its decision
+  points (point 17);
 - an eval-lite smoke set of 5-10 scenarios.
 
 Conformance work is done by the mentor directly; each stage's lesson is its upgrade. No rewrites
@@ -67,11 +69,40 @@ scenario.
 
 Each stage also carries its scheduled items from [BACKLOG.md](BACKLOG.md).
 
+**Decision points in the return pass** (ADR-0021; the lead's [dossier](artifacts/jev-dossier.md),
+section 3). Each lives inside its stage's own hard concept, so none adds a second one:
+
+- **R1:** the `decision_model` seam with its first consumer, the claim check (one decision per
+  claim); confidence derived in code from those decisions; "is the evidence enough?" as the
+  search loop's stop condition inside the search budget.
+- **R2:** grading and reranking in one request; the entry questions asked at once; per-claim
+  verification with reroutes; tier routing and the catalog measured on a labeled set that
+  carries reference answers.
+- **R3:** `ruff` and the AST find issues, a decider labels severity, category, and score, the
+  LLM explains.
+- **R4:** a risk label on the `execute` approval prompt; the approval itself unchanged.
+- **P5 teaching pass:** the guard as three checks combined fail-closed; the staleness
+  pre-pass; recall ranking; the schema compiler at its third consumer.
+- **R5:** the coordinator's pre-router, measured on a labeled routing set.
+
 ## P5 teaching pass (after R4)
 
 B4 to C4 again, one topic at a time, starting with B4 topic 1's tests-and-demo step, adapted to
 whatever R0-R4 changed. C3's skill designer gets one line on its production analog, a
 versioned context registry such as LangSmith Context Hub (DEC-011).
+
+## D1: Decision engineering (between R5 and P6)
+
+**Hard concept:** the compositional layer of decision models: decomposing a judgment into
+atomic questions, fitting thresholds from the cost of each mistake, and measuring coverage at an
+error budget. Advances C8, C9.
+
+- **Main build:** the decision workbench. An LLM compiles a prose policy or rubric into
+  candidate question sets; each runs on a labeled set; code fits thresholds, compares wordings,
+  versions the winner, and watches drift. It generalizes the points R1-R5 measured by hand.
+- **Labs:** generate N and select one; search with a decider as the value function; composite
+  scoring (atomic questions and a small fitted model); active learning from low-confidence
+  cases. The tier system (a measured catalog, routing, verify-then-escalate) is built here.
 
 ## P6: Capstone I, Research-to-Decision workflow (L5)
 
@@ -80,11 +111,11 @@ optional analysis, verification, approval. Advances C4, C5, C8.
 
 | Stage | Hard concept |
 | :--- | :--- |
-| **A1** | A deterministic parent workflow over specialists: P1 and P2 called through the contract, synthesis, delivery gated on approval |
+| **A1** | A deterministic parent workflow over specialists: P1 and P2 called through the contract, its branches decided by typed decisions with escalation, synthesis, delivery gated on approval |
 | **B1** | Fan-out and fan-in: parallel research branches with `Send`, merged by a reducer; source conflicts surface in the synthesis |
 | **B2** | Failure by error class: retry transient errors, feed recoverable ones back to the model, pause for a human, cap runaway loops |
 | **B3** | Nested runs: approvals raised inside subagents surfaced to the app (closes the coordinator's unapproved shell), progress streamed across namespaces, long runs resumed |
-| **C1** | Deterministic vs model-directed control: the same eval set against the workflow and a DeepAgents supervisor |
+| **C1** | Deterministic vs model-directed control: the same eval set against the workflow with code rules, the workflow with decided branches, and a DeepAgents supervisor |
 | **C2** | Evaluator-optimizer: a graph loop vs `RubricMiddleware`; the control choice recorded in an ADR |
 
 ## P7: Document intelligence (L5)
@@ -93,7 +124,7 @@ Also covers visual perception (formerly P10), and compiled knowledge (DEC-013). 
 
 | Stage | Hard concept |
 | :--- | :--- |
-| **A1** | Extraction into typed schemas for one document family, with per-field confidence |
+| **A1** | Extraction into typed schemas for one document family, with per-field confidence (the family chosen by a decision; each field verified against its source) |
 | **B1** | Vision: scanned pages and images, tables and layout |
 | **B2** | Validation loops, and human review of ambiguous fields only (confidence-based escalation to a person) |
 | **C1** | Multi-document reasoning with provenance (page and region) and audit-ready output; reusable extraction skills |
@@ -141,7 +172,7 @@ Advances C5, C6, C4.
 | **B2** | Retries, rate limits, and error mapping for external APIs |
 | **C1** | Transactional boundaries and compensation |
 | **C2** | Delegated authorization (the agent acts with the user's scoped credentials) and tenant isolation |
-| **C3** | A connector catalog, with tool search once it outgrows the context |
+| **C3** | A connector catalog, with tool search (a decider over the catalog) once it outgrows the context |
 | **C4** | Mini-workflow, Plan-to-Action Cell: plan -> context -> P11 proposal -> approval -> idempotent execution -> audit record (practice) |
 
 ## P12: Capstone II, Business Operations Control Tower (L6)
@@ -166,8 +197,8 @@ Advances C4, C5, C10, C11.
    for excessive agency, a red-team suite.
 2. **E2, shared runtime and platform:** lifecycle, event model, checkpoint, approval, and retry
    services; versioned agent, tool, workflow, and context registries (skills, instructions, and
-   policies versioned and promoted like code; DEC-011); policy, model routing, memory and
-   artifact services. Proven by at least three workflows running on it.
+   policies versioned and promoted like code; DEC-011); policy, model routing, decision (versioned
+   question sets, shadow evaluation), memory, and artifact services. Proven by at least three workflows running on it.
 3. **E3, distributed execution:** deployed agents behind an authenticated API, queue and workers,
    durable run state, scheduled jobs, a policy for new input on a running thread, tenant
    isolation, metrics, logs, and traces.

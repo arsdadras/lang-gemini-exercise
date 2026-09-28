@@ -1,7 +1,7 @@
 """Show a role's inbox: open messages addressed to it, and replies to its own open messages.
 
 Usage:
-    python scripts/inbox.py [lead|mentor|research] [--fetch]   # no role: this checkout's
+    python scripts/inbox.py [lead|engineer|mentor|research] [--fetch]   # no role: this checkout's
 
 Messages live in each office's OUTBOX.md (library/governance/protocol.md). Each role writes on
 its own branch (ADR-0019), so an outbox is read from `origin/main`, from the sender's branch

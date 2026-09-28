@@ -2,55 +2,59 @@
 
 Read first in every lead session; rewrite it, don't append. Program status in one place:
 [ROADMAP.md](ROADMAP.md) "Now, next, later". Live teaching status: the mentor's
-[state](../mentor/STATE.md).
+[state](../mentor/STATE.md); live build status: the engineer's [state](../engineer/STATE.md).
 
 - **Last lead session:** 2026-09-27 to 28 (session 6, local, in `D:/Repos/lce-lead`).
+- **Roles:** four since 2026-09-28 (ADR-0022). The lead decides, coordinates, and reviews; the
+  engineer builds, tests, debugs, and verifies every code and tooling change; the mentor teaches
+  and reviews the code it teaches; research investigates, analyzes, and advises. A change flows
+  lead -> engineer -> the lead's review and merge -> mentor. Reports to the user open with the
+  bottom line (principle 12).
 - **Repo:** each role has its own worktree and branch (ADR-0019): `D:/Repos/lce-lead`,
-  `lce-mentor`, `lce-research`, each with its own `.venv` and `.env`; the main checkout is a
-  clean `main` that takes no edits. The ownership guard, worktree routing, and message
-  awareness are live (ADR-0020). Branch protection isn't available on GitHub Free for a private
-  repo, so "main only by pull request" is policy, backed by the guard and the Messages report.
-  `docs/ROADMAP.md` is archived; the only branches are `main`, `lead`, `mentor`, `research`,
-  plus Dependabot's; `handoff/local-snapshot` survives as the tag
-  `archive/handoff-local-snapshot`.
+  `lce-engineer`, `lce-mentor`, `lce-research`, each with its own `.venv` and `.env`; the main
+  checkout is a clean `main` that takes no edits. The ownership guard, worktree routing, and
+  message awareness are live (ADR-0020); since ADR-0022 the guard keeps the lead out of code and
+  tooling. Branch protection isn't available on GitHub Free for a private repo, so "main only by
+  pull request" is policy, backed by the guard and the Messages report.
 
 ## Open messages
 
-LD-003, LD-005, and LD-015 (research); LD-006 and LD-008 (mentor, R0 close); LD-010 (mentor,
-blocking: move in); LD-016 (mentor, R0 topic 3: decision points in the eval harness); LD-012 and
-LD-014 (all: research has acknowledged both, the mentor hasn't yet). Received and under review:
-research's RS-020 (BR-003 version 3). Details in [OUTBOX.md](OUTBOX.md).
+- **Engineer:** LD-018 (blocking: move in, adopt the office and the live code issues), LD-019
+  (R0's remaining implementation, in order).
+- **Mentor:** LD-010 and LD-020 (blocking: move in; teaching only, charter update).
+- **Research:** LD-021 (mandate and the Jev follow-ups), LD-003 with LD-015 (upstream watch),
+  LD-005 (measurements; its code-needing parts now go through the engineer).
+- **All:** LD-012, LD-014, LD-022 (research acknowledged the first two; the mentor and the engineer
+  haven't yet).
+
+Details in [OUTBOX.md](OUTBOX.md).
 
 ## The Jev file
 
-Open since 2026-09-27. The lead read research's whole dossier and wrote its own:
-[artifacts/jev-dossier.md](artifacts/jev-dossier.md). The user asked to think it through together
-before anything is decided, so its positions are leanings until the joint review settles its
-seven questions. Then: DECISIONS entries and an ADR, the records they touch, the reply to
-RS-020, and a directive to the mentor for R1.
+Decided 2026-09-28: the user accepted the lead's [dossier](artifacts/jev-dossier.md) in full
+(DEC-022 to DEC-025, ADR-0021, roadmap v4.2). The rules live in
+[`library/engineering/decision-models.md`](../../library/engineering/decision-models.md). First
+code: the eval harness's decision datasets (LD-019), then the `decision_model` seam when R1 is made
+ready.
 
 ## Reserved for the user
 
-- The Jev file's joint review (the dossier's section 13).
-- Consent for the development-loop hooks' data flow: session content sent to a hosted decider,
-  and past transcripts read for a replay (dossier, section 11).
+- The explicit yes before a development-loop hook sends session content to a hosted decider, or a
+  replay reads past transcripts (DEC-025); asked when the first such hook is ready.
+- The OK to delete the old `src/data/dbs/checkpoints.db` (LD-019 item 5).
 - Trust the project's hooks once when Claude Code asks.
 
 ## Agenda for the next lead session
 
-1. The Jev file: the joint review with the user; then record and execute the decisions, and
-   reply to RS-020.
-2. Verify the mentor's replies to LD-010, LD-012, LD-014, and LD-016; close them. When research
-   answers LD-015, create the weekly routine.
-3. Merge the role branches' green pull requests; fast-forward the main checkout.
-4. Write the P1 design card before R1 opens, naming its decision points; then P2-P4 before their
-   stages.
-5. When R0 closes: record the specialist contract as an ADR, update
-   [ARCHITECTURE.md](ARCHITECTURE.md) "Current system", and make R1 ready (with the decision seam,
-   if the Jev file accepts it).
-6. When the user defines the fourth role: its office, ownership rows, worktree, and the hooks'
-   role list.
-7. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
+1. Review and merge the engineer's pull requests against LD-018 and LD-019; verify the mentor's
+   replies to LD-010 and LD-020 and research's to LD-021; close what checks out.
+2. Write the P1 design card before R1 opens, with its decision points (point 17); then P2-P4
+   before their stages.
+3. When R0 closes: record the specialist contract as an ADR, update
+   [ARCHITECTURE.md](ARCHITECTURE.md) "Current system", and make R1 ready: the decision seam
+   (ADR-0021) as the engineer's next directive, ahead of the lesson.
+4. When research answers LD-015, create the weekly routine.
+5. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
 
 ## Session log
 
@@ -76,8 +80,11 @@ RS-020, and a directive to the mentor for R1.
   handoff record; built ADR-0020 (ownership guard over a machine-read Roles column, worktree
   routing and `/mentor`, a prompt hook, `/inbox`, the Messages workflow; DEC-019 to DEC-021);
   sent LD-014 and LD-015. The lead now merges without asking.
-- **2026-09-27 to 28, session 6 (local).** Opened the Jev file: read research's whole dossier
-  (BR-003 version 3, its landscape, and six evidence records with their scripts) and the user's
-  sources; wrote the lead's dossier. Merged research's pull request #7 (BR-003 version 3, its
-  charter's Sessions section); closed LD-004 and LD-011; sent LD-016; corrected the radar's Jev
-  and OpenRouter rows and closed the obsolete TypeSafe-key backlog item.
+- **2026-09-27 to 28, session 6 (local).** Opened and closed the Jev file: read research's whole
+  dossier and the user's sources, wrote the lead's dossier, and after the user accepted it
+  recorded DEC-022 to DEC-025 and ADR-0021 (roadmap v4.2, stage D1, design card point 17, the
+  library entry, the `decision-points` skill). Founded the engineer role on the user's direction
+  (DEC-026, ADR-0022): its office, worktree, tooling support, and ownership; moved R0's
+  implementation to it (LD-018, LD-019); new mandates for the mentor and research (LD-020,
+  LD-021); reports open with the bottom line (DEC-027). Merged pull requests #7 and #8; closed
+  LD-004 and LD-011.

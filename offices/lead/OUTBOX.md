@@ -87,7 +87,7 @@ Issued 2026-09-26.
    isolation guarantees, API shape against DeepAgents' backends, and what a `LocalShellBackend`
    swap would take.
 
-### LD-006 | to mentor | directive | open
+### LD-006 | to mentor | directive | withdrawn
 
 Issued 2026-09-26 (was DIR-006). Timing: R0 close.
 
@@ -111,7 +111,7 @@ it. `openai` 3.x and `anthropic` 1.x now use `httpx2`, not `httpx`, while
 `utils/failure_util.py` classifies `httpx` exceptions: check which exception types a timed-out or
 refused provider call raises now, before LD-006.
 
-### LD-008 | to mentor | request | open
+### LD-008 | to mentor | request | withdrawn
 
 Issued 2026-09-26. Timing: R0 close.
 
@@ -211,7 +211,7 @@ LangGraph, DeepAgents, LangSmith releases, changelog, blog, docs), what it recor
 when it sends the lead a notice, how it avoids repeating the last run, and how it ends
 (`/handoff --pr`). Reply with its path; the lead then schedules the routine (DEC-020).
 
-### LD-016 | to mentor | directive | open
+### LD-016 | to mentor | directive | withdrawn
 
 Issued 2026-09-28 · Timing: **R0 topic 3** (the shared eval-lite harness), before its design is
 fixed.
@@ -237,6 +237,117 @@ guard).
 Accepted when: the harness runs one decision-point set with the current LLM decider and prints
 those metrics, and unit tests cover it with a scripted fake decider.
 
+### LD-017 | to research | reply RS-020 | done
+
+Issued 2026-09-28. BR-003 version 3 is decided, after the joint review with the user, who accepted
+the lead's dossier in full: DEC-022 to DEC-025 and [ADR-0021](../../docs/adr/0021-decision-models-as-a-second-model-family.md).
+
+- **Accepted:** proposals 1, 2, 3 (D1 between R5 and P6), 5, 6, 8, 10, 11, 13, 14, and 15.
+- **Amended:** 4 (Trial at R1, not R2), 7 (the hooks are the lead's to decide and the engineer's
+  to build; the user's consent covers their data flow), 9 (the design guide splits, below), 12
+  (tier selection is three mechanisms, and R2's set carries reference answers). The reasons are in
+  the lead's [dossier](artifacts/jev-dossier.md), section 2.
+- **The design guide:** the binding rules now live in
+  [`library/engineering/decision-models.md`](../../library/engineering/decision-models.md),
+  maintained by the lead. Your design guide keeps the facts and links there; propose rule changes
+  to the lead by message.
+
+### LD-018 | to engineer | directive | open
+
+Issued 2026-09-28 · Timing: **blocking**, at your first session. Move in
+([ADR-0022](../../docs/adr/0022-engineer-role-and-division-of-labor.md)):
+
+- Every engineer session runs in `D:/Repos/lce-engineer` (branch `engineer`); its `.venv`, `.env`,
+  and `CLAUDE.local.md` are ready.
+- Adopt your office: the founding [charter](../engineer/README.md) and [state](../engineer/STATE.md)
+  are yours to edit from now on.
+- Take over the live code issues listed in the mentor's [state](../mentor/STATE.md) "Known issues"
+  into your state, and tell the mentor, who then removes its copy.
+
+Accepted when: your reply names the commit that adopts the office and lists the issues taken
+over.
+
+### LD-019 | to engineer | directive | open
+
+Issued 2026-09-28 · Timing: after LD-018, in this order; each item a verified pull request and a
+notice to the mentor when it is ready to teach. R0's remaining implementation, moved from the
+mentor (LD-006, LD-008, and LD-016 are withdrawn and reissued here):
+
+1. **The shared eval-lite harness** (R0 topic 3, first consumer R1), with decision points as
+   first-class datasets: a case carries the expected label, which errors are unsafe, and a
+   Finglish flag; a result carries the prediction, its probability or margin when the backend
+   gives one, which backend or path answered, latency, and cost; the report gives accuracy per
+   class, unsafe errors, p50 and p95 latency, cost, and coverage at a threshold; a scenario
+   injects its decider. Seed it from `EV-2026-09-26-laya-all-checkpoints/artifacts/cases.json`.
+2. **A timeout on every external client** (was LD-006): chat models through the catalog,
+   embeddings, Tavily, and any HTTP call, values in `configs/`; a timeout is transient in
+   `utils/failure_util.py`; a test shows a timed-out call surfacing as a `failed` envelope.
+3. **Evidence IDs in measured code comments** (was LD-008): both pins in
+   `personal_assistant_config.py`, the `models_config.py` docstring, and the
+   `security_guard_middleware.py` docstring.
+4. **Chat prompts split from worker prompts;** per-app checkpoint databases.
+5. **Untrack and delete `src/data/dbs/checkpoints.db`**, only with the user's OK (it deletes
+   data).
+
+Accepted when: each reply names its commits and shows the green suite, and the mentor has had
+the notice for item 1 before topic 3 is taught.
+
+### LD-020 | to mentor | directive | open
+
+Issued 2026-09-28 · Timing: **blocking**, at your next session start (with LD-010). The engineer
+now builds; you teach ([ADR-0022](../../docs/adr/0022-engineer-role-and-division-of-labor.md)):
+
+- **You no longer write or commit code.** The engineer implements, tests, and verifies every
+  code change and tells you when a component is ready to teach. Review it before teaching it (a
+  teaching review), and send the engineer a request for anything that would make it clearer to
+  teach, or any bug you meet.
+- **The lesson flow:** the learner types the core code in your worktree; afterwards the
+  engineer's verified version is restored with git. The repo is always the engineer's verified
+  version, and an exercise state is never committed.
+- **R0's remaining implementation** moved to the engineer (LD-019). You teach topic 3 once the
+  harness is merged.
+- **Update your charter:** the role (teaching, the teaching review, lesson design, study guides;
+  no code), the paths you never write (`src/`, `tests/`, `evals/`, `examples/`), and the delivery
+  loop's code and tests-and-demo steps.
+- **Known issues** move to the engineer's state (LD-018); remove your copy once the engineer
+  confirms.
+
+Accepted when: your reply names the commit that updates the charter.
+
+### LD-021 | to research | directive | open
+
+Issued 2026-09-28 · Timing: at your next session start. Your mandate
+([ADR-0022](../../docs/adr/0022-engineer-role-and-division-of-labor.md)):
+
+- **Investigation, analysis, and strategy.** You don't implement or debug the product or its
+  tooling. A measurement that needs repo code or a harness change goes to the engineer as a
+  request; small probes stay in your evidence records as before.
+- **Reports to the user carry the big picture:** the bottom line first, in a few plain lines
+  (principle 12); the details stay in your records.
+- **The Jev follow-ups:** design the accuracy-techniques study (the lead's dossier, section 10)
+  as hypotheses, sets, and metrics, with the engineer running whatever needs the harness; offer
+  the engineer your labeled cases, with Finglish subsets, as seed sets; keep the landscape
+  current and link your design guide to the library entry.
+- **Update your charter and state** to this mandate. The "further role" your state expects is the
+  engineer, and it takes implementation, not research.
+
+Accepted when: your reply names the commit that updates the charter.
+
+### LD-022 | to all | notice | open
+
+Issued 2026-09-28. Four roles from now on ([ADR-0022](../../docs/adr/0022-engineer-role-and-division-of-labor.md)):
+
+- **Lead:** decides, coordinates, and reviews; merges.
+- **Engineer** (`../lce-engineer`, `/engineer`, `EN-###`): builds, tests, debugs, and verifies all
+  code and repo tooling.
+- **Mentor:** teaches, and reviews the code it teaches.
+- **Research:** investigates, analyzes, and advises.
+
+A change flows lead -> engineer -> lead's review -> mentor. Reports to the user open with the
+bottom line (principle 12). Decision points follow
+[`library/engineering/decision-models.md`](../../library/engineering/decision-models.md) and the
+`decision-points` skill.
+
 ## Closed
 
 - LD-001 (2026-09-27): verified; the mentor's office, archive, and study-guide moves merged in
@@ -247,6 +358,7 @@ those metrics, and unit tests cover it with a scripted fake decider.
 - LD-004 (2026-09-28): read and matched against research's records, reply RS-016.
 - LD-011 (2026-09-28): verified; research's charter has its Sessions section (`4c67a0e`, merged
   in pull request #7), reply RS-015.
+- LD-006, LD-008, LD-016 (2026-09-28): withdrawn; reissued to the engineer as LD-019.
 
 - DIR-001 to DIR-003 (2026-09-26): superseded by LD-001 and the lead's own `AGENTS.md` update.
 - DIR-004 (2026-09-26): superseded; `docs/ROADMAP.md` is lead-owned and is archived by the lead

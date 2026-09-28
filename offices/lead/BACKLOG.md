@@ -2,8 +2,8 @@
 
 Every candidate that isn't a stage's hard concept, triaged by the lead. **E** = essential,
 **N** = nice-to-have. An item is either scheduled into a named stage (the Definition of Ready
-pulls it in) or parked behind a concrete trigger. The mentor's live code issues stay in its
-[state](../mentor/STATE.md); new ideas arrive as request or notice messages and are triaged here.
+pulls it in) or parked behind a concrete trigger. The live code issues stay in the engineer's
+[state](../engineer/STATE.md); new ideas arrive as request or notice messages and are triaged here.
 
 Re-triaged from the handoff backlog on 2026-09-26 under [principles](../../library/governance/principles.md) 2-3:
 priorities were re-judged at production load, and items that are already a stage's hard concept
@@ -17,7 +17,8 @@ were dropped from this list (the roadmap owns them).
 - **E:** Record the R0 specialist contract as an ADR when R0 closes, from the mentor's state.
 - **N:** Add point 16 (production path) to the P5 design card.
 
-**R0, the specialist contract** (mentor-direct)
+**R0, the specialist contract** (built by the engineer, LD-019; taught by the mentor)
+- **E:** Decision points as first-class datasets in the eval harness (LD-019, was LD-016).
 - **E:** Shared eval-lite harness; first consumer R1.
 - **E:** Chat prompts split from worker prompts (the chat template reaches every agent today).
 - **E:** Per-app checkpoint databases, so `list` stops mixing apps' threads.
@@ -28,7 +29,9 @@ were dropped from this list (the roadmap owns them).
 - **E:** Evidence IDs in code comments that carry measurements (LD-008).
 
 **R1, P1**
-- **E:** The unused groundedness middleware wired in for citation checks.
+- **E:** The unused groundedness middleware wired in for citation checks: the claim check, the
+  first consumer of the `decision_model` seam (ADR-0021).
+- **E:** "Is the evidence enough?" as the search loop's stop condition, inside the search budget.
 - **E:** A search budget replaces approving every search.
 - **N:** Finglish repair on P1's report (Perso-Arabic leaked in a `lab-brief` run).
 - **N:** Decide whether the coordinator's `researcher` becomes a `CompiledSubAgent` over
@@ -39,22 +42,30 @@ were dropped from this list (the roadmap owns them).
   agents and apps as well.
 - **E:** Ungrounded answers rerouted to query rewrite or web search instead of a disclaimer.
 - **E:** The groundedness check on the web fallback path too.
-- **N:** Batch document grading.
+- **E:** Grading and reranking in one decider request; the entry questions at once; per-claim
+  verification (ADR-0021).
+- **E:** Reference answers in R2's labeled set; tier routing and the model catalog measured on it.
 - **E:** Hybrid retrieval (BM25 + vector + reranker) as the first change judged by R2's metrics
   (DEC-013).
 
 **R3, P3**
 - **E:** Diff and multi-file input.
+- **E:** The review triangle: `ruff` and the AST find issues, a decider labels severity,
+  category, and score, the LLM explains.
 
 **R4, P4**
+- **E:** A risk label on the `execute` approval prompt; the approval itself unchanged.
 - **N:** Carry the typed envelope into a DeepAgents coordinator's state, not only its text (extra
   state keys from a `CompiledSubAgent` reach the parent).
 
 **P5 teaching pass**
+- **E:** The guard as three checks combined fail-closed; the staleness pre-pass; recall ranking;
+  the schema compiler at its third consumer (ADR-0021).
 - **E:** Compare assistant models in C2: script leakage per line, false "saved" claims, guard
   agreement. The Finglish repair only mitigates the leak.
 
 **R5, close**
+- **E:** The coordinator's pre-router, measured on a labeled routing set.
 - **E:** Secret redaction and trace masking in every app, and one LangSmith project per app.
 - **E:** One CLI approval loop (`run_with_hitl` and `stream_with_hitl` overlap).
 - **N:** Remove `utils/time_travel_util.py` unless a consumer appears.
@@ -82,7 +93,8 @@ were dropped from this list (the roadmap owns them).
 | Session-scoped or remote sandbox workspaces | N | Term E, E1 |
 | A guard against direct pushes to `main`: a pre-push hook through `core.hooksPath`, installed by `scripts/setup_worktrees.py` (GitHub can't protect a private repo's branch on the Free plan) | N | A direct push to `main` happens |
 | A weekly cloud routine running research's upstream watch on branch `research` (DEC-020) | E | Research replies to LD-015 with its watch procedure |
-| Library placement of research's decision-model design guide (now `offices/research/landscape/decision-models/design-guide.md`; RS-011 withdrawn) | E | The Jev file's joint review with the user ([dossier](artifacts/jev-dossier.md), item 7 of its joint-review list) |
+| Development-loop hooks, advisory: document health, a done gate, shell edits and ownership, meaning-level conventions (DEC-025) | N | The engineer's queue after R1; the user's explicit yes before a hook sends session content or a replay reads transcripts |
+| Rename `TIER_CASCADE_ORDER` to a fallback order (DEC-025) | N | The quality escalation lands (D1) |
 
 ## Deep-dive candidates
 
@@ -98,5 +110,8 @@ None yet ([PEDAGOGY.md](PEDAGOGY.md#digressions-and-deep-dives)).
   2026-09-27 (DEC-017, ADR-0019).
 - **Wire `rag_subagent` into the researcher:** superseded by P6-A1, where the workflow composes P1
   and P2 instead.
-- **System-1 decision layer:** now a planned stage, P8-C3 (DEC-004).
+- **System-1 decision layer:** superseded 2026-09-28: decision points from R1 and a stage, D1
+  (DEC-022 to DEC-024).
+- **Library placement of research's design guide:** done 2026-09-28; the rules moved to
+  `library/engineering/decision-models.md`, the facts stay in research's landscape (DEC-025).
 - **Surface approvals raised inside subagents:** the hard concept of P6-B3.

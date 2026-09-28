@@ -13,7 +13,7 @@ recorded in the mentor's [state](../../offices/mentor/STATE.md), not here.
 | P1-P4 | Planned: written by the lead before R1-R4 respectively (built before design cards existed; `docs/study_guides/` covers P3 and P4) |
 | P5 Memory-rich personal assistant | [P5_memory_assistant.md](P5_memory_assistant.md) |
 
-## Template (16 points)
+## Template (17 points)
 
 1. **User job:** the concrete problem it solves.
 2. **Role boundary:** what it owns, and what it refuses or delegates.
@@ -33,3 +33,6 @@ recorded in the mentor's [state](../../offices/mentor/STATE.md), not here.
 16. **Production path:** what changes at production load (concurrent users, tenants, data
     volume, cost, failure rates) and the seam that makes each change a swap, not a rewrite
     ([ARCHITECTURE.md](../../offices/lead/ARCHITECTURE.md#scale-seams) "Scale seams").
+17. **Decision points:** every step where a model decides rather than writes, with its options,
+    labeled set, which error is unsafe, threshold and escalation, and the backend chosen by
+    measurement ([decision-models.md](../../library/engineering/decision-models.md)).

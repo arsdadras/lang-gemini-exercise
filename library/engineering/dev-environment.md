@@ -29,6 +29,7 @@ an index, or a `.venv` with another ([git-policy.md](git-policy.md),
 ```
 D:/Repos/lang_claude_exercise   main checkout: clean main, the IDE, alireza/; no role session
 D:/Repos/lce-lead               lead's worktree, branch lead
+D:/Repos/lce-engineer           engineer's worktree, branch engineer
 D:/Repos/lce-mentor             mentor's worktree, branch mentor; the learner's exercises
 D:/Repos/lce-research           research's worktree, branch research
 ```
