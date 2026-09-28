@@ -9,15 +9,16 @@ related: [principles.md, ownership.md, ../../scripts/inbox.py]
 
 # Coordination Protocol
 
-Four parties run this project. Each role works in its own Claude Code session and its own
+Five parties run this project. Each role works in its own Claude Code session and its own
 office, and the offices talk only through files, never through memory.
 
 | Party | Office | Job |
 | :--- | :--- | :--- |
 | **User** | none (`alireza/` is private scratch) | Sponsor, product owner, and learner; final authority |
-| **Lead** | [`offices/lead/`](../../offices/lead/README.md) | Decides and executes: direction, roadmap, architecture, technology, governance, git and GitHub |
-| **Mentor** | [`offices/mentor/`](../../offices/mentor/README.md) | Teaches the learner and implements the plan in lesson code |
-| **Research** | [`offices/research/`](../../offices/research/README.md) | Investigates, measures, and advises; decides nothing |
+| **Lead** | [`offices/lead/`](../../offices/lead/README.md) | Decides, coordinates, and reviews: direction, roadmap, architecture, technology, governance, git and GitHub |
+| **Engineer** | [`offices/engineer/`](../../offices/engineer/README.md) | Builds what the lead decides: implements, tests, debugs, and verifies the code and the repo tooling |
+| **Mentor** | [`offices/mentor/`](../../offices/mentor/README.md) | Teaches the learner; reviews the code it teaches |
+| **Research** | [`offices/research/`](../../offices/research/README.md) | Investigates, analyzes, and advises; brings the user the big picture; decides nothing |
 
 ## Files every office has
 
@@ -40,8 +41,8 @@ people and `scripts/inbox.py` read it the same way:
 
 | Field | Values |
 | :--- | :--- |
-| ID | `LD-###` (lead), `MN-###` (mentor), `RS-###` (research); numbered per outbox, never reused |
-| to | `lead`, `mentor`, `research`, `user`, or `all`; several are comma-separated |
+| ID | `LD-###` (lead), `EN-###` (engineer), `MN-###` (mentor), `RS-###` (research); numbered per outbox, never reused |
+| to | `lead`, `engineer`, `mentor`, `research`, `user`, or `all`; several are comma-separated |
 | type | `directive` (lead only: must be applied at its timing), `request` (asks for a decision, research, a measurement, or a record), `notice` (for information), or `reply <ID>` (answers a message) |
 | status | For directives, requests, and notices: `open`, then `closed` or `withdrawn` (set by the sender). For replies: `done`, `partial`, or `declined` |
 
@@ -66,11 +67,15 @@ other work), **next topic boundary**, **stage close**, or a named stage. A direc
 
 | From | To | Typical types |
 | :--- | :--- | :--- |
-| Lead | Mentor | Directives (plans, migrations, conventions), notices (upgrades, decisions that touch lessons) |
+| Lead | Engineer | Directives (what to build or fix, with acceptance criteria), notices (decisions that touch code) |
+| Lead | Mentor | Directives (what to teach, conventions), notices (decisions that touch lessons) |
 | Lead | Research | Requests (a question to investigate, a measurement, an upstream check) |
+| Engineer | Lead | Requests (a decision the plan doesn't settle), replies (the commits and what was verified) |
+| Engineer | Mentor | Notices (a verified component is ready to teach: where its core code is, what to watch for) |
 | Mentor | Lead | Requests (a decision the plan doesn't settle, a record for an ADR), notices (parked ideas, found debt) |
+| Mentor | Engineer | Requests (a change that makes code teachable, a bug found in a lesson) |
 | Research | Lead | Notices (a brief or an upstream change is ready), requests (a key, a budget, a decision) |
-| Research | Mentor | Requests (a harness change needed for a measurement) |
+| Research | Engineer | Requests (a harness or code change a measurement needs) |
 | Anyone | User | Only what the user alone can do: accounts, keys, approvals the rules reserve. The lead surfaces these in its report |
 
 The user talks to each office in its own session. Discussion with the lead is for decisions and
@@ -85,8 +90,9 @@ role; switching roles means a new session, in the other role's worktree.
 
 | Role | Where its sessions run | Loads its charter through |
 | :--- | :--- | :--- |
-| Mentor | `../lce-mentor` (branch `mentor`) | `CLAUDE.local.md` in its worktree |
 | Lead | `../lce-lead` (branch `lead`) | `CLAUDE.local.md`, or `/lead` |
+| Engineer | `../lce-engineer` (branch `engineer`) | `CLAUDE.local.md`, or `/engineer` |
+| Mentor | `../lce-mentor` (branch `mentor`) | `CLAUDE.local.md`, or `/mentor` |
 | Research | `../lce-research` (branch `research`) | `CLAUDE.local.md`, or `/research` |
 
 `CLAUDE.md` loads `AGENTS.md`, [principles.md](principles.md), and this protocol into every

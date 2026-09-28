@@ -1,6 +1,6 @@
 """Create or complete the role worktrees: one worktree, branch, and `.venv` per role (ADR-0019).
 
-    python scripts/setup_worktrees.py [--roles lead,mentor,research] [--no-sync] [--no-push]
+    python scripts/setup_worktrees.py [--roles lead,engineer,mentor,research] [--no-sync] [--no-push]
                                       [--copy-runtime]
 
 Idempotent: an existing worktree is only checked and completed. For each role it

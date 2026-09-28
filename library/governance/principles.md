@@ -150,6 +150,9 @@ user said need their approval. Reports have no "next steps" section unless the w
   messages, and docs.
 - Short by default. Go deep only for architecture, trade-offs, real bugs, and new concepts.
   Don't repeat what was already said.
+- **Reports open with the bottom line:** what we will do and what the role thinks, in a few
+  short, plain lines. Details follow only when needed, or when the user asks. (Lessons keep
+  the mentor's teaching form.)
 - Optional message prefixes from the user: **S** = question only (no edits), **M** = advisory
   discussion (no edits; only the user ends it), **D** = do the work.
 - `alireza/` is the user's private scratch area: never read, reference, edit, or sync it, and

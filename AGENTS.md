@@ -37,12 +37,13 @@ src/agentlab/
 tests/             pytest suite
 scripts/           repo tooling: docs lint, inbox, session hooks, handoff, worktree setup,
                    live smoke, and their tests
-offices/           one office per role (lead, mentor, research): charter, state, outbox
+offices/           one office per role (lead, engineer, mentor, research): charter, state, outbox
 library/           shared canonical knowledge: principles, protocol, ownership, policies
 archive/           retired documents, frozen
 docs/              ADRs, design cards, and study guides (write-ups of finished projects)
 .github/           CI and Dependabot
-.claude/           Claude Code skills (/lead, /mentor, /research, /handoff, /inbox) and the
+.claude/           Claude Code skills (/lead, /engineer, /mentor, /research, /handoff, /inbox,
+                   decision-points) and the
                    session hooks (start, prompt, ownership guard, stop)
 examples/          sample inputs (e.g. code to review)
 evals/             live eval-lite scenario sets (real models, run by hand, not by pytest)
@@ -79,6 +80,9 @@ that suffix too: `prompts/nodes/*_prompt.py`, `schemas/output/*_output_schema.py
    - Graph nodes and middleware: `llm_model.chain(tier, structured=Schema)`.
    - `LLM_TEST_MODE=true` routes every tier to `TEST_TIER` (`LLM_TEST_PROFILE=<name>` picks a
      different one of the named `TEST_MODE_PROFILES`; see ADR-0015).
+   - Decision points (route, gate, grade, verify, recall, stop): the rule and the one standard
+     in [decision-models.md](library/engineering/decision-models.md); the `decision_model`
+     seam arrives at R1 ([ADR-0021](docs/adr/0021-decision-models-as-a-second-model-family.md)).
 4. **Identity.** Per-user data uses `context_schema=UserContext`, and every call passes
    `context=UserContext(user_id=...)`. `thread_id` stays in `config["configurable"]`
    ([ADR-0003](docs/adr/0003-runtime-context-for-user-identity.md)).

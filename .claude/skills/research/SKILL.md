@@ -1,6 +1,6 @@
 ---
 name: research
-description: Open a research session (the role that investigates, measures, and advises, and decides nothing). Invoked by the user only.
+description: Open a research session (the role that investigates, analyzes, and advises, and decides nothing). Invoked by the user only.
 disable-model-invocation: true
 ---
 

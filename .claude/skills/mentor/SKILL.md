@@ -1,6 +1,6 @@
 ---
 name: mentor
-description: Open a mentor session (the role that teaches the learner and implements the plan in lesson code). Invoked by the user only.
+description: Open a mentor session (the role that teaches the learner and reviews the code it teaches). Invoked by the user only.
 disable-model-invocation: true
 ---
 

@@ -83,6 +83,15 @@ def test_role_comes_from_worktree_config_before_branch(project):
     assert workspace.detect_role(project) == "research"
 
 
+def test_engineer_is_a_role(project):
+    assert workspace.role_of_branch("engineer/r0-harness") == "engineer"
+    path = worktree(project, "engineer")
+    assert workspace.detect_role(path) == "engineer"
+    assert "@offices/engineer/README.md" in (path / "CLAUDE.local.md").read_text(
+        encoding="utf-8"
+    )
+
+
 def test_setup_builds_a_role_worktree_and_is_idempotent(project):
     write(project, ".env", "SECRET_NAME=value\n")
     first = setup_worktrees.setup(project, "research", sync=False, push=True)
@@ -169,8 +178,10 @@ def test_setup_ignores_claude_local_on_branches_without_the_gitignore(project):
 
 def test_the_repositorys_ownership_map_parses():
     rules = workspace.ownership_rules(workspace.ROOT)
-    assert workspace.owners("src/agentlab/apps/rag_app.py", rules) == {"mentor"}
-    assert workspace.owners("AGENTS.md", rules) == {"lead", "mentor"}
+    assert workspace.owners("src/agentlab/apps/rag_app.py", rules) == {"engineer"}
+    assert workspace.owners("scripts/inbox.py", rules) == {"engineer"}
+    assert workspace.owners(".claude/skills/lead/SKILL.md", rules) == {"lead"}
+    assert workspace.owners("AGENTS.md", rules) == {"lead", "engineer"}
     assert workspace.owners("offices/research/STATE.md", rules) == {"research"}
     assert workspace.owners("archive/docs/ROADMAP.md", rules) == {"all"}
     assert workspace.owners("alireza/notes.ipynb", rules) == {"none"}

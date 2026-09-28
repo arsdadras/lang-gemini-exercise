@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: End a role session cleanly - update the office's STATE.md, commit (a wip commit if the work is unfinished), push the role branch, and print a three-line summary. Use at the end of every lead, mentor, or research session, and before switching between machines or between local and cloud.
+description: End a role session cleanly - update the office's STATE.md, commit (a wip commit if the work is unfinished), push the role branch, and print a three-line summary. Use at the end of every lead, engineer, mentor, or research session, and before switching between machines or between local and cloud.
 ---
 
 End this session so the next one (here, on another machine, or in the cloud) can start from

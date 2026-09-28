@@ -35,7 +35,7 @@ Every entry except this index and the log starts with YAML front matter.
 | Field | Required | Value |
 | :--- | :-: | :--- |
 | `title` | yes | Human title |
-| `maintainer` | yes | `lead`, `mentor`, or `research` |
+| `maintainer` | yes | `lead`, `engineer`, `mentor`, or `research` |
 | `status` | yes | `current`, `draft`, or `superseded` |
 | `updated` | yes | `YYYY-MM-DD` of the last content change |
 | `summary` | yes | One sentence: what the entry holds |
@@ -71,4 +71,5 @@ compiled into interlinked pages, and the whole is linted.
 | :--- | :--- | :--- |
 | [git-policy.md](engineering/git-policy.md) | Role worktrees and branches, pull requests, commits, pushes, and CI | lead |
 | [dependency-policy.md](engineering/dependency-policy.md) | Staying current: versions, pins, Dependabot, upgrades | lead |
+| [decision-models.md](engineering/decision-models.md) | The rule for every AI decision point, the one standard each is held to, and calling decision models here | lead |
 | [dev-environment.md](engineering/dev-environment.md) | Python, uv, role worktrees and their environments, session hooks, sandboxes, secrets | lead |

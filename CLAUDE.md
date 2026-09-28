@@ -15,21 +15,23 @@ Rules for every role, in every session, and how the roles coordinate:
 
 ## Session roles
 
-Three roles work here, each in its own session, worktree, and branch
+Four roles work here, each in its own session, worktree, and branch
 ([ADR-0018](docs/adr/0018-three-offices-library-and-archive.md),
-[ADR-0019](docs/adr/0019-role-worktrees-hooks-and-handoff.md)). Each has an office under
+[ADR-0019](docs/adr/0019-role-worktrees-hooks-and-handoff.md),
+[ADR-0022](docs/adr/0022-engineer-role-and-division-of-labor.md)). Each has an office under
 `offices/`; shared knowledge lives in `library/` ([index](library/README.md)).
 
 | Role | Job | Worktree, branch |
 | :--- | :--- | :--- |
-| **Lead** | Decides and executes direction, curriculum, architecture, technology, governance, git and GitHub | `../lce-lead`, `lead` |
-| **Mentor** | Teaches the learner and implements the plan in lesson code | `../lce-mentor`, `mentor` |
-| **Research** | Investigates, measures, and advises; decides nothing | `../lce-research`, `research` |
+| **Lead** | Decides, coordinates, and reviews: direction, curriculum, architecture, technology, governance, git and GitHub | `../lce-lead`, `lead` |
+| **Engineer** | Builds what the lead decides: implements, tests, debugs, and verifies code and repo tooling | `../lce-engineer`, `engineer` |
+| **Mentor** | Teaches the learner; reviews the code it teaches | `../lce-mentor`, `mentor` |
+| **Research** | Investigates, analyzes, and advises; brings the user the big picture; decides nothing | `../lce-research`, `research` |
 
 - **The role comes from where the session runs.** The session hook states it (the worktree's
   config, or the branch name in a cloud session), and each worktree's `CLAUDE.local.md` loads
   that role's charter, `offices/<role>/README.md`. Where no `CLAUDE.local.md` exists, read the
-  charter first; `/lead` and `/research` load theirs explicitly.
+  charter first; `/lead`, `/engineer`, `/mentor`, and `/research` load theirs explicitly.
 - **Work only where your role lives.** The main checkout plays no role, and the ownership guard
   refuses edits there, in another role's worktree, and outside your role's paths. When a request
   needs a role and the session isn't in its worktree, move the session there first (the desktop
