@@ -58,8 +58,8 @@ Each role works in its own git worktree, on its own long-lived branch
   worktree, pushes your branch, and prints a three-line summary. Unfinished work is committed
   as `wip(<role>): ...`; a role branch may be red between sessions.
 - **Only verified states reach `main`.** A pull request is opened when the suite and the linters
-  pass. The mentor never commits an exercise state: the learner types in the mentor's worktree,
-  and the engineer's verified version is restored with git.
+  pass. Code reaches `main` only through the engineer's pull requests; nothing is ever reset for
+  the learner to type ([ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)).
 - **Conventional commits:** `type(scope): summary` in English, imperative, at most 72
   characters. Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `ci`. Documentation
   from an office uses the role as scope (`docs(lead): ...`, `docs(research): ...`).

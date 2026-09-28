@@ -4,7 +4,7 @@ maintainer: lead
 status: current
 updated: 2026-09-26
 summary: How the stack stays on the latest stable releases, LangChain's ecosystem above all.
-related: [git-policy.md, dev-environment.md, ../../offices/lead/TECH_RADAR.md, ../../.github/dependabot.yml]
+related: [git-policy.md, dev-environment.md, ../technology/radar.md, ../../.github/dependabot.yml]
 ---
 
 # Dependency Policy
@@ -16,7 +16,7 @@ wrong thing (Principle 2, "Stay current").
 ## Versions
 
 - **Released versions only.** A pre-release enters `main` only with a recorded reason and an
-  exit date in the [radar](../../offices/lead/TECH_RADAR.md).
+  exit date in the [radar](../technology/radar.md).
 - **`uv.lock` holds the exact versions.** `pyproject.toml` declares lower bounds; an exact pin
   exists only where a known break or a reviewed tool needs it, with a comment saying why (ruff
   is pinned so new lint rules arrive as their own change).

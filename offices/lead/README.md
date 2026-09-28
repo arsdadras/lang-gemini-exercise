@@ -32,10 +32,10 @@ measurement are research's job; the lead decides on research's briefs.
 
 | Decision | Decides | Executes | Recorded in |
 | :--- | :--- | :--- | :--- |
-| Vision, learning outcomes, curriculum shape, project and stage plans | Lead | Mentor teaches | [ROADMAP.md](ROADMAP.md), [PEDAGOGY.md](PEDAGOGY.md) |
-| Architecture: specialist contracts, shared infrastructure, layering, conventions, security model | Lead | Engineer implements | ADR, [ARCHITECTURE.md](ARCHITECTURE.md), design card, `AGENTS.md` |
-| Technology: adopting, upgrading, or dropping a dependency, provider, or model tier | Lead, on research's evidence where it exists | Engineer (upgrades and code changes) | [TECH_RADAR.md](TECH_RADAR.md), ADR when significant |
-| Pedagogy policy | Lead | Mentor's procedure | [PEDAGOGY.md](PEDAGOGY.md) |
+| Vision, learning outcomes, curriculum shape, project and stage plans | Lead | Mentor teaches | [ROADMAP.md](ROADMAP.md), [pedagogy](../../library/teaching/pedagogy.md) |
+| Architecture: specialist contracts, shared infrastructure, layering, conventions, security model | Lead | Engineer implements | ADR, [architecture standards](../../library/architecture/standards.md), [ARCHITECTURE.md](ARCHITECTURE.md), design card, `AGENTS.md` |
+| Technology: adopting, upgrading, or dropping a dependency, provider, or model tier | Lead, on research's evidence where it exists | Engineer (upgrades and code changes) | [radar](../../library/technology/radar.md), ADR when significant |
+| Pedagogy policy | Lead | Mentor's procedure | [pedagogy](../../library/teaching/pedagogy.md) |
 | Governance, process, ownership, git | Lead | Lead | ADR, `library/governance/`, `library/engineering/` |
 | Build-internal design inside an approved plan | Engineer | Engineer | The engineer's state and pull requests |
 | Lesson design inside an approved plan | Mentor | Mentor | Mentor's state and log |
@@ -69,7 +69,7 @@ Every idea runs the same pipeline, whatever its source.
 
 The lead plans ahead of the engineer and the mentor: a stage starts only when it meets the
 Definition of Ready
-([PEDAGOGY.md](PEDAGOGY.md#definition-of-ready)).
+([pedagogy](../../library/teaching/pedagogy.md#definition-of-ready)).
 
 ## Session protocol
 
@@ -110,9 +110,8 @@ No "next steps" section unless the work itself is staged.
 | Governance | [RISKS.md](RISKS.md) | Program risk register | Project boundary, or a risk fires |
 | Plan | [ROADMAP.md](ROADMAP.md) | What gets built and taught, in order, with gates | Phase and project boundaries, or a decision |
 | Plan | [BACKLOG.md](BACKLOG.md) | Triaged candidates with destination or trigger | Intake and triage |
-| Education | [PEDAGOGY.md](PEDAGOGY.md) | Learning outcomes, curriculum rules, readiness, assessment | A policy decision |
-| Engineering | [ARCHITECTURE.md](ARCHITECTURE.md) | Current and target system, quality ladder, scale seams | Architecture decisions, project boundaries |
-| Engineering | [TECH_RADAR.md](TECH_RADAR.md) | Technology rings and current versions | Evaluations, upgrades, project boundaries |
+| Engineering | [ARCHITECTURE.md](ARCHITECTURE.md) | The system picture, the current and target system, the quality ladder | Architecture decisions, project boundaries |
+| Library | [`library/`](../../library/README.md) | The shared knowledge the lead alone writes and curates: governance, engineering, architecture (standards, decision models), technology (radar, models), teaching (pedagogy) | A decision that changes a rule; curation at every phase and project boundary |
 | Work | `artifacts/`, [sandbox/](sandbox/README.md) | Kept files; scratch (ignored) | As needed |
 
 Shared records the lead writes: [`docs/adr/`](../../docs/adr/README.md) (significant decisions),
@@ -125,3 +124,6 @@ library's structure ([`library/`](../../library/README.md)).
 - **Phase boundary:** re-cut the next phase's stages; make its first stage ready.
 - **Project boundary:** roadmap and competency coverage, radar, risks, backlog triage, and a
   document health check (duplicated facts, stale entries).
+- **Library curation, at every phase and project boundary:** read the offices for knowledge
+  other roles now rely on, move it into the library under its category, and ask the owner by
+  message to link to it ([ADR-0024](../../docs/adr/0024-a-lead-curated-library-in-five-categories.md)).

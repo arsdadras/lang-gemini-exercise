@@ -1,6 +1,7 @@
 # ADR-0022: An engineer role: building apart from teaching, research, and review
 
-- Status: Accepted
+- Status: Accepted; step 4 of the flow amended by [ADR-0023](0023-active-review-instead-of-typing.md)
+  (the learner reviews the verified code instead of typing it)
 - Date: 2026-09-28
 - Origin: user direction (2026-09-28); design by the lead. Amends
   [ADR-0018](0018-three-offices-library-and-archive.md) (three offices become four) and

@@ -32,7 +32,7 @@ recorded in the mentor's [state](../../offices/mentor/STATE.md), not here.
 15. **Phase C output:** the reusable artifact it hands to later projects.
 16. **Production path:** what changes at production load (concurrent users, tenants, data
     volume, cost, failure rates) and the seam that makes each change a swap, not a rewrite
-    ([ARCHITECTURE.md](../../offices/lead/ARCHITECTURE.md#scale-seams) "Scale seams").
+    ([ARCHITECTURE.md](../../library/architecture/standards.md#scale-seams) "Scale seams").
 17. **Decision points:** every step where a model decides rather than writes, with its options,
     labeled set, which error is unsafe, threshold and escalation, and the backend chosen by
-    measurement ([decision-models.md](../../library/engineering/decision-models.md)).
+    measurement ([decision-models.md](../../library/architecture/decision-models.md)).

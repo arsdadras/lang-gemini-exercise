@@ -27,7 +27,7 @@ belongs to the lead.
 | `CLAUDE.md` | Session router: what every session loads, and which role it plays | Lead | lead |
 | `AGENTS.md` | Repo mechanics for any coding agent: layout, conventions, commands, gotchas | Lead for layout, conventions, and policy; the engineer keeps commands and gotchas true when its code changes them | lead, engineer |
 | `README.md` | Public front page | Lead | lead |
-| `library/` | Shared, canonical, text-only knowledge ([library/README.md](../README.md)) | The lead, which owns the structure, the index, and every current entry | lead |
+| `library/` | Shared, canonical, text-only knowledge ([library/README.md](../README.md)) | The lead only: it curates knowledge from every office into the library; other roles propose changes by message ([ADR-0024](../../docs/adr/0024-a-lead-curated-library-in-five-categories.md)) | lead |
 | `offices/lead/` | Lead office: decisions, plans, architecture, radar, risks, outbox | Lead | lead |
 | `offices/engineer/` | Engineer office: charter, build state, live code issues, outbox | Engineer | engineer |
 | `offices/mentor/` | Mentor office: role contract, teaching state, lesson log, outbox | Mentor | mentor |

@@ -18,9 +18,17 @@ Append-only: one line per change to the library, newest last. Format:
 - 2026-09-27 | lead | engineering/git-policy.md | The lead merges without asking; unmerged branches retire as `archive/<branch>` tags
 - 2026-09-27 | lead | engineering/dev-environment.md | Prompt hook, ownership guard, worktree routing, `/inbox` and `/loop`, the Messages workflow
 - 2026-09-27 | lead | governance/protocol.md | Receiving: hooks announce messages; `inbox.py` defaults to the worktree's role
-- 2026-09-28 | lead | engineering/decision-models.md | New: the rule for AI decision points and the one standard (ADR-0021); research's landscape keeps the facts
+- 2026-09-28 | lead | architecture/decision-models.md | New: the rule for AI decision points and the one standard (ADR-0021); research's landscape keeps the facts
 - 2026-09-28 | lead | governance/protocol.md | A fourth role, the engineer (`EN-###`), in the parties, routing, and sessions tables (ADR-0022)
 - 2026-09-28 | lead | governance/ownership.md | Code, tests, evals, tooling, CI, hooks, and dependencies move to the engineer (ADR-0022)
 - 2026-09-28 | lead | governance/principles.md | Principle 12: reports open with the bottom line (DEC-027)
 - 2026-09-28 | lead | engineering/git-policy.md | The engineer's worktree; CI implemented by the engineer; exercise states restored with git
 - 2026-09-28 | lead | engineering/dev-environment.md | The engineer's worktree
+- 2026-09-28 | lead | README.md | The lead alone writes and curates the library; five categories (ADR-0024)
+- 2026-09-28 | lead | architecture/standards.md | Moved in from the lead's ARCHITECTURE.md: principles, scale seams, composition patterns
+- 2026-09-28 | lead | architecture/decision-models.md | Moved from engineering/
+- 2026-09-28 | lead | technology/radar.md | Moved in from the lead's TECH_RADAR.md
+- 2026-09-28 | lead | technology/models.md | New: the LLM tiers, the deciders, what is measured, how tiers will be chosen
+- 2026-09-28 | lead | teaching/pedagogy.md | Moved in from the lead's PEDAGOGY.md; active review replaces typing (ADR-0023)
+- 2026-09-28 | lead | governance/glossary.md | Engineer, active review, decision point, decider, cascade and fallback
+- 2026-09-28 | lead | engineering/git-policy.md | No exercise states; code reaches main only through the engineer

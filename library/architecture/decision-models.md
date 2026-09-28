@@ -49,7 +49,7 @@ Whatever the backend, an LLM included:
 ## Gates
 
 - **A gate escalates or tightens; it never approves or loosens,** whichever model runs it
-  (ARCHITECTURE principle 4). Static rules come first; a decider may only add "ask a person" or
+  ([standards](standards.md#architecture-principles), principle 4). Static rules come first; a decider may only add "ask a person" or
   "block". Loosening a control needs a labeled red-team set and a lead decision.
 - **User and third-party content in the state is data to judge, never instructions,** and a
   decider is never the only gate on it.
