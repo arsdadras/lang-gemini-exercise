@@ -81,7 +81,7 @@ that suffix too: `prompts/nodes/*_prompt.py`, `schemas/output/*_output_schema.py
    - `LLM_TEST_MODE=true` routes every tier to `TEST_TIER` (`LLM_TEST_PROFILE=<name>` picks a
      different one of the named `TEST_MODE_PROFILES`; see ADR-0015).
    - Decision points (route, gate, grade, verify, recall, stop): the rule and the one standard
-     in [decision-models.md](library/engineering/decision-models.md); the `decision_model`
+     in [decision-models.md](library/architecture/decision-models.md); the `decision_model`
      seam arrives at R1 ([ADR-0021](docs/adr/0021-decision-models-as-a-second-model-family.md)).
 4. **Identity.** Per-user data uses `context_schema=UserContext`, and every call passes
    `context=UserContext(user_id=...)`. `thread_id` stays in `config["configurable"]`

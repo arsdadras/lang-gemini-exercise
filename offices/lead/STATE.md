@@ -8,8 +8,13 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 - **Roles:** four since 2026-09-28 (ADR-0022). The lead decides, coordinates, and reviews; the
   engineer builds, tests, debugs, and verifies every code and tooling change; the mentor teaches
   and reviews the code it teaches; research investigates, analyzes, and advises. A change flows
-  lead -> engineer -> the lead's review and merge -> mentor. Reports to the user open with the
-  bottom line (principle 12).
+  lead -> engineer -> the lead's review and merge -> mentor. The learner reviews the verified
+  code instead of typing it (ADR-0023). Reports to the user open with the bottom line
+  (principle 12).
+- **Library:** the lead's alone to write and curate, in five categories (ADR-0024). First pass
+  done: the pedagogy, the radar, and the architecture standards moved in from this office;
+  redirects stay at `PEDAGOGY.md` and `TECH_RADAR.md` until the mentor and research update
+  their links.
 - **Repo:** each role has its own worktree and branch (ADR-0019): `D:/Repos/lce-lead`,
   `lce-engineer`, `lce-mentor`, `lce-research`, each with its own `.venv` and `.env`; the main
   checkout is a clean `main` that takes no edits. The ownership guard, worktree routing, and
@@ -19,13 +24,15 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 
 ## Open messages
 
-- **Engineer:** LD-018 (blocking: move in, adopt the office and the live code issues), LD-019
-  (R0's remaining implementation, in order).
-- **Mentor:** LD-010 and LD-020 (blocking: move in; teaching only, charter update).
-- **Research:** LD-021 (mandate and the Jev follow-ups), LD-003 with LD-015 (upstream watch),
-  LD-005 (measurements; its code-needing parts now go through the engineer).
-- **All:** LD-012, LD-014, LD-022 (research acknowledged the first two; the mentor and the engineer
-  haven't yet).
+- **Engineer:** LD-018 (blocking: move in, adopt the office and the live code issues), LD-024
+  (charter wording, docs lint for a lead-only library), LD-019 (R0's remaining implementation,
+  in order).
+- **Mentor:** LD-010 and LD-023 (blocking: move in; teaching only, active review, charter and
+  state).
+- **Research:** LD-021 (mandate and the Jev follow-ups), LD-025 (library links), LD-003 with
+  LD-015 (upstream watch), LD-005 (measurements; its code-needing parts go through the engineer).
+- **All:** LD-012, LD-014, LD-022, LD-026 (research acknowledged the first two; the mentor and
+  the engineer haven't yet).
 
 Details in [OUTBOX.md](OUTBOX.md).
 
@@ -33,7 +40,7 @@ Details in [OUTBOX.md](OUTBOX.md).
 
 Decided 2026-09-28: the user accepted the lead's [dossier](artifacts/jev-dossier.md) in full
 (DEC-022 to DEC-025, ADR-0021, roadmap v4.2). The rules live in
-[`library/engineering/decision-models.md`](../../library/engineering/decision-models.md). First
+[`library/architecture/decision-models.md`](../../library/architecture/decision-models.md). First
 code: the eval harness's decision datasets (LD-019), then the `decision_model` seam when R1 is made
 ready.
 
@@ -46,15 +53,17 @@ ready.
 
 ## Agenda for the next lead session
 
-1. Review and merge the engineer's pull requests against LD-018 and LD-019; verify the mentor's
-   replies to LD-010 and LD-020 and research's to LD-021; close what checks out.
+1. Review and merge the engineer's pull requests against LD-018, LD-019, and LD-024; verify the
+   mentor's replies to LD-010 and LD-023 and research's to LD-021 and LD-025; close what checks
+   out. When both have updated their links, remove the redirects (BACKLOG).
 2. Write the P1 design card before R1 opens, with its decision points (point 17); then P2-P4
    before their stages.
 3. When R0 closes: record the specialist contract as an ADR, update
    [ARCHITECTURE.md](ARCHITECTURE.md) "Current system", and make R1 ready: the decision seam
    (ADR-0021) as the engineer's next directive, ahead of the lesson.
 4. When research answers LD-015, create the weekly routine.
-5. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
+5. At every phase and project boundary: curate the library from every office (ADR-0024).
+6. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
 
 ## Session log
 
@@ -88,3 +97,7 @@ ready.
   implementation to it (LD-018, LD-019); new mandates for the mentor and research (LD-020,
   LD-021); reports open with the bottom line (DEC-027). Merged pull requests #7 and #8; closed
   LD-004 and LD-011.
+- **2026-09-28, session 6 continued.** On the user's direction, relayed from a side chat: the
+  learner reviews instead of typing (DEC-028, ADR-0023; LD-020 reissued as LD-023, LD-024 to the
+  engineer), and the library became the lead's alone, in five categories, with a first curation
+  pass (DEC-029, ADR-0024; LD-025, LD-026).

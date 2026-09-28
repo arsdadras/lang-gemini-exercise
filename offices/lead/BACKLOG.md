@@ -95,10 +95,11 @@ were dropped from this list (the roadmap owns them).
 | A weekly cloud routine running research's upstream watch on branch `research` (DEC-020) | E | Research replies to LD-015 with its watch procedure |
 | Development-loop hooks, advisory: document health, a done gate, shell edits and ownership, meaning-level conventions (DEC-025) | N | The engineer's queue after R1; the user's explicit yes before a hook sends session content or a replay reads transcripts |
 | Rename `TIER_CASCADE_ORDER` to a fallback order (DEC-025) | N | The quality escalation lands (D1) |
+| Remove the redirects at `offices/lead/PEDAGOGY.md` and `offices/lead/TECH_RADAR.md` (DEC-029) | E | The mentor and research have updated their links (LD-023, LD-025) |
 
 ## Deep-dive candidates
 
-None yet ([PEDAGOGY.md](PEDAGOGY.md#digressions-and-deep-dives)).
+None yet ([pedagogy](../../library/teaching/pedagogy.md#digressions-and-deep-dives)).
 
 ## Closed in triage
 
@@ -113,5 +114,5 @@ None yet ([PEDAGOGY.md](PEDAGOGY.md#digressions-and-deep-dives)).
 - **System-1 decision layer:** superseded 2026-09-28: decision points from R1 and a stage, D1
   (DEC-022 to DEC-024).
 - **Library placement of research's design guide:** done 2026-09-28; the rules moved to
-  `library/engineering/decision-models.md`, the facts stay in research's landscape (DEC-025).
+  `library/architecture/decision-models.md`, the facts stay in research's landscape (DEC-025).
 - **Surface approvals raised inside subagents:** the hard concept of P6-B3.

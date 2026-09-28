@@ -89,7 +89,7 @@
   their providers.
 - The roadmap gains one stage (D1).
 - Research's design guide splits: the binding rules move to
-  [`library/engineering/decision-models.md`](../../library/engineering/decision-models.md),
+  [`library/architecture/decision-models.md`](../../library/architecture/decision-models.md),
   maintained by the lead; the facts and the evidence stay in research's landscape.
 
 ## Alternatives considered

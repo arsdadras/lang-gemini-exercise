@@ -248,7 +248,7 @@ the lead's dossier in full: DEC-022 to DEC-025 and [ADR-0021](../../docs/adr/002
   (tier selection is three mechanisms, and R2's set carries reference answers). The reasons are in
   the lead's [dossier](artifacts/jev-dossier.md), section 2.
 - **The design guide:** the binding rules now live in
-  [`library/engineering/decision-models.md`](../../library/engineering/decision-models.md),
+  [`library/architecture/decision-models.md`](../../library/architecture/decision-models.md),
   maintained by the lead. Your design guide keeps the facts and links there; propose rule changes
   to the lead by message.
 
@@ -292,7 +292,7 @@ mentor (LD-006, LD-008, and LD-016 are withdrawn and reissued here):
 Accepted when: each reply names its commits and shows the green suite, and the mentor has had
 the notice for item 1 before topic 3 is taught.
 
-### LD-020 | to mentor | directive | open
+### LD-020 | to mentor | directive | withdrawn
 
 Issued 2026-09-28 · Timing: **blocking**, at your next session start (with LD-010). The engineer
 now builds; you teach ([ADR-0022](../../docs/adr/0022-engineer-role-and-division-of-labor.md)):
@@ -345,8 +345,81 @@ Issued 2026-09-28. Four roles from now on ([ADR-0022](../../docs/adr/0022-engine
 
 A change flows lead -> engineer -> lead's review -> mentor. Reports to the user open with the
 bottom line (principle 12). Decision points follow
-[`library/engineering/decision-models.md`](../../library/engineering/decision-models.md) and the
+[`library/architecture/decision-models.md`](../../library/architecture/decision-models.md) and the
 `decision-points` skill.
+
+### LD-023 | to mentor | directive | open
+
+Issued 2026-09-28 · Timing: **blocking**, at your next session start, with LD-010. Replaces
+LD-020: the engineer builds and you teach ([ADR-0022](../../docs/adr/0022-engineer-role-and-division-of-labor.md)), and the learner now reviews the
+code instead of typing it ([ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)).
+
+- **You no longer write or commit code.** The engineer implements, tests, and verifies every code
+  change and tells you when a component is ready to teach. Before each topic, review it (a
+  teaching review), and send the engineer a request for anything that would make it clearer to
+  teach, or any bug you meet.
+- **Active review replaces typing.** Nothing is reset or reverted. Walk through the engineer's
+  verified code one component at a time (diff-only): a prediction question before it, "why this
+  design?" and "what if X changed?" after it; plumbing is shown with links. Then the tests, a
+  live demo, and a hands-on scenario the learner runs; a teach-back at each project close. When a
+  "what if" needs a live change, build that demo in your sandbox; `src/` stays the engineer's.
+- **Where the learner reads code:** the main checkout, which the lead fast-forwards after every
+  merge. LD-010's line about exercises in your worktree no longer applies.
+- **R0's remaining implementation** moved to the engineer (LD-019). You teach topic 3 once the
+  harness is merged.
+- **Update your charter and state:** your role (teaching, the teaching review, lesson design,
+  study guides; no code); the paths you never write (`src/`, `tests/`, `evals/`, `examples/`); the
+  delivery loop's code, tests, and demo steps; the session end's exercise-state line; and your
+  state's "Code delivery" and "Branch" agreements.
+- **Links:** the pedagogy moved to
+  [`library/teaching/pedagogy.md`](../../library/teaching/pedagogy.md) ([ADR-0024](../../docs/adr/0024-a-lead-curated-library-in-five-categories.md)).
+  Point your charter's links there, the `#difficulty-curve` one included.
+- **Known issues** move to the engineer's state (LD-018); remove your copy once it confirms.
+
+Accepted when: your reply names the commit that updates the charter and the state.
+
+### LD-024 | to engineer | directive | open
+
+Issued 2026-09-28 · Timing: with LD-018, at your first session.
+
+- **Your charter:** step 2 still says "the part the learner types". The learner now reviews the
+  verified code instead of typing it ([ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)): name the core the mentor walks the
+  learner through. Lesson-sized commits and a named core per component stay.
+- **The library is the lead's alone** ([ADR-0024](../../docs/adr/0024-a-lead-curated-library-in-five-categories.md)): make `scripts/check_docs.py` require
+  `maintainer: lead` on every library entry, with a test.
+
+Accepted when: your reply names the commit.
+
+### LD-025 | to research | directive | open
+
+Issued 2026-09-28 · Timing: at your next session start, with LD-021.
+
+- **The library is the lead's alone to write and curate** ([ADR-0024](../../docs/adr/0024-a-lead-curated-library-in-five-categories.md)). Propose changes
+  to an entry by message. When the lead brings knowledge from your office into the library, it
+  asks you by message to link to it; research's living facts stay with you, and the library
+  carries their takeaway with your record ID.
+- **Update your links;** the redirects at the old paths go once you have:
+  - `offices/lead/PEDAGOGY.md` is now `library/teaching/pedagogy.md` (BR-003's README and
+    `curriculum.md`);
+  - `offices/lead/TECH_RADAR.md` is now `library/technology/radar.md` (BR-001's README,
+    `EV-2026-09-25-laya-zero-shot`);
+  - your design guide's rules now live in `library/architecture/decision-models.md`: link there.
+
+Accepted when: your reply names the commit.
+
+### LD-026 | to all | notice | open
+
+Issued 2026-09-28.
+
+- **The library is the lead's alone** ([ADR-0024](../../docs/adr/0024-a-lead-curated-library-in-five-categories.md)), in five categories: governance,
+  engineering, architecture (standards, decision models), technology (radar, models), and teaching
+  (pedagogy). Propose a change to an entry by message.
+- **Moved:** `offices/lead/PEDAGOGY.md` to `library/teaching/pedagogy.md`;
+  `offices/lead/TECH_RADAR.md` to `library/technology/radar.md`; the architecture principles, scale
+  seams, and composition patterns to `library/architecture/standards.md`; the decision-model rules
+  from `library/engineering/` to `library/architecture/`.
+- **The learner reviews the engineer's verified code instead of typing it**
+  ([ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)). Nothing is reset for typing, and exercise states are gone.
 
 ## Closed
 
@@ -359,6 +432,7 @@ bottom line (principle 12). Decision points follow
 - LD-011 (2026-09-28): verified; research's charter has its Sessions section (`4c67a0e`, merged
   in pull request #7), reply RS-015.
 - LD-006, LD-008, LD-016 (2026-09-28): withdrawn; reissued to the engineer as LD-019.
+- LD-020 (2026-09-28): withdrawn; reissued as LD-023 after ADR-0023.
 
 - DIR-001 to DIR-003 (2026-09-26): superseded by LD-001 and the lead's own `AGENTS.md` update.
 - DIR-004 (2026-09-26): superseded; `docs/ROADMAP.md` is lead-owned and is archived by the lead

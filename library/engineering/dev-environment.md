@@ -27,10 +27,10 @@ an index, or a `.venv` with another ([git-policy.md](git-policy.md),
 [ADR-0019](../../docs/adr/0019-role-worktrees-hooks-and-handoff.md)).
 
 ```
-D:/Repos/lang_claude_exercise   main checkout: clean main, the IDE, alireza/; no role session
+D:/Repos/lang_claude_exercise   main checkout: clean main, where the learner reads code; alireza/
 D:/Repos/lce-lead               lead's worktree, branch lead
 D:/Repos/lce-engineer           engineer's worktree, branch engineer
-D:/Repos/lce-mentor             mentor's worktree, branch mentor; the learner's exercises
+D:/Repos/lce-mentor             mentor's worktree, branch mentor
 D:/Repos/lce-research           research's worktree, branch research
 ```
 
@@ -41,7 +41,8 @@ role's charter, copies `.env` from the main checkout, runs `uv sync`, and pushes
 `--copy-runtime` copies the main checkout's `out/state/` and `.chroma_index/` into a worktree
 that has none; run it with no app running.
 
-- **Open a role's sessions in its worktree.** The IDE opens the mentor's worktree for exercises.
+- **Open a role's sessions in its worktree.** The learner reads and reviews the merged code in
+  the main checkout, which the lead fast-forwards after every merge.
 - **Each worktree has its own `.venv`, `.env`, and runtime data** (`out/`, `.chroma_index/`),
   because paths resolve from the checkout. Copy `.env` into a worktree; never put one in a
   parent directory, where `load_dotenv()`'s upward search would also hand it to sibling

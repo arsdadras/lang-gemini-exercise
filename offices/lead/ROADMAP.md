@@ -3,7 +3,7 @@
 What gets built and taught, in which order, and the gates between. Lead-owned.
 
 - The rules this plan is built with (competencies, difficulty curve, admission rule, phases,
-  readiness): [PEDAGOGY.md](PEDAGOGY.md).
+  readiness): [pedagogy](../../library/teaching/pedagogy.md).
 - System direction: [ARCHITECTURE.md](ARCHITECTURE.md). Candidates not yet placed, and the small
   items each stage carries: [BACKLOG.md](BACKLOG.md). Live stage status: the mentor's
   [state](../mentor/STATE.md).
