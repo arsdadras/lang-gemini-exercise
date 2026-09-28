@@ -37,7 +37,8 @@ audit the claims (see the mentor's outbox).
 
 ## LLM systems
 
-From research's notes of 2026-09-28 (sandbox copy), not yet re-checked by the mentor.
+From the mentor's research notes of 2026-09-28 (sandbox), not yet re-checked against the
+sources.
 
 | Idea in the skill | Finding | Strength | Source |
 | :--- | :--- | :--- | :--- |
