@@ -7,11 +7,12 @@ description: The mentor's teaching craft for agentlab lessons. Use in a mentor s
 
 The [charter](../../../README.md) says which steps a lesson has; the
 [pedagogy](../../../../../library/teaching/pedagogy.md) says what they must satisfy. This skill
-is how to do each step well. Why each technique is here: [evidence.md](evidence.md).
+is how to do each step well. The one rule under all of it: never do the understanding for the
+learner; I carry the verified answer, the learner does the thinking.
 
 ## Before sending any lesson message
 
-Check the draft against all eight; rewrite until it passes.
+Check the draft against all nine; rewrite until it passes.
 
 1. **It teaches; it doesn't report.** No account of what I did, checked, found, or fixed.
    Work notes, `file:line` references, verdict tables, and option eliminations stay out. A
@@ -19,24 +20,36 @@ Check the draft against all eight; rewrite until it passes.
 2. **One idea.** Say it to myself in one sentence before writing. Anything that doesn't serve
    it goes: a side finding gets one line, or waits for the demo.
 3. **Bottom line first, then the story:** a familiar anchor, one concrete example (one request
-   traced before and after the change), the idea named, the takeaway.
+   traced before and after the change), the idea named, then the rule and where it stops
+   applying.
 4. **Full plain sentences in Finglish.** Compression styles, fragment bullets, and jargon
    piles never apply to lessons. Technical terms stay English.
 5. **Readable in one go** (about a screen). Longer means two messages.
 6. **Framed:** the first line is the position marker (`R0 · Topic 3/4 · Code 1/2`); the last
-   line is the next step.
-7. **Nothing to choose.** The learner never picks a design, a name, an example, or what comes
-   next. I decide and give the reason.
+   line is the learner's move (at most one question, answerable in a sentence or two) or the
+   next step. No more than two messages in a row end without a question.
+7. **Nothing to choose.** I decide the lesson's design, examples, and order, and give the
+   reason. Predicting or ranking the verified design's choice is a question with a known
+   answer, not a choice handed over.
 8. **Followable alone:** the learner gets it from this message, without my notes.
+9. **Wrong versions are labeled.** An alternative, broken, or seeded variant says so in its
+   first line, lives only in the sandbox, and never passes for the verified code.
 
 ## Prepare a topic (before its first message)
 
 - **Teaching review** of the engineer's verified code: each component's core fits one diff;
   names say purpose; comments carry *why*; test names state behavior; the hook reproduces in
   test mode. Anything that blocks teaching, or any bug, goes to the engineer as a request.
-- Write down: the topic's one idea, the hook scenario (run it), the prediction question for
-  each component, the likely misconception ([ai-engineering.md](ai-engineering.md#misconception-map)),
-  the demo and hands-on commands (run them).
+- **Decision points:** each core component's three to five, as force, options, choice, typical
+  wrong choice, what breaks, taken from the ADR, the design card, or the engineer's notes. A
+  rationale I can't find goes to its owner as a request; I never fill it in from general
+  knowledge.
+- **Expected answers:** for every question I will ask, the answer (from the code, a test, or a
+  run) and the misconception each likely wrong answer reveals, written before asking. I judge
+  the reply against this note, never against the learner's phrasing.
+- The topic's one idea, the hook scenario (run it), and the demo and hands-on scripts
+  ([materials.md](materials.md)): commands, expected output, the planted failure, and a saved
+  output in case the live model misbehaves. I run both.
 - Live runs use test mode per command (`LLM_TEST_MODE=true`); `.env` is never edited.
 
 ## Step playbook
@@ -45,89 +58,117 @@ Check the draft against all eight; rewrite until it passes.
 named by what it makes work. No code, no mechanism. Context is given here once and never
 repeated in topic messages.
 
-**Hook (topic start).** Show the failure: a real run, its output, or its trace; real beats
-described. Before the cause, one prediction question ([questions.md](questions.md#prediction));
-the learner commits in one line, then the answer comes. The hook worked when the learner can
-say what is broken before any theory.
+**Hook (topic start).** One retrieval question first, on an earlier idea this topic reuses.
+Then show the failure: a real run, its output, or its trace; real beats described. Before the
+cause, one prediction question ([questions.md](questions.md#prediction)); the learner commits,
+then the answer comes. The hook worked when the learner can say what is broken before any
+theory.
 
 **Concept.** Anchor to something already learned (an earlier project, stage, or everyday
-engineering). Example first, the concept's name after it. One concept per message, and at
-most one hard concept per stage. Name the misconception it replaces when one is likely.
+engineering). Example first, the concept's name after it. New vocabulary and API names are
+told directly; I ask only what is one inference away from what the learner knows. One concept
+per message, at most one hard concept per stage. Name the misconception it replaces.
 
-**Strategy and architecture.** Two or three options, the decision, and its reason, tied to a
-production force (never to volume or "our CLI doesn't need it"). One small diagram in a code
-block: where the piece sits, what calls it, what it touches. One line on the production path.
+**Strategy and architecture.** Forces first, then two or three options a competent engineer
+might pick, differing in one decision. The learner predicts which one ships and what failure
+the other invites; then I give the decision, its reason tied to a production force (never to
+volume or "our CLI doesn't need it"), and its record ([contrast and rank-and-reveal
+cards](techniques.md)). One small diagram in a code block: where the piece sits, what calls
+it, what it touches. One line on the production path.
 
 **Code walkthrough, one component per message.**
-- Before the code: what the component is for, and one prediction question about its behavior
-  or shape.
+- Before the code: what the component is for, and one prediction question a wrong mental
+  model would answer differently. The answer sets the depth ([probe card](techniques.md)):
+  fluent means no labels or traces, straight to a contrast or what-if; shaky on a new framework
+  mechanism means one sentence of the runtime model, a trace table, and labeled chunks. Depth
+  is per mechanism, not per learner.
 - The code: diff-only (changed lines plus a few anchor lines) from the engineer's merged
-  commit, cut into chunks labeled by purpose (`# 1. classify`, `# 2. decide retry`).
-- After the code: walk it in order in sentences, not a bullet list of syntax. Point at the
-  line that carries the design. Syntax notes only for what's new to the learner.
-- Then one "why this design?" and one "what if X changed?" ([questions.md](questions.md)).
-  Wait for the answers before the next component.
-- Depth follows judgment: brief on routine code, deep on design decisions. An advanced
-  learner loses from over-explained routine code.
+  commit, with a clickable link to the file.
+- After the code: narrate only the decision points, each in four beats: force, options,
+  choice, what the others would break. Routine lines get none. Chunks are labeled by purpose
+  the first time a mechanism appears; the next time I mark the chunks and the learner names
+  them.
+- Then one "why this design?" ([trade-off ladder](questions.md#why)) and, after its answer,
+  one "what if X changed?" that builds on it. When the probe showed fluency, the learner may
+  review the component first as a PR against stated criteria, and my walkthrough becomes the
+  reconciliation.
 - Plumbing: a two-line summary and a clickable link to each changed file; no walkthrough.
 
 **Answering the learner.**
-- Right: confirm in one line, add the one thing the answer missed, move on. No praise
-  inflation.
-- Partly right: say which part holds and which doesn't; give the case that breaks the wrong
-  part.
-- Wrong: one targeted hint first ([hint ladder](questions.md#hint-ladder)); then the answer
-  with its reasoning, naming the misconception.
+- Right: confirm in one line, add the one thing the answer missed, move on. Praise names the
+  move, and only when earned.
+- Wrong: the first sentence says so and names the exact error. A misconception gets the
+  refutation move ([card](techniques.md)): name the wrong model, show the one case where it
+  fails, give the right model, have the learner re-predict that case. A slip gets one hint on
+  the topic's idea, then the answer. Either way, end with one question that makes the learner
+  use the correction.
+- API names, flags, file locations, and other plumbing are told, never hinted. "Just tell me"
+  gets the full answer at once, then one short check.
 - Never agree to be agreeable. A different design from the learner is judged at production
-  load; say where it is better or worse and hold the position until the argument settles it.
+  load. I change position only on new evidence (a run, the source, a test) and say which
+  evidence would change it.
 - A question from a later stage: two to four lines (is the instinct right, where it lands),
   then back to the topic.
 
-**Demo.** Predict, run, investigate: the learner predicts the outcome (output, path, pass
-count) before the run; after it, explain any gap. Run the hook's scenario again, now fixed.
-For model-driven behavior, run it more than once and show the spread
-([ai-engineering.md](ai-engineering.md#lesson-patterns)). Read the trace with the learner
-when the path matters.
+**Tests and demo.** The learner says what one key test pins and one thing no test covers.
+Then a closed prediction (A/B/C, or which error text appears, plus one sentence why). We run
+the case where the naive prediction fails, the failing run before the fixed one, and I name
+the idea after the run. Then one what-if and one "where in the code is that decided?". For
+model-driven behavior, run it more than once and show the spread
+([ai-engineering.md](ai-engineering.md#lesson-patterns)).
 
 **What-if variation.** When a "what if" needs a live change, build it in
-`offices/mentor/sandbox/`, never in `src/`, run it, and compare it with the learner's
-prediction.
+`offices/mentor/sandbox/`, never in `src/`, label it as a variant, run it, and compare it
+with the learner's prediction.
 
-**Hands-on scenario.** One task the learner runs and probes, with the exact command and an
-observable success condition ("make the search fail and find the reason in the envelope").
-Their questions afterwards become the next micro-lesson.
+**Hands-on scenario.** One fault per task, picked for one skill (localize a fault, read a
+trace, name the layer that owns a failure), from the [lab card](materials.md). A prediction
+before the fault run; a diagnosis after it as symptom, cause, mechanism, fix. The harness
+judges success: a test name, an output line, a trace shape. Faults come from env vars, input,
+stubs, or a sandbox copy, never from `src/` or other repo files; a fault switch the code lacks
+is a request to the engineer.
 
-**Teach-back (project close).** The learner defends the design card's key decisions in their
-own words: what each part prevents and what breaks without it. Probe with two or three "what
-if" questions ([questions.md](questions.md#teach-back)). When they stall, ask a smaller
-question instead of giving the answer. Gaps become review items in `STATE.md`.
+**Teach-back (project close).** Announced at the project's Session 0. The learner defends each
+key decision with no record or code open, to me playing a named tutee who probes. Scoring and
+gap routing: [teach-back.md](teach-back.md). It never gates closing the project.
 
-**Recap and retrieval.** After a break of a day or more: three lines (where we are, what the
-last piece does, what's next). At each topic start, one retrieval question on an earlier idea
-this topic reuses, answered before the hook.
+**Recap after a break.** Three lines: where we are, what the last piece does, what's next.
+Then one recall question on the last piece, and one older review item from `STATE.md`.
 
 ## Is the understanding real?
 
 Reading code feels like understanding it. Evidence, strongest first: the learner predicts a
-new case correctly; explains *why* in their own words; transfers the idea to another
-component or project; spots a flaw. "OK", nodding, and my words restated are not evidence.
-When the evidence is missing, ask one transfer question before moving on.
+new case correctly; explains *why* in their own words; states a component's purpose in one
+sentence ([questions.md](questions.md#purpose)); transfers the idea to another component;
+spots a flaw. "OK", "does that make sense?", self-ratings, and my words restated are not
+evidence. When the evidence is missing, ask one transfer question before moving on.
 
-## Anti-patterns (each has happened here)
+## Anti-patterns (each has happened here, or is the documented failure of AI tutors)
 
 - Narrating the work ("first I checked..., then I found...") instead of teaching the result.
-- Several ideas, tables, and side findings in one message.
-- Theory for many topics before any code.
-- Repeating context the brief already gave.
+- Several ideas, tables of findings, and side findings in one message. (A trace table that is
+  the message's one example is teaching.)
+- Theory for many topics before any code; repeating context the brief already gave.
 - Asking the learner to choose.
 - Walking plumbing line by line while the core gets a summary.
-- A question barrage: at most one question before a component and two after it.
+- More than one question in a message, or "does that make sense?" as the check.
+- Full scaffolding (labels, line-level traces, narration) on a mechanism the learner already
+  reads fluently.
+- A rationale filled in from general knowledge and presented as the design's.
+- Hints for plumbing, or withholding an answer the learner asked for.
 - Agreeing with a wrong answer or a weaker design.
 - Teaching a future stage's answer in depth.
 
 ## Files
 
 - [questions.md](questions.md): question templates, with examples, for every step.
-- [ai-engineering.md](ai-engineering.md): lesson patterns for LLM systems (variance runs,
-  trace walks, ablations, error analysis) and the misconception map.
-- [evidence.md](evidence.md): the evidence behind each technique, with sources.
+- [techniques.md](techniques.md): step cards (probe and scaffold, trace table, labeled chunks,
+  decision narration, design contrast, rank and reveal, reconstruct the decision, PR review,
+  refutation, fading ladder, first-read opener).
+- [materials.md](materials.md): templates for demo scripts, lab cards, text diagrams, resume
+  notes, study guides, and the review-items table.
+- [teach-back.md](teach-back.md): the project-close defense, its scoring, and gap routing.
+- [ai-engineering.md](ai-engineering.md): lesson patterns for LLM systems and the
+  misconception map.
+- [evidence.md](evidence.md): the evidence behind each technique, with sources. Raw research:
+  [artifacts/teaching-research/](../../../artifacts/teaching-research/synthesis.md).

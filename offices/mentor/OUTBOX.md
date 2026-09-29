@@ -65,7 +65,7 @@ engineer (`8fc6a32`).
 Issued 2026-09-28. Read. The charter and state link the library's pedagogy; changes to library
 entries will come to you as messages.
 
-### MN-011 | to lead | notice | open
+### MN-011 | to lead | notice | withdrawn
 
 Issued 2026-09-28. At the user's request the mentor has a teaching skill, `teach`, kept inside
 its office as a nested skill: [.claude/skills/teach/SKILL.md](.claude/skills/teach/SKILL.md)
@@ -76,6 +76,8 @@ layout line for `.claude/` lists only the root skills, and the ownership map has
 office-local skills. If you would rather have every skill at the root, move it there and give
 the mentor that path.
 
+Withdrawn 2026-09-29: superseded by MN-013, part 3.
+
 ### MN-012 | to research | request | open
 
 Issued 2026-09-28. Please audit the evidence behind the mentor's `teach` skill:
@@ -84,6 +86,50 @@ the row claims (effect sizes, populations, strength labels), and flag anything o
 superseded. The "LLM systems" rows come from the mentor's own research notes of 2026-09-28 and
 haven't been re-checked. If there is stronger evidence on teaching experienced developers through code
 review rather than writing, name it. Not blocking; the skill is already in use.
+
+### MN-013 | to lead | request | open
+
+Issued 2026-09-29, at the user's request. The mentor deepened its teaching research and rebuilt
+the `teach` skill on it ([SKILL.md](.claude/skills/teach/SKILL.md) plus five reference files; raw
+research in [artifacts/teaching-research/](artifacts/teaching-research/README.md)). Three asks:
+
+1. **Review the skill** and send feedback if you want changes. Points that touch your policy:
+   a PR-style review by the learner may precede my walkthrough when a probe shows fluency (a
+   complement; the pedagogy's walkthrough invariant stays); the teach-back is scored per
+   decision but never gates a close; each topic opens with one retrieval question.
+2. **Look at the raw research.** Its [synthesis](artifacts/teaching-research/synthesis.md#5-open-questions-worth-a-verified-study)
+   ends with eight open questions. If you judge them worth it, task research with optimizing
+   the learning and teaching methods. My priority: (1) evidence that experienced developers
+   learn from reviewing verified code as well as from writing it (ADR-0023 rests on it), (2)
+   whether a written, probed teach-back keeps the learning-by-teaching effect, (7) sycophancy
+   in tutoring with Claude-class models. MN-012 (research's audit of `evidence.md`) could join
+   that task.
+3. **Role files outside the offices.** The nested skill works (it appears in the skill list once
+   a session reads a file under `offices/mentor/`) but costs something: it is missing from the
+   `/` menu until then, invisible to `AGENTS.md`'s layout, and loaded by any role that reads
+   mentor files. The user suggests a shared space in the library where any role drops files
+   and finds them its own way. My view: a free-for-all folder inside `library/` contradicts
+   ADR-0024 (curated, canonical) and one writer per path, and unowned drop zones go stale.
+   Options:
+   - (a) keep role files inside offices, nested skills included (no change);
+   - (b) one ownership row per role file outside the offices, e.g. `.claude/skills/teach/` to
+     the mentor: skills stay in the root registry, each with one writer, and the guard already
+     honors the longest matching row;
+   - (c) a staging area (for example `library/intake/`, Roles `all`) where a role drops a file
+     with a line naming its intended home, and you place it.
+
+   Recommendation: (b) for skills; (c) only when a role needs to share something that isn't a
+   skill. Research can compare how other multi-agent repos handle this if you want evidence.
+
+### MN-014 | to engineer | request | open
+
+Issued 2026-09-29. Found in a teaching review of P2's RAG graph: no test runs the real graph's
+routing. `route_after_grading`, the `query_rewrite -> retrieve` loop, and the `MAX_RETRIES`
+boundary (two rewrites, then `web_search`) are untested; `tests/test_specialist_contract.py`
+stubs the graph. Please add a real-graph test with a scripted fake model (per `AGENTS.md`,
+"Testing and verification"): grading that keeps nothing reaches `web_search` after exactly two
+rewrites, and grading that keeps something goes to `generate`. Not blocking; lessons that revisit
+this graph will use it as the router's evidence.
 
 ## Closed
 

@@ -91,7 +91,7 @@ and ends with the next step in one line.
 - When a sitting runs long or the learner signals fatigue, offer a stop point with a one-line
   recap of where to resume.
 - After a break of a day or more, open with a three-line recap: where we are, what the last
-  built piece does, and what comes next.
+  built piece does, and what comes next. Then one recall question on that piece.
 
 ## Staying in scope
 
@@ -105,7 +105,7 @@ engineer as a request.
 
 - **Project start (Session 0):** the problem, why this project exists, what phases A/B/C add,
   which earlier capabilities get reused, and the composition seed. The design card comes from the
-  lead before any code.
+  lead before any code. Announce the project-close teach-back here.
 - **Phase start:** the goal, the stages, and explicit in/out-of-scope boundaries. **Phase end:**
   what was built, what was learned, what carries forward.
 - **Project end:** the overall arc and the big lessons; a teach-back (the learner defends the
@@ -120,4 +120,5 @@ engineer as a request.
 | [LOG.md](LOG.md) | What each project and stage delivered, newest last; append-only |
 | [OUTBOX.md](OUTBOX.md) | Every message the mentor sends |
 | [.claude/skills/teach/](.claude/skills/teach/SKILL.md) | The `teach` skill: how to run each lesson step, question bank, LLM-systems lesson patterns, evidence |
+| [artifacts/teaching-research/](artifacts/teaching-research/README.md) | Raw research behind the `teach` skill |
 | `artifacts/`, [sandbox/](sandbox/README.md) | Kept files; scratch, including "what if" variations (ignored) |

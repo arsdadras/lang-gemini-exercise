@@ -68,5 +68,12 @@ issues move to the engineer's state (LD-018, LD-023); this copy goes once the en
 
 ## Review items
 
-Gaps from teach-backs and review questions, to revisit in the next project. None yet: the first
-teach-back under active review is at R0's close.
+Gaps from review questions and teach-backs, in the format and cadence of the `teach` skill's
+[review-items table](.claude/skills/teach/materials.md#review-items-table). None yet: active
+review starts with R0 topic 3.
+
+Fading levels per decision type ([fading ladder](.claude/skills/teach/techniques.md#fading-ladder)):
+none recorded yet.
+
+The skill's demo and lab examples haven't been run yet; each is run in test mode during its
+topic's preparation.
