@@ -11,7 +11,11 @@ from deepagents.middleware.filesystem import FilesystemPermission
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph.state import CompiledStateGraph
 
-from agentlab.configs.paths_config import PROJECT_ROOT, SKILLS_RESOURCES_DIR
+from agentlab.configs.paths_config import (
+    PROJECT_ROOT,
+    SKILLS_RESOURCES_DIR,
+    checkpoint_db_path,
+)
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
 from agentlab.middlewares.fallback_middleware import make_model_fallback
 from agentlab.models import llm_model
@@ -45,7 +49,7 @@ def make_repo_insight_agent(
         system_prompt=build_repo_insight_prompt(),
         checkpointer=checkpointer
         if checkpointer is not None
-        else get_sqlite_checkpointer(),
+        else get_sqlite_checkpointer(checkpoint_db_path("repo_insight")),
         middleware=[make_model_fallback(tier)],
         subagents=[rag_subagent if rag_subagent is not None else make_rag_subagent()],
         skills=[REPO_INSIGHT_SKILLS_PATH],

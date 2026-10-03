@@ -9,10 +9,12 @@ from langgraph.graph.state import CompiledStateGraph
 from pydantic import BaseModel
 
 from agentlab.configs.interpreter_config import DEFAULT_INTERRUPT_TOOLS
+from agentlab.configs.paths_config import checkpoint_db_path
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
 from agentlab.middlewares.fallback_middleware import make_model_fallback
 from agentlab.models import llm_model
 from agentlab.prompts.agents_prompt import build_interpreter_agent_prompt
+from agentlab.prompts.subagents_prompt import build_interpreter_worker_prompt
 from agentlab.utils.sandbox_util import make_sandbox_backend
 
 
@@ -23,25 +25,32 @@ def make_interpreter_agent(
     backend: LocalShellBackend | None = None,
     interrupt_tools: Sequence[str] = DEFAULT_INTERRUPT_TOOLS,
     response_format: type[BaseModel] | None = None,
+    worker: bool = False,
 ) -> CompiledStateGraph:
     """Build the interpreter agent.
 
     Args:
-        checkpointer: State persistence; defaults to the shared SQLite checkpointer
+        checkpointer: State persistence; defaults to the interpreter app's SQLite checkpointer
             so pending approvals survive a restart.
         tier: Capability tier from the model catalog.
         backend: Shell and filesystem backend; defaults to the sandbox under ``out/sandbox``.
         interrupt_tools: Tools that pause for human approval. Pass ``()`` only when
             the caller owns the approval policy.
         response_format: Optional schema for a structured final answer.
+        worker: Build the prompt for a delegated run, whose reply goes to a coordinator
+            agent: English, no user-facing persona. Default: the chat prompt for a person.
     """
     return create_deep_agent(
         model=llm_model.get(tier),
-        system_prompt=build_interpreter_agent_prompt(),
+        system_prompt=(
+            build_interpreter_worker_prompt()
+            if worker
+            else build_interpreter_agent_prompt()
+        ),
         backend=backend if backend is not None else make_sandbox_backend(),
         checkpointer=checkpointer
         if checkpointer is not None
-        else get_sqlite_checkpointer(),
+        else get_sqlite_checkpointer(checkpoint_db_path("interpreter")),
         middleware=[make_model_fallback(tier)],
         interrupt_on={tool: True for tool in interrupt_tools} or None,
         response_format=response_format,

@@ -1,50 +1,35 @@
 {
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/session_hooks.py\" start 2>/dev/null || python3 \"$CLAUDE_PROJECT_DIR/scripts/session_hooks.py\" start",
-            "timeout": 60,
-            "statusMessage": "Loading the role's state and inbox"
-          }
-        ]
-      }
+  "permissions": {
+    "deny": [
+      "Read(node_modules/**)",
+      "Read(dist/**)",
+      "Read(build/**)",
+      "Read(.next/**)",
+      "Read(coverage/**)",
+      "Read(.turbo/**)",
+      "Read(vendor/**)",
+      "Read(out/**)",
+      "Read(**/*.lock)",
+      "Read(**/*.log)",
+      "Read(**/*.map)",
+      "Read(**/*.min.js)",
+      "Read(**/*.min.css)",
+      "Read(.git/**)",
+      "Read(**/*.wasm)",
+      "Read(**/*.pb)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/*.env)"
     ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/session_hooks.py\" prompt 2>/dev/null || python3 \"$CLAUDE_PROJECT_DIR/scripts/session_hooks.py\" prompt",
-            "timeout": 30
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/session_hooks.py\" guard 2>/dev/null || python3 \"$CLAUDE_PROJECT_DIR/scripts/session_hooks.py\" guard",
-            "timeout": 30
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/session_hooks.py\" stop 2>/dev/null || python3 \"$CLAUDE_PROJECT_DIR/scripts/session_hooks.py\" stop",
-            "timeout": 30
-          }
-        ]
-      }
+    "ask": [
+      "Read(**/*.png)",
+      "Read(**/*.jpg)",
+      "Read(**/*.jpeg)",
+      "Read(**/*.gif)",
+      "Read(**/*.svg)",
+      "Read(**/*.mp4)",
+      "Read(**/*.mp3)",
+      "Read(**/*.wav)"
     ]
   }
 }

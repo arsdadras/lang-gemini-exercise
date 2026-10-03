@@ -15,6 +15,7 @@ from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import Command
 
+from agentlab.configs.paths_config import checkpoint_db_path
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
 from agentlab.graphs.code_review_parentgraph import build_code_review_graph
 from agentlab.schemas.output.code_review_output_schema import (
@@ -40,7 +41,7 @@ def _make_graph(checkpointer: BaseCheckpointSaver | None) -> CompiledStateGraph:
     return build_code_review_graph(
         checkpointer=checkpointer
         if checkpointer is not None
-        else get_sqlite_checkpointer(),
+        else get_sqlite_checkpointer(checkpoint_db_path("code_review")),
     )
 
 

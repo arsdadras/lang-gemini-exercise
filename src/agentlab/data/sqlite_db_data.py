@@ -1,4 +1,4 @@
-"""SQLite-backed LangGraph checkpoint persistence shared by the CLI apps."""
+"""SQLite-backed LangGraph checkpoint persistence for the CLI apps, one database per app."""
 
 import sqlite3
 from contextlib import closing
@@ -7,10 +7,8 @@ from pathlib import Path
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.store.sqlite import SqliteStore
 
-from agentlab.configs.paths_config import CHECKPOINT_DB_PATH
 
-
-def get_sqlite_checkpointer(db_path: Path = CHECKPOINT_DB_PATH) -> SqliteSaver:
+def get_sqlite_checkpointer(db_path: Path) -> SqliteSaver:
     """Open a process-lifetime SQLite connection and wrap it in a ``SqliteSaver``.
 
     The saver owns the connection until the process exits. ``check_same_thread``
@@ -35,10 +33,7 @@ def get_sqlite_store(db_path: Path) -> SqliteStore:
     return store
 
 
-def get_recent_threads(
-    limit: int | None = None,
-    db_path: Path = CHECKPOINT_DB_PATH,
-) -> list[str]:
+def get_recent_threads(db_path: Path, limit: int | None = None) -> list[str]:
     """Return distinct thread IDs ordered by their latest checkpoint, newest first."""
     if not db_path.exists():
         return []
