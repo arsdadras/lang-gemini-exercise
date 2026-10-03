@@ -4,7 +4,7 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 [ROADMAP.md](ROADMAP.md) "Now, next, later". Live teaching status: the mentor's
 [state](../mentor/STATE.md); live build status: the engineer's [state](../engineer/STATE.md).
 
-- **Last lead session:** 2026-09-27 to 28 (session 6, local, in `D:/Repos/lce-lead`).
+- **Last lead session:** 2026-10-03 (session 7, local, in `D:/Repos/lce-lead`).
 - **Roles:** four since 2026-09-28 (ADR-0022). The lead decides, coordinates, and reviews; the
   engineer builds, tests, debugs, and verifies every code and tooling change; the mentor teaches
   and reviews the code it teaches; research investigates, analyzes, and advises. A change flows
@@ -27,10 +27,10 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 - **Engineer:** LD-018 (blocking: move in, adopt the office and the live code issues), LD-024
   (charter wording, docs lint for a lead-only library), LD-019 (R0's remaining implementation,
   in order).
-- **Mentor:** LD-010 and LD-023 (blocking: move in; teaching only, active review, charter and
-  state).
+- **Mentor:** LD-027 (move the `teach` skill to the root registry; answers MN-013).
 - **Research:** LD-021 (mandate and the Jev follow-ups), LD-025 (library links), LD-003 with
-  LD-015 (upstream watch), LD-005 (measurements; its code-needing parts go through the engineer).
+  LD-015 (upstream watch), LD-005 (measurements; its code-needing parts go through the engineer),
+  LD-028 (teaching-method questions from MN-013, with the audit MN-012).
 - **All:** LD-012, LD-014, LD-022, LD-026 (research acknowledged the first two; the mentor and
   the engineer haven't yet).
 
@@ -53,9 +53,9 @@ ready.
 
 ## Agenda for the next lead session
 
-1. Inbox waiting since 2026-09-29: the mentor's request MN-013 (its rebuilt teaching research)
-   and its replies MN-005 to MN-010 (LD-010, LD-023, LD-012, LD-014, LD-022, LD-026). Decide
-   MN-013; check each reply against the repo and close what checks out.
+1. Verify the mentor's reply to LD-027 (skill moved, links resolve) and research's brief for
+   LD-028; ADR-0023 rests on the evidence for question 1, so a weak finding reopens it. LD-012,
+   LD-014, LD-022, LD-026 close when the engineer has replied too.
 2. Review and merge the engineer's pull requests against LD-018, LD-019, and LD-024; verify
    research's replies to LD-021 and LD-025; close what checks out. When the mentor and research
    have updated their links, remove the redirects (BACKLOG).
@@ -104,3 +104,8 @@ ready.
   learner reviews instead of typing (DEC-028, ADR-0023; LD-020 reissued as LD-023, LD-024 to the
   engineer), and the library became the lead's alone, in five categories, with a first curation
   pass (DEC-029, ADR-0024; LD-025, LD-026).
+- **2026-10-03, session 7 (local).** The session started in a mentor-notebook worktree and could
+  not `change_directory`; it ended up in `lce-lead` after the turn. Decided MN-013 (DEC-030):
+  accepted the rebuilt `teach` skill, added the pedagogy's reconciliation clause, gave
+  `.claude/skills/teach/` an ownership row, rejected a shared drop-zone folder (reopen trigger in
+  LD-027); sent LD-027 and LD-028; verified and closed LD-010 and LD-023. Docs lint green.

@@ -43,7 +43,8 @@ archive/           retired documents, frozen
 docs/              ADRs, design cards, and study guides (write-ups of finished projects)
 .github/           CI and Dependabot
 .claude/           Claude Code skills (/lead, /engineer, /mentor, /research, /handoff, /inbox,
-                   decision-points) and the
+                   decision-points; the mentor's
+                   teach) and the
                    session hooks (start, prompt, ownership guard, stop)
 examples/          sample inputs (e.g. code to review)
 evals/             live eval-lite scenario sets (real models, run by hand, not by pytest)

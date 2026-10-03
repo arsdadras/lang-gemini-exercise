@@ -150,7 +150,9 @@ Whatever the mentor's procedure looks like, it keeps these true:
 - The problem is shown before the theory.
 - The learner reviews the engineer's verified code: the mentor walks through the core
   architecture code one component at a time, with a prediction question before it and "why"
-  and "what if" questions after it; plumbing is shown with a link to every changed file.
+  and "what if" questions after it; plumbing is shown with a link to every changed file. When
+  a probe shows fluency, the learner may review the component as a pull request first, and the
+  walkthrough becomes the reconciliation.
 - The repo is always the engineer's verified, clean version; nothing is reset for typing.
 - Messages to the learner teach, one idea at a time in full sentences; working notes stay out.
 - Each step waits for the learner's OK, carries a position marker, and ends with the next step.

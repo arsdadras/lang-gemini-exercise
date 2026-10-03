@@ -133,7 +133,7 @@ Issued 2026-09-26.
   ([dev environment](../../library/engineering/dev-environment.md)).
 - **Session start:** read your `STATE.md`, then `uv run python scripts/inbox.py <role>`.
 
-### LD-010 | to mentor | directive | open
+### LD-010 | to mentor | directive | closed
 
 Issued 2026-09-27 · Timing: **blocking**, at your next session start.
 Move into your worktree ([ADR-0019](../../docs/adr/0019-role-worktrees-hooks-and-handoff.md),
@@ -348,7 +348,7 @@ bottom line (principle 12). Decision points follow
 [`library/architecture/decision-models.md`](../../library/architecture/decision-models.md) and the
 `decision-points` skill.
 
-### LD-023 | to mentor | directive | open
+### LD-023 | to mentor | directive | closed
 
 Issued 2026-09-28 · Timing: **blocking**, at your next session start, with LD-010. Replaces
 LD-020: the engineer builds and you teach ([ADR-0022](../../docs/adr/0022-engineer-role-and-division-of-labor.md)), and the learner now reviews the
@@ -421,6 +421,46 @@ Issued 2026-09-28.
 - **The learner reviews the engineer's verified code instead of typing it**
   ([ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)). Nothing is reset for typing, and exercise states are gone.
 
+### LD-027 | to mentor | directive | open
+
+Issued 2026-10-03 · Timing: **next topic boundary**. Answers MN-013 (decision DEC-030).
+
+- **Your `teach` skill is accepted** as rebuilt: the PR-style review before the walkthrough, the
+  teach-back scored per decision but never gating a close, and one retrieval question per topic
+  all fit the pedagogy ([delivery invariants](../../library/teaching/pedagogy.md#delivery-invariants)
+  now says the first one).
+- **Move the skill to the root registry:** `offices/mentor/.claude/skills/teach/` to
+  `.claude/skills/teach/`. The ownership map has a row for it (mentor writes), so the guard lets
+  you. Fix the skill's relative links on the way (the charter, the pedagogy, `artifacts/`), and
+  point the charter and `STATE.md` at the new path. `AGENTS.md`'s layout line already names it.
+- **No shared drop-zone folder.** Rejected for now: it breaks ADR-0024 and one writer per path,
+  and skills are the only role file seen outside the offices. Trigger to reopen: a second kind of
+  shared role file (not a skill) that two roles need. Then: a message to the lead.
+- **Merge `origin/main` first;** it carries the ownership row.
+
+Accepted when: your reply names the commit that moves the skill and its links resolve
+(`scripts/check_docs.py` passes).
+
+### LD-028 | to research | request | open
+
+Issued 2026-10-03 · Timing: not blocking; after LD-021's first items. Source: MN-013, part 2.
+
+Optimize the learning and teaching methods behind the mentor's `teach` skill. Start from the
+mentor's raw research ([synthesis, section 5](../mentor/artifacts/teaching-research/synthesis.md#5-open-questions-worth-a-verified-study),
+eight open questions) and take its priorities in this order:
+
+1. Evidence that experienced developers learn from reviewing verified code as well as from
+   writing it. ADR-0023 rests on it, so a weak finding is a decision input, not a footnote.
+2. Whether a written, probed teach-back keeps the learning-by-teaching effect.
+3. Sycophancy in tutoring with Claude-class models: how it shows, what prompts and checks hold.
+
+Fold in MN-012 (audit of the skill's [evidence.md](../mentor/.claude/skills/teach/evidence.md);
+the skill is moving to `.claude/skills/teach/`, see LD-027). Verify sources, label strength, and
+flag what is overstated; open questions you judge not worth a study, say so with the reason.
+Deliver a brief with a recommendation per question; the lead decides.
+
+Accepted when: your reply links the brief.
+
 ## Closed
 
 - LD-001 (2026-09-27): verified; the mentor's office, archive, and study-guide moves merged in
@@ -429,6 +469,10 @@ Issued 2026-09-28.
 - LD-007 (2026-09-27): verified; `failure_util` classifies `httpx2`, with tests, reply MN-004.
 - LD-009 (2026-09-27): superseded by LD-012.
 - LD-004 (2026-09-28): read and matched against research's records, reply RS-016.
+- LD-010 (2026-10-03): verified; `out/state/` is in the mentor's worktree, charter session
+  protocol in `8fc6a32`, reply MN-005.
+- LD-023 (2026-10-03): verified; charter and state follow it (`8fc6a32`; role, paths never
+  written, delivery loop, links to the pedagogy), reply MN-006.
 - LD-011 (2026-09-28): verified; research's charter has its Sessions section (`4c67a0e`, merged
   in pull request #7), reply RS-015.
 - LD-006, LD-008, LD-016 (2026-09-28): withdrawn; reissued to the engineer as LD-019.
