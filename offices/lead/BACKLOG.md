@@ -22,8 +22,6 @@ were dropped from this list (the roadmap owns them).
 - **E:** Shared eval-lite harness; first consumer R1.
 - **E:** Chat prompts split from worker prompts (the chat template reaches every agent today).
 - **E:** Per-app checkpoint databases, so `list` stops mixing apps' threads.
-- **E:** Untrack and delete the old `src/data/dbs/checkpoints.db` (needs the user's OK: deleting
-  data).
 - **E:** An explicit timeout on every external call: models, embeddings, search, HTTP. A call
   that can hang forever never produces a failure the contract can classify (LD-006).
 - **E:** Evidence IDs in code comments that carry measurements (LD-008).
