@@ -32,19 +32,15 @@ Details in [OUTBOX.md](OUTBOX.md).
 
 ## Build queue (taken over from the engineer, ADR-0025)
 
-R0's implementation, from LD-019 (verified in pull request #15, merged with this session's
-pull request): the eval-lite harness, timeouts and GapGPT embeddings, evidence IDs, per-app
-checkpoint databases and the worker prompt. Left:
+R0's implementation (LD-019) is built, verified, and merged: the eval-lite harness, timeouts and
+GapGPT embeddings, evidence IDs, per-app checkpoint databases and the worker prompt. The old
+checkpoint database is deleted (`b2c8b37`), and the embedding change is recorded (the
+[models entry](../../library/technology/models.md#embeddings) and ADR-0014's update). Left:
 
-1. **Delete the old checkpoint database:** `git rm src/data/dbs/checkpoints.db` (3.7 MB, tracked,
-   nothing references it; a consistent copy is at `out/state/`). Needs the user's OK (below).
-2. **Record the embedding change:** `EMBEDDING_SPEC` (GapGPT `text-embedding-3-small`, 1536
-   dimensions) replaced Gemini's embeddings at the user's instruction. Add a models-catalog line
-   and a note in ADR-0014's follow-up.
-3. **R0 close:** record the specialist contract as an ADR, update
-   [ARCHITECTURE.md](ARCHITECTURE.md) "Current system", then make R1 ready: the decision seam
-   (ADR-0021) ahead of the lesson.
-4. **Teaching handoff:** the eval harness (R0 topic 3) is ready to teach: LD-030.
+1. **R0 close**, when the mentor has taught its topics: record the specialist contract as an ADR,
+   update [ARCHITECTURE.md](ARCHITECTURE.md) "Current system", then make R1 ready: the decision
+   seam (ADR-0021) ahead of the lesson.
+2. **Teaching handoff:** the eval harness (R0 topic 3) is ready to teach: LD-030.
 
 ## Live code issues
 
@@ -81,6 +77,8 @@ Not started; the lead measures and records in [`research/`](research/CATALOG.md)
 - **The Jev follow-ups** and decision-accuracy techniques (state shaping, question wording,
   decomposition, answer-set design), measured on our labeled sets (was LD-021). Replaying our own
   sessions to measure development-loop gates needs the user's yes.
+- **The consolidator records disagree** (ADR-0014's erratum: 3/3 vs 0/3 in ADR-0012, not 6/6 vs
+  4/6; `EV-2026-09-19-consolidator-model-comparison`): reconcile them.
 - **Teaching-method questions** from MN-013 and the mentor's audit MN-012 (was LD-028):
   [synthesis, section 5](../mentor/artifacts/teaching-research/synthesis.md#5-open-questions-worth-a-verified-study).
   ADR-0023 rests on the evidence for question 1; a weak finding reopens it.
@@ -97,13 +95,12 @@ ready.
 
 - The explicit yes before a development-loop hook sends session content to a hosted decider, or a
   replay reads past transcripts (DEC-025); asked when the first such hook is ready.
-- The OK to delete the old `src/data/dbs/checkpoints.db` (build queue item 1).
 - Trust the project's hooks once when Claude Code asks.
 
 ## Agenda for the next lead session
 
 1. Verify the mentor's replies to LD-027 and LD-030 (skill moved, links resolve, office updated).
-2. Build queue items 1-3, then make R1 ready.
+2. R0 close once the mentor reports its last topic, then make R1 ready.
 3. Write the P1 design card before R1 opens, with its decision points (point 17); then P2-P4
    before their stages.
 4. Create the weekly upstream-watch routine once its procedure is written.

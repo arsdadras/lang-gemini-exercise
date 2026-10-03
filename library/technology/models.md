@@ -15,6 +15,15 @@ by environment variable; neither is copied here. Rings and versions:
 [radar.md](radar.md). The rules for decision points:
 [decision-models.md](../architecture/decision-models.md).
 
+## Embeddings
+
+The RAG index embeds with GapGPT's `text-embedding-3-small` (1536 dimensions), through the same
+OpenAI-compatible gateway as the paid tiers (`EMBEDDING_SPEC` in `configs/models_config.py`,
+live-verified 2026-10-03, with the same call timeout as every external client). It replaced
+Gemini's embeddings at the user's instruction, so Google serves only the `free` tier. Changing the
+embedding model means rebuilding `.chroma_index`: the old vectors are Gemini's and a different
+width, so the RAG graph answers nothing until the rebuild (R2).
+
 ## LLM tiers
 
 | Tier | Served by | Use |

@@ -93,4 +93,12 @@
 
 The consolidator comparison cited above is 3/3 vs 0/3 in ADR-0012, not 6/6 vs 4/6; the two
 records of that run disagree (`EV-2026-09-19-consolidator-model-comparison`). The pin and this
-decision are unchanged; research is reconciling the records (LD-005).
+decision are unchanged; the lead is reconciling the records (research queue in its STATE).
+
+## Update (2026-10-03)
+
+Embeddings left Gemini for GapGPT's `text-embedding-3-small` (1536 dimensions) at the user's
+instruction, so Google now serves only the `free` tier; the tier scores, orders, and pins above
+are unchanged. The model, its timeout, and the required index rebuild are recorded in the
+[models entry](../../library/technology/models.md#embeddings).
+
