@@ -53,17 +53,20 @@ ready.
 
 ## Agenda for the next lead session
 
-1. Review and merge the engineer's pull requests against LD-018, LD-019, and LD-024; verify the
-   mentor's replies to LD-010 and LD-023 and research's to LD-021 and LD-025; close what checks
-   out. When both have updated their links, remove the redirects (BACKLOG).
-2. Write the P1 design card before R1 opens, with its decision points (point 17); then P2-P4
+1. Inbox waiting since 2026-09-29: the mentor's request MN-013 (its rebuilt teaching research)
+   and its replies MN-005 to MN-010 (LD-010, LD-023, LD-012, LD-014, LD-022, LD-026). Decide
+   MN-013; check each reply against the repo and close what checks out.
+2. Review and merge the engineer's pull requests against LD-018, LD-019, and LD-024; verify
+   research's replies to LD-021 and LD-025; close what checks out. When the mentor and research
+   have updated their links, remove the redirects (BACKLOG).
+3. Write the P1 design card before R1 opens, with its decision points (point 17); then P2-P4
    before their stages.
-3. When R0 closes: record the specialist contract as an ADR, update
+4. When R0 closes: record the specialist contract as an ADR, update
    [ARCHITECTURE.md](ARCHITECTURE.md) "Current system", and make R1 ready: the decision seam
    (ADR-0021) as the engineer's next directive, ahead of the lesson.
-4. When research answers LD-015, create the weekly routine.
-5. At every phase and project boundary: curate the library from every office (ADR-0024).
-6. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
+5. When research answers LD-015, create the weekly routine.
+6. At every phase and project boundary: curate the library from every office (ADR-0024).
+7. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
 
 ## Session log
 
