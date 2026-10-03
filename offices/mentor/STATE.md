@@ -22,6 +22,12 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
   engineer's (LD-019); the mentor teaches each piece after its teaching review. The lead
   records the contract as an ADR when R0 closes.
 - **Order after R0:** R1 -> R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
+- **Teaching craft:** the `teach` skill ([SKILL.md](.claude/skills/teach/SKILL.md)) is rebuilt
+  on the research in [artifacts/teaching-research/](artifacts/teaching-research/README.md) and
+  is in use from R0 topic 3 on. Pull request #11 carries it, CI green, awaiting the lead's merge.
+- **Waiting on others:** the lead on MN-013 (skill review, research tasking, role files outside
+  the offices); research on MN-012 (audit of the skill's evidence); the engineer on MN-014 (a
+  real-graph test for the RAG router) and on confirming it took over the known issues (LD-018).
 - **Stack:** re-verified on 2026-09-27 against the lead's upgrade (LD-007). openai 3.x and
   anthropic 1.x raise timeouts and refusals from `httpx2`; `failure_util` now classifies them,
   tested against real SDK clients on a local silent server and a closed port.
