@@ -3,7 +3,7 @@
 | | |
 | :--- | :--- |
 | Status | **Decided 2026-09-28:** the user accepted every leaning below after the joint review ([DECISIONS](../DECISIONS.md) DEC-022 to DEC-025, [ADR-0021](../../../docs/adr/0021-decision-models-as-a-second-model-family.md)). Opened 2026-09-27 on the user's word ("parvande-ye Jev ro shoru konim"). The binding rules now live in [`library/architecture/decision-models.md`](../../../library/architecture/decision-models.md); this dossier stays as the reasoning and the idea bank |
-| Read for it | Research's whole dossier: [BR-003](../../research/briefs/BR-003-decision-points/README.md) version 3 with its [second review](../../research/briefs/BR-003-decision-points/second-review.md), use cases, plan, curriculum, and agent guidance; the nine [decision-model landscape](../../research/landscape/decision-models/README.md) pages; the six Jev and Laya evidence records with their scripts and raw results; BR-001 and [BR-002](../../research/briefs/BR-002-model-catalog-evidence-map/README.md). The four sources the user sent (shipwithjev.com; LangChain's *Building a harness with Jev* and *Building prod with Jev and LangGraph*; the video *7 Jev Repos That 10x Claude Code*, title only). The user's two reviews and later guidance, as research recorded them |
+| Read for it | Research's whole dossier: [BR-003](../research/briefs/BR-003-decision-points/README.md) version 3 with its [second review](../research/briefs/BR-003-decision-points/second-review.md), use cases, plan, curriculum, and agent guidance; the nine [decision-model landscape](../research/landscape/decision-models/README.md) pages; the six Jev and Laya evidence records with their scripts and raw results; BR-001 and [BR-002](../research/briefs/BR-002-model-catalog-evidence-map/README.md). The four sources the user sent (shipwithjev.com; LangChain's *Building a harness with Jev* and *Building prod with Jev and LangGraph*; the video *7 Jev Repos That 10x Claude Code*, title only). The user's two reviews and later guidance, as research recorded them |
 | Code read | `f261b6e`: the models layer, the output schemas, and every `llm_model` call site |
 
 ## 1. The position
@@ -143,7 +143,7 @@ rewrite, the answer, the Finglish repair, skill drafts, test generation.
 Three mechanisms make one system, "cheap by default, frontier on exception":
 
 1. **Calibrate the catalog.** Every tier's primary is picked from hand-estimated speed, power,
-   and cost scores ([BR-002](../../research/briefs/BR-002-model-catalog-evidence-map/README.md)
+   and cost scores ([BR-002](../research/briefs/BR-002-model-catalog-evidence-map/README.md)
    #1: an engine without calibration data). A decider is a cheap, consistent judge: it scores
    every tier's answers on our labeled sets with a typed rubric, so the scores can be measured
    instead of guessed. The judge itself is checked against a hand-labeled sample. This makes

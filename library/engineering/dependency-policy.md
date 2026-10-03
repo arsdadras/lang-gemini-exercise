@@ -2,7 +2,7 @@
 title: Dependency policy
 maintainer: lead
 status: current
-updated: 2026-09-26
+updated: 2026-10-03
 summary: How the stack stays on the latest stable releases, LangChain's ecosystem above all.
 related: [git-policy.md, dev-environment.md, ../technology/radar.md, ../../.github/dependabot.yml]
 ---
@@ -38,7 +38,7 @@ wrong thing (Principle 2, "Stay current").
   stage's beta APIs are re-verified when it starts.
 - **Every session of the lead** checks drift (`uv lock --upgrade --dry-run`) and open Dependabot
   pull requests, and follows LangChain's releases, changelog, and blog for changes to what the
-  curriculum teaches or plans (research watches upstream in depth).
+  curriculum teaches or plans (the lead's upstream watch goes deeper).
 
 ## Verification for any upgrade
 

@@ -37,18 +37,17 @@ src/agentlab/
 tests/             pytest suite
 scripts/           repo tooling: docs lint, inbox, session hooks, handoff, worktree setup,
                    live smoke, and their tests
-offices/           one office per role (lead, engineer, mentor, research): charter, state, outbox
+offices/           one office per role (lead, mentor): charter, state, outbox; the lead's holds the research record
 library/           shared canonical knowledge: principles, protocol, ownership, policies
 archive/           retired documents, frozen
 docs/              ADRs, design cards, and study guides (write-ups of finished projects)
 .github/           CI and Dependabot
-.claude/           Claude Code skills (/lead, /engineer, /mentor, /research, /handoff, /inbox,
-                   decision-points; the mentor's
-                   teach) and the
-                   session hooks (start, prompt, ownership guard, stop)
+.claude/           Claude Code skills (/lead, /mentor, /handoff, /inbox, decision-points; the
+                   mentor's teach) and the session hooks (start, prompt, ownership
+                   guard, stop)
 examples/          sample inputs (e.g. code to review)
 evals/             live eval-lite scenario sets (real models, run by hand, not by pytest)
-out/               runtime output, gitignored: sandbox/, state/checkpoints.db
+out/               runtime output, gitignored: sandbox/, state/<app>_checkpoints.db
 alireza/           the mentee's private scratch area: never imported, edited, or read
 ```
 

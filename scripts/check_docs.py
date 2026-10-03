@@ -24,8 +24,12 @@ LIBRARY_MAINTAINER = "lead"  # the library is the lead's alone (ADR-0024)
 LIBRARY_STATUSES = {"current", "draft", "superseded"}
 LIBRARY_UNINDEXED = {"README.md", "LOG.md"}
 
-OFFICE_PREFIX = {"lead": "LD", "engineer": "EN", "mentor": "MN", "research": "RS"}
-RECIPIENTS = {"lead", "engineer", "mentor", "research", "user", "all"}
+OFFICE_PREFIX = {"lead": "LD", "mentor": "MN"}
+RETIRED_ROLES = {
+    "engineer",
+    "research",
+}  # folded into the lead (ADR-0025); old messages name them
+RECIPIENTS = {"lead", "mentor", "user", "all"} | RETIRED_ROLES
 OPEN_STATUSES = {"open", "closed", "withdrawn"}
 REPLY_STATUSES = {"done", "partial", "declined"}
 

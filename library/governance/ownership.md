@@ -9,7 +9,8 @@ related: [protocol.md, principles.md, ../../AGENTS.md, ../../scripts/workspace.p
 
 # Repository Map and Ownership
 
-Each role works in its own worktree and branch ([git-policy.md](../engineering/git-policy.md)),
+Two roles work here, the lead and the mentor, each in its own worktree and branch
+([git-policy.md](../engineering/git-policy.md), [ADR-0025](../../docs/adr/0025-two-roles-lead-and-mentor.md)),
 and every path still has one writing role: that keeps merges into `main` free of conflicts and
 numbers free of collisions. Everyone else reads, links, or sends the owner a message
 ([protocol.md](protocol.md)). Code layout inside `src/agentlab/` is in `AGENTS.md`.
@@ -25,23 +26,21 @@ belongs to the lead.
 | Path | Holds | Writer | Roles |
 | :--- | :--- | :--- | :--- |
 | `CLAUDE.md` | Session router: what every session loads, and which role it plays | Lead | lead |
-| `AGENTS.md` | Repo mechanics for any coding agent: layout, conventions, commands, gotchas | Lead for layout, conventions, and policy; the engineer keeps commands and gotchas true when its code changes them | lead, engineer |
+| `AGENTS.md` | Repo mechanics for any coding agent: layout, conventions, commands, gotchas | Lead | lead |
 | `README.md` | Public front page | Lead | lead |
 | `library/` | Shared, canonical, text-only knowledge ([library/README.md](../README.md)) | The lead only: it curates knowledge from every office into the library; other roles propose changes by message ([ADR-0024](../../docs/adr/0024-a-lead-curated-library-in-five-categories.md)) | lead |
-| `offices/lead/` | Lead office: decisions, plans, architecture, radar, risks, outbox | Lead | lead |
-| `offices/engineer/` | Engineer office: charter, build state, live code issues, outbox | Engineer | engineer |
+| `offices/lead/` | Lead office: decisions, plans, architecture, radar, risks, outbox, build state, and the research record (`research/`: landscape, evidence, briefs, catalog) | Lead | lead |
 | `offices/mentor/` | Mentor office: role contract, teaching state, lesson log, outbox | Mentor | mentor |
-| `offices/research/` | Research office: landscape, evidence, briefs, catalog, outbox | Research | research |
 | `docs/adr/`, `docs/design_cards/` | Architecture decision records; specialist contracts | Lead | lead |
 | `docs/study_guides/` | Write-ups of finished projects | Mentor | mentor |
 | `archive/` | Retired documents, frozen ([archive/README.md](../../archive/README.md)) | The retiring file's owner moves it in; nobody edits it after | all |
-| `src/`, `tests/`, `evals/`, `examples/` | The `agentlab` package, its tests, live eval sets, sample inputs | Engineer; the mentor reviews what it teaches and requests changes | engineer |
-| `scripts/`, `.github/` | Repo tooling (docs lint, inbox, session hooks, handoff, worktree setup, reports, live smoke) and their tests; CI, Dependabot, and the message report | Engineer, implementing what the lead decides; the lead owns the policies they enforce | engineer |
+| `src/`, `tests/`, `evals/`, `examples/` | The `agentlab` package, its tests, live eval sets, sample inputs | Lead; the mentor reviews what it teaches and requests changes by message | lead |
+| `scripts/`, `.github/` | Repo tooling (docs lint, inbox, session hooks, handoff, worktree setup, reports, live smoke) and their tests; CI, Dependabot, and the message report | Lead | lead |
 | `.claude/skills/` | Claude Code skills: role bootstraps, `/handoff`, `/inbox`, `decision-points` | Lead | lead |
 | `.claude/skills/teach/` | The mentor's teaching skill and its reference files | Mentor | mentor |
-| `.claude/settings.json` | The session hooks' configuration | Engineer | engineer |
+| `.claude/settings.json` | The session hooks' configuration | Lead | lead |
 | `CLAUDE.local.md` | The worktree's role and charter (per worktree, ignored), written by `scripts/setup_worktrees.py` | The setup script | none |
-| `pyproject.toml`, `uv.lock` | Dependencies and tool configuration | Engineer, on the lead's radar decisions | engineer |
+| `pyproject.toml`, `uv.lock` | Dependencies and tool configuration | Lead | lead |
 | `.gitignore`, `.python-version`, `.gitattributes` | Repo configuration | Lead | lead |
 | `out/`, `.chroma_index/`, `.venv/` | Runtime output, vector index, environment (all ignored) | Whoever runs the code | all |
 | `alireza/` | The user's private scratch area | The user only; nobody else reads it | none |

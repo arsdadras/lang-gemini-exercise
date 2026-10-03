@@ -138,18 +138,14 @@ def test_outbox_grammar(repo):
     ]
 
 
-def test_engineer_outbox_and_recipient(repo):
+def test_retired_roles_stay_valid_recipients_but_have_no_office(repo):
     write(
         repo,
         "offices/lead/OUTBOX.md",
-        "### LD-001 | to engineer, mentor | directive | open\n",
+        "### LD-001 | to engineer, research, mentor | directive | closed\n",
     )
-    write(
-        repo,
-        "offices/engineer/OUTBOX.md",
-        "### EN-001 | to lead | reply LD-001 | done\n\n### LD-002 | to mentor | notice | open\n",
-    )
+    write(repo, "offices/engineer/OUTBOX.md", "### EN-001 | to lead | notice | open\n")
     problems = check_docs.run(repo, ["offices"])
     assert problems == [
-        "offices/engineer/OUTBOX.md:3: ID LD-002 must be EN-### in the engineer outbox"
+        "offices/engineer/OUTBOX.md: outbox of unknown office 'engineer'"
     ]

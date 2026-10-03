@@ -26,8 +26,8 @@ is reviewable in a diff and readable by any session.
   - Stable knowledge (a rule, a guide, a policy, a lesson learned) moves here, and its old home
     links to it. For another role's file, the lead asks the owner by message to replace the
     original with the link.
-  - Research's living facts (vendors, numbers, measurements) stay in research's landscape and
-    evidence. An entry here carries the practical takeaway and the key numbers, with the record
+  - The living facts (vendors, numbers, measurements) stay in the research record
+    (`offices/lead/research/`: landscape and evidence). An entry here carries the practical takeaway and the key numbers, with the record
     ID and its date.
 - **No forks.** A rule that differs by role is written in its entry with the role named; a
   role-only procedure lives in that role's office and links here.

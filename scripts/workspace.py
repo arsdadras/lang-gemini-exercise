@@ -1,8 +1,7 @@
 """Role workspaces: which role a checkout plays, and the git helpers the session scripts share.
 
-Each role works in its own git worktree and branch (ADR-0019, ADR-0022): `../lce-lead` on
-`lead`, `../lce-engineer` on `engineer`, `../lce-mentor` on `mentor`, `../lce-research` on
-`research`. A worktree's role comes from its
+Each role works in its own git worktree and branch (ADR-0019, ADR-0025): `../lce-lead` on
+`lead` and `../lce-mentor` on `mentor`. A worktree's role comes from its
 own git config (`agentlab.role`, written by `setup_worktrees.py`); where that is missing, as in
 a cloud session, from the branch name (`mentor` or `mentor/<topic>`). The main checkout stays on
 `main` and plays no role.
@@ -22,7 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-ROLES = ("lead", "engineer", "mentor", "research")
+ROLES = ("lead", "mentor")
 ROLE_CONFIG_KEY = "agentlab.role"
 MAIN_BRANCH = "main"
 REMOTE = "origin"

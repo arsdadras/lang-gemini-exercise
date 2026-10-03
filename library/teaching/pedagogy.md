@@ -2,7 +2,7 @@
 title: Pedagogy
 maintainer: lead
 status: current
-updated: 2026-09-28
+updated: 2026-10-03
 summary: Learning outcomes, the learning method (active review), curriculum rules, readiness, delivery invariants, and assessment.
 related: [../../offices/lead/ROADMAP.md, ../../offices/mentor/README.md]
 ---
@@ -53,7 +53,7 @@ The rules below exist for these reasons; change a rule only with its reason in v
 - **Spiral curriculum:** concepts come back at a higher level (the return pass; the capstones
   composing earlier specialists).
 - **Active review, not typing** (the learner's choice, 2026-09-28;
-  [ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)): the learner reviews the engineer's
+  [ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)): the learner reviews the lead's
   verified code instead of typing it, and writes code only when they choose, in their private
   area. Understanding is checked, never assumed: a prediction question before the code, "why
   this design?" and "what if X changed?" after it, a hands-on scenario after the demo, and a
@@ -133,8 +133,8 @@ The lead makes a stage ready before the mentor opens it:
 - acceptance is concrete: the before/after demo scenario, and the tests or eval cases;
 - dependencies (earlier stages, library versions, directives) are in place;
 - it passes the admission rule;
-- the stage's verified reference implementation is merged by the engineer, or the engineer is
-  at least one topic ahead of the lesson ([ADR-0022](../../docs/adr/0022-engineer-role-and-division-of-labor.md)).
+- the stage's verified reference implementation is merged by the lead, or the lead is
+  at least one topic ahead of the lesson ([ADR-0025](../../docs/adr/0025-two-roles-lead-and-mentor.md)).
 
 ## Definition of Done
 
@@ -148,12 +148,12 @@ Whatever the mentor's procedure looks like, it keeps these true:
 
 - Each topic is a vertical slice that ends in code the learner has watched run.
 - The problem is shown before the theory.
-- The learner reviews the engineer's verified code: the mentor walks through the core
+- The learner reviews the lead's verified code: the mentor walks through the core
   architecture code one component at a time, with a prediction question before it and "why"
   and "what if" questions after it; plumbing is shown with a link to every changed file. When
   a probe shows fluency, the learner may review the component as a pull request first, and the
   walkthrough becomes the reconciliation.
-- The repo is always the engineer's verified, clean version; nothing is reset for typing.
+- The repo is always the lead's verified, clean version; nothing is reset for typing.
 - Messages to the learner teach, one idea at a time in full sentences; working notes stay out.
 - Each step waits for the learner's OK, carries a position marker, and ends with the next step.
 

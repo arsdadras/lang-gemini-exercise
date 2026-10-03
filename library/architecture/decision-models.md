@@ -2,16 +2,16 @@
 title: Decision models
 maintainer: lead
 status: current
-updated: 2026-09-28
+updated: 2026-10-03
 summary: The rule for every AI decision point (which of code, a decision model, or an LLM takes it), the one standard each is held to, and how decision models are called here.
-related: [../governance/principles.md, ../../docs/adr/0021-decision-models-as-a-second-model-family.md, ../../offices/research/landscape/decision-models/README.md, ../../offices/lead/artifacts/jev-dossier.md]
+related: [../governance/principles.md, ../../docs/adr/0021-decision-models-as-a-second-model-family.md, ../../offices/lead/research/landscape/decision-models/README.md, ../../offices/lead/artifacts/jev-dossier.md]
 ---
 
 # Decision Models
 
 Binding rules for every role ([ADR-0021](../../docs/adr/0021-decision-models-as-a-second-model-family.md)).
-What the models are, how well they measure, and who builds what with them lives in research's
-[decision-model landscape](../../offices/research/landscape/decision-models/README.md); the
+What the models are, how well they measure, and who builds what with them lives in the lead's research record,
+[decision-model landscape](../../offices/lead/research/landscape/decision-models/README.md); the
 patterns and the program are in the lead's [Jev dossier](../../offices/lead/artifacts/jev-dossier.md).
 
 ## Two model families
@@ -109,6 +109,6 @@ Choosing which schema applies is a `choice` over contracts. Verifying a field an
 
 ## Raising a use
 
-The engineer builds a decision point only from a directive. The mentor sends the lead a
-`request` for one met in a lesson; research proposes measurements; the lead records the decision
+The lead builds a decision point from its design card. The mentor sends the lead a
+`request` for one met in a lesson; the lead measures it (a research record) and records the decision
 on the design card and, for a new backend or dependency, on the radar.

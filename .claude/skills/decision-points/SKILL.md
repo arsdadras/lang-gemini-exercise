@@ -8,6 +8,6 @@ description: Use when designing, planning, building, or reviewing an AI step tha
    unsafe errors, latency, and cost; the decider first and the LLM as its escalation, unless the
    measurement says otherwise.
 3. A gate on anything consequential escalates or tightens; it never approves or loosens.
-4. Record the result where your role records design: the design card's point 17 (lead), the
-   build notes and the pull request (engineer), a request to the lead (mentor), or a brief
-   (research). A new backend or dependency enters only through the lead's radar.
+4. Record the result where your role records design: the design card's point 17 and the pull
+   request (lead), or a request to the lead (mentor). Measurements go in a research record
+   (`offices/lead/research/`). A new backend or dependency enters only through the lead's radar.

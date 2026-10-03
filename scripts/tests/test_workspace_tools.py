@@ -79,33 +79,30 @@ def test_role_comes_from_worktree_config_before_branch(project):
     git(project, "checkout", "--quiet", "-b", "mentor/r0")
     assert workspace.detect_role(project) == "mentor"
     git(project, "config", "extensions.worktreeConfig", "true")
-    git(project, "config", "--worktree", workspace.ROLE_CONFIG_KEY, "research")
-    assert workspace.detect_role(project) == "research"
+    git(project, "config", "--worktree", workspace.ROLE_CONFIG_KEY, "lead")
+    assert workspace.detect_role(project) == "lead"
 
 
-def test_engineer_is_a_role(project):
-    assert workspace.role_of_branch("engineer/r0-harness") == "engineer"
-    path = worktree(project, "engineer")
-    assert workspace.detect_role(path) == "engineer"
-    assert "@offices/engineer/README.md" in (path / "CLAUDE.local.md").read_text(
-        encoding="utf-8"
-    )
+def test_there_are_two_roles_and_retired_ones_are_not_among_them():
+    assert workspace.ROLES == ("lead", "mentor")
+    assert workspace.role_of_branch("engineer/r0-harness") is None
+    assert workspace.role_of_branch("research") is None
 
 
 def test_setup_builds_a_role_worktree_and_is_idempotent(project):
     write(project, ".env", "SECRET_NAME=value\n")
-    first = setup_worktrees.setup(project, "research", sync=False, push=True)
-    path = project.parent / "lce-research"
-    assert workspace.detect_role(path) == "research"
-    assert workspace.current_branch(path) == "research"
-    assert "@offices/research/README.md" in (path / "CLAUDE.local.md").read_text(
+    first = setup_worktrees.setup(project, "lead", sync=False, push=True)
+    path = project.parent / "lce-lead"
+    assert workspace.detect_role(path) == "lead"
+    assert workspace.current_branch(path) == "lead"
+    assert "@offices/lead/README.md" in (path / "CLAUDE.local.md").read_text(
         encoding="utf-8"
     )
     assert (path / ".env").read_text(encoding="utf-8") == "SECRET_NAME=value\n"
-    assert git(project, "ls-remote", "origin", "research")
-    assert any("new branch research" in line for line in first)
+    assert git(project, "ls-remote", "origin", "lead")
+    assert any("new branch lead" in line for line in first)
 
-    second = setup_worktrees.setup(project, "research", sync=False, push=True)
+    second = setup_worktrees.setup(project, "lead", sync=False, push=True)
     assert "  worktree present" in second
     assert "  CLAUDE.local.md present" in second
 
@@ -135,10 +132,10 @@ def test_start_report_gives_role_state_and_inbox(project):
 
 
 def test_stop_warns_only_about_unsaved_work_in_a_role_worktree(project):
-    research = worktree(project, "research")
-    assert session_hooks.stop_message(research) is None
-    write(research, "offices/research/notes.md", "draft\n")
-    assert "1 uncommitted path(s)" in session_hooks.stop_message(research)
+    lead = worktree(project, "lead")
+    assert session_hooks.stop_message(lead) is None
+    write(lead, "offices/lead/notes.md", "draft\n")
+    assert "1 uncommitted path(s)" in session_hooks.stop_message(lead)
     write(project, "scratch.txt", "x\n")
     assert session_hooks.stop_message(project) is None
 
@@ -161,10 +158,10 @@ def test_handoff_refuses_outside_a_role_worktree(project):
 
 
 def test_start_report_asks_for_the_charter_without_claude_local(project):
-    git(project, "checkout", "--quiet", "-b", "research")
+    git(project, "checkout", "--quiet", "-b", "lead")
     report = session_hooks.start_report(project)
-    assert "role research, branch research" in report
-    assert "read offices/research/README.md before anything else" in report
+    assert "role lead, branch lead" in report
+    assert "read offices/lead/README.md before anything else" in report
 
 
 def test_setup_ignores_claude_local_on_branches_without_the_gitignore(project):
@@ -178,11 +175,13 @@ def test_setup_ignores_claude_local_on_branches_without_the_gitignore(project):
 
 def test_the_repositorys_ownership_map_parses():
     rules = workspace.ownership_rules(workspace.ROOT)
-    assert workspace.owners("src/agentlab/apps/rag_app.py", rules) == {"engineer"}
-    assert workspace.owners("scripts/inbox.py", rules) == {"engineer"}
+    assert workspace.owners("src/agentlab/apps/rag_app.py", rules) == {"lead"}
+    assert workspace.owners("scripts/inbox.py", rules) == {"lead"}
     assert workspace.owners(".claude/skills/lead/SKILL.md", rules) == {"lead"}
-    assert workspace.owners("AGENTS.md", rules) == {"lead", "engineer"}
-    assert workspace.owners("offices/research/STATE.md", rules) == {"research"}
+    assert workspace.owners("AGENTS.md", rules) == {"lead"}
+    assert workspace.owners("offices/mentor/STATE.md", rules) == {"mentor"}
+    assert workspace.owners(".claude/skills/teach/SKILL.md", rules) == {"mentor"}
+    assert workspace.owners("offices/lead/research/CATALOG.md", rules) == {"lead"}
     assert workspace.owners("archive/docs/ROADMAP.md", rules) == {"all"}
     assert workspace.owners("alireza/notes.ipynb", rules) == {"none"}
     assert workspace.owners("a-new-top-level-file.txt", rules) == {"lead"}

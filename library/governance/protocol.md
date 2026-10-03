@@ -2,23 +2,22 @@
 title: Coordination protocol
 maintainer: lead
 status: current
-updated: 2026-09-27
-summary: How the offices and the user coordinate through outboxes, inboxes, and state files.
-related: [principles.md, ownership.md, ../../scripts/inbox.py]
+updated: 2026-10-03
+summary: The two parties' roles, the message format between the lead and the mentor, the flow, routing, sessions, and the session rhythm.
+related: [principles.md, ownership.md, ../../docs/adr/0025-two-roles-lead-and-mentor.md, ../engineering/git-policy.md]
 ---
 
 # Coordination Protocol
 
-Five parties run this project. Each role works in its own Claude Code session and its own
-office, and the offices talk only through files, never through memory.
+Three parties run this project: the user and two roles. Each role works in its own Claude Code
+session and its own office, and the offices talk only through files, never through memory
+([ADR-0025](../../docs/adr/0025-two-roles-lead-and-mentor.md)).
 
 | Party | Office | Job |
 | :--- | :--- | :--- |
 | **User** | none (`alireza/` is private scratch) | Sponsor, product owner, and learner; final authority |
-| **Lead** | [`offices/lead/`](../../offices/lead/README.md) | Decides, coordinates, and reviews: direction, roadmap, architecture, technology, governance, git and GitHub |
-| **Engineer** | [`offices/engineer/`](../../offices/engineer/README.md) | Builds what the lead decides: implements, tests, debugs, and verifies the code and the repo tooling |
+| **Lead** | [`offices/lead/`](../../offices/lead/README.md) | Decides, plans, builds, researches, and reviews: direction, roadmap, architecture, technology, governance, code and tooling, evidence, git and GitHub |
 | **Mentor** | [`offices/mentor/`](../../offices/mentor/README.md) | Teaches the learner; reviews the code it teaches |
-| **Research** | [`offices/research/`](../../offices/research/README.md) | Investigates, analyzes, and advises; brings the user the big picture; decides nothing |
 
 ## Files every office has
 
@@ -41,9 +40,9 @@ people and `scripts/inbox.py` read it the same way:
 
 | Field | Values |
 | :--- | :--- |
-| ID | `LD-###` (lead), `EN-###` (engineer), `MN-###` (mentor), `RS-###` (research); numbered per outbox, never reused |
-| to | `lead`, `engineer`, `mentor`, `research`, `user`, or `all`; several are comma-separated |
-| type | `directive` (lead only: must be applied at its timing), `request` (asks for a decision, research, a measurement, or a record), `notice` (for information), or `reply <ID>` (answers a message) |
+| ID | `LD-###` (lead), `MN-###` (mentor); numbered per outbox, never reused. Old `EN-###` and `RS-###` IDs (the retired engineer and research roles) stay as history |
+| to | `lead`, `mentor`, `user`, or `all`; several are comma-separated. Messages written before 2026-10-03 may name `engineer` or `research`; new ones never do |
+| type | `directive` (lead only: must be applied at its timing), `request` (asks for a decision or a record), `notice` (for information), or `reply <ID>` (answers a message) |
 | status | For directives, requests, and notices: `open`, then `closed` or `withdrawn` (set by the sender). For replies: `done`, `partial`, or `declined` |
 
 The body starts with `Issued <date>`, and for a directive a timing: **blocking** (before any
@@ -56,7 +55,7 @@ other work), **next topic boundary**, **stage close**, or a named stage. A direc
 2. **Receive.** Every session hears its inbox without asking: the start hook lists the open
    messages addressed to the role that it hasn't replied to, and the replies to its own open
    messages; the prompt hook announces anything that arrives later. `python scripts/inbox.py
-   --fetch` (or `/inbox`) shows it on demand, read from every role's branch.
+   --fetch` (or `/inbox`) shows it on demand, read from both roles' branches.
 3. **Act and reply.** The recipient acts at the stated timing (the mentor never breaks a topic
    for a non-blocking message), then appends `reply <ID>` to its own outbox: `done` with the
    commit, `partial` with what remains, or `declined` with the reason (Principle 1).
@@ -67,19 +66,12 @@ other work), **next topic boundary**, **stage close**, or a named stage. A direc
 
 | From | To | Typical types |
 | :--- | :--- | :--- |
-| Lead | Engineer | Directives (what to build or fix, with acceptance criteria), notices (decisions that touch code) |
-| Lead | Mentor | Directives (what to teach, conventions), notices (decisions that touch lessons) |
-| Lead | Research | Requests (a question to investigate, a measurement, an upstream check) |
-| Engineer | Lead | Requests (a decision the plan doesn't settle), replies (the commits and what was verified) |
-| Engineer | Mentor | Notices (a verified component is ready to teach: where its core code is, what to watch for) |
-| Mentor | Lead | Requests (a decision the plan doesn't settle, a record for an ADR), notices (parked ideas, found debt) |
-| Mentor | Engineer | Requests (a change that makes code teachable, a bug found in a lesson) |
-| Research | Lead | Notices (a brief or an upstream change is ready), requests (a key, a budget, a decision) |
-| Research | Engineer | Requests (a harness or code change a measurement needs) |
+| Lead | Mentor | Directives (what to teach, conventions), notices (decisions that touch lessons; verified code ready to teach: where its core code is, what to watch for) |
+| Mentor | Lead | Requests (a decision the plan doesn't settle, a record for an ADR, a change that makes code teachable, a bug found in a lesson), notices (parked ideas, found debt) |
 | Anyone | User | Only what the user alone can do: accounts, keys, approvals the rules reserve. The lead surfaces these in its report |
 
-The user talks to each office in its own session. Discussion with the lead is for decisions and
-execution; investigation and analysis go to research, and the lead decides on its briefs.
+The user talks to each office in its own session. The lead plans, builds, and investigates; the
+mentor teaches and brings what teaching reveals back as requests.
 
 ## Sessions
 
@@ -91,9 +83,7 @@ role; switching roles means a new session, in the other role's worktree.
 | Role | Where its sessions run | Loads its charter through |
 | :--- | :--- | :--- |
 | Lead | `../lce-lead` (branch `lead`) | `CLAUDE.local.md`, or `/lead` |
-| Engineer | `../lce-engineer` (branch `engineer`) | `CLAUDE.local.md`, or `/engineer` |
 | Mentor | `../lce-mentor` (branch `mentor`) | `CLAUDE.local.md`, or `/mentor` |
-| Research | `../lce-research` (branch `research`) | `CLAUDE.local.md`, or `/research` |
 
 `CLAUDE.md` loads `AGENTS.md`, [principles.md](principles.md), and this protocol into every
 session. The session hook tells each session its role (from the worktree, or the branch name in
@@ -110,5 +100,5 @@ a cloud session), what `main` has that its branch lacks, its uncommitted work, t
   pull request when the work is ready for `main`
   ([git-policy.md](../engineering/git-policy.md)).
 - **Lead, every session:** merge green pull requests and fast-forward the main checkout, verify
-  replies and close messages, triage requests, check dependency drift and Dependabot, run
-  `scripts/check_docs.py`.
+  the mentor's replies and close messages, triage requests, check dependency drift and
+  Dependabot, run `scripts/check_docs.py`.

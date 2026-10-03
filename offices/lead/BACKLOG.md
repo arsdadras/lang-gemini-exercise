@@ -2,8 +2,8 @@
 
 Every candidate that isn't a stage's hard concept, triaged by the lead. **E** = essential,
 **N** = nice-to-have. An item is either scheduled into a named stage (the Definition of Ready
-pulls it in) or parked behind a concrete trigger. The live code issues stay in the engineer's
-[state](../engineer/STATE.md); new ideas arrive as request or notice messages and are triaged here.
+pulls it in) or parked behind a concrete trigger. The live code issues stay in the lead's
+[state](STATE.md); new ideas arrive as request or notice messages and are triaged here.
 
 Re-triaged from the handoff backlog on 2026-09-26 under [principles](../../library/governance/principles.md) 2-3:
 priorities were re-judged at production load, and items that are already a stage's hard concept
@@ -17,7 +17,7 @@ were dropped from this list (the roadmap owns them).
 - **E:** Record the R0 specialist contract as an ADR when R0 closes, from the mentor's state.
 - **N:** Add point 16 (production path) to the P5 design card.
 
-**R0, the specialist contract** (built by the engineer, LD-019; taught by the mentor)
+**R0, the specialist contract** (built by the lead, LD-019; taught by the mentor)
 - **E:** Decision points as first-class datasets in the eval harness (LD-019, was LD-016).
 - **E:** Shared eval-lite harness; first consumer R1.
 - **E:** Chat prompts split from worker prompts (the chat template reaches every agent today).
@@ -92,8 +92,8 @@ were dropped from this list (the roadmap owns them).
 | Sandbox filesystem snapshots alongside checkpoints | N | Time travel over side effects is taught (Term E, E1) |
 | Session-scoped or remote sandbox workspaces | N | Term E, E1 |
 | A guard against direct pushes to `main`: a pre-push hook through `core.hooksPath`, installed by `scripts/setup_worktrees.py` (GitHub can't protect a private repo's branch on the Free plan) | N | A direct push to `main` happens |
-| A weekly cloud routine running research's upstream watch on branch `research` (DEC-020) | E | Research replies to LD-015 with its watch procedure |
-| Development-loop hooks, advisory: document health, a done gate, shell edits and ownership, meaning-level conventions (DEC-025) | N | The engineer's queue after R1; the user's explicit yes before a hook sends session content or a replay reads transcripts |
+| A weekly cloud routine running the lead's upstream watch (DEC-020; the research role is retired, ADR-0025) | E | The lead writes the watch procedure (research queue in STATE) |
+| Development-loop hooks, advisory: document health, a done gate, shell edits and ownership, meaning-level conventions (DEC-025) | N | The lead's build queue after R1; the user's explicit yes before a hook sends session content or a replay reads transcripts |
 | Rename `TIER_CASCADE_ORDER` to a fallback order (DEC-025) | N | The quality escalation lands (D1) |
 | Remove the redirects at `offices/lead/PEDAGOGY.md` and `offices/lead/TECH_RADAR.md` (DEC-029) | E | The mentor and research have updated their links (LD-023, LD-025) |
 
@@ -114,5 +114,5 @@ None yet ([pedagogy](../../library/teaching/pedagogy.md#digressions-and-deep-div
 - **System-1 decision layer:** superseded 2026-09-28: decision points from R1 and a stage, D1
   (DEC-022 to DEC-024).
 - **Library placement of research's design guide:** done 2026-09-28; the rules moved to
-  `library/architecture/decision-models.md`, the facts stay in research's landscape (DEC-025).
+  `library/architecture/decision-models.md`, the facts stay in the research record's landscape (DEC-025).
 - **Surface approvals raised inside subagents:** the hard concept of P6-B3.

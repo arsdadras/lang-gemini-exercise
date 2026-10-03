@@ -17,13 +17,13 @@ def test_parse_reads_headings_and_first_body_line(tmp_path):
         tmp_path,
         "lead",
         "# Lead Outbox\n\n## Open\n\n"
-        "### LD-001 | to mentor, research | directive | open\n\nIssued 2026-09-26.\n\n"
+        "### LD-001 | to mentor, user | directive | open\n\nIssued 2026-09-26.\n\n"
         "## Closed\n\n- DIR-001: done.\n",
     )
     [message] = inbox.load(tmp_path)
     assert message.id == "LD-001"
     assert message.sender == "lead"
-    assert message.recipients == ("mentor", "research")
+    assert message.recipients == ("mentor", "user")
     assert message.kind == "directive"
     assert message.first_line == "Issued 2026-09-26."
 
@@ -35,7 +35,7 @@ def test_inbox_lists_unanswered_open_messages_and_replies_to_verify(tmp_path):
         "### LD-001 | to mentor | directive | open\n"
         "### LD-002 | to mentor | notice | closed\n"
         "### LD-003 | to all | notice | open\n"
-        "### LD-004 | to research | request | open\n"
+        "### LD-004 | to user | request | open\n"
         "### LD-005 | to mentor | request | open\n",
     )
     write_outbox(
