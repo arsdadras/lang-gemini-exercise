@@ -63,6 +63,11 @@ def build_chat_model(spec: ModelSpec) -> BaseChatModel:
         kwargs["base_url"] = base_url
     if spec.top_p is not None:
         kwargs["top_p"] = spec.top_p
+    if spec.model_provider == "ollama":
+        # ChatOllama has no timeout field; its httpx client takes it.
+        kwargs["client_kwargs"] = {"timeout": spec.timeout_seconds}
+    else:
+        kwargs["timeout"] = spec.timeout_seconds
     return init_chat_model(**kwargs)
 
 

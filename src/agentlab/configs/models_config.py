@@ -23,7 +23,13 @@ check against GapGPT's catalog. Verify any new ID the same way before relying
 on it in production.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+
+from agentlab.configs.timeouts_config import (
+    CHAT_MODEL_TIMEOUT_SECONDS,
+    EMBEDDING_TIMEOUT_SECONDS,
+    LOCAL_MODEL_TIMEOUT_SECONDS,
+)
 
 
 @dataclass(frozen=True)
@@ -40,6 +46,7 @@ class ModelSpec:
     base_url_env: str | None = None
     temperature: float = 0.0
     top_p: float | None = None
+    timeout_seconds: float = CHAT_MODEL_TIMEOUT_SECONDS
 
 
 @dataclass(frozen=True)
@@ -88,6 +95,7 @@ def _ollama(model: str) -> ModelSpec:
         model=model,
         model_provider="ollama",
         base_url_env="OLLAMA_HOST",
+        timeout_seconds=LOCAL_MODEL_TIMEOUT_SECONDS,
     )
 
 
@@ -192,6 +200,13 @@ MODEL_TIERS: dict[str, dict[str, ModelSpec]] = {
         "qwen-2b": _ollama("qwen3.5:2b"),
     },
 }
+
+# The embedding model, through GapGPT like the paid tiers (OpenAI-compatible /v1/embeddings).
+# Live-verified 2026-10-03: 1536 dimensions. Changing it needs an index rebuild.
+EMBEDDING_SPEC = replace(
+    _gapgpt("text-embedding-3-small"),
+    timeout_seconds=EMBEDDING_TIMEOUT_SECONDS,
+)
 
 DEFAULT_TIER = "low"
 
