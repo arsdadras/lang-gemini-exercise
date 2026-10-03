@@ -5,6 +5,7 @@ from typing import Any
 from deepagents import CompiledSubAgent
 from langchain_core.runnables import Runnable, RunnableLambda
 
+from agentlab.configs.paths_config import DELEGATIONS_APP, checkpoint_db_path
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
 from agentlab.graphs.code_review_parentgraph import build_code_review_graph
 from agentlab.schemas.output.code_review_output_schema import CodeReviewOutcome
@@ -117,13 +118,15 @@ def make_code_review_subagent(
 ) -> CompiledSubAgent:
     """Wrap the compiled review pipeline as a ``CompiledSubAgent``.
 
-    Defaults to ``build_code_review_graph`` on the shared SQLite checkpointer. The last
+    Defaults to ``build_code_review_graph`` on the delegations' SQLite checkpointer. The last
     coordinator message is reviewed as Python source; the envelope comes back as text.
     """
     review_graph = (
         graph
         if graph is not None
-        else build_code_review_graph(checkpointer=get_sqlite_checkpointer())
+        else build_code_review_graph(
+            checkpointer=get_sqlite_checkpointer(checkpoint_db_path(DELEGATIONS_APP))
+        )
     )
 
     def run(state: dict[str, Any]) -> dict[str, Any]:

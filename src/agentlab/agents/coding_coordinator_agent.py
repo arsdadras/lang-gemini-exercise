@@ -8,6 +8,7 @@ from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph.state import CompiledStateGraph
 
 from agentlab.agents.interpreter_agent import make_interpreter_agent
+from agentlab.configs.paths_config import DELEGATIONS_APP, checkpoint_db_path
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
 from agentlab.middlewares.fallback_middleware import make_model_fallback
 from agentlab.models import llm_model
@@ -34,7 +35,12 @@ def make_coding_coordinator_agent(
     """
     if interpreter_subagent is None:
         interpreter_subagent = make_interpreter_subagent(
-            make_interpreter_agent(tier=tier, interrupt_tools=()),
+            make_interpreter_agent(
+                get_sqlite_checkpointer(checkpoint_db_path(DELEGATIONS_APP)),
+                tier=tier,
+                interrupt_tools=(),
+                worker=True,
+            ),
         )
     if code_review_subagent is None:
         code_review_subagent = make_code_review_subagent()
@@ -44,7 +50,7 @@ def make_coding_coordinator_agent(
         system_prompt=build_coding_coordinator_prompt(),
         checkpointer=checkpointer
         if checkpointer is not None
-        else get_sqlite_checkpointer(),
+        else get_sqlite_checkpointer(checkpoint_db_path("coding_coordinator")),
         subagents=[
             interpreter_subagent,
             code_review_subagent,

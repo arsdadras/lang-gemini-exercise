@@ -2,7 +2,11 @@
 
 from pathlib import Path
 
-from agentlab.configs.paths_config import SKILLS_RESOURCES_DIR, STATE_DIR
+from agentlab.configs.paths_config import (
+    SKILLS_RESOURCES_DIR,
+    STATE_DIR,
+    checkpoint_db_path,
+)
 
 # Virtual filesystem routes (see utils/memory_backend_util.py).
 MEMORIES_ROUTE_PREFIX: str = "/memories/"
@@ -13,8 +17,8 @@ PUBLISHED_SKILLS_ROUTE_PREFIX: str = "/published-skills/"
 PUBLISHED_SKILLS_NAMESPACE: tuple[str, str] = ("shared", "skills")
 SKILLS_DIR: Path = SKILLS_RESOURCES_DIR / "personal_assistant"
 
-# Durable state of the P5 app, apart from the other apps' shared checkpoint database.
-ASSISTANT_CHECKPOINT_DB_PATH: Path = STATE_DIR / "personal_assistant_checkpoints.db"
+# Durable state of the P5 app, like every app's: one checkpoint database per app.
+ASSISTANT_CHECKPOINT_DB_PATH: Path = checkpoint_db_path("personal_assistant")
 ASSISTANT_STORE_DB_PATH: Path = STATE_DIR / "personal_assistant_store.db"
 
 # A conversation is consolidated mid-way once its unconsolidated transcript reaches this size,
