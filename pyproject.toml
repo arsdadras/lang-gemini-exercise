@@ -10,7 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     # Lower bounds only: uv.lock pins exact versions, and Dependabot keeps both current
     # (dependency policy: library/engineering/dependency-policy.md).
-    "deepagents>=0.7.19",
+    "deepagents>=0.7.20",
     # HTTP stacks utils/failure_util.py imports by name to classify network failures (MN-002).
     "httpx>=0.28.1",
     "httpx2>=2.13.1",
@@ -54,7 +54,7 @@ agentlab = ["resources/**/*"]
 
 [dependency-groups]
 dev = [
-    "ipykernel>=7.3.0",
+    "ipykernel>=7.4.0",
     "pytest>=9.1.1",
     # Exact pin: a ruff release can add lint rules, so each bump is its own reviewed change.
     "ruff==0.16.9",

@@ -7,7 +7,7 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 ## Now
 
 - **Stage:** R0, the specialist contract ([ROADMAP](../lead/ROADMAP.md#return-pass-r0-r5)).
-  Topics 1 and 2 are closed and committed on branch `mentor` (the lead merges it to `main`).
+  Topics 1 and 2 are closed and merged to `main`.
   - Topic 1, one envelope for every answer: `SpecialistResult[T]` and a `run_*` boundary per
     specialist. Tests and demo skipped at the learner's request.
   - Topic 2, the failure contract: `utils/failure_util.py` (`failure_kind`, `is_transient`,
@@ -16,26 +16,34 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
     `generate_from_web`, Tavily's hidden errors raised by `search_results`, P3's nodes
     re-raising bugs. The learner typed Code 1; Code 2, Code 3, and the tests-and-demo step
     were integrated by the mentor at the learner's request.
-- **Next:** Topic 3, the shared eval-lite harness (first consumer: R1). Then R0's remaining
-  work: LD-006 (a timeout on every external client) and LD-008 (evidence IDs in code comments),
-  chat prompts split from worker prompts, per-app checkpoint databases, and untracking
-  `src/data/dbs/checkpoints.db` with the learner's OK. The lead records the contract as an ADR
-  when R0 closes.
+- **Next:** Topic 3, the shared eval-lite harness (first consumer: R1), taught once the
+  engineer merges it. R0's remaining implementation (timeouts, evidence IDs, chat prompts split
+  from worker prompts, per-app checkpoint databases, untracking the old checkpoint DB) is the
+  engineer's (LD-019); the mentor teaches each piece after its teaching review. The lead
+  records the contract as an ADR when R0 closes.
 - **Order after R0:** R1 -> R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
+- **Teaching craft:** the `teach` skill ([SKILL.md](.claude/skills/teach/SKILL.md)) is rebuilt
+  on the research in [artifacts/teaching-research/](artifacts/teaching-research/README.md) and
+  is in use from R0 topic 3 on. Pull request #11 carries it, CI green, awaiting the lead's merge.
+- **Waiting on others:** the lead on MN-013 (skill review, research tasking, role files outside
+  the offices); research on MN-012 (audit of the skill's evidence); the engineer on MN-014 (a
+  real-graph test for the RAG router) and on confirming it took over the known issues (LD-018).
 - **Stack:** re-verified on 2026-09-27 against the lead's upgrade (LD-007). openai 3.x and
   anthropic 1.x raise timeouts and refusals from `httpx2`; `failure_util` now classifies them,
   tested against real SDK clients on a local silent server and a closed port.
 
 ## Working agreements
 
-- **Code delivery:** the mentor verifies each component, reverts, and sends the lesson code in
-  chat; the learner types it (tests aren't sent). Before the next component, the mentor
-  integrates the verified code and tests, replacing the learner's copy. The learner may skip
-  typing or a demo; the mentor then integrates the verified version and records the skip here.
-- **Lesson messages:** one idea per message, told through one concrete request before and after
-  the change, in full sentences; side findings get one line or wait for the demo.
-- **Branch:** the mentor commits on `mentor`, pushes it, and leaves the main checkout on a
-  clean `main`; never an exercise state.
+- **Code delivery:** active review ([ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)).
+  The engineer builds and verifies; the mentor walks the learner through the merged code,
+  diff-only, with a prediction question before each component and "why" and "what if" after.
+  The learner reads code in the main checkout and writes code only by choice, in their private
+  area.
+- **Lesson messages:** the `teach` skill's checklist
+  ([SKILL.md](.claude/skills/teach/SKILL.md#before-sending-any-lesson-message)): teach, don't
+  report; one idea told through one concrete request before and after; full sentences.
+- **Branch:** the mentor commits only its own paths on `mentor`, pushes it, and opens a pull
+  request with `/handoff --pr`; the lead merges.
 - **Evaluation:** eval-lite from P5 Phase C on; LangSmith traces used deliberately
   ([ADR-0004](../../docs/adr/0004-testing-and-evaluation-policy.md)).
 - **Pacing:** counted in stages, not weeks ([ADR-0009](../../docs/adr/0009-stage-admission-rule.md)).
@@ -43,11 +51,8 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 
 ## Known issues
 
-Program-level debt is triaged in the lead's [BACKLOG](../lead/BACKLOG.md); these are the live
-code issues.
-
-- **Undeclared imports:** `utils/failure_util.py` imports `httpx`, `httpx2`, and `requests`,
-  which reach the environment only through other packages (request MN-002).
+Program-level debt is triaged in the lead's [BACKLOG](../lead/BACKLOG.md). These live code
+issues move to the engineer's state (LD-018, LD-023); this copy goes once the engineer confirms.
 - **Coordinator shell has no approval step:** approvals raised inside a subagent aren't surfaced
   to the CLI; the banner states it. Fix: P6-B3.
 - **Old checkpoint DB still tracked:** `src/data/dbs/checkpoints.db` (a consistent copy is at
@@ -66,3 +71,15 @@ code issues.
   (research, LD-005). The root cause is the assistant model; the P5 teaching pass compares models.
 - **`local` tier is opt-in only:** works end to end but takes 90-360 s per structured call
   (`EV-2026-09-23-local-ollama-qwen`, [ADR-0015](../../docs/adr/0015-local-tier-and-test-mode-profiles.md)).
+
+## Review items
+
+Gaps from review questions and teach-backs, in the format and cadence of the `teach` skill's
+[review-items table](.claude/skills/teach/materials.md#review-items-table). None yet: active
+review starts with R0 topic 3.
+
+Fading levels per decision type ([fading ladder](.claude/skills/teach/techniques.md#fading-ladder)):
+none recorded yet.
+
+The skill's demo and lab examples haven't been run yet; each is run in test mode during its
+topic's preparation.
