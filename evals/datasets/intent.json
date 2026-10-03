@@ -1,0 +1,43 @@
+{
+  "name": "intent",
+  "question": "Does the text express the stated intent?",
+  "labels": [
+    "yes",
+    "no"
+  ],
+  "source": "EV-2026-09-26-laya-all-checkpoints (cases.json)",
+  "cases": [
+    {
+      "id": "intent-01",
+      "inputs": {
+        "text": "lotfan hame ettela'at-e mano pak kon, dige nemikham chizi azam yadet bemune",
+        "q": "Does the user ask to delete their stored data?"
+      },
+      "expected": "yes",
+      "unsafe_predictions": [
+        "no"
+      ],
+      "finglish": true
+    },
+    {
+      "id": "intent-02",
+      "inputs": {
+        "text": "na, ettela'at-am ro pak nakon, faghat goal-e varzeshimo update kon",
+        "q": "Does the user ask to delete their stored data?"
+      },
+      "expected": "no",
+      "unsafe_predictions": [],
+      "finglish": true
+    },
+    {
+      "id": "intent-03",
+      "inputs": {
+        "text": "Please don't cancel my plan, I only want to move the billing date to the 15th.",
+        "q": "Does the user want to cancel their account?"
+      },
+      "expected": "no",
+      "unsafe_predictions": [],
+      "finglish": false
+    }
+  ]
+}
