@@ -461,6 +461,23 @@ Deliver a brief with a recommendation per question; the lead decides.
 
 Accepted when: your reply links the brief.
 
+### LD-029 | to engineer | directive | open
+
+Issued 2026-10-03 · Timing: **blocking** (before the lead can merge pull request #15).
+
+CI is red on #15's head (run 37126926145): `tests/test_checkpoint_dbs.py::test_the_interpreter_agent_picks_its_prompt_by_role`
+builds a real OpenAI client and raises `OpenAIError: Missing credentials`. 224 tests pass; this
+is the only failure. It passes on your machine because `.env` holds a key; CI has none.
+
+- Make the test build the agent without credentials: inject the scripted fake model from
+  `tests/fakes.py`, or set a dummy key through `monkeypatch`, whichever matches the
+  [testing policy](../../docs/adr/0004-testing-and-evaluation-policy.md). Don't weaken or skip it.
+- Check the other new tests for the same gap: run the suite once with `OPENAI_API_KEY`,
+  `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, and `TAVILY_API_KEY` unset.
+
+Accepted when: `uv run pytest` is green with those keys unset, CI on #15 is green, and your reply
+names the fix commit.
+
 ## Closed
 
 - LD-001 (2026-09-27): verified; the mentor's office, archive, and study-guide moves merged in

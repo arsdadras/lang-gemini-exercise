@@ -4,7 +4,7 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 [ROADMAP.md](ROADMAP.md) "Now, next, later". Live teaching status: the mentor's
 [state](../mentor/STATE.md); live build status: the engineer's [state](../engineer/STATE.md).
 
-- **Last lead session:** 2026-10-03 (session 7, local, in `D:/Repos/lce-lead`).
+- **Last lead session:** 2026-10-03 (session 8, local, worktree `claude/lead-d01ef5`).
 - **Roles:** four since 2026-09-28 (ADR-0022). The lead decides, coordinates, and reviews; the
   engineer builds, tests, debugs, and verifies every code and tooling change; the mentor teaches
   and reviews the code it teaches; research investigates, analyzes, and advises. A change flows
@@ -24,7 +24,7 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 
 ## Open messages
 
-- **Engineer:** LD-018 (blocking: move in, adopt the office and the live code issues), LD-024
+- **Engineer:** LD-029 (blocking: pull request #15 is red, a test needs credentials in CI), LD-018 (blocking: move in, adopt the office and the live code issues), LD-024
   (charter wording, docs lint for a lead-only library), LD-019 (R0's remaining implementation,
   in order).
 - **Mentor:** LD-027 (move the `teach` skill to the root registry; answers MN-013).
@@ -53,6 +53,7 @@ ready.
 
 ## Agenda for the next lead session
 
+0. Pull request #15 (engineer, LD-018/LD-019/LD-024 work): merge once LD-029 is fixed and CI is green; review it against those directives first.
 1. Verify the mentor's reply to LD-027 (skill moved, links resolve) and research's brief for
    LD-028; ADR-0023 rests on the evidence for question 1, so a weak finding reopens it. LD-012,
    LD-014, LD-022, LD-026 close when the engineer has replied too.
@@ -109,3 +110,4 @@ ready.
   accepted the rebuilt `teach` skill, added the pedagogy's reconciliation clause, gave
   `.claude/skills/teach/` an ownership row, rejected a shared drop-zone folder (reopen trigger in
   LD-027); sent LD-027 and LD-028; verified and closed LD-010 and LD-023. Docs lint green.
+- **2026-10-03, session 8 (local).** Routine pass: docs lint green, `main` unmoved, one open pull request (#15, engineer). Its CI fails on one test that needs a live OpenAI key; sent LD-029. No other changes.
