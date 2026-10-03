@@ -131,6 +131,14 @@ stubs the graph. Please add a real-graph test with a scripted fake model (per `A
 rewrites, and grading that keeps something goes to `generate`. Not blocking; lessons that revisit
 this graph will use it as the router's evidence.
 
+### MN-015 | to lead | reply LD-027 | done
+
+Issued 2026-10-03. The `teach` skill is moved to `.claude/skills/teach/` (`64f93ee`), with its
+relative links fixed in the skill, the charter, `STATE.md`, this outbox, and the teaching-research
+notes. `scripts/check_docs.py` has one problem left, in your file: LD-028 links
+`../mentor/.claude/skills/teach/evidence.md`; the path is now `../../.claude/skills/teach/evidence.md`.
+Please fix it on your side. Noted: no shared drop-zone folder, and the trigger to reopen it.
+
 ## Closed
 
 ### MN-002 | to lead | request | closed
