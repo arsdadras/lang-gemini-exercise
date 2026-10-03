@@ -92,11 +92,24 @@ def test_library_entry_needs_front_matter_and_index(repo):
     )
     problems = check_docs.check_library(repo)
     assert problems == [
-        "library/governance/bad.md: unknown maintainer 'bob'",
+        "library/governance/bad.md: maintainer must be 'lead', found 'bob'",
         "library/governance/bad.md: 'updated' is not YYYY-MM-DD",
         "library/governance/bad.md: not listed in library/README.md",
         "library/governance/orphan.md: missing front matter",
     ]
+
+
+def test_library_entry_maintained_by_another_role_is_reported(repo):
+    write(repo, "library/README.md", "# Library\n\n[entry](governance/entry.md)\n")
+    for role in ("engineer", "mentor", "research"):
+        write(
+            repo,
+            "library/governance/entry.md",
+            LIBRARY_ENTRY.replace("maintainer: lead", f"maintainer: {role}"),
+        )
+        assert check_docs.check_library(repo) == [
+            f"library/governance/entry.md: maintainer must be 'lead', found '{role}'"
+        ]
 
 
 def test_outbox_grammar(repo):
