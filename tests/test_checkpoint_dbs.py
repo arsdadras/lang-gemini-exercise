@@ -65,7 +65,11 @@ def test_no_database_means_no_threads(state_dir: Path) -> None:
 def test_the_interpreter_agent_picks_its_prompt_by_role() -> None:
     prompts = []
     for worker in (False, True):
-        with patch.object(interpreter_agent, "create_deep_agent") as create:
+        with (
+            patch.object(interpreter_agent, "create_deep_agent") as create,
+            patch.object(interpreter_agent, "llm_model"),
+            patch.object(interpreter_agent, "make_model_fallback"),
+        ):
             interpreter_agent.make_interpreter_agent(
                 InMemorySaver(),
                 backend=object(),
