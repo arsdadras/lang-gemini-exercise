@@ -54,7 +54,7 @@ Every app and command, with session modes: [`AGENTS.md`](AGENTS.md#commands).
 
 ## Documentation
 
-- [`CLAUDE.md`](CLAUDE.md): session roles (mentor, lead, research) and what every session loads
+- [`CLAUDE.md`](CLAUDE.md): session roles (lead, mentor) and what every session loads
 - [`AGENTS.md`](AGENTS.md): layout, conventions, commands, gotchas
 - [`library/`](library/README.md): shared knowledge: principles, coordination protocol,
   ownership, git and dependency policies, development environment

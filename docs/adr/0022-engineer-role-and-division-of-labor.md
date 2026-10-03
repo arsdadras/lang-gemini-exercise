@@ -1,6 +1,7 @@
 # ADR-0022: An engineer role: building apart from teaching, research, and review
 
-- Status: Accepted; step 4 of the flow amended by [ADR-0023](0023-active-review-instead-of-typing.md)
+- Status: Superseded by [ADR-0025](0025-two-roles-lead-and-mentor.md) (the engineer role is retired);
+  step 4 of the flow was amended by [ADR-0023](0023-active-review-instead-of-typing.md)
   (the learner reviews the verified code instead of typing it)
 - Date: 2026-09-28
 - Origin: user direction (2026-09-28); design by the lead. Amends

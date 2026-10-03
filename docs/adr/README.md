@@ -37,13 +37,14 @@ set the old one's status to `Superseded by ADR-XXXX`.
 | [0015](0015-local-tier-and-test-mode-profiles.md) | A `local` Ollama tier, and named test-mode profiles switchable mid-session | Accepted |
 | [0016](0016-project-office-and-document-governance.md) | A project office owns direction; the mentor teaches; one writer per file | Accepted |
 | [0017](0017-production-standards-as-design-yardstick.md) | Production engineering standards are the design yardstick | Accepted |
-| [0018](0018-three-offices-library-and-archive.md) | Three offices, a shared library, an archive, and one message protocol | Accepted; amended by ADR-0019, ADR-0022, and ADR-0024 |
-| [0019](0019-role-worktrees-hooks-and-handoff.md) | One worktree and branch per role, session hooks, and a /handoff skill | Accepted |
+| [0018](0018-three-offices-library-and-archive.md) | Three offices, a shared library, an archive, and one message protocol | Accepted; amended by ADR-0019, ADR-0022, ADR-0024, and ADR-0025 |
+| [0019](0019-role-worktrees-hooks-and-handoff.md) | One worktree and branch per role, session hooks, and a /handoff skill | Accepted; amended by ADR-0025 |
 | [0020](0020-ownership-guard-routing-and-message-awareness.md) | An ownership guard, worktree routing, and automatic message awareness | Accepted |
 | [0021](0021-decision-models-as-a-second-model-family.md) | Decision models as a second model family, and one standard for every decision point | Accepted |
-| [0022](0022-engineer-role-and-division-of-labor.md) | An engineer role: building apart from teaching, research, and review | Accepted; amended by ADR-0023 |
+| [0022](0022-engineer-role-and-division-of-labor.md) | An engineer role: building apart from teaching, research, and review | Superseded by ADR-0025 (step 4 of its flow amended by ADR-0023) |
 | [0023](0023-active-review-instead-of-typing.md) | The learner reviews verified code instead of typing it | Accepted |
 | [0024](0024-a-lead-curated-library-in-five-categories.md) | A library the lead alone writes and curates, in five categories | Accepted |
+| [0025](0025-two-roles-lead-and-mentor.md) | Two roles, the lead and the mentor: engineering and research fold into the lead | Accepted |
 
 ## Template
 

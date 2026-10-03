@@ -2,7 +2,7 @@
 title: Git policy
 maintainer: lead
 status: current
-updated: 2026-09-27
+updated: 2026-10-03
 summary: One worktree and branch per role, pull requests to main merged by the lead without asking, branch retirement, CI, and what is never done to history.
 related: [dependency-policy.md, dev-environment.md, ../governance/ownership.md, ../../.github/workflows/ci.yml, ../../docs/adr/0019-role-worktrees-hooks-and-handoff.md]
 ---
@@ -10,8 +10,7 @@ related: [dependency-policy.md, dev-environment.md, ../governance/ownership.md, 
 # Git Policy
 
 Git and GitHub belong to the lead: it sets this policy, merges pull requests, and keeps `main`
-green. The engineer implements CI and the workflows in `.github/` as the lead decides. Under this policy every role commits and pushes its own work without
-asking (Principle 10).
+green. The lead also implements CI and the workflows in `.github/`. Under this policy every role commits and pushes its own work without asking (Principle 10).
 
 ## Branches and worktrees
 
@@ -21,9 +20,7 @@ Each role works in its own git worktree, on its own long-lived branch
 | Role | Worktree | Branch |
 | :--- | :--- | :--- |
 | Lead | `../lce-lead` | `lead` |
-| Engineer | `../lce-engineer` | `engineer` |
 | Mentor | `../lce-mentor` | `mentor` |
-| Research | `../lce-research` | `research` |
 
 - **`main`** is the integration branch, and nobody commits to it directly. Every change reaches
   it by pull request: the role opens one from its branch (`/handoff --pr`), CI runs, and the
@@ -43,7 +40,8 @@ Each role works in its own git worktree, on its own long-lived branch
 - **Short-lived branches** (a Dependabot update, a handoff, a spike) are deleted by the lead
   once merged. A branch retired without merging is first kept as an annotated tag
   `archive/<branch>` pushed to `origin`, so nothing is lost; then the branch goes. Role branches
-  are never deleted; GitHub's automatic head-branch deletion stays off.
+  are never deleted, except a retired role's, after a check that `main` holds everything on it
+  ([ADR-0025](../../docs/adr/0025-two-roles-lead-and-mentor.md)); GitHub's automatic head-branch deletion stays off.
 
 `scripts/setup_worktrees.py` creates or completes the worktrees
 ([dev-environment.md](dev-environment.md)).
@@ -58,11 +56,11 @@ Each role works in its own git worktree, on its own long-lived branch
   worktree, pushes your branch, and prints a three-line summary. Unfinished work is committed
   as `wip(<role>): ...`; a role branch may be red between sessions.
 - **Only verified states reach `main`.** A pull request is opened when the suite and the linters
-  pass. Code reaches `main` only through the engineer's pull requests; nothing is ever reset for
+  pass. Code reaches `main` only through pull requests, the lead's own included, with CI green; nothing is ever reset for
   the learner to type ([ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)).
 - **Conventional commits:** `type(scope): summary` in English, imperative, at most 72
   characters. Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `ci`. Documentation
-  from an office uses the role as scope (`docs(lead): ...`, `docs(research): ...`).
+  from an office uses the role as scope (`docs(lead): ...`, `docs(mentor): ...`).
 - **Never committed:** `.env` or any secret, `alireza/`, `.venv/`, `out/`, `.chroma_index/`,
   office sandboxes, `CLAUDE.local.md`, `.claude/settings.local.json`, plugin data under
   `.claude/`.

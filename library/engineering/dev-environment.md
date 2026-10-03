@@ -2,7 +2,7 @@
 title: Development environment
 maintainer: lead
 status: current
-updated: 2026-09-27
+updated: 2026-10-03
 summary: Python, uv, the role worktrees and their environments, session hooks and the ownership guard, sandboxes, secrets, and live runs.
 related: [dependency-policy.md, git-policy.md, ../../AGENTS.md, ../../scripts/setup_worktrees.py, ../../.claude/settings.json]
 ---
@@ -29,9 +29,7 @@ an index, or a `.venv` with another ([git-policy.md](git-policy.md),
 ```
 D:/Repos/lang_claude_exercise   main checkout: clean main, where the learner reads code; alireza/
 D:/Repos/lce-lead               lead's worktree, branch lead
-D:/Repos/lce-engineer           engineer's worktree, branch engineer
 D:/Repos/lce-mentor             mentor's worktree, branch mentor
-D:/Repos/lce-research           research's worktree, branch research
 ```
 
 `python scripts/setup_worktrees.py` (run from any checkout) creates what is missing and never
@@ -74,7 +72,7 @@ that has none; run it with no app running.
 A session outside the role worktrees (the main checkout, a fresh clone on another branch) plays
 no role: the hook tells it to move to the right worktree first (the desktop app's
 `change_directory` tool, or a new `claude` in that folder), and the guard refuses its edits
-until it does. `/lead`, `/mentor`, and `/research` route the same way. Only the user can switch
+until it does. `/lead` and `/mentor` route the same way. Only the user can switch
 the guard off, for one session, by starting Claude Code with `AGENTLAB_GUARD=off`.
 
 For a long session, `/loop 15m /inbox` checks the inbox on a timer; on GitHub, the `Messages`

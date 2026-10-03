@@ -2,7 +2,7 @@
 title: Technology radar
 maintainer: lead
 status: current
-updated: 2026-09-28
+updated: 2026-10-03
 summary: Where each technology stands in this repo (adopt, trial, assess, hold), and the locked versions of the core stack.
 related: [models.md, ../engineering/dependency-policy.md, ../architecture/decision-models.md]
 ---
@@ -55,7 +55,7 @@ Last reviewed: 2026-09-28.
 | LangSmith tracing | Adopt | Observability thread | [ADR-0004](../../docs/adr/0004-testing-and-evaluation-policy.md) |
 | `LocalShellBackend` with an allow-listed env | Adopt | Sandbox for Term P | [ADR-0005](../../docs/adr/0005-sandbox-secret-isolation.md) |
 | Postgres checkpointer and store | Assess | The production swap; enters with concurrency (Term E) | [ARCHITECTURE.md](../../library/architecture/standards.md#scale-seams) |
-| LangSmith Sandboxes (microVM; DeepAgents `LangSmithSandbox` backend) | Assess | Real isolation for P4's shell; research evaluates it for R4 and E1 (LD-005) | [ADR-0005](../../docs/adr/0005-sandbox-secret-isolation.md), DEC-012 |
+| LangSmith Sandboxes (microVM; DeepAgents `LangSmithSandbox` backend) | Assess | Real isolation for P4's shell; the lead evaluates it for R4 and E1 (LD-005) | [ADR-0005](../../docs/adr/0005-sandbox-secret-isolation.md), DEC-012 |
 | LangSmith Context Hub (versioned contexts; DeepAgents `ContextHubBackend`) | Assess | Production context registry: E2, and one line in the P5 teaching pass. Not for repo docs | DEC-011 |
 | LangSmith Engine (trace failures clustered into issues, fixes proposed) | Assess | P8-C2's feedback loop | DEC-012 |
 | Managed Deep Agents | Assess | Hosted runs, P12-B3 | DEC-012 |

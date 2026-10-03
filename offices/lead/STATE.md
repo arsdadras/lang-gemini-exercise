@@ -2,72 +2,113 @@
 
 Read first in every lead session; rewrite it, don't append. Program status in one place:
 [ROADMAP.md](ROADMAP.md) "Now, next, later". Live teaching status: the mentor's
-[state](../mentor/STATE.md); live build status: the engineer's [state](../engineer/STATE.md).
+[state](../mentor/STATE.md).
 
 - **Last lead session:** 2026-10-03 (session 8, local, worktree `claude/lead-d01ef5`).
-- **Roles:** four since 2026-09-28 (ADR-0022). The lead decides, coordinates, and reviews; the
-  engineer builds, tests, debugs, and verifies every code and tooling change; the mentor teaches
-  and reviews the code it teaches; research investigates, analyzes, and advises. A change flows
-  lead -> engineer -> the lead's review and merge -> mentor. The learner reviews the verified
-  code instead of typing it (ADR-0023). Reports to the user open with the bottom line
-  (principle 12).
-- **Library:** the lead's alone to write and curate, in five categories (ADR-0024). First pass
-  done: the pedagogy, the radar, and the architecture standards moved in from this office;
-  redirects stay at `PEDAGOGY.md` and `TECH_RADAR.md` until the mentor and research update
-  their links.
+- **Roles:** two since 2026-10-03 (ADR-0025, DEC-031). The lead decides, plans, builds, tests,
+  debugs, researches, and reviews; the mentor teaches and reviews the code it teaches. A change
+  flows plan -> build and verify (lead) -> merge on green CI -> notice to the mentor. The learner
+  reviews the verified code instead of typing it (ADR-0023). Reports to the user open with the
+  bottom line (principle 12). The engineer's and research's offices are in
+  [`archive/offices/`](../../archive/README.md); the research record is
+  [`research/`](research/CATALOG.md).
+- **Library:** the lead's alone to write and curate, in five categories (ADR-0024). Redirects stay
+  at `PEDAGOGY.md` and `TECH_RADAR.md` until the mentor updates its links (BACKLOG).
 - **Repo:** each role has its own worktree and branch (ADR-0019): `D:/Repos/lce-lead`,
-  `lce-engineer`, `lce-mentor`, `lce-research`, each with its own `.venv` and `.env`; the main
-  checkout is a clean `main` that takes no edits. The ownership guard, worktree routing, and
-  message awareness are live (ADR-0020); since ADR-0022 the guard keeps the lead out of code and
-  tooling. Branch protection isn't available on GitHub Free for a private repo, so "main only by
-  pull request" is policy, backed by the guard and the Messages report.
+  `lce-mentor`, each with its own `.venv` and `.env`; the main checkout is a clean `main` that
+  takes no edits. The ownership guard, worktree routing, and message awareness are live
+  (ADR-0020); the lead owns every path except the mentor's. Branch protection isn't available on
+  GitHub Free for a private repo, so "main only by pull request" is policy, backed by the guard
+  and the Messages report.
 
 ## Open messages
 
-- **Engineer:** LD-029 (blocking: pull request #15 is red, a test needs credentials in CI), LD-018 (blocking: move in, adopt the office and the live code issues), LD-024
-  (charter wording, docs lint for a lead-only library), LD-019 (R0's remaining implementation,
-  in order).
-- **Mentor:** LD-027 (move the `teach` skill to the root registry; answers MN-013).
-- **Research:** LD-021 (mandate and the Jev follow-ups), LD-025 (library links), LD-003 with
-  LD-015 (upstream watch), LD-005 (measurements; its code-needing parts go through the engineer),
-  LD-028 (teaching-method questions from MN-013, with the audit MN-012).
-- **All:** LD-012, LD-014, LD-022, LD-026 (research acknowledged the first two; the mentor and
-  the engineer haven't yet).
+- **Mentor:** LD-027 (move the `teach` skill to the root registry; answers MN-013), LD-030 (two
+  roles: update your office, close MN-012 and MN-014, the eval harness is ready to teach).
+- **From the mentor:** MN-013 (answered by LD-027; the mentor closes it), MN-012 and MN-014 (the
+  mentor closes them under LD-030).
 
 Details in [OUTBOX.md](OUTBOX.md).
+
+## Build queue (taken over from the engineer, ADR-0025)
+
+R0's implementation, from LD-019 (verified in pull request #15, merged with this session's
+pull request): the eval-lite harness, timeouts and GapGPT embeddings, evidence IDs, per-app
+checkpoint databases and the worker prompt. Left:
+
+1. **Delete the old checkpoint database:** `git rm src/data/dbs/checkpoints.db` (3.7 MB, tracked,
+   nothing references it; a consistent copy is at `out/state/`). Needs the user's OK (below).
+2. **Record the embedding change:** `EMBEDDING_SPEC` (GapGPT `text-embedding-3-small`, 1536
+   dimensions) replaced Gemini's embeddings at the user's instruction. Add a models-catalog line
+   and a note in ADR-0014's follow-up.
+3. **R0 close:** record the specialist contract as an ADR, update
+   [ARCHITECTURE.md](ARCHITECTURE.md) "Current system", then make R1 ready: the decision seam
+   (ADR-0021) ahead of the lesson.
+4. **Teaching handoff:** the eval harness (R0 topic 3) is ready to teach: LD-030.
+
+## Live code issues
+
+Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
+
+- **Coordinator shell has no approval step:** approvals raised inside a subagent aren't surfaced
+  to the CLI; the banner states it. Fix: P6-B3.
+- **RAG index must be rebuilt:** `.chroma_index` predates the restructure and holds Gemini's
+  vectors; the embedding model is now 1536-dimensional, so the old index can't answer queries.
+  The corpus list also names different files now. Rebuild in R2 (paced; minutes); the paced
+  batch size and delay were sized for Gemini's free quota, and GapGPT's limits are unmeasured.
+- **Dead code:** `middlewares/groundedness_middleware.py` (wired in R1) and
+  `utils/time_travel_util.py` (removed in R5 unless a consumer appears).
+- **Personal data in traces:** only P5 masks before upload. R5.
+- **Perso-Arabic script in long P5 replies:** repair cuts leaked lines by about three quarters
+  (`EV-2026-09-17-finglish-line-repair`); the repair's current model hasn't been re-measured. The
+  root cause is the assistant model.
+- **`local` tier is opt-in only:** 90-360 s per structured call
+  (`EV-2026-09-23-local-ollama-qwen`, [ADR-0015](../../docs/adr/0015-local-tier-and-test-mode-profiles.md)).
+- **Retries stack in hosted chat calls:** the OpenAI SDK retries twice by default, so a call can
+  take up to three timeouts (3 x 120 s) per provider before the fallback switches. Pick a number
+  (SDK `max_retries` per spec).
+- **`_TimeoutSearchWrapper`** (`tools/web_search_tool.py`) replaces langchain-tavily 0.2.18's two
+  request methods because the library sets no timeout. Remove it once the library takes one;
+  `tests/test_timeouts.py` shows what to check.
+
+## Research queue (taken over from research, ADR-0025)
+
+Not started; the lead measures and records in [`research/`](research/CATALOG.md).
+
+- **Upstream watch:** a weekly routine over the pinned stack's releases and the radar's watched
+  items, written as a procedure first, then scheduled (was LD-003, LD-015).
+- **BR-002's measurements,** and LangSmith Sandboxes for P4 (R4, E1) (was LD-005).
+- **The Jev follow-ups** and decision-accuracy techniques (state shaping, question wording,
+  decomposition, answer-set design), measured on our labeled sets (was LD-021). Replaying our own
+  sessions to measure development-loop gates needs the user's yes.
+- **Teaching-method questions** from MN-013 and the mentor's audit MN-012 (was LD-028):
+  [synthesis, section 5](../mentor/artifacts/teaching-research/synthesis.md#5-open-questions-worth-a-verified-study).
+  ADR-0023 rests on the evidence for question 1; a weak finding reopens it.
 
 ## The Jev file
 
 Decided 2026-09-28: the user accepted the lead's [dossier](artifacts/jev-dossier.md) in full
 (DEC-022 to DEC-025, ADR-0021, roadmap v4.2). The rules live in
 [`library/architecture/decision-models.md`](../../library/architecture/decision-models.md). First
-code: the eval harness's decision datasets (LD-019), then the `decision_model` seam when R1 is made
+code: the eval harness's decision datasets (done), then the `decision_model` seam when R1 is made
 ready.
 
 ## Reserved for the user
 
 - The explicit yes before a development-loop hook sends session content to a hosted decider, or a
   replay reads past transcripts (DEC-025); asked when the first such hook is ready.
-- The OK to delete the old `src/data/dbs/checkpoints.db` (LD-019 item 5).
+- The OK to delete the old `src/data/dbs/checkpoints.db` (build queue item 1).
 - Trust the project's hooks once when Claude Code asks.
 
 ## Agenda for the next lead session
 
-0. Pull request #15 (engineer, LD-018/LD-019/LD-024 work): merge once LD-029 is fixed and CI is green; review it against those directives first.
-1. Verify the mentor's reply to LD-027 (skill moved, links resolve) and research's brief for
-   LD-028; ADR-0023 rests on the evidence for question 1, so a weak finding reopens it. LD-012,
-   LD-014, LD-022, LD-026 close when the engineer has replied too.
-2. Review and merge the engineer's pull requests against LD-018, LD-019, and LD-024; verify
-   research's replies to LD-021 and LD-025; close what checks out. When the mentor and research
-   have updated their links, remove the redirects (BACKLOG).
+1. Verify the mentor's replies to LD-027 and LD-030 (skill moved, links resolve, office updated).
+2. Build queue items 1-3, then make R1 ready.
 3. Write the P1 design card before R1 opens, with its decision points (point 17); then P2-P4
    before their stages.
-4. When R0 closes: record the specialist contract as an ADR, update
-   [ARCHITECTURE.md](ARCHITECTURE.md) "Current system", and make R1 ready: the decision seam
-   (ADR-0021) as the engineer's next directive, ahead of the lesson.
-5. When research answers LD-015, create the weekly routine.
-6. At every phase and project boundary: curate the library from every office (ADR-0024).
-7. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
+4. Create the weekly upstream-watch routine once its procedure is written.
+5. At every phase and project boundary: curate the library (ADR-0024).
+6. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
 
 ## Session log
 
@@ -97,17 +138,15 @@ ready.
   dossier and the user's sources, wrote the lead's dossier, and after the user accepted it
   recorded DEC-022 to DEC-025 and ADR-0021 (roadmap v4.2, stage D1, design card point 17, the
   library entry, the `decision-points` skill). Founded the engineer role on the user's direction
-  (DEC-026, ADR-0022): its office, worktree, tooling support, and ownership; moved R0's
-  implementation to it (LD-018, LD-019); new mandates for the mentor and research (LD-020,
-  LD-021); reports open with the bottom line (DEC-027). Merged pull requests #7 and #8; closed
-  LD-004 and LD-011.
-- **2026-09-28, session 6 continued.** On the user's direction, relayed from a side chat: the
-  learner reviews instead of typing (DEC-028, ADR-0023; LD-020 reissued as LD-023, LD-024 to the
-  engineer), and the library became the lead's alone, in five categories, with a first curation
-  pass (DEC-029, ADR-0024; LD-025, LD-026).
-- **2026-10-03, session 7 (local).** The session started in a mentor-notebook worktree and could
-  not `change_directory`; it ended up in `lce-lead` after the turn. Decided MN-013 (DEC-030):
-  accepted the rebuilt `teach` skill, added the pedagogy's reconciliation clause, gave
-  `.claude/skills/teach/` an ownership row, rejected a shared drop-zone folder (reopen trigger in
-  LD-027); sent LD-027 and LD-028; verified and closed LD-010 and LD-023. Docs lint green.
-- **2026-10-03, session 8 (local).** Routine pass: docs lint green, `main` unmoved, one open pull request (#15, engineer). Its CI fails on one test that needs a live OpenAI key; sent LD-029. No other changes.
+  (DEC-026, ADR-0022); new mandates for the mentor and research (LD-020, LD-021); reports open
+  with the bottom line (DEC-027). The learner reviews instead of typing (DEC-028, ADR-0023), and
+  the library became the lead's alone, in five categories (DEC-029, ADR-0024).
+- **2026-10-03, session 7 (local).** Decided MN-013 (DEC-030): accepted the rebuilt `teach`
+  skill, the pedagogy's reconciliation clause, an ownership row for `.claude/skills/teach/`,
+  rejected a shared drop-zone folder; sent LD-027; verified and closed LD-010 and LD-023.
+- **2026-10-03, session 8 (local).** On the user's direction, collapsed four roles into two
+  (DEC-031, ADR-0025): the lead owns every path but the mentor's; `ROLES` is lead and mentor
+  in the scripts and tests; the engineer and research skills, offices, worktrees, and branches
+  are gone (offices archived, the research record moved to `offices/lead/research/`); open
+  messages to them closed or withdrawn; the engineer's pull request #15 merged in (its CI had
+  been fixed in `b2c8b37`); LD-030 to the mentor.

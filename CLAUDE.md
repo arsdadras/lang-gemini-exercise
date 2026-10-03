@@ -15,28 +15,26 @@ Rules for every role, in every session, and how the roles coordinate:
 
 ## Session roles
 
-Four roles work here, each in its own session, worktree, and branch
+Two roles work here, each in its own session, worktree, and branch
 ([ADR-0018](docs/adr/0018-three-offices-library-and-archive.md),
 [ADR-0019](docs/adr/0019-role-worktrees-hooks-and-handoff.md),
-[ADR-0022](docs/adr/0022-engineer-role-and-division-of-labor.md)). Each has an office under
+[ADR-0025](docs/adr/0025-two-roles-lead-and-mentor.md)). Each has an office under
 `offices/`; shared knowledge lives in `library/` ([index](library/README.md)).
 
 | Role | Job | Worktree, branch |
 | :--- | :--- | :--- |
-| **Lead** | Decides, coordinates, and reviews: direction, curriculum, architecture, technology, governance, git and GitHub | `../lce-lead`, `lead` |
-| **Engineer** | Builds what the lead decides: implements, tests, debugs, and verifies code and repo tooling | `../lce-engineer`, `engineer` |
+| **Lead** | Decides, plans, builds, researches, and reviews: direction, curriculum, architecture, technology, governance, code and tooling, evidence, git and GitHub; everything except teaching | `../lce-lead`, `lead` |
 | **Mentor** | Teaches the learner; reviews the code it teaches | `../lce-mentor`, `mentor` |
-| **Research** | Investigates, analyzes, and advises; brings the user the big picture; decides nothing | `../lce-research`, `research` |
 
 - **The role comes from where the session runs.** The session hook states it (the worktree's
   config, or the branch name in a cloud session), and each worktree's `CLAUDE.local.md` loads
   that role's charter, `offices/<role>/README.md`. Where no `CLAUDE.local.md` exists, read the
-  charter first; `/lead`, `/engineer`, `/mentor`, and `/research` load theirs explicitly.
+  charter first; `/lead` and `/mentor` load theirs explicitly.
 - **Work only where your role lives.** The main checkout plays no role, and the ownership guard
-  refuses edits there, in another role's worktree, and outside your role's paths. When a request
-  needs a role and the session isn't in its worktree, move the session there first (the desktop
-  app's `change_directory` tool, or a new `claude` in that folder); `/lead`, `/mentor`, and
-  `/research` do this for you.
+  refuses edits there, in the other role's worktree, and outside your role's paths. When a
+  request needs a role and the session isn't in its worktree, move the session there first (the
+  desktop app's `change_directory` tool, or a new `claude` in that folder); `/lead` and
+  `/mentor` do this for you.
 - **Every session** starts from the hook's summary, its `STATE.md`, and its inbox, and ends with
   `/handoff`.
 
@@ -47,4 +45,5 @@ Four roles work here, each in its own session, worktree, and branch
 - The lead's records (`offices/lead/`, `docs/adr/`, `docs/design_cards/`) and the library decide
   direction, architecture, and policy.
 - Every path has one writing role; write only inside yours
-  ([ownership](library/governance/ownership.md)).
+  ([ownership](library/governance/ownership.md)). The mentor writes its office, the study
+  guides, and the `teach` skill; everything else is the lead's.

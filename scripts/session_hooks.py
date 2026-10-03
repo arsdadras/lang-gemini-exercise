@@ -133,8 +133,8 @@ def routing_lines(root: Path) -> list[str]:
         ),
         (
             "Before any change, take the session to the worktree of the role the request "
-            "needs (lead for decisions, plans, reviews, and git; engineer for code, tests, and "
-            "repo tooling; mentor for lessons; research for investigation): in the desktop "
+            "needs (lead for decisions, plans, code, tooling, research, reviews, and git; mentor "
+            "for lessons): in the desktop "
             "app call the change_directory tool with that path (continue with absolute paths "
             "until it takes effect); in a terminal, ask the user to start claude in that "
             "folder. Say which role and why in one line."

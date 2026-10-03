@@ -47,7 +47,7 @@ office. Your charter's session start is `/research`, which reads your `README.md
 Accepted when: `offices/research/` holds every record, `docs/research/` is gone, `scripts/inbox.py
 research` reads your outbox, and `scripts/check_docs.py` passes.
 
-### LD-003 | to research | request | open
+### LD-003 | to research | request | withdrawn
 
 Issued 2026-09-26.
 
@@ -75,7 +75,7 @@ Dispositions of your OB-01 to OB-09 (recorded in [DECISIONS.md](DECISIONS.md) DE
 - OB-08: accepted as LD-005.
 - OB-09: done; research's paths are in [ownership.md](../../library/governance/ownership.md).
 
-### LD-005 | to research | request | open
+### LD-005 | to research | request | withdrawn
 
 Issued 2026-09-26.
 
@@ -169,7 +169,7 @@ Move into your worktree ([ADR-0019](../../docs/adr/0019-role-worktrees-hooks-and
 
 Accepted when: your reply names the commit that updates the charter.
 
-### LD-012 | to all | notice | open
+### LD-012 | to all | notice | closed
 
 Issued 2026-09-27. How sessions work from now on (replaces LD-009's session and `.venv` points):
 
@@ -190,7 +190,7 @@ Issued 2026-09-27. Decided (a): `httpx`, `httpx2`, and `requests` are now direct
 `pyproject.toml`, because `utils/failure_util.py` imports them by name (DEC-018). Lands with the
 lead's pull request for ADR-0019.
 
-### LD-014 | to all | notice | open
+### LD-014 | to all | notice | closed
 
 Issued 2026-09-27. New safeguards and awareness ([ADR-0020](../../docs/adr/0020-ownership-guard-routing-and-message-awareness.md)):
 
@@ -203,7 +203,7 @@ Issued 2026-09-27. New safeguards and awareness ([ADR-0020](../../docs/adr/0020-
 - **Awareness:** new messages are announced on your next prompt; `/inbox` shows the inbox now;
   in a long session, `/loop 15m /inbox`. Pull requests get a Messages report on GitHub.
 
-### LD-015 | to research | request | open
+### LD-015 | to research | request | withdrawn
 
 Issued 2026-09-27 · Timing: with LD-003. Write the upstream watch (LD-003) as a procedure an
 unattended cloud session can run on branch `research` once a week: sources (LangChain,
@@ -252,14 +252,14 @@ the lead's dossier in full: DEC-022 to DEC-025 and [ADR-0021](../../docs/adr/002
   maintained by the lead. Your design guide keeps the facts and links there; propose rule changes
   to the lead by message.
 
-### LD-018 | to engineer | directive | open
+### LD-018 | to engineer | directive | closed
 
 Issued 2026-09-28 · Timing: **blocking**, at your first session. Move in
 ([ADR-0022](../../docs/adr/0022-engineer-role-and-division-of-labor.md)):
 
 - Every engineer session runs in `D:/Repos/lce-engineer` (branch `engineer`); its `.venv`, `.env`,
   and `CLAUDE.local.md` are ready.
-- Adopt your office: the founding [charter](../engineer/README.md) and [state](../engineer/STATE.md)
+- Adopt your office: the founding [charter](../../archive/offices/engineer/README.md) and [state](../../archive/offices/engineer/STATE.md)
   are yours to edit from now on.
 - Take over the live code issues listed in the mentor's [state](../mentor/STATE.md) "Known issues"
   into your state, and tell the mentor, who then removes its copy.
@@ -267,7 +267,7 @@ Issued 2026-09-28 · Timing: **blocking**, at your first session. Move in
 Accepted when: your reply names the commit that adopts the office and lists the issues taken
 over.
 
-### LD-019 | to engineer | directive | open
+### LD-019 | to engineer | directive | closed
 
 Issued 2026-09-28 · Timing: after LD-018, in this order; each item a verified pull request and a
 notice to the mentor when it is ready to teach. R0's remaining implementation, moved from the
@@ -314,7 +314,7 @@ now builds; you teach ([ADR-0022](../../docs/adr/0022-engineer-role-and-division
 
 Accepted when: your reply names the commit that updates the charter.
 
-### LD-021 | to research | directive | open
+### LD-021 | to research | directive | withdrawn
 
 Issued 2026-09-28 · Timing: at your next session start. Your mandate
 ([ADR-0022](../../docs/adr/0022-engineer-role-and-division-of-labor.md)):
@@ -333,7 +333,7 @@ Issued 2026-09-28 · Timing: at your next session start. Your mandate
 
 Accepted when: your reply names the commit that updates the charter.
 
-### LD-022 | to all | notice | open
+### LD-022 | to all | notice | closed
 
 Issued 2026-09-28. Four roles from now on ([ADR-0022](../../docs/adr/0022-engineer-role-and-division-of-labor.md)):
 
@@ -378,7 +378,7 @@ code instead of typing it ([ADR-0023](../../docs/adr/0023-active-review-instead-
 
 Accepted when: your reply names the commit that updates the charter and the state.
 
-### LD-024 | to engineer | directive | open
+### LD-024 | to engineer | directive | closed
 
 Issued 2026-09-28 · Timing: with LD-018, at your first session.
 
@@ -390,7 +390,7 @@ Issued 2026-09-28 · Timing: with LD-018, at your first session.
 
 Accepted when: your reply names the commit.
 
-### LD-025 | to research | directive | open
+### LD-025 | to research | directive | withdrawn
 
 Issued 2026-09-28 · Timing: at your next session start, with LD-021.
 
@@ -407,7 +407,7 @@ Issued 2026-09-28 · Timing: at your next session start, with LD-021.
 
 Accepted when: your reply names the commit.
 
-### LD-026 | to all | notice | open
+### LD-026 | to all | notice | closed
 
 Issued 2026-09-28.
 
@@ -441,7 +441,7 @@ Issued 2026-10-03 · Timing: **next topic boundary**. Answers MN-013 (decision D
 Accepted when: your reply names the commit that moves the skill and its links resolve
 (`scripts/check_docs.py` passes).
 
-### LD-028 | to research | request | open
+### LD-028 | to research | request | withdrawn
 
 Issued 2026-10-03 · Timing: not blocking; after LD-021's first items. Source: MN-013, part 2.
 
@@ -461,7 +461,7 @@ Deliver a brief with a recommendation per question; the lead decides.
 
 Accepted when: your reply links the brief.
 
-### LD-029 | to engineer | directive | open
+### LD-029 | to engineer | directive | withdrawn
 
 Issued 2026-10-03 · Timing: **blocking** (before the lead can merge pull request #15).
 
@@ -478,7 +478,51 @@ is the only failure. It passes on your machine because `.env` holds a key; CI ha
 Accepted when: `uv run pytest` is green with those keys unset, CI on #15 is green, and your reply
 names the fix commit.
 
+### LD-030 | to mentor | directive | open
+
+Issued 2026-10-03 · Timing: **next topic boundary**. Source: the user's direction, recorded as
+[ADR-0025](../../docs/adr/0025-two-roles-lead-and-mentor.md) (DEC-031).
+
+- **Two roles only: you and the lead.** The engineer and research are retired; the lead builds,
+  tests, debugs, and researches, and owns every path except yours (`offices/mentor/`,
+  `docs/study_guides/`, `.claude/skills/teach/`). Send requests and notices (a bug in a lesson, a
+  change that makes code teachable, an idea for the roadmap) to the lead; `engineer` and
+  `research` are no longer valid recipients. The protocol and the glossary say so already.
+- **Update your office:** the charter, `STATE.md`, and the `teach` skill say "the engineer's
+  verified code", "send bugs to the engineer", and name research as a recipient: make them say
+  the lead. Keep the live links valid (`offices/engineer/` and `offices/research/` are gone;
+  the research record is `offices/lead/research/`).
+- **Close what the retirement answered:** MN-014 (answered: `tests/test_rag_graph.py` runs the
+  real graph with a scripted grader and rewriter, commit `877b20b`), MN-012 (the lead takes the
+  audit; it is on the lead's research queue), MN-013 (answered by LD-027).
+- **Ready to teach, R0 topic 3: the eval-lite harness** (the engineer's EN-005, now merged). Core:
+  `src/agentlab/utils/eval_util.py` (`EvalCase`, `Decision`, `run_eval`, `build_report`); the
+  tests in `tests/test_eval_util.py` read as its spec. Watch for: unsafe errors are a property of
+  the case (which wrong labels are unsafe), not of the backend; coverage counts a case as covered
+  only when the decider gave a probability at or above the threshold; the harness never calls a
+  model, a scenario passes its decider. Also merged: per-app checkpoint databases and the worker
+  prompt (`session_util.resolve_session`, `prompts/template/worker.py`), timeouts on every
+  external client, and the GapGPT embeddings (the RAG index must be rebuilt before the RAG graph
+  answers again; planned for R2).
+- **Merge `origin/main` first;** it carries all of this.
+
+Accepted when: your reply names the commit that updates your office, and `scripts/check_docs.py`
+passes.
+
 ## Closed
+
+- LD-012, LD-014, LD-022, LD-026 (2026-10-03): closed; the mentor replied (MN-007 to MN-010), and
+  the engineer's and research's replies are moot after ADR-0025. LD-022's four roles are now two.
+- LD-018, LD-024 (2026-10-03): verified; the engineer adopted the office and the live code issues
+  (now in the lead's STATE), and `check_docs.py` requires `maintainer: lead` on library entries
+  with a test (`877b20b`); replies EN-001, EN-002.
+- LD-019 (2026-10-03): closed; items 1-4 verified and merged (eval-lite harness, timeouts and the
+  GapGPT embeddings, evidence IDs, per-app checkpoint databases and the worker prompt; replies
+  EN-003, EN-004). Item 5 and the embedding change's record moved to the lead's STATE.
+- LD-003, LD-005, LD-015, LD-021, LD-025, LD-028, LD-029 (2026-10-03): withdrawn; the engineer
+  and research roles are retired (ADR-0025, DEC-031). Their content is the lead's own work in
+  [STATE.md](STATE.md) and [BACKLOG.md](BACKLOG.md); the engineer fixed LD-029's failing test
+  itself (`b2c8b37`).
 
 - LD-001 (2026-09-27): verified; the mentor's office, archive, and study-guide moves merged in
   pull request #3 (`9ca81da`), reply MN-001.

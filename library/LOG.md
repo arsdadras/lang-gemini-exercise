@@ -32,3 +32,8 @@ Append-only: one line per change to the library, newest last. Format:
 - 2026-09-28 | lead | teaching/pedagogy.md | Moved in from the lead's PEDAGOGY.md; active review replaces typing (ADR-0023)
 - 2026-09-28 | lead | governance/glossary.md | Engineer, active review, decision point, decider, cascade and fallback
 - 2026-09-28 | lead | engineering/git-policy.md | No exercise states; code reaches main only through the engineer
+- 2026-10-03 | lead | governance/protocol.md | Two roles, lead and mentor; the engineer and research retired; messages LD and MN only (ADR-0025)
+- 2026-10-03 | lead | governance/ownership.md | Every path is the lead's except the mentor's; the research record is `offices/lead/research/`
+- 2026-10-03 | lead | governance/glossary.md | Engineer and Research removed; Lead widened; Research record
+- 2026-10-03 | lead | engineering/git-policy.md, engineering/dev-environment.md | Two worktrees; a retired role's branch may be deleted once `main` holds it
+- 2026-10-03 | lead | teaching/pedagogy.md, architecture/decision-models.md, technology/*.md, engineering/dependency-policy.md | Engineer and research references now the lead; research links to `offices/lead/research/`

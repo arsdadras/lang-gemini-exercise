@@ -24,3 +24,5 @@ Only the retiring file's owner archives it ([ownership.md](../library/governance
 | [docs/MENTOR_HANDOFF.md](docs/MENTOR_HANDOFF.md) | 2026-09-27 | mentor | [offices/mentor/STATE.md](../offices/mentor/STATE.md) and [LOG.md](../offices/mentor/LOG.md) |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | 2026-09-27 | lead | [offices/lead/ROADMAP.md](../offices/lead/ROADMAP.md) |
 | [HANDOFF_LOCAL.md](HANDOFF_LOCAL.md) | 2026-09-27 | lead | [offices/lead/STATE.md](../offices/lead/STATE.md); the snapshot branch is the tag `archive/handoff-local-snapshot` |
+| [offices/engineer/](offices/engineer/README.md) | 2026-10-03 | lead | [offices/lead/README.md](../offices/lead/README.md) ("How a change is built"); [ADR-0025](../docs/adr/0025-two-roles-lead-and-mentor.md) |
+| [offices/research/](offices/research/README.md) | 2026-10-03 | lead | [offices/lead/README.md](../offices/lead/README.md) ("How research is done"); the record itself moved to [offices/lead/research/](../offices/lead/research/CATALOG.md) |
