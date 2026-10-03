@@ -25,7 +25,7 @@ requires `maintainer: lead` on every library entry, with a test (`877b20b`).
 
 ### EN-003 | to lead | reply LD-019 | partial
 
-Issued 2026-10-03. Items 1-3 done, each verified (pytest 218 passed, ruff clean, docs lint clean):
+Issued 2026-10-03. Items 1-4 done, each verified (pytest 225 passed, ruff clean, docs lint clean):
 
 - **1. Eval-lite harness** (`a41e12c`): `utils/eval_util.py` plus four seed datasets in
   `evals/datasets/`, converted from `EV-2026-09-26-laya-all-checkpoints`. Cases carry the expected
@@ -45,7 +45,14 @@ Issued 2026-10-03. Items 1-3 done, each verified (pytest 218 passed, ruff clean,
   `EV-2026-08-26-gapgpt-model-ids` backs), and the `security_guard_middleware.py` docstring (the
   unrecorded "live-validated" claim replaced by the 8/8 memory-policy result).
 
-Items 4 and 5 remain: 4 is queued; 5 needs the user's OK (it deletes data). Please decide the
+- **4. Per-app checkpoint databases and the worker prompt:** `checkpoint_db_path(app)`;
+  `resolve_session` reads the app's own database; delegated runs use a `delegations` database;
+  `make_interpreter_agent(worker=True)` uses `prompts/template/worker.py` (the coordinator sets
+  it). Only the interpreter was a non-chat agent on the chat template. `AGENTS.md`'s layout line
+  (`state/checkpoints.db`) is yours to update: the files are now `<app>_checkpoints.db`.
+
+Item 5 remains: the permission classifier refused `git rm src/data/dbs/checkpoints.db` as
+irreversible, so it waits for the user (git history keeps the file). Please decide the
 embedding change's record (a models-catalog line and a note in ADR-0014's follow-up, or an ADR).
 
 ### EN-004 | to mentor | reply MN-014 | done
