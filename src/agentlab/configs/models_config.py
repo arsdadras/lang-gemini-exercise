@@ -15,15 +15,22 @@ weights chosen per tier in ``TIER_WEIGHTS``. So a tier's primary changes
 automatically if a provider's scored profile changes, instead of silently
 drifting out of sync with a hardcoded order.
 
-Model IDs were verified against each gateway's ``/v1/models`` list and a live
-call on 2026-08-26, except the Anthropic IDs (Opus 5.5, Sonnet 5, Haiku 4.5),
-confirmed current as of this update, and the ``opensource`` entries, which are
-illustrative reputable open-weight picks (GLM, Qwen, DeepSeek) pending a live
-check against GapGPT's catalog. Verify any new ID the same way before relying
-on it in production.
+What backs each ID is in EV-2026-08-26-gapgpt-model-ids. Only the GPT IDs and
+``claude-sonnet-5`` were checked against GapGPT's ``/v1/models`` with a live call (2026-08-26).
+The two Gemini IDs were checked on Google's own API, not through GapGPT. ``claude-opus-5-5`` and
+``claude-haiku-4-5-20251001`` come from model knowledge, and ``gemini-3.8-pro`` and the
+``opensource`` entries (GLM, Qwen, DeepSeek) are illustrative picks never checked; only
+``glm-5.3`` has answered a live call since (EV-2026-09-25-laya-zero-shot). Verify any new ID with
+a ``/v1/models`` listing and a live call before relying on it in production.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+
+from agentlab.configs.timeouts_config import (
+    CHAT_MODEL_TIMEOUT_SECONDS,
+    EMBEDDING_TIMEOUT_SECONDS,
+    LOCAL_MODEL_TIMEOUT_SECONDS,
+)
 
 
 @dataclass(frozen=True)
@@ -40,6 +47,7 @@ class ModelSpec:
     base_url_env: str | None = None
     temperature: float = 0.0
     top_p: float | None = None
+    timeout_seconds: float = CHAT_MODEL_TIMEOUT_SECONDS
 
 
 @dataclass(frozen=True)
@@ -88,6 +96,7 @@ def _ollama(model: str) -> ModelSpec:
         model=model,
         model_provider="ollama",
         base_url_env="OLLAMA_HOST",
+        timeout_seconds=LOCAL_MODEL_TIMEOUT_SECONDS,
     )
 
 
@@ -192,6 +201,13 @@ MODEL_TIERS: dict[str, dict[str, ModelSpec]] = {
         "qwen-2b": _ollama("qwen3.5:2b"),
     },
 }
+
+# The embedding model, through GapGPT like the paid tiers (OpenAI-compatible /v1/embeddings).
+# Live-verified 2026-10-03: 1536 dimensions. Changing it needs an index rebuild.
+EMBEDDING_SPEC = replace(
+    _gapgpt("text-embedding-3-small"),
+    timeout_seconds=EMBEDDING_TIMEOUT_SECONDS,
+)
 
 DEFAULT_TIER = "low"
 

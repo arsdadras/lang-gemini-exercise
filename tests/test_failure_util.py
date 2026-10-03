@@ -1,8 +1,7 @@
 """Tests for failure classes: real library exceptions, retry policy behavior, safe reasons."""
 
 import operator
-import socket
-from collections.abc import Callable, Iterator
+from collections.abc import Callable
 from typing import Annotated, TypedDict
 
 import anthropic
@@ -68,26 +67,6 @@ def test_provider_errors_are_classified_by_status_or_network_failure(
     error: Exception, kind: str
 ) -> None:
     assert failure_kind(error) == kind
-
-
-@pytest.fixture
-def silent_server() -> Iterator[str]:
-    """A local address that accepts connections and never answers, so every read times out."""
-    server = socket.socket()
-    server.bind(("127.0.0.1", 0))
-    server.listen(4)
-    yield f"http://127.0.0.1:{server.getsockname()[1]}"
-    server.close()
-
-
-@pytest.fixture
-def closed_port() -> str:
-    """A local address nothing listens on, so every connection is refused."""
-    probe = socket.socket()
-    probe.bind(("127.0.0.1", 0))
-    port = probe.getsockname()[1]
-    probe.close()
-    return f"http://127.0.0.1:{port}"
 
 
 def call_openai(base_url: str, timeout: float) -> None:

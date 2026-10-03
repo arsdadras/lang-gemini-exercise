@@ -1,6 +1,12 @@
 """Tests for the prompt builder."""
 
-from agentlab.prompts import DEFAULTS, build_system_prompt
+from agentlab.prompts import (
+    DEFAULTS,
+    build_interpreter_agent_prompt,
+    build_interpreter_worker_prompt,
+    build_system_prompt,
+)
+from agentlab.prompts.template.worker import build_worker_prompt
 
 
 def test_build_system_prompt_returns_string() -> None:
@@ -29,3 +35,22 @@ def test_empty_sections_dropped() -> None:
 def test_empty_sections_kept() -> None:
     result = build_system_prompt(drop_empty_sections=False)
     assert "<tools_policy>" in result
+
+
+def test_worker_prompt_has_no_chat_persona() -> None:
+    worker = build_interpreter_worker_prompt()
+    chat = build_interpreter_agent_prompt()
+
+    for chat_only in ("Finglish", "user_profile", "response_modes"):
+        assert chat_only in chat
+        assert chat_only not in worker
+    assert "Write in English" in worker
+
+
+def test_worker_prompt_keeps_the_job_and_drops_empty_sections() -> None:
+    worker = build_worker_prompt(name="W", role="a worker", mission="Do the thing.")
+
+    assert "Do the thing." in worker
+    assert "<tools_policy>" not in worker
+    assert "<constraints>" not in worker
+    assert build_interpreter_worker_prompt().count("`execute`") >= 1

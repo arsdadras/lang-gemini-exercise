@@ -79,11 +79,9 @@ def _model_checks(profile: str) -> list[bool]:
 
 
 def _embeddings() -> str:
-    from langchain_google_genai import GoogleGenerativeAIEmbeddings
+    from agentlab.retrieval.index_retrieval import make_embeddings
 
-    from agentlab.configs.rag_config import EMBEDDING_MODEL
-
-    vector = GoogleGenerativeAIEmbeddings(model=EMBEDDING_MODEL).embed_query("smoke")
+    vector = make_embeddings().embed_query("smoke")
     return f"{len(vector)} dimensions"
 
 

@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 SKIPPED_TOP_DIRS = {"alireza", "archive"}
 LIBRARY_FIELDS = ("title", "maintainer", "status", "updated", "summary")
-LIBRARY_ROLES = {"lead", "engineer", "mentor", "research"}
+LIBRARY_MAINTAINER = "lead"  # the library is the lead's alone (ADR-0024)
 LIBRARY_STATUSES = {"current", "draft", "superseded"}
 LIBRARY_UNINDEXED = {"README.md", "LOG.md"}
 
@@ -147,8 +147,10 @@ def check_library(root: Path) -> list[str]:
         for key in LIBRARY_FIELDS:
             if not fields.get(key):
                 problems.append(f"{rel}: front matter lacks '{key}'")
-        if fields.get("maintainer") and fields["maintainer"] not in LIBRARY_ROLES:
-            problems.append(f"{rel}: unknown maintainer '{fields['maintainer']}'")
+        if fields.get("maintainer") and fields["maintainer"] != LIBRARY_MAINTAINER:
+            problems.append(
+                f"{rel}: maintainer must be '{LIBRARY_MAINTAINER}', found '{fields['maintainer']}'"
+            )
         if fields.get("status") and fields["status"] not in LIBRARY_STATUSES:
             problems.append(f"{rel}: unknown status '{fields['status']}'")
         if fields.get("updated"):

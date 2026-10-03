@@ -4,15 +4,18 @@ Indexing re-embeds the whole corpus, so it runs on demand, never on the request 
 ``uv run python -m agentlab.retrieval.index_retrieval``
 """
 
+import os
 import time
 
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_core.vectorstores import VectorStoreRetriever
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from pydantic import SecretStr
 
+from agentlab.configs.models_config import EMBEDDING_SPEC
 from agentlab.configs.paths_config import CHROMA_DIR, PROJECT_ROOT
 from agentlab.configs.rag_config import (
     CODE_GLOB,
@@ -20,16 +23,31 @@ from agentlab.configs.rag_config import (
     DOC_FILES,
     EMBED_BATCH_DELAY_SECONDS,
     EMBED_BATCH_SIZE,
-    EMBEDDING_MODEL,
     RETRIEVER_TOP_K,
 )
+
+
+def make_embeddings() -> OpenAIEmbeddings:
+    """The embedding client: GapGPT's OpenAI-compatible endpoint, with a request timeout.
+
+    ``check_embedding_ctx_length=False`` sends the text itself; the default sends tiktoken
+    token ids, which only OpenAI's own endpoint is guaranteed to accept.
+    """
+    return OpenAIEmbeddings(
+        model=EMBEDDING_SPEC.model,
+        api_key=SecretStr(os.getenv(EMBEDDING_SPEC.api_key_env or "") or ""),
+        base_url=os.getenv(EMBEDDING_SPEC.base_url_env or "")
+        or EMBEDDING_SPEC.base_url,
+        timeout=EMBEDDING_SPEC.timeout_seconds,
+        check_embedding_ctx_length=False,
+    )
 
 
 def _open_store() -> Chroma:
     return Chroma(
         collection_name=COLLECTION_NAME,
         persist_directory=str(CHROMA_DIR),
-        embedding_function=GoogleGenerativeAIEmbeddings(model=EMBEDDING_MODEL),
+        embedding_function=make_embeddings(),
     )
 
 

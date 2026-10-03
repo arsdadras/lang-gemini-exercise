@@ -10,6 +10,7 @@ Modes:
 - anything else: used verbatim as the thread id.
 """
 
+import functools
 import re
 import sys
 import uuid
@@ -20,6 +21,7 @@ from typing import Any
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
 
+from agentlab.configs.paths_config import checkpoint_db_path
 from agentlab.data.sqlite_db_data import get_recent_threads
 
 AgentFactory = Callable[[BaseCheckpointSaver | None], Any]
@@ -115,7 +117,7 @@ def resolve_session(
     default_thread_id: str,
     agent_factory: AgentFactory,
     app_name: str,
-    get_threads_fn: Callable[..., list[str]] = get_recent_threads,
+    get_threads_fn: Callable[..., list[str]] | None = None,
     cli_command_hint: str | None = None,
     handle_cli_exit: bool = True,
 ) -> ResolvedSession:
@@ -124,6 +126,10 @@ def resolve_session(
     The agent is built only after the mode is known to be valid, and not at all
     for ``list``. With ``handle_cli_exit=False`` errors raise instead of exiting.
     """
+    if get_threads_fn is None:
+        # The app's own database: `list`, `resume`, and `step[N]` never see another app's threads.
+        db_path = checkpoint_db_path(app_name)
+        get_threads_fn = functools.partial(get_recent_threads, db_path)
     arg = (raw_arg or "").strip()
     mode = arg.lower()
     hint = (

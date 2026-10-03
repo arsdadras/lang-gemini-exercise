@@ -32,8 +32,9 @@ direction, architecture, conventions, and dependencies are the lead's.
    library API first (principle 4): the `docs-langchain` MCP server, Context7, and the installed
    source under `.venv/`.
 2. **Build in lesson-sized steps.** One component per commit, with its tests, shaped so the mentor
-   can teach it component by component. Name the core architecture code (the part the learner
-   types) in the pull request and in the notice to the mentor.
+   can teach it component by component. Name the core architecture code (the part the mentor
+   walks the learner through in review, [ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md))
+   in the pull request and in the notice to the mentor.
 3. **Verify, with real output** (principle 5): `uv run pytest`, `uv run ruff check src tests
    scripts`, `uv run ruff format --check src tests scripts`, `uv run python
    scripts/check_docs.py`, and the stage's live scenario in test mode (`LLM_TEST_MODE=true`).

@@ -1,0 +1,77 @@
+{
+  "name": "grounded",
+  "question": "Is every claim in the answer supported by the context?",
+  "labels": [
+    "yes",
+    "no"
+  ],
+  "source": "EV-2026-09-26-laya-all-checkpoints (cases.json)",
+  "cases": [
+    {
+      "id": "grounded-01",
+      "inputs": {
+        "ctx": "In test mode, TEST_TIER resolves to the opensource tier, whose primary model is glm-5.3.",
+        "ans": "In test mode, requests go to the opensource tier, served by glm-5.3."
+      },
+      "expected": "yes",
+      "unsafe_predictions": [],
+      "finglish": false
+    },
+    {
+      "id": "grounded-02",
+      "inputs": {
+        "ctx": "In test mode, TEST_TIER resolves to the opensource tier, whose primary model is glm-5.3.",
+        "ans": "In test mode, requests go to the free tier, served by Gemini Flash-Lite."
+      },
+      "expected": "no",
+      "unsafe_predictions": [
+        "yes"
+      ],
+      "finglish": false
+    },
+    {
+      "id": "grounded-03",
+      "inputs": {
+        "ctx": "The consolidator is pinned to claude-sonnet-5: it resolved an implicit diet conflict 3/3 where gpt-5.6-terra resolved it 0/3.",
+        "ans": "The consolidator uses claude-sonnet-5 because it resolved the diet conflict more reliably than gpt-5.6-terra."
+      },
+      "expected": "yes",
+      "unsafe_predictions": [],
+      "finglish": false
+    },
+    {
+      "id": "grounded-04",
+      "inputs": {
+        "ctx": "The consolidator is pinned to claude-sonnet-5: it resolved an implicit diet conflict 3/3 where gpt-5.6-terra resolved it 0/3.",
+        "ans": "The consolidator uses claude-sonnet-5 because it is the cheapest model available."
+      },
+      "expected": "no",
+      "unsafe_predictions": [
+        "yes"
+      ],
+      "finglish": false
+    },
+    {
+      "id": "grounded-05",
+      "inputs": {
+        "ctx": "Embeddings are sent in batches of 20, with a 15 second delay between batches.",
+        "ans": "Embeddings go out in batches of 20 with a 15 second pause, and any failed batch is retried three times."
+      },
+      "expected": "no",
+      "unsafe_predictions": [
+        "yes"
+      ],
+      "finglish": false
+    },
+    {
+      "id": "grounded-06",
+      "inputs": {
+        "ctx": "The sandbox shell only sees allow-listed environment variables such as PATH and SYSTEMROOT; every API key loaded from .env is withheld.",
+        "ans": "Commands in the sandbox cannot read API keys from .env."
+      },
+      "expected": "yes",
+      "unsafe_predictions": [],
+      "finglish": false
+    }
+  ]
+}

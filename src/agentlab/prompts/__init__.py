@@ -24,7 +24,10 @@ from agentlab.prompts.nodes.rag_prompt import (
     HALLUCINATION_PROMPT,
     REWRITE_PROMPT,
 )
-from agentlab.prompts.subagents_prompt import RESEARCHER_SUBAGENT_PROMPT
+from agentlab.prompts.subagents_prompt import (
+    RESEARCHER_SUBAGENT_PROMPT,
+    build_interpreter_worker_prompt,
+)
 from agentlab.prompts.template.builder import build_system_prompt
 from agentlab.prompts.template.template import DEFAULTS
 
@@ -44,6 +47,7 @@ __all__ = [
     "TEST_GEN_PROMPT",
     "build_coding_coordinator_prompt",
     "build_interpreter_agent_prompt",
+    "build_interpreter_worker_prompt",
     "build_personal_assistant_prompt",
     "build_repo_insight_prompt",
     "build_system_prompt",

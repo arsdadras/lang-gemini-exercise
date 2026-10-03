@@ -36,9 +36,9 @@ def make_security_guard(
         policy: What to allow, ask about, or block (e.g. ``MEMORY_WRITE_POLICY``).
         classifier: Structured-output model returning ``GuardVerdict``; defaults to the
             ``low`` tier with its fallbacks. Kept on a paid tier deliberately: this is a
-            security boundary (live-validated against a data-exfiltration attempt), and
-            GapGPT's opensource catalog has no verified adversarial-classification track
-            record in this repo (ADR-0014).
+            security boundary, the ``low`` primary scored 8/8 on the memory-policy cases
+            (EV-2026-09-25-laya-zero-shot, a small set), and GapGPT's opensource catalog has no
+            verified adversarial-classification track record in this repo (ADR-0014).
     """
     model = (
         classifier
