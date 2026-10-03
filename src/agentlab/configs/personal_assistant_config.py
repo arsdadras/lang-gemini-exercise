@@ -26,12 +26,14 @@ DEFAULT_USER_ID: str = "default_user"
 DEFAULT_ASSISTANT_THREAD_ID: str = "pa_session_001"
 
 # In Phase A, gemini-3.5-flash-lite claimed memory writes without calling any
-# tool; gpt-5.6-luna (same tier) didn't, so the assistant pins that provider.
+# tool; gpt-5.6-luna (same tier) didn't, so the assistant pins that provider. A qualitative
+# observation with no run count (EV-undated-flash-lite-false-memory-claims).
 DEFAULT_ASSISTANT_TIER: str = "low"
 DEFAULT_ASSISTANT_PROVIDER: str = "openai"
 
 # The memory consolidator must notice a new fact that contradicts an old one under another
 # heading (a new diet vs. an old food preference). Measured on 2026-09-19, 3 runs per case:
-# claude-sonnet-5 resolved 6/6, gpt-5.6-terra 4/6; gemini-3.8-flash was rate-limited.
+# claude-sonnet-5 resolved 6/6, gpt-5.6-terra 4/6; gemini-3.8-flash was rate-limited
+# (EV-2026-09-19-consolidator-model-comparison, reconstructed from this comment; not re-run).
 CONSOLIDATOR_TIER: str = "medium"
 CONSOLIDATOR_PROVIDER: str = "anthropic"

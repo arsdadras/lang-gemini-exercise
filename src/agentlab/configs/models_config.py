@@ -15,12 +15,13 @@ weights chosen per tier in ``TIER_WEIGHTS``. So a tier's primary changes
 automatically if a provider's scored profile changes, instead of silently
 drifting out of sync with a hardcoded order.
 
-Model IDs were verified against each gateway's ``/v1/models`` list and a live
-call on 2026-08-26, except the Anthropic IDs (Opus 5.5, Sonnet 5, Haiku 4.5),
-confirmed current as of this update, and the ``opensource`` entries, which are
-illustrative reputable open-weight picks (GLM, Qwen, DeepSeek) pending a live
-check against GapGPT's catalog. Verify any new ID the same way before relying
-on it in production.
+What backs each ID is in EV-2026-08-26-gapgpt-model-ids. Only the GPT IDs and
+``claude-sonnet-5`` were checked against GapGPT's ``/v1/models`` with a live call (2026-08-26).
+The two Gemini IDs were checked on Google's own API, not through GapGPT. ``claude-opus-5-5`` and
+``claude-haiku-4-5-20251001`` come from model knowledge, and ``gemini-3.8-pro`` and the
+``opensource`` entries (GLM, Qwen, DeepSeek) are illustrative picks never checked; only
+``glm-5.3`` has answered a live call since (EV-2026-09-25-laya-zero-shot). Verify any new ID with
+a ``/v1/models`` listing and a live call before relying on it in production.
 """
 
 from dataclasses import dataclass, replace
