@@ -2,7 +2,7 @@
 title: Repository map and ownership
 maintainer: lead
 status: current
-updated: 2026-09-28
+updated: 2026-10-03
 summary: Every top-level area, what it holds, and which role writes it (one writer per path); the guard reads the Roles column.
 related: [protocol.md, principles.md, ../../AGENTS.md, ../../scripts/workspace.py]
 ---
@@ -38,6 +38,7 @@ belongs to the lead.
 | `src/`, `tests/`, `evals/`, `examples/` | The `agentlab` package, its tests, live eval sets, sample inputs | Engineer; the mentor reviews what it teaches and requests changes | engineer |
 | `scripts/`, `.github/` | Repo tooling (docs lint, inbox, session hooks, handoff, worktree setup, reports, live smoke) and their tests; CI, Dependabot, and the message report | Engineer, implementing what the lead decides; the lead owns the policies they enforce | engineer |
 | `.claude/skills/` | Claude Code skills: role bootstraps, `/handoff`, `/inbox`, `decision-points` | Lead | lead |
+| `.claude/skills/teach/` | The mentor's teaching skill and its reference files | Mentor | mentor |
 | `.claude/settings.json` | The session hooks' configuration | Engineer | engineer |
 | `CLAUDE.local.md` | The worktree's role and charter (per worktree, ignored), written by `scripts/setup_worktrees.py` | The setup script | none |
 | `pyproject.toml`, `uv.lock` | Dependencies and tool configuration | Engineer, on the lead's radar decisions | engineer |
