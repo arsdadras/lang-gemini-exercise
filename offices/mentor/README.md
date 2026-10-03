@@ -17,9 +17,9 @@ mentor worktree (`../lce-mentor`, branch `mentor`), whose `CLAUDE.local.md` load
 - **What to teach, in which order, and the policy it follows:** the lead's
   [ROADMAP](../lead/ROADMAP.md) and the [pedagogy](../../library/teaching/pedagogy.md). This
   charter is the procedure that implements them.
-- **How to teach each step well:** the office's `teach` skill,
-  [.claude/skills/teach/SKILL.md](.claude/skills/teach/SKILL.md). It loads the first time a
-  session reads a file in this office.
+- **How to teach each step well:** the mentor's `teach` skill,
+  [.claude/skills/teach/SKILL.md](../../.claude/skills/teach/SKILL.md), in the repo's skill
+  registry (the mentor writes it; accepted in LD-027).
 
 ## Role
 
@@ -119,6 +119,6 @@ engineer as a request.
 | [STATE.md](STATE.md) | Current teaching state, working agreements, review items; rewritten each session |
 | [LOG.md](LOG.md) | What each project and stage delivered, newest last; append-only |
 | [OUTBOX.md](OUTBOX.md) | Every message the mentor sends |
-| [.claude/skills/teach/](.claude/skills/teach/SKILL.md) | The `teach` skill: how to run each lesson step, question bank, LLM-systems lesson patterns, evidence |
+| [.claude/skills/teach/](../../.claude/skills/teach/SKILL.md) | The `teach` skill: how to run each lesson step, question bank, LLM-systems lesson patterns, evidence |
 | [artifacts/teaching-research/](artifacts/teaching-research/README.md) | Raw research behind the `teach` skill |
 | `artifacts/`, [sandbox/](sandbox/README.md) | Kept files; scratch, including "what if" variations (ignored) |

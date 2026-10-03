@@ -22,11 +22,12 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
   engineer's (LD-019); the mentor teaches each piece after its teaching review. The lead
   records the contract as an ADR when R0 closes.
 - **Order after R0:** R1 -> R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
-- **Teaching craft:** the `teach` skill ([SKILL.md](.claude/skills/teach/SKILL.md)) is rebuilt
+- **Teaching craft:** the `teach` skill ([SKILL.md](../../.claude/skills/teach/SKILL.md)) is rebuilt
   on the research in [artifacts/teaching-research/](artifacts/teaching-research/README.md) and
-  is in use from R0 topic 3 on. Pull request #11 carries it, CI green, awaiting the lead's merge.
-- **Waiting on others:** the lead on MN-013 (skill review, research tasking, role files outside
-  the offices); research on MN-012 (audit of the skill's evidence); the engineer on MN-014 (a
+  is in use from R0 topic 3 on. The lead accepted it (LD-027); it lives in the root registry,
+  `.claude/skills/teach/`, and its research stays in `offices/mentor/artifacts/`.
+- **Waiting on others:** the lead on LD-027's last fix (its LD-028 text links the old skill path);
+  research on LD-028 and MN-012 (audit of the skill's evidence); the engineer on MN-014 (a
   real-graph test for the RAG router) and on confirming it took over the known issues (LD-018).
 - **Stack:** re-verified on 2026-09-27 against the lead's upgrade (LD-007). openai 3.x and
   anthropic 1.x raise timeouts and refusals from `httpx2`; `failure_util` now classifies them,
@@ -40,7 +41,7 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
   The learner reads code in the main checkout and writes code only by choice, in their private
   area.
 - **Lesson messages:** the `teach` skill's checklist
-  ([SKILL.md](.claude/skills/teach/SKILL.md#before-sending-any-lesson-message)): teach, don't
+  ([SKILL.md](../../.claude/skills/teach/SKILL.md#before-sending-any-lesson-message)): teach, don't
   report; one idea told through one concrete request before and after; full sentences.
 - **Branch:** the mentor commits only its own paths on `mentor`, pushes it, and opens a pull
   request with `/handoff --pr`; the lead merges.
@@ -75,10 +76,10 @@ issues move to the engineer's state (LD-018, LD-023); this copy goes once the en
 ## Review items
 
 Gaps from review questions and teach-backs, in the format and cadence of the `teach` skill's
-[review-items table](.claude/skills/teach/materials.md#review-items-table). None yet: active
+[review-items table](../../.claude/skills/teach/materials.md#review-items-table). None yet: active
 review starts with R0 topic 3.
 
-Fading levels per decision type ([fading ladder](.claude/skills/teach/techniques.md#fading-ladder)):
+Fading levels per decision type ([fading ladder](../../.claude/skills/teach/techniques.md#fading-ladder)):
 none recorded yet.
 
 The skill's demo and lab examples haven't been run yet; each is run in test mode during its
