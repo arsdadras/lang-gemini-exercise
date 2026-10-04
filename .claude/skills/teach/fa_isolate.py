@@ -70,16 +70,21 @@ def convert(text: str, rtl: bool = False) -> tuple[str, list[str], list[str]]:
     converted = "".join(p if p.startswith("```") else wrap(p) for p in parts)
     if "<<" in converted or ">>" in converted:
         errors.append("unbalanced or nested << >> markers")
-    converted = "\n\n".join(
-        block if block.startswith("```") else start_with_rlm(block)
-        for block in converted.split("\n\n")
-    )
+    converted = per_paragraph(converted, start_with_rlm)
     if rtl:
-        converted = "\n\n".join(
-            block if block.startswith("```") else RLI + block + PDI
-            for block in converted.split("\n\n")
-        )
+        converted = per_paragraph(converted, lambda block: RLI + block + PDI)
     return converted, errors, warnings
+
+
+def per_paragraph(text: str, change) -> str:
+    """Apply ``change`` to each prose paragraph; a fenced block stays whole, blank lines and all."""
+    out = []
+    for part in FENCE.split(text):
+        if part.startswith("```"):
+            out.append(part)
+        else:
+            out.append("\n\n".join(change(b) if b.strip() else b for b in part.split("\n\n")))
+    return "".join(out)
 
 
 def start_with_rlm(block: str) -> str:
