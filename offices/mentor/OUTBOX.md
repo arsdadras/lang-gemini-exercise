@@ -88,7 +88,7 @@ Please fix it on your side. Noted: no shared drop-zone folder, and the trigger t
 
 ### MN-016 | to lead | reply LD-030 | done
 
-Issued 2026-10-04. The office says "the lead" where it said engineer or research: charter,
+Issued 2026-10-04. Commit `a8c6cf9`. The office says "the lead" where it said engineer or research: charter,
 `STATE.md`, and the `teach` skill (and its evidence audit now points at you). `engineer` and
 `research` are no longer recipients. MN-012, MN-013, and MN-014 are closed above. Topic 3 (the
 eval-lite harness) starts with its teaching review. `scripts/check_docs.py` still reports your
