@@ -6,13 +6,14 @@ on 2026-10-04, which overrides the Finglish rule in
 the exception (MN-017). The learner reads this skill's result, not this file, so the file is
 English and its examples are Persian.
 
-Three things went wrong in the first Persian message. Each has a rule below.
+This file is only about writing Persian. How to teach (examples first, one idea per message)
+is in [SKILL.md](SKILL.md). Two things went wrong in the first Persian message, and each has a
+rule below.
 
 | What went wrong | Rule |
 | :--- | :--- |
 | English words scrambled the Persian sentence order | [1. Mark every Latin run](#1-mark-every-latin-run) |
 | "Raise" and "call" were translated, so the text became hard to read | [2. Technical words stay English](#2-technical-words-stay-english) |
-| A concept came as prose only, and the learner could not follow it | [3. Every concept comes with an example](#3-every-concept-comes-with-an-example) |
 
 ## 1. Mark every Latin run
 
@@ -84,18 +85,7 @@ code or output, it uses the English name seen there.
 **A new term** appears once as the English word with a short Persian gloss, like
 `decider` (چیزی که تصمیم می‌گیرد). After that it is English only.
 
-## 3. Every concept comes with an example
-
-The learner learns from examples. An intro and a recap in prose are fine; a concept explained
-in prose alone is not understood.
-
-- Order: the example first (a real input and output, a run, a trace, or four lines of code),
-  then at most three sentences that name the concept and its rule.
-- A paragraph of more than four sentences with no example in the same message is a defect:
-  replace the prose with an example.
-- The example is code or output in a fenced block (English only), with the Persian around it.
-
-## 4. Sentence style
+## 3. Sentence style
 
 - Short sentences, one idea each, about fifteen words at most. Avoid long chains of `ی`
   (ezafe): not `معماری لایه‌ی انتزاع تصمیم‌گیری`.
@@ -107,14 +97,12 @@ in prose alone is not understood.
 
 1. The helper ran, and printed no warning that I cannot defend.
 2. Every term that appears in the code is English, and no Persian suffix touches it.
-3. Every concept has its example in this message.
-4. Each paragraph starts with a Persian word where that reads naturally.
-5. The first line is the position marker, with the English run wrapped:
+3. Each paragraph starts with a Persian word where that reads naturally.
+4. The first line is the position marker, with the English run wrapped:
    `<<R0 · Topic 3/4>> · نام قدم`.
 
 ## Sources
 
 [W3C: bidi basics](https://www.w3.org/International/articles/inline-bidi-markup/uba-basics),
 [Unicode bidirectional algorithm](https://en.wikipedia.org/wiki/Unicode_bidirectional_algorithm),
-and the 2026-10-04 test above. The wording rules (2 and 3) come from the learner's own
-feedback on 2026-10-04.
+and the 2026-10-04 test above. Rule 2 comes from the learner's own feedback on 2026-10-04.

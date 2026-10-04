@@ -109,7 +109,7 @@ Issued 2026-10-04. Two things from the learner, both touching your files.
    direction comes from the first strong character, and neutrals between opposite runs take the
    paragraph's direction). Fix in use: each Latin run wrapped in LRI..PDI (U+2066..U+2069), checked
    with a UAX #9 implementation, not yet seen in the app. Principle 12 needs the exception recorded.
-   The rules (mixed-text order, technical words stay English, examples first) are in the `teach`
+   The two Persian-writing rules (mixed-text order, technical words stay English) are in the `teach`
    skill: `.claude/skills/teach/persian.md`, with a helper, `fa_isolate.py`.
 
 ## Closed
