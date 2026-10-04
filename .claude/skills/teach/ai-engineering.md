@@ -23,7 +23,7 @@ Each pattern is a demo or hands-on shape; pick the one that makes the topic's id
 
 | Pattern | How it runs | Fits |
 | :--- | :--- | :--- |
-| **Failure first** | The failing run and its trace come first; the learner diagnoses; then the engineer's fix, compared with the diagnosis | Every hook |
+| **Failure first** | The failing run and its trace come first; the learner diagnoses; then the lead's fix, compared with the diagnosis | Every hook |
 | **Predict, run, investigate** | The learner writes a prediction (output, path, pass count), we run, then explain the gap | Every demo |
 | **Variance run** | The same scenario 3 to 5 times in test mode; the learner predicts the pass count first; we name pass@k and pass^k; after a change, ask whether the spread moved, not only the mean | Any model-driven demo |
 | **Trace walk** | Open one trace; at each decision point the learner says why the model chose it before I comment | Routing, agents, tool choice |
@@ -44,7 +44,7 @@ the learner's prediction before every run.
 - Look before judging: read outputs before writing criteria or eval cases.
 - Measure before tweaking: a prompt change is judged on a fixed set against a baseline.
 - Least autonomy that works: workflow before agent, one agent before several, code before a
-  model where a rule decides ([decision models](../../../../../library/architecture/decision-models.md)).
+  model where a rule decides ([decision models](../../../library/architecture/decision-models.md)).
 - Concept before framework: the idea in plain terms first, then the LangChain, LangGraph, or
   DeepAgents feature that implements it.
 - Own taxonomy first: compare the learner's failure categories with a published taxonomy (such

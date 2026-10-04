@@ -22,10 +22,10 @@ Notes cited by alias and section: **CR** [code_reading_and_review.md](code_readi
 **DJ** [design_judgment_transfer.md](design_judgment_transfer.md), **AT**
 [ai_tutor_behavior.md](ai_tutor_behavior.md), **LM** [lesson_materials.md](lesson_materials.md),
 **AE** [teaching_ai_engineering.md](teaching_ai_engineering.md). Checked against the skill's
-four files ([SKILL.md](../../.claude/skills/teach/SKILL.md),
-[questions.md](../../.claude/skills/teach/questions.md),
-[ai-engineering.md](../../.claude/skills/teach/ai-engineering.md),
-[evidence.md](../../.claude/skills/teach/evidence.md)), the [charter](../../README.md), and the
+four files ([SKILL.md](../../../../.claude/skills/teach/SKILL.md),
+[questions.md](../../../../.claude/skills/teach/questions.md),
+[ai-engineering.md](../../../../.claude/skills/teach/ai-engineering.md),
+[evidence.md](../../../../.claude/skills/teach/evidence.md)), the [charter](../../README.md), and the
 lead's [pedagogy](../../../../library/teaching/pedagogy.md).
 
 ## 1. Bottom line: eight changes carry most of the value

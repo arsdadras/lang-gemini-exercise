@@ -3,8 +3,8 @@
 The project-close defense ([SKILL.md](SKILL.md), *Teach-back*): the learner teaches the design
 card's key decisions, and I play a tutee who probes. It produces review items and nothing else:
 it never gates closing the project, which is the user's call
-([Definition of Done](../../../../../library/teaching/pedagogy.md#definition-of-done);
-[Principle 10](../../../../../library/governance/principles.md#10-decide-dont-ask)).
+([Definition of Done](../../../library/teaching/pedagogy.md#definition-of-done);
+[Principle 10](../../../library/governance/principles.md#10-decide-dont-ask)).
 
 ## Procedure
 
