@@ -2,7 +2,8 @@
 
 Write the draft with every Latin run (identifier, code span, English term, abbreviation)
 between ``<<`` and ``>>``. This script swaps those markers for the invisible Unicode
-isolates LRI (U+2066) and PDI (U+2069), and checks the draft against persian.md.
+isolates LRI (U+2066) and PDI (U+2069), starts every paragraph with an invisible right-to-left
+mark (RLM, U+200F), and checks the draft against persian.md.
 
     python .claude/skills/teach/fa_isolate.py draft.txt          # or text on stdin
     python .claude/skills/teach/fa_isolate.py draft.txt --rtl    # also wrap each paragraph in RLI..PDI
@@ -13,7 +14,9 @@ Fenced code blocks are left alone. Problems go to stderr; a bad marker exits wit
 import re
 import sys
 
-LRI, RLI, PDI = "⁦", "⁧", "⁩"
+LRI, RLI, PDI, RLM = "⁦", "⁧", "⁩", "‏"
+LEADING_MARKUP = re.compile(r"^\s*(?:#+ |[-*>] |\d+\. )*")
+LATIN_START = re.compile(r"[A-Za-z0-9]")
 FENCE = re.compile(r"(```.*?```)", re.S)
 MARK = re.compile(r"<<(.+?)>>", re.S)
 LINK_TARGET = re.compile(r"\]\([^)]*\)")
@@ -58,16 +61,32 @@ def convert(text: str, rtl: bool = False) -> tuple[str, list[str], list[str]]:
     def wrap(part: str) -> str:
         return MARK.sub(lambda m: LRI + m.group(1) + PDI, part)
 
+    for block in prose.split("\n\n"):
+        first = LEADING_MARKUP.sub("", block.strip())
+        if first.startswith("<<") or LATIN_START.match(first):
+            warnings.append(f"paragraph starts with a Latin run: {first[:30]!r}")
+
     parts = FENCE.split(text)
     converted = "".join(p if p.startswith("```") else wrap(p) for p in parts)
     if "<<" in converted or ">>" in converted:
         errors.append("unbalanced or nested << >> markers")
+    converted = "\n\n".join(
+        block if block.startswith("```") else start_with_rlm(block)
+        for block in converted.split("\n\n")
+    )
     if rtl:
         converted = "\n\n".join(
             block if block.startswith("```") else RLI + block + PDI
             for block in converted.split("\n\n")
         )
     return converted, errors, warnings
+
+
+def start_with_rlm(block: str) -> str:
+    """Put an invisible right-to-left mark first, so the paragraph is right-to-left."""
+    lead = LEADING_MARKUP.match(block)
+    cut = lead.end() if lead else 0
+    return block[:cut] + RLM + block[cut:]
 
 
 def main() -> int:

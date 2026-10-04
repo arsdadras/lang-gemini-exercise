@@ -30,7 +30,8 @@ Check the draft against all nine; rewrite until it passes.
    Compression styles, fragment bullets, and jargon piles never apply to lessons. Technical
    words stay English, and every Latin run goes through `fa_isolate.py`.
 5. **Readable in one go** (about a screen). Longer means two messages.
-6. **Framed:** the first line is the position marker (`R0 · Topic 3/4 · Code 1/2`); the last
+6. **Framed:** the first line is the position marker (`R0 · Topic 3/4 · Code 1/2`; in Persian,
+   led by a Persian word, see [persian.md](persian.md)); the last
    line is the learner's move (at most one question, answerable in a sentence or two) or the
    next step. No more than two messages in a row end without a question.
 7. **Nothing to choose.** I decide the lesson's design, examples, and order, and give the

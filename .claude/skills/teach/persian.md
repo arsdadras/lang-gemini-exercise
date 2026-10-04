@@ -34,8 +34,21 @@ order from the right:
 A line that already starts with a Persian word and has one English term in the middle was
 fine either way. The wrap matters at the start of a line, and between two English terms.
 
-**The rule.** Wrap every Latin run in `LRI` (U+2066) and `PDI` (U+2069). These are invisible,
-and the paragraph-direction check skips what is inside them.
+**Seen in the Claude desktop app (learner's screenshots, 2026-10-04):** two paragraphs that
+began with an English run (`EvalCase هیچ چیز...`, `path هم ساده است...`) were drawn scrambled,
+although the run was wrapped. So the app does not skip the isolates when it picks a
+paragraph's direction, and the wrap alone is not enough. Paragraphs that began with a Persian
+word were fine.
+
+**The rule.** Two measures, both needed:
+
+- **Every paragraph starts with a Persian word.** This includes the position marker:
+  `مرحله: <<R0 · Topic 3/4>> · نام قدم`. Rephrase instead of opening with a term:
+  `در این کد <<EvalCase>> ...`, `فیلد <<path>> ...`. The helper also puts an invisible
+  right-to-left mark (RLM, U+200F) at the start of each paragraph, and warns about a
+  paragraph that starts with a Latin run.
+- **Wrap every Latin run in `LRI` (U+2066) and `PDI` (U+2069).** These are invisible, and
+  keep neighbouring English terms from merging into one block that reads backwards.
 
 - A run is a phrase, not a word: `Topic 3/4` is one run. Identifiers, code spans, English
   terms, abbreviations, and numbers that touch English text are all runs.
@@ -54,9 +67,9 @@ and the paragraph-direction check skips what is inside them.
   `برای decider`). A separate word such as `را` is fine.
 - On Windows, Python prints Persian only with `PYTHONIOENCODING=utf-8`; without it the
   console raises `UnicodeEncodeError` (cp1252).
-- **Not verified:** how the Claude desktop app draws these paragraphs; I cannot see it. If the
-  learner still reports mixed-up order, run the helper with `--rtl`, which wraps each
-  paragraph in `RLI`..`PDI`, and record which version worked here.
+- **Not verified:** whether the RLM fixes a paragraph in the app; I cannot see it, only the
+  learner's screenshots. If a paragraph is still drawn wrong, run the helper with `--rtl`,
+  which wraps each paragraph in `RLI`..`PDI`, and record which version worked here.
 
 ## 2. Technical words stay English
 
@@ -97,9 +110,9 @@ code or output, it uses the English name seen there.
 
 1. The helper ran, and printed no warning that I cannot defend.
 2. Every term that appears in the code is English, and no Persian suffix touches it.
-3. Each paragraph starts with a Persian word where that reads naturally.
-4. The first line is the position marker, with the English run wrapped:
-   `<<R0 · Topic 3/4>> · نام قدم`.
+3. Every paragraph starts with a Persian word; the helper warns when one does not.
+4. The first line is the position marker, led by a Persian word:
+   `مرحله: <<R0 · Topic 3/4>> · نام قدم`.
 
 ## Sources
 
