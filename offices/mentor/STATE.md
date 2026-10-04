@@ -7,27 +7,20 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 ## Now
 
 - **Stage:** R0, the specialist contract ([ROADMAP](../lead/ROADMAP.md#return-pass-r0-r5)).
-  Topics 1 and 2 are closed and merged to `main`.
-  - Topic 1, one envelope for every answer: `SpecialistResult[T]` and a `run_*` boundary per
-    specialist. Tests and demo skipped at the learner's request.
-  - Topic 2, the failure contract: `utils/failure_util.py` (`failure_kind`, `is_transient`,
-    `failure_reason`, `TRANSIENT_RETRY`), a `failed` envelope from every `run_*`, one retry
-    layer per call (`AGENTS.md` convention 11), P2's web fallback split into `web_search` and
-    `generate_from_web`, Tavily's hidden errors raised by `search_results`, P3's nodes
-    re-raising bugs. The learner typed Code 1; Code 2, Code 3, and the tests-and-demo step
-    were integrated by the mentor at the learner's request.
-- **Next:** Topic 3, the shared eval-lite harness (first consumer: R1), taught once the
-  engineer merges it. R0's remaining implementation (timeouts, evidence IDs, chat prompts split
-  from worker prompts, per-app checkpoint databases, untracking the old checkpoint DB) is the
-  engineer's (LD-019); the mentor teaches each piece after its teaching review. The lead
-  records the contract as an ADR when R0 closes.
+  The three topics are taught: the envelope (`SpecialistResult[T]`), the failure contract
+  (`failure_util`), and the eval-lite harness (`utils/eval_util.py`, topic 3, 2026-10-05).
+  Tests, demo, and hands-on were skipped on topics 1 and 3 at the learner's request. R0 is ready
+  for the lead to close (ADR for the contract); the learner's go-ahead closes the stage.
+- **Next:** R1, P1 evidence-grounded research, once the lead has made it ready (design card,
+  `decision_model` seam). Start with a stage brief, no code.
 - **Order after R0:** R1 -> R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
-- **Teaching craft:** the `teach` skill ([SKILL.md](.claude/skills/teach/SKILL.md)) is rebuilt
+- **Teaching craft:** the `teach` skill ([SKILL.md](../../.claude/skills/teach/SKILL.md)) is rebuilt
   on the research in [artifacts/teaching-research/](artifacts/teaching-research/README.md) and
-  is in use from R0 topic 3 on. Pull request #11 carries it, CI green, awaiting the lead's merge.
-- **Waiting on others:** the lead on MN-013 (skill review, research tasking, role files outside
-  the offices); research on MN-012 (audit of the skill's evidence); the engineer on MN-014 (a
-  real-graph test for the RAG router) and on confirming it took over the known issues (LD-018).
+  is in use from R0 topic 3 on. The lead accepted it (LD-027); it lives in the root registry,
+  `.claude/skills/teach/`, and its research stays in `offices/mentor/artifacts/`.
+- **Waiting on others:** nobody. Two roles since ADR-0025: the lead builds, tests, and
+  researches; requests and notices go to the lead. The lead took over MN-012 (audit of the
+  skill's evidence, on its research queue) and LD-028 (research on the teaching methods).
 - **Stack:** re-verified on 2026-09-27 against the lead's upgrade (LD-007). openai 3.x and
   anthropic 1.x raise timeouts and refusals from `httpx2`; `failure_util` now classifies them,
   tested against real SDK clients on a local silent server and a closed port.
@@ -35,12 +28,17 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 ## Working agreements
 
 - **Code delivery:** active review ([ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)).
-  The engineer builds and verifies; the mentor walks the learner through the merged code,
+  The lead builds and verifies; the mentor walks the learner through the merged code,
   diff-only, with a prediction question before each component and "why" and "what if" after.
   The learner reads code in the main checkout and writes code only by choice, in their private
   area.
+- **Language and style (2026-10-04):** lessons are in Persian script, written by the `teach`
+  skill's [persian.md](../../.claude/skills/teach/persian.md) with its helper `fa_isolate.py`;
+  technical words stay English; every concept has an example first. No trailing questions, and
+  no tests, observe, eval, demo, or hands-on steps unless the learner asks (they have said so
+  repeatedly). Jev's key is `TYPESAFE_API_KEY` (in the main checkout's `.env`).
 - **Lesson messages:** the `teach` skill's checklist
-  ([SKILL.md](.claude/skills/teach/SKILL.md#before-sending-any-lesson-message)): teach, don't
+  ([SKILL.md](../../.claude/skills/teach/SKILL.md#before-sending-any-lesson-message)): teach, don't
   report; one idea told through one concrete request before and after; full sentences.
 - **Branch:** the mentor commits only its own paths on `mentor`, pushes it, and opens a pull
   request with `/handoff --pr`; the lead merges.
@@ -52,7 +50,7 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 ## Known issues
 
 Program-level debt is triaged in the lead's [BACKLOG](../lead/BACKLOG.md). These live code
-issues move to the engineer's state (LD-018, LD-023); this copy goes once the engineer confirms.
+issues moved to the lead's state (LD-018, LD-023); this copy goes once the lead confirms.
 - **Coordinator shell has no approval step:** approvals raised inside a subagent aren't surfaced
   to the CLI; the banner states it. Fix: P6-B3.
 - **Old checkpoint DB still tracked:** `src/data/dbs/checkpoints.db` (a consistent copy is at
@@ -75,10 +73,10 @@ issues move to the engineer's state (LD-018, LD-023); this copy goes once the en
 ## Review items
 
 Gaps from review questions and teach-backs, in the format and cadence of the `teach` skill's
-[review-items table](.claude/skills/teach/materials.md#review-items-table). None yet: active
+[review-items table](../../.claude/skills/teach/materials.md#review-items-table). None yet: active
 review starts with R0 topic 3.
 
-Fading levels per decision type ([fading ladder](.claude/skills/teach/techniques.md#fading-ladder)):
+Fading levels per decision type ([fading ladder](../../.claude/skills/teach/techniques.md#fading-ladder)):
 none recorded yet.
 
 The skill's demo and lab examples haven't been run yet; each is run in test mode during its

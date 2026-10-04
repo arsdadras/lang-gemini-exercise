@@ -45,7 +45,7 @@ verified code: A, since `search_results` raises it and `failure_kind` calls a 40
 
 - Faults come from env vars, input, stubs, or a labeled copy in `offices/mentor/sandbox/`, never
   from `src/`, `tests/`, the index, or any other repo file; a fault switch the code lacks is a
-  request to the engineer. An env var goes on the command line (`load_dotenv()` doesn't
+  request to the lead. An env var goes on the command line (`load_dotenv()` doesn't
   override a variable already set).
 - One fault per task, for one skill: localize a fault, read a trace, or name the owning layer.
 - The harness judges success (a test name, an output line, a trace shape, a metric), not me.

@@ -152,7 +152,7 @@ judgment gap; at architecture scale it is the design kata ([ai-engineering.md](a
 2. Tests beside the diff: which behavior each key test pins, what stays untested.
 3. Three lenses: correctness under failure, conventions (`AGENTS.md`), the production path.
 4. The learner writes two to four reviewer comments: question, suggestion, or reasoned approval.
-5. My walkthrough sorts each: confirmed, answered by the design, or a finding for the engineer.
+5. My walkthrough sorts each: confirmed, answered by the design, or a finding for the lead.
 6. A seeded variant (one realistic defect) is labeled in its first line and lives in the sandbox.
 - **Repo example:** `rag_graph.py`. "Who resets `retries`?" The caller, per `RAGState`; `run_rag`
   starts at 0 (`test_rag_from_the_corpus_is_ok_with_file_sources`). "Which test pins the router

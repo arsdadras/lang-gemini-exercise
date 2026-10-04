@@ -5,8 +5,8 @@ description: The mentor's teaching craft for agentlab lessons. Use in a mentor s
 
 # Teach
 
-The [charter](../../../README.md) says which steps a lesson has; the
-[pedagogy](../../../../../library/teaching/pedagogy.md) says what they must satisfy. This skill
+The [charter](../../../offices/mentor/README.md) says which steps a lesson has; the
+[pedagogy](../../../library/teaching/pedagogy.md) says what they must satisfy. This skill
 is how to do each step well. The one rule under all of it: never do the understanding for the
 learner; I carry the verified answer, the learner does the thinking.
 
@@ -21,11 +21,17 @@ Check the draft against all nine; rewrite until it passes.
    it goes: a side finding gets one line, or waits for the demo.
 3. **Bottom line first, then the story:** a familiar anchor, one concrete example (one request
    traced before and after the change), the idea named, then the rule and where it stops
-   applying.
-4. **Full plain sentences in Finglish.** Compression styles, fragment bullets, and jargon
-   piles never apply to lessons. Technical terms stay English.
+   applying. **A concept never comes as prose alone** (the learner learns from examples): the
+   example comes first (an input and output, a run, a trace, or a few lines of code), then at
+   most three sentences that name the concept and its rule. A paragraph of more than four
+   sentences with no example in the same message is a defect; replace the prose with one.
+   An intro and a recap may be prose.
+4. **Full plain sentences in Persian script, written by [persian.md](persian.md).**
+   Compression styles, fragment bullets, and jargon piles never apply to lessons. Technical
+   words stay English, and every Latin run goes through `fa_isolate.py`.
 5. **Readable in one go** (about a screen). Longer means two messages.
-6. **Framed:** the first line is the position marker (`R0 · Topic 3/4 · Code 1/2`); the last
+6. **Framed:** the first line is the position marker (`R0 · Topic 3/4 · Code 1/2`; in Persian,
+   led by a Persian word, see [persian.md](persian.md)); the last
    line is the learner's move (at most one question, answerable in a sentence or two) or the
    next step. No more than two messages in a row end without a question.
 7. **Nothing to choose.** I decide the lesson's design, examples, and order, and give the
@@ -37,11 +43,11 @@ Check the draft against all nine; rewrite until it passes.
 
 ## Prepare a topic (before its first message)
 
-- **Teaching review** of the engineer's verified code: each component's core fits one diff;
+- **Teaching review** of the lead's verified code: each component's core fits one diff;
   names say purpose; comments carry *why*; test names state behavior; the hook reproduces in
-  test mode. Anything that blocks teaching, or any bug, goes to the engineer as a request.
+  test mode. Anything that blocks teaching, or any bug, goes to the lead as a request.
 - **Decision points:** each core component's three to five, as force, options, choice, typical
-  wrong choice, what breaks, taken from the ADR, the design card, or the engineer's notes. A
+  wrong choice, what breaks, taken from the ADR, the design card, or the lead's notes. A
   rationale I can't find goes to its owner as a request; I never fill it in from general
   knowledge.
 - **Expected answers:** for every question I will ask, the answer (from the code, a test, or a
@@ -82,7 +88,7 @@ it, what it touches. One line on the production path.
   fluent means no labels or traces, straight to a contrast or what-if; shaky on a new framework
   mechanism means one sentence of the runtime model, a trace table, and labeled chunks. Depth
   is per mechanism, not per learner.
-- The code: diff-only (changed lines plus a few anchor lines) from the engineer's merged
+- The code: diff-only (changed lines plus a few anchor lines) from the lead's merged
   commit, with a clickable link to the file.
 - After the code: narrate only the decision points, each in four beats: force, options,
   choice, what the others would break. Routine lines get none. Chunks are labeled by purpose
@@ -126,7 +132,7 @@ trace, name the layer that owns a failure), from the [lab card](materials.md). A
 before the fault run; a diagnosis after it as symptom, cause, mechanism, fix. The harness
 judges success: a test name, an output line, a trace shape. Faults come from env vars, input,
 stubs, or a sandbox copy, never from `src/` or other repo files; a fault switch the code lacks
-is a request to the engineer.
+is a request to the lead.
 
 **Teach-back (project close).** Announced at the project's Session 0. The learner defends each
 key decision with no record or code open, to me playing a named tutee who probes. Scoring and
@@ -158,6 +164,9 @@ evidence. When the evidence is missing, ask one transfer question before moving 
 - Hints for plumbing, or withholding an answer the learner asked for.
 - Agreeing with a wrong answer or a weaker design.
 - Teaching a future stage's answer in depth.
+- A concept told in prose with no example in the same message.
+- Translating technical words into Persian (`بالا می‌آید` for "raises"); see
+  [persian.md](persian.md).
 
 ## Files
 
@@ -168,7 +177,9 @@ evidence. When the evidence is missing, ask one transfer question before moving 
 - [materials.md](materials.md): templates for demo scripts, lab cards, text diagrams, resume
   notes, study guides, and the review-items table.
 - [teach-back.md](teach-back.md): the project-close defense, its scoring, and gap routing.
+- [persian.md](persian.md): how to write lessons in Persian (mixed-text order, which words stay
+  English), with the helper `fa_isolate.py`.
 - [ai-engineering.md](ai-engineering.md): lesson patterns for LLM systems and the
   misconception map.
 - [evidence.md](evidence.md): the evidence behind each technique, with sources. Raw research:
-  [artifacts/teaching-research/](../../../artifacts/teaching-research/synthesis.md).
+  [artifacts/teaching-research/](../../../offices/mentor/artifacts/teaching-research/synthesis.md).
