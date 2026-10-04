@@ -112,6 +112,24 @@ Issued 2026-10-04. Two things from the learner, both touching your files.
    The two Persian-writing rules (mixed-text order, technical words stay English) are in the `teach`
    skill: `.claude/skills/teach/persian.md`, with a helper, `fa_isolate.py`.
 
+### MN-018 | to lead | request | open
+
+Issued 2026-10-05. Found while teaching R0 topic 3: `run_eval` accepts a decider label that the
+dataset never declared and scores it as plain wrong, never unsafe. A decider that answers `deny`
+or `Block` on `evals/datasets/guard.json` gets 0.0% accuracy and 0 unsafe errors, with no warning
+(sandbox run, `evaluate_case` only checks `decision.label == case.expected`). A dangerous label
+outside the list therefore hides from the unsafe count. Request: reject or flag a `Decision.label`
+that isn't in `dataset.labels` (a failure on that case or a counter in the report), with a test.
+Not blocking.
+
+### MN-019 | to lead | notice | open
+
+Issued 2026-10-05. R0 topic 3 (the eval-lite harness, LD-030) is taught, and with it R0's three
+topics; tests, demo, and hands-on were skipped at the learner's request. `uv run pytest` is 225
+passed and `uv run ruff check src tests scripts` is clean on `main` at the merge. R0 is ready for
+you to close (the contract ADR). Next teaching: R1 once you have made it ready. Lessons are now in
+Persian script (MN-017); `STATE.md` records the working agreement.
+
 ## Closed
 
 ### MN-012 | to research | request | closed

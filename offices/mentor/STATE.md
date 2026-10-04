@@ -7,21 +7,12 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 ## Now
 
 - **Stage:** R0, the specialist contract ([ROADMAP](../lead/ROADMAP.md#return-pass-r0-r5)).
-  Topics 1 and 2 are closed and merged to `main`.
-  - Topic 1, one envelope for every answer: `SpecialistResult[T]` and a `run_*` boundary per
-    specialist. Tests and demo skipped at the learner's request.
-  - Topic 2, the failure contract: `utils/failure_util.py` (`failure_kind`, `is_transient`,
-    `failure_reason`, `TRANSIENT_RETRY`), a `failed` envelope from every `run_*`, one retry
-    layer per call (`AGENTS.md` convention 11), P2's web fallback split into `web_search` and
-    `generate_from_web`, Tavily's hidden errors raised by `search_results`, P3's nodes
-    re-raising bugs. The learner typed Code 1; Code 2, Code 3, and the tests-and-demo step
-    were integrated by the mentor at the learner's request.
-- **Next:** Topic 3, the eval-lite harness (first consumer: R1), is merged and ready to teach:
-  `src/agentlab/utils/eval_util.py` (`EvalCase`, `Decision`, `run_eval`, `build_report`), with
-  `tests/test_eval_util.py` as its spec (LD-030). Start with its teaching review and the `teach`
-  skill's prep list. R0's remaining pieces merged too (per-app checkpoint databases, the worker
-  prompt, timeouts on every external client, the GapGPT embeddings); each is taught after its
-  teaching review. The lead records the contract as an ADR when R0 closes.
+  The three topics are taught: the envelope (`SpecialistResult[T]`), the failure contract
+  (`failure_util`), and the eval-lite harness (`utils/eval_util.py`, topic 3, 2026-10-05).
+  Tests, demo, and hands-on were skipped on topics 1 and 3 at the learner's request. R0 is ready
+  for the lead to close (ADR for the contract); the learner's go-ahead closes the stage.
+- **Next:** R1, P1 evidence-grounded research, once the lead has made it ready (design card,
+  `decision_model` seam). Start with a stage brief, no code.
 - **Order after R0:** R1 -> R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
 - **Teaching craft:** the `teach` skill ([SKILL.md](../../.claude/skills/teach/SKILL.md)) is rebuilt
   on the research in [artifacts/teaching-research/](artifacts/teaching-research/README.md) and
@@ -41,6 +32,11 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
   diff-only, with a prediction question before each component and "why" and "what if" after.
   The learner reads code in the main checkout and writes code only by choice, in their private
   area.
+- **Language and style (2026-10-04):** lessons are in Persian script, written by the `teach`
+  skill's [persian.md](../../.claude/skills/teach/persian.md) with its helper `fa_isolate.py`;
+  technical words stay English; every concept has an example first. No trailing questions, and
+  no tests, observe, eval, demo, or hands-on steps unless the learner asks (they have said so
+  repeatedly). Jev's key is `TYPESAFE_API_KEY` (in the main checkout's `.env`).
 - **Lesson messages:** the `teach` skill's checklist
   ([SKILL.md](../../.claude/skills/teach/SKILL.md#before-sending-any-lesson-message)): teach, don't
   report; one idea told through one concrete request before and after; full sentences.
