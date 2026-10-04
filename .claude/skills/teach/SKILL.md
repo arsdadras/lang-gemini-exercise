@@ -5,8 +5,8 @@ description: The mentor's teaching craft for agentlab lessons. Use in a mentor s
 
 # Teach
 
-The [charter](../../../README.md) says which steps a lesson has; the
-[pedagogy](../../../../../library/teaching/pedagogy.md) says what they must satisfy. This skill
+The [charter](../../../offices/mentor/README.md) says which steps a lesson has; the
+[pedagogy](../../../library/teaching/pedagogy.md) says what they must satisfy. This skill
 is how to do each step well. The one rule under all of it: never do the understanding for the
 learner; I carry the verified answer, the learner does the thinking.
 
@@ -171,4 +171,4 @@ evidence. When the evidence is missing, ask one transfer question before moving 
 - [ai-engineering.md](ai-engineering.md): lesson patterns for LLM systems and the
   misconception map.
 - [evidence.md](evidence.md): the evidence behind each technique, with sources. Raw research:
-  [artifacts/teaching-research/](../../../artifacts/teaching-research/synthesis.md).
+  [artifacts/teaching-research/](../../../offices/mentor/artifacts/teaching-research/synthesis.md).

@@ -1,6 +1,6 @@
 # Teaching Research
 
-Raw research behind the mentor's [`teach` skill](../../.claude/skills/teach/SKILL.md), kept as
+Raw research behind the mentor's [`teach` skill](../../../../.claude/skills/teach/SKILL.md), kept as
 gathered. Scope: practical teaching technique for an AI mentor teaching agentic-AI engineering
 through active review of verified code; learning psychology stays out. Each note uses the same
 format per question: Takeaway, Cited Findings, Inferences, Gaps. Findings are labeled by
@@ -18,5 +18,5 @@ evidence type; the Inferences are the researcher's own synthesis, not tested pra
 Caveats: most code-reading evidence comes from novices; every AI-tutor trial used students or
 junior developers; no study measures what experienced developers learn from reviewing verified
 code. Several full texts were paywalled and are flagged in the notes. The skill's
-[evidence.md](../../.claude/skills/teach/evidence.md) holds the rows it relies on; research is
+[evidence.md](../../../../.claude/skills/teach/evidence.md) holds the rows it relies on; research is
 asked to audit them (MN-012).

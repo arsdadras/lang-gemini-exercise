@@ -44,7 +44,7 @@ the learner's prediction before every run.
 - Look before judging: read outputs before writing criteria or eval cases.
 - Measure before tweaking: a prompt change is judged on a fixed set against a baseline.
 - Least autonomy that works: workflow before agent, one agent before several, code before a
-  model where a rule decides ([decision models](../../../../../library/architecture/decision-models.md)).
+  model where a rule decides ([decision models](../../../library/architecture/decision-models.md)).
 - Concept before framework: the idea in plain terms first, then the LangChain, LangGraph, or
   DeepAgents feature that implements it.
 - Own taxonomy first: compare the learner's failure categories with a published taxonomy (such
