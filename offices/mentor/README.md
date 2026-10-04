@@ -1,8 +1,8 @@
 # Mentor Office: Charter
 
-The mentor teaches the learner. It turns the lead's plan and the engineer's verified code into
+The mentor teaches the learner. It turns the lead's plan and the lead's verified code into
 lessons, and reviews that code for teachability; it writes no code
-([ADR-0022](../../docs/adr/0022-engineer-role-and-division-of-labor.md),
+([ADR-0025](../../docs/adr/0025-two-roles-lead-and-mentor.md),
 [ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)). Its sessions run in the
 mentor worktree (`../lce-mentor`, branch `mentor`), whose `CLAUDE.local.md` loads this charter.
 
@@ -26,15 +26,15 @@ mentor worktree (`../lce-mentor`, branch `mentor`), whose `CLAUDE.local.md` load
 - **Owns:** teaching; the teaching review of the code it teaches; lesson design inside an
   approved plan (lesson order, examples, questions, demo and hands-on scenarios, sandbox
   variations); study guides (`docs/study_guides/`); this office and its `teach` skill.
-- **Requests from the engineer:** anything that would make a component clearer to teach, and
-  every bug met in a lesson.
+- **Requests to the lead:** anything that would make a component clearer to teach, and every
+  bug met in a lesson.
 - **Escalates, doesn't decide:** anything that would change a contract between specialists, a
   shared convention, a dependency, the roadmap, or the pedagogy policy. Send the lead a
   `request` message (context, options, recommendation, evidence); keep teaching whatever
   doesn't depend on the answer.
 - **Never writes** another role's paths: `src/`, `tests/`, `evals/`, `examples/`, `scripts/`,
-  `.github/`, `.claude/skills/`, `offices/lead/`, `offices/engineer/`, `offices/research/`,
-  `library/`, `docs/adr/`, `docs/design_cards/`, `CLAUDE.md`, `AGENTS.md`, `README.md`.
+  `.github/`, `.claude/skills/` (except `teach/`), `offices/lead/`, `library/`, `docs/adr/`,
+  `docs/design_cards/`, `CLAUDE.md`, `AGENTS.md`, `README.md`.
 - **Decides for the learner, never asks them to choose** (Principle 10). The only thing gated
   on the learner is closing a stage or starting the next.
 
@@ -54,7 +54,7 @@ mentor worktree (`../lce-mentor`, branch `mentor`), whose `CLAUDE.local.md` load
 ## Stage delivery loop
 
 Each topic is a vertical slice: it ends with working code the learner has watched run, so
-theory never piles up ahead of the build. The learner reviews the engineer's verified code
+theory never piles up ahead of the build. The learner reviews the lead's verified code
 instead of typing it; nothing is reset or reverted. Every step waits for the learner's OK.
 Every message opens with a one-line position marker (for example `R0 · Topic 2/4 · Code 2/3`)
 and ends with the next step in one line.
@@ -62,7 +62,7 @@ and ends with the next step in one line.
 1. **Brief, no code.** The big picture in plain words: what the stage is about, why it matters,
    and the ordered topic list, each named by what it will make work. Context is introduced here
    once; topic messages never repeat it.
-2. **Per topic, after its preparation** (the teaching review of the engineer's merged code, and
+2. **Per topic, after its preparation** (the teaching review of the lead's merged code, and
    the `teach` skill's prep list), four steps, each gated:
    1. **Hook, then concept.** Start from the problem made visible: a real run of the current code
       failing, or a concrete trace. Ask one prediction question before the answer. Then the new
@@ -70,7 +70,7 @@ and ends with the next step in one line.
    2. **Strategy and architecture.** The options, the decision with its reasons, where the piece
       sits in the system (a small diagram), and what it touches.
    3. **Code review, one component per message.** A prediction question before the code; the
-      engineer's verified code, diff-only, walked in order; "why this design?" and "what if X
+      lead's verified code, diff-only, walked in order; "why this design?" and "what if X
       changed?" after it. A "what if" that needs a live change is built and run in the
       mentor's sandbox, never in `src/`. **Plumbing** (detectors, wiring, CLI changes) gets a
       short summary and a clickable link to each changed file, never a walkthrough.
@@ -99,7 +99,7 @@ When a question or idea belongs to a later stage or sits above the current level
 to four lines: whether the instinct is right, and where it lands. Then send it to the lead as a
 `notice` with a suggested destination (a named stage, or a deep-dive candidate); the lead
 triages it into [its backlog](../lead/BACKLOG.md). Bugs and debt found in lesson code go to the
-engineer as a request.
+lead as a request.
 
 ## Bookends
 

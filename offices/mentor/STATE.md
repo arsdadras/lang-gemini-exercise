@@ -16,19 +16,20 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
     `generate_from_web`, Tavily's hidden errors raised by `search_results`, P3's nodes
     re-raising bugs. The learner typed Code 1; Code 2, Code 3, and the tests-and-demo step
     were integrated by the mentor at the learner's request.
-- **Next:** Topic 3, the shared eval-lite harness (first consumer: R1), taught once the
-  engineer merges it. R0's remaining implementation (timeouts, evidence IDs, chat prompts split
-  from worker prompts, per-app checkpoint databases, untracking the old checkpoint DB) is the
-  engineer's (LD-019); the mentor teaches each piece after its teaching review. The lead
-  records the contract as an ADR when R0 closes.
+- **Next:** Topic 3, the eval-lite harness (first consumer: R1), is merged and ready to teach:
+  `src/agentlab/utils/eval_util.py` (`EvalCase`, `Decision`, `run_eval`, `build_report`), with
+  `tests/test_eval_util.py` as its spec (LD-030). Start with its teaching review and the `teach`
+  skill's prep list. R0's remaining pieces merged too (per-app checkpoint databases, the worker
+  prompt, timeouts on every external client, the GapGPT embeddings); each is taught after its
+  teaching review. The lead records the contract as an ADR when R0 closes.
 - **Order after R0:** R1 -> R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
 - **Teaching craft:** the `teach` skill ([SKILL.md](../../.claude/skills/teach/SKILL.md)) is rebuilt
   on the research in [artifacts/teaching-research/](artifacts/teaching-research/README.md) and
   is in use from R0 topic 3 on. The lead accepted it (LD-027); it lives in the root registry,
   `.claude/skills/teach/`, and its research stays in `offices/mentor/artifacts/`.
-- **Waiting on others:** the lead on LD-027's last fix (its LD-028 text links the old skill path);
-  research on LD-028 and MN-012 (audit of the skill's evidence); the engineer on MN-014 (a
-  real-graph test for the RAG router) and on confirming it took over the known issues (LD-018).
+- **Waiting on others:** nobody. Two roles since ADR-0025: the lead builds, tests, and
+  researches; requests and notices go to the lead. The lead took over MN-012 (audit of the
+  skill's evidence, on its research queue) and LD-028 (research on the teaching methods).
 - **Stack:** re-verified on 2026-09-27 against the lead's upgrade (LD-007). openai 3.x and
   anthropic 1.x raise timeouts and refusals from `httpx2`; `failure_util` now classifies them,
   tested against real SDK clients on a local silent server and a closed port.
@@ -36,7 +37,7 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 ## Working agreements
 
 - **Code delivery:** active review ([ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)).
-  The engineer builds and verifies; the mentor walks the learner through the merged code,
+  The lead builds and verifies; the mentor walks the learner through the merged code,
   diff-only, with a prediction question before each component and "why" and "what if" after.
   The learner reads code in the main checkout and writes code only by choice, in their private
   area.
@@ -53,7 +54,7 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 ## Known issues
 
 Program-level debt is triaged in the lead's [BACKLOG](../lead/BACKLOG.md). These live code
-issues move to the engineer's state (LD-018, LD-023); this copy goes once the engineer confirms.
+issues moved to the lead's state (LD-018, LD-023); this copy goes once the lead confirms.
 - **Coordinator shell has no approval step:** approvals raised inside a subagent aren't surfaced
   to the CLI; the banner states it. Fix: P6-B3.
 - **Old checkpoint DB still tracked:** `src/data/dbs/checkpoints.db` (a consistent copy is at

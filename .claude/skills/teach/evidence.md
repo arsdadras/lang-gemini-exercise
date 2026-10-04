@@ -13,7 +13,7 @@ Rows compiled 2026-09-28: every DOI checked against Crossref. Rows marked † we
 changed on 2026-09-29 from the mentor's
 [teaching-research notes](../../../offices/mentor/artifacts/teaching-research/synthesis.md): only their DOI
 links were matched to Crossref titles; their claims, labels, and other links are not yet
-checked and join research's audit, [MN-012](../../../offices/mentor/OUTBOX.md).
+checked and join the lead's audit, [MN-012](../../../offices/mentor/OUTBOX.md).
 
 ## Learning
 

@@ -96,7 +96,7 @@ When the learner reviews a component as a PR before my walkthrough.
 - Before the diff: "What must a correct change do? Two or three criteria."
 - With the tests: "Which behavior does this test pin, and what stays untested?"
 - After: "Two to four comments in a reviewer's voice: a question, a suggestion, or an approval
-  with its reason." A real finding goes to the engineer.
+  with its reason." A real finding goes to the lead.
 
 ## Hint ladder
 

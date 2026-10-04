@@ -37,11 +37,11 @@ Check the draft against all nine; rewrite until it passes.
 
 ## Prepare a topic (before its first message)
 
-- **Teaching review** of the engineer's verified code: each component's core fits one diff;
+- **Teaching review** of the lead's verified code: each component's core fits one diff;
   names say purpose; comments carry *why*; test names state behavior; the hook reproduces in
-  test mode. Anything that blocks teaching, or any bug, goes to the engineer as a request.
+  test mode. Anything that blocks teaching, or any bug, goes to the lead as a request.
 - **Decision points:** each core component's three to five, as force, options, choice, typical
-  wrong choice, what breaks, taken from the ADR, the design card, or the engineer's notes. A
+  wrong choice, what breaks, taken from the ADR, the design card, or the lead's notes. A
   rationale I can't find goes to its owner as a request; I never fill it in from general
   knowledge.
 - **Expected answers:** for every question I will ask, the answer (from the code, a test, or a
@@ -82,7 +82,7 @@ it, what it touches. One line on the production path.
   fluent means no labels or traces, straight to a contrast or what-if; shaky on a new framework
   mechanism means one sentence of the runtime model, a trace table, and labeled chunks. Depth
   is per mechanism, not per learner.
-- The code: diff-only (changed lines plus a few anchor lines) from the engineer's merged
+- The code: diff-only (changed lines plus a few anchor lines) from the lead's merged
   commit, with a clickable link to the file.
 - After the code: narrate only the decision points, each in four beats: force, options,
   choice, what the others would break. Routine lines get none. Chunks are labeled by purpose
@@ -126,7 +126,7 @@ trace, name the layer that owns a failure), from the [lab card](materials.md). A
 before the fault run; a diagnosis after it as symptom, cause, mechanism, fix. The harness
 judges success: a test name, an output line, a trace shape. Faults come from env vars, input,
 stubs, or a sandbox copy, never from `src/` or other repo files; a fault switch the code lacks
-is a request to the engineer.
+is a request to the lead.
 
 **Teach-back (project close).** Announced at the project's Session 0. The learner defends each
 key decision with no record or code open, to me playing a named tutee who probes. Scoring and
