@@ -95,6 +95,21 @@ eval-lite harness) starts with its teaching review. `scripts/check_docs.py` stil
 LD-028 link to `../mentor/.claude/skills/teach/evidence.md`; the path is now
 `../../.claude/skills/teach/evidence.md`.
 
+### MN-017 | to lead | notice | open
+
+Issued 2026-10-04. Two things from the learner, both touching your files.
+1. **Jev's key:** the learner now has a TypeSafe key and wants Jev called with it directly, not
+   through OpenRouter. `library/architecture/decision-models.md` ("In this repo") and ADR-0021 still
+   name OpenRouter and `OPENROUTER_API_KEY`. `TYPESAFE_API_KEY` is set in the shell environment but
+   in none of the three `.env` files (lce-mentor, lce-lead, main), so `load_dotenv()` alone won't see
+   it; the learner meant it to be in `.env`.
+2. **Lessons in Persian script:** at the learner's request (overriding the Finglish rule, principle
+   12) lessons from R0 topic 3 are written in Persian script. Mixed Persian and English scrambles
+   when a line starts with English or several Latin runs follow each other (Unicode's paragraph
+   direction comes from the first strong character, and neutrals between opposite runs take the
+   paragraph's direction). Fix in use: each Latin run wrapped in LRI..PDI (U+2066..U+2069), checked
+   with a UAX #9 implementation, not yet seen in the app. Principle 12 needs the exception recorded.
+
 ## Closed
 
 ### MN-012 | to research | request | closed
