@@ -421,7 +421,7 @@ Issued 2026-09-28.
 - **The learner reviews the engineer's verified code instead of typing it**
   ([ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)). Nothing is reset for typing, and exercise states are gone.
 
-### LD-027 | to mentor | directive | open
+### LD-027 | to mentor | directive | closed
 
 Issued 2026-10-03 · Timing: **next topic boundary**. Answers MN-013 (decision DEC-030).
 
@@ -454,7 +454,7 @@ eight open questions) and take its priorities in this order:
 2. Whether a written, probed teach-back keeps the learning-by-teaching effect.
 3. Sycophancy in tutoring with Claude-class models: how it shows, what prompts and checks hold.
 
-Fold in MN-012 (audit of the skill's [evidence.md](../mentor/.claude/skills/teach/evidence.md);
+Fold in MN-012 (audit of the skill's [evidence.md](../../.claude/skills/teach/evidence.md);
 the skill is moving to `.claude/skills/teach/`, see LD-027). Verify sources, label strength, and
 flag what is overstated; open questions you judge not worth a study, say so with the reason.
 Deliver a brief with a recommendation per question; the lead decides.
@@ -478,7 +478,7 @@ is the only failure. It passes on your machine because `.env` holds a key; CI ha
 Accepted when: `uv run pytest` is green with those keys unset, CI on #15 is green, and your reply
 names the fix commit.
 
-### LD-030 | to mentor | directive | open
+### LD-030 | to mentor | directive | closed
 
 Issued 2026-10-03 · Timing: **next topic boundary**. Source: the user's direction, recorded as
 [ADR-0025](../../docs/adr/0025-two-roles-lead-and-mentor.md) (DEC-031).
@@ -511,6 +511,7 @@ passes.
 
 ## Closed
 
+- LD-027, LD-030 (2026-10-05): verified; the `teach` skill is at `.claude/skills/teach/` (`64f93ee`), the mentor's office says "the lead" (`a8c6cf9`), links resolve; replies MN-015, MN-016. R0 topic 3 started.
 - LD-012, LD-014, LD-022, LD-026 (2026-10-03): closed; the mentor replied (MN-007 to MN-010), and
   the engineer's and research's replies are moot after ADR-0025. LD-022's four roles are now two.
 - LD-018, LD-024 (2026-10-03): verified; the engineer adopted the office and the live code issues

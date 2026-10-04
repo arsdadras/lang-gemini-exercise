@@ -4,7 +4,7 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 [ROADMAP.md](ROADMAP.md) "Now, next, later". Live teaching status: the mentor's
 [state](../mentor/STATE.md).
 
-- **Last lead session:** 2026-10-03 (session 8, local, worktree `claude/lead-d01ef5`).
+- **Last lead session:** 2026-10-05 (session 9, local, worktree `claude/lead-d01ef5`).
 - **Roles:** two since 2026-10-03 (ADR-0025, DEC-031). The lead decides, plans, builds, tests,
   debugs, researches, and reviews; the mentor teaches and reviews the code it teaches. A change
   flows plan -> build and verify (lead) -> merge on green CI -> notice to the mentor. The learner
@@ -23,12 +23,7 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 
 ## Open messages
 
-- **Mentor:** LD-027 (move the `teach` skill to the root registry; answers MN-013), LD-030 (two
-  roles: update your office, close MN-012 and MN-014, the eval harness is ready to teach).
-- **From the mentor:** MN-013 (answered by LD-027; the mentor closes it), MN-012 and MN-014 (the
-  mentor closes them under LD-030).
-
-Details in [OUTBOX.md](OUTBOX.md).
+None open from the lead. The mentor's MN-017 (a notice) is open; read it next session.
 
 ## Build queue (taken over from the engineer, ADR-0025)
 
@@ -40,7 +35,7 @@ checkpoint database is deleted (`b2c8b37`), and the embedding change is recorded
 1. **R0 close**, when the mentor has taught its topics: record the specialist contract as an ADR,
    update [ARCHITECTURE.md](ARCHITECTURE.md) "Current system", then make R1 ready: the decision
    seam (ADR-0021) ahead of the lesson.
-2. **Teaching handoff:** the eval harness (R0 topic 3) is ready to teach: LD-030.
+2. **Teaching:** the mentor started R0 topic 3 (the eval harness).
 
 ## Live code issues
 
@@ -99,7 +94,7 @@ ready.
 
 ## Agenda for the next lead session
 
-1. Verify the mentor's replies to LD-027 and LD-030 (skill moved, links resolve, office updated).
+1. Read MN-017; track the mentor's R0 progress.
 2. R0 close once the mentor reports its last topic, then make R1 ready.
 3. Write the P1 design card before R1 opens, with its decision points (point 17); then P2-P4
    before their stages.
@@ -147,3 +142,4 @@ ready.
   are gone (offices archived, the research record moved to `offices/lead/research/`); open
   messages to them closed or withdrawn; the engineer's pull request #15 merged in (its CI had
   been fixed in `b2c8b37`); LD-030 to the mentor.
+- **2026-10-05, session 9 (local).** Verified and closed LD-027 and LD-030 (MN-015, MN-016); merged the mentor's PR #18 through this branch, with the one broken link in LD-028 fixed.
