@@ -22,8 +22,10 @@ Check the draft against all nine; rewrite until it passes.
 3. **Bottom line first, then the story:** a familiar anchor, one concrete example (one request
    traced before and after the change), the idea named, then the rule and where it stops
    applying.
-4. **Full plain sentences in Finglish.** Compression styles, fragment bullets, and jargon
-   piles never apply to lessons. Technical terms stay English.
+4. **Full plain sentences in Persian script, written by [persian.md](persian.md).**
+   Compression styles, fragment bullets, and jargon piles never apply to lessons. Technical
+   words stay English, every Latin run goes through `fa_isolate.py`, and every concept comes
+   with an example in the same message.
 5. **Readable in one go** (about a screen). Longer means two messages.
 6. **Framed:** the first line is the position marker (`R0 · Topic 3/4 · Code 1/2`); the last
    line is the learner's move (at most one question, answerable in a sentence or two) or the
@@ -158,6 +160,8 @@ evidence. When the evidence is missing, ask one transfer question before moving 
 - Hints for plumbing, or withholding an answer the learner asked for.
 - Agreeing with a wrong answer or a weaker design.
 - Teaching a future stage's answer in depth.
+- Translating technical words into Persian (`بالا می‌آید` for "raises"), or a concept told in
+  prose with no example ([persian.md](persian.md)).
 
 ## Files
 
@@ -168,6 +172,8 @@ evidence. When the evidence is missing, ask one transfer question before moving 
 - [materials.md](materials.md): templates for demo scripts, lab cards, text diagrams, resume
   notes, study guides, and the review-items table.
 - [teach-back.md](teach-back.md): the project-close defense, its scoring, and gap routing.
+- [persian.md](persian.md): how to write lessons in Persian (mixed-text order, which words stay
+  English, examples first), with the helper `fa_isolate.py`.
 - [ai-engineering.md](ai-engineering.md): lesson patterns for LLM systems and the
   misconception map.
 - [evidence.md](evidence.md): the evidence behind each technique, with sources. Raw research:

@@ -100,15 +100,17 @@ LD-028 link to `../mentor/.claude/skills/teach/evidence.md`; the path is now
 Issued 2026-10-04. Two things from the learner, both touching your files.
 1. **Jev's key:** the learner now has a TypeSafe key and wants Jev called with it directly, not
    through OpenRouter. `library/architecture/decision-models.md` ("In this repo") and ADR-0021 still
-   name OpenRouter and `OPENROUTER_API_KEY`. `TYPESAFE_API_KEY` is set in the shell environment but
-   in none of the three `.env` files (lce-mentor, lce-lead, main), so `load_dotenv()` alone won't see
-   it; the learner meant it to be in `.env`.
+   name OpenRouter and `OPENROUTER_API_KEY`. `TYPESAFE_API_KEY` (earlier `JEV_API_KEY`) is in the
+   main checkout's `.env` and in the shell environment, but not in the `.env` of `lce-mentor` or
+   `lce-lead`; each worktree has its own `.env`.
 2. **Lessons in Persian script:** at the learner's request (overriding the Finglish rule, principle
    12) lessons from R0 topic 3 are written in Persian script. Mixed Persian and English scrambles
    when a line starts with English or several Latin runs follow each other (Unicode's paragraph
    direction comes from the first strong character, and neutrals between opposite runs take the
    paragraph's direction). Fix in use: each Latin run wrapped in LRI..PDI (U+2066..U+2069), checked
    with a UAX #9 implementation, not yet seen in the app. Principle 12 needs the exception recorded.
+   The rules (mixed-text order, technical words stay English, examples first) are in the `teach`
+   skill: `.claude/skills/teach/persian.md`, with a helper, `fa_isolate.py`.
 
 ## Closed
 
