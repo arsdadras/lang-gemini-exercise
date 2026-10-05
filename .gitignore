@@ -44,11 +44,11 @@ last_threads.txt
 .gemini/
 .antigravity/
 
-# Office sandboxes: scratch, never committed (library/engineering/dev-environment.md)
-offices/*/sandbox/*
-!offices/*/sandbox/README.md
+# The mentor's sandbox: scratch, never committed (library/engineering/dev-environment.md)
+mentor/sandbox/*
+!mentor/sandbox/README.md
 
-# Claude Code local state: per-worktree role file (scripts/setup_worktrees.py) and plugin data
+# Claude Code local state
 CLAUDE.local.md
 .claude/settings.local.json
 .claude/*.lock

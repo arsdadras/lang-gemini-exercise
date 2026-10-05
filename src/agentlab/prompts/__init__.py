@@ -8,7 +8,6 @@ from agentlab.prompts.agents_prompt import (
     build_web_researcher_prompt,
 )
 from agentlab.prompts.middlewares_prompt import (
-    GROUNDEDNESS_PROMPT,
     MEMORY_WRITE_POLICY,
     SECURITY_GUARD_PROMPT,
 )
@@ -36,7 +35,6 @@ __all__ = [
     "GENERATE_FROM_WEB_PROMPT",
     "GENERATE_PROMPT",
     "GRADE_PROMPT",
-    "GROUNDEDNESS_PROMPT",
     "HALLUCINATION_PROMPT",
     "MEMORY_WRITE_POLICY",
     "RESEARCHER_SUBAGENT_PROMPT",

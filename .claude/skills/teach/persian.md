@@ -2,8 +2,8 @@
 
 Every message to the learner from R0 topic 3 on is in Persian script. The learner asked for it
 on 2026-10-04, which overrides the Finglish rule in
-[principle 12](../../../library/governance/principles.md#12-communication); the lead records
-the exception (MN-017). The learner reads this skill's result, not this file, so the file is
+[principle 12](../../../library/governance/principles.md#12-communication); the exception is recorded
+there (DEC-034). The learner reads this skill's result, not this file, so the file is
 English and its examples are Persian.
 
 This file is only about writing Persian. How to teach (examples first, one idea per message)

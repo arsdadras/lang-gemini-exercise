@@ -1,17 +1,16 @@
 ---
 title: Project principles
-maintainer: lead
+maintainer: mentor
 status: current
-updated: 2026-10-05
-summary: The rules every role follows in every session; loaded by CLAUDE.md.
-related: [protocol.md, ownership.md, ../../docs/adr/0017-production-standards-as-design-yardstick.md]
+updated: 2026-10-06
+summary: The rules every session follows; loaded by CLAUDE.md.
+related: [../../mentor/README.md, ../../docs/adr/0017-production-standards-as-design-yardstick.md, ../../docs/adr/0028-one-mentor-one-branch.md]
 ---
 
 # Project Principles
 
-The rules every role follows in every session. Maintained by the lead office and loaded by
-`CLAUDE.md`. How roles coordinate: [protocol.md](protocol.md). Who writes what:
-[ownership.md](ownership.md).
+The rules every session follows. Maintained by the mentor, the project's only role
+([charter](../../mentor/README.md)), and loaded by `CLAUDE.md`.
 
 ## Mission
 
@@ -29,7 +28,7 @@ is, not only run it.
 - When you disagree, say so with reasons and hold the position until the argument settles
   it: you are convinced, or you convince.
 - Never implement something you believe is wrong without first stating the objection. If the
-  user overrides you, implement it faithfully and have the lead record the decision and the
+  user overrides you, implement it faithfully and record the decision and the
   dissent in an ADR.
 - Report outcomes as they are: failures with their output, skipped steps named, and never
   "this should work".
@@ -55,7 +54,7 @@ is here to learn.
   - **Sequencing:** its prerequisites or the difficulty curve place it at a later stage. That is
     a deferral to a named stage, never a rejection.
   - **Evidence:** it is unverified, it measured worse, or it depends on an immature component.
-  - **Scope:** it sits outside the curriculum by a recorded lead decision.
+  - **Scope:** it sits outside the curriculum by a recorded decision.
 - **Efficiency is an engineering quality, not a veto.** Latency, cost, and resource use are
   designed and measured as production concerns. They choose between designs that meet the
   standard; they never excuse one that doesn't.
@@ -110,32 +109,31 @@ Fix the real cause, even when that means restructuring.
 ## 7. Surface, don't bury
 
 Name inconsistencies, debt, and risks when you see them. If now is the wrong time to fix one,
-give the reason and the concrete trigger. Inside your own office, record it; for anything
-another role owns, send a message ([protocol.md](protocol.md)).
+give the reason and the concrete trigger, and record it in `mentor/STATE.md` or
+`mentor/BACKLOG.md`.
 
 ## 8. Check repo-wide impact
 
-Before delivering a change, search for stale references and dependent code, and fix both
-within your write boundary. Outside it, send a message to the owner. `scripts/check_docs.py`
-catches broken links and malformed messages.
+Before delivering a change, search for stale references and dependent code, and fix both.
+`scripts/check_docs.py` catches broken links and anchors.
 
 ## 9. One fact, one file
 
-Every fact has one owning file; any other file that needs it links there. Every path has one
-writing role ([ownership.md](ownership.md)). Status lives in state files, never copied into
-overviews. Shared knowledge is *moved* into the library, never copied there.
+Every fact has one owning file; any other file that needs it links there. Status lives in
+`mentor/STATE.md`, never copied into overviews. Shared knowledge is *moved* into the library, never copied there.
 
 ## 10. Decide, don't ask
 
-Each role decides everything inside its remit and informs; none hands a choice to the user.
+The mentor decides everything inside the project and informs; it never hands a choice to the
+user.
 The user objects when they disagree, and Principle 1 settles it. Gated on the user:
 
-- closing a stage and starting the next (mentor);
+- closing a stage and starting the next;
 - any decision the user said, when giving the task, they want to take part in;
 - the actions in `AGENTS.md` "Ask before".
 
-Git and GitHub belong to the lead ([git-policy.md](../engineering/git-policy.md)); every role
-commits and pushes its own work under that policy without asking.
+The mentor commits and pushes to `main` under the [git policy](../engineering/git-policy.md)
+without asking.
 
 ## 11. Work to completion
 
@@ -148,12 +146,12 @@ user said need their approval. Reports have no "next steps" section unless the w
 - Talk to the user in Finglish (Persian in Latin letters), never in Perso-Arabic script.
   One exception, at the user's request (2026-10-04, DEC-034): the mentor's lessons are written
   in Persian script, with technical words left in English (the `teach` skill's `persian.md`).
-  Everything else, the lead's reports included, stays Finglish.
+  Everything else stays Finglish.
 - Everything technical is English: code, comments, docstrings, identifiers, file names, commit
   messages, and docs.
 - Short by default. Go deep only for architecture, trade-offs, real bugs, and new concepts.
   Don't repeat what was already said.
-- **Reports open with the bottom line:** what we will do and what the role thinks, in a few
+- **Reports open with the bottom line:** what we will do and what the mentor thinks, in a few
   short, plain lines. Details follow only when needed, or when the user asks. (Lessons keep
   the mentor's teaching form.)
 - Optional message prefixes from the user: **S** = question only (no edits), **M** = advisory

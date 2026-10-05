@@ -1,17 +1,16 @@
 # Specialist Design Cards
 
-A design card is the contract for one specialist agent. The lead writes it before the
-project's Session 0 (or before the specialist's return-pass stage), and the mentor teaches from
-it; the mentor proposes changes as request messages to the lead. When the contract changes, the
-lead edits the card and notes why ([DEC-006](../../offices/lead/DECISIONS.md)). Progress is
-recorded in the mentor's [state](../../offices/mentor/STATE.md), not here.
+A design card is the contract for one specialist agent. The mentor writes it before the
+project's Session 0 (or before the specialist's return-pass stage) and teaches from it. When the
+contract changes, the mentor edits the card and notes why ([DEC-006](../../mentor/DECISIONS.md)). Progress is
+recorded in the mentor's [state](../../mentor/STATE.md), not here.
 
 ## Index
 
 | Project | Card |
 | :--- | :--- |
 | P1 Evidence-grounded research agent | [P1_research_agent.md](P1_research_agent.md) |
-| P2-P4 | Planned: written by the lead before R2-R4 respectively (built before design cards existed; `docs/study_guides/` covers P3 and P4) |
+| P2-P4 | Planned: written before R2-R4 respectively (built before design cards existed; `docs/study_guides/` covers P3 and P4) |
 | P5 Memory-rich personal assistant | [P5_memory_assistant.md](P5_memory_assistant.md) |
 
 ## Template (17 points)

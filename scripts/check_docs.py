@@ -1,4 +1,4 @@
-"""Lint the repository's Markdown: links, anchors, library front matter and index, outboxes.
+"""Lint the repository's Markdown: links, anchors, library front matter and index.
 
 Usage:
     uv run python scripts/check_docs.py [PATH_PREFIX ...]
@@ -20,25 +20,14 @@ ROOT = Path(__file__).resolve().parent.parent
 
 SKIPPED_TOP_DIRS = {"alireza", "archive"}
 LIBRARY_FIELDS = ("title", "maintainer", "status", "updated", "summary")
-LIBRARY_MAINTAINER = "lead"  # the library is the lead's alone (ADR-0024)
+LIBRARY_MAINTAINER = "mentor"  # the only role (ADR-0028)
 LIBRARY_STATUSES = {"current", "draft", "superseded"}
 LIBRARY_UNINDEXED = {"README.md", "LOG.md"}
-
-OFFICE_PREFIX = {"lead": "LD", "mentor": "MN"}
-RETIRED_ROLES = {
-    "engineer",
-    "research",
-}  # folded into the lead (ADR-0025); old messages name them
-RECIPIENTS = {"lead", "mentor", "user", "all"} | RETIRED_ROLES
-OPEN_STATUSES = {"open", "closed", "withdrawn"}
-REPLY_STATUSES = {"done", "partial", "declined"}
 
 FENCE = re.compile(r"^\s*(```|~~~)")
 INLINE_CODE = re.compile(r"`[^`]*`")
 LINK = re.compile(r"!?\[[^\]]*\]\(\s*<?([^)\s>]+)>?(?:\s+\"[^\"]*\")?\s*\)")
 HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$")
-MESSAGE_HEADING = re.compile(r"^###\s+(.*)$")
-MESSAGE_ID = re.compile(r"^(LD|EN|MN|RS)-\d{3}$")
 
 
 def markdown_files(root: Path, prefixes: list[str]) -> list[Path]:
@@ -171,71 +160,12 @@ def check_library(root: Path) -> list[str]:
     return problems
 
 
-def parse_heading(heading: str) -> tuple[str, list[str], str, str] | None:
-    """`LD-001 | to mentor | directive | open` -> (id, recipients, type, status)."""
-    parts = [p.strip() for p in heading.split("|")]
-    if len(parts) != 4 or not parts[1].startswith("to "):
-        return None
-    recipients = [r.strip() for r in parts[1][3:].split(",")]
-    return parts[0], recipients, parts[2], parts[3]
-
-
-def check_outbox(path: Path, root: Path) -> list[str]:
-    office = path.parent.name
-    prefix = OFFICE_PREFIX.get(office)
-    rel = path.relative_to(root).as_posix()
-    if prefix is None:
-        return [f"{rel}: outbox of unknown office '{office}'"]
-    problems, seen = [], set()
-    for number, line in prose_lines(path.read_text(encoding="utf-8")):
-        match = MESSAGE_HEADING.match(line)
-        if not match:
-            continue
-        where = f"{rel}:{number}"
-        parsed = parse_heading(match.group(1))
-        if parsed is None:
-            problems.append(
-                f"{where}: heading is not 'ID | to <role> | <type> | <status>'"
-            )
-            continue
-        msg_id, recipients, kind, status = parsed
-        if not MESSAGE_ID.match(msg_id) or not msg_id.startswith(prefix):
-            problems.append(
-                f"{where}: ID {msg_id} must be {prefix}-### in the {office} outbox"
-            )
-        if msg_id in seen:
-            problems.append(f"{where}: duplicate ID {msg_id}")
-        seen.add(msg_id)
-        unknown = [r for r in recipients if r not in RECIPIENTS]
-        if unknown:
-            problems.append(f"{where}: unknown recipient {', '.join(unknown)}")
-        if kind.startswith("reply "):
-            if not MESSAGE_ID.match(kind[6:].strip()):
-                problems.append(f"{where}: reply must name a message ID")
-            if status not in REPLY_STATUSES:
-                problems.append(
-                    f"{where}: reply status must be done, partial, or declined"
-                )
-        elif kind in {"directive", "request", "notice"}:
-            if kind == "directive" and office != "lead":
-                problems.append(f"{where}: only the lead sends directives")
-            if status not in OPEN_STATUSES:
-                problems.append(f"{where}: status must be open, closed, or withdrawn")
-        else:
-            problems.append(f"{where}: unknown type '{kind}'")
-    return problems
-
-
 def run(root: Path, prefixes: list[str]) -> list[str]:
     problems = []
     for path in markdown_files(root, prefixes):
         problems += check_links(path, root)
     if not prefixes or any(p.startswith("library") for p in prefixes):
         problems += check_library(root)
-    for path in sorted((root / "offices").glob("*/OUTBOX.md")):
-        rel = path.relative_to(root).as_posix()
-        if not prefixes or any(rel.startswith(p.rstrip("/")) for p in prefixes):
-            problems += check_outbox(path, root)
     return problems
 
 

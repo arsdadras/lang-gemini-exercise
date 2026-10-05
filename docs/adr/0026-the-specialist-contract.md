@@ -2,7 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-10-05
-- Origin: lead, closing stage R0 ([roadmap](../../offices/lead/ROADMAP.md#return-pass-r0-r5),
+- Origin: lead, closing stage R0 ([roadmap](../../mentor/ROADMAP.md#return-pass-r0-r5),
   [ADR-0011](0011-return-pass-before-p6.md)); the user's go-ahead closed the stage.
 - Revisit when: P6 composes specialists through inter-agent contracts, or a specialist needs a
   fourth status.

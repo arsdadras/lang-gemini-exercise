@@ -3,7 +3,7 @@
 - Status: Accepted
 - Date: 2026-09-28
 - Origin: user direction (the Jev file, opened 2026-09-27); research's BR-003 version 3; the
-  lead's [dossier](../../offices/lead/artifacts/jev-dossier.md), accepted in full by the user
+  lead's [dossier](../../mentor/artifacts/jev-dossier.md), accepted in full by the user
   after the joint review. Supersedes the "P8-C3 first" part of DEC-004.
 - Revisit when: a Jev release or an alias move; `langchain-typesafe` leaves alpha, or is still
   alpha at P8-C3; R2's measurement; a Finglish or Persian study.

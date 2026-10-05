@@ -1,6 +1,6 @@
 # ADR-0019: One worktree and branch per role, session hooks, and a /handoff skill
 
-- Status: Accepted; the roles are now two, the lead and the mentor ([ADR-0025](0025-two-roles-lead-and-mentor.md))
+- Status: Superseded by [ADR-0028](0028-one-mentor-one-branch.md)
 - Date: 2026-09-27
 - Origin: user direction (2026-09-27); design by the lead. Replaces the shared working tree of
   the git policy that [ADR-0018](0018-three-offices-library-and-archive.md) set up; the offices,

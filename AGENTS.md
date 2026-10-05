@@ -1,9 +1,8 @@
 # AGENTS.md
 
-Repo mechanics for any coding agent. Roles and rules: `CLAUDE.md` and `library/`
-([index](library/README.md)). Plan: `offices/lead/ROADMAP.md`. Teaching state:
-`offices/mentor/STATE.md`. Each role works in its own worktree and branch (`../lce-<role>`,
-[dev environment](library/engineering/dev-environment.md)).
+Repo mechanics for any coding agent. The role and the rules: `CLAUDE.md` and `library/`
+([index](library/README.md)). Plan: `mentor/ROADMAP.md`. State: `mentor/STATE.md`. All work
+happens on `main` ([git policy](library/engineering/git-policy.md)).
 
 ## Project
 
@@ -36,16 +35,16 @@ src/agentlab/
   configs/         plain constants: paths, model catalog, one module per project
   resources/       packaged non-code files (agent skills)
 tests/             pytest suite
-scripts/           repo tooling: docs lint, inbox, session hooks, handoff, worktree setup,
-                   live smoke, and their tests
-offices/           one office per role (lead, mentor): charter, state, outbox; the lead's holds the research record
-library/           shared canonical knowledge: principles, protocol, ownership, policies
+scripts/           repo tooling: docs lint, live smoke, and their tests
+mentor/            the mentor's office: charter, state, log, roadmap, backlog, decisions,
+                   risks, the research record, artifacts, sandbox (ignored)
+library/           canonical knowledge: principles, architecture, engineering, teaching,
+                   technology
 archive/           retired documents, frozen
-docs/              ADRs, design cards, and study guides (write-ups of finished projects)
+docs/              architecture, ADRs, design cards, and study guides (write-ups of finished
+                   projects)
 .github/           CI and Dependabot
-.claude/           Claude Code skills (/lead, /mentor, /handoff, /inbox, decision-points; the
-                   mentor's teach) and the session hooks (start, prompt, ownership
-                   guard, stop)
+.claude/           Claude Code skills: /mentor, /handoff, teach, decision-points
 examples/          sample inputs (e.g. code to review)
 evals/             live eval-lite scenario sets (real models, run by hand, not by pytest)
 out/               runtime output, gitignored: sandbox/, state/<app>_checkpoints.db
@@ -114,7 +113,7 @@ that suffix too: `prompts/nodes/*_prompt.py`, `schemas/output/*_output_schema.py
     - A specialist boundary (`run_*`) turns an external failure into a `failed` envelope
       with `failure_reason`; anything `failure_kind` can't classify is a bug and raises.
 12. **Top-level packages.** Adding a new package under `src/agentlab/` needs a reason recorded
-    in an ADR by the lead.
+    in an ADR.
 
 ## Commands
 
@@ -123,11 +122,7 @@ uv sync                                         # install (editable) with dev to
 uv run pytest                                   # tests
 uv run ruff check src tests scripts             # lint
 uv run ruff format src tests scripts            # format
-uv run python scripts/check_docs.py             # docs lint: links, anchors, library, outboxes
-python scripts/inbox.py [role] --fetch          # open messages (default: this worktree's role)
-python scripts/handoff.py -m "<subject>" [--wip] [--pr]  # end a session (the /handoff skill)
-python scripts/setup_worktrees.py               # create or complete the role worktrees
-python scripts/pr_report.py --summary           # open messages per role (the Messages workflow)
+uv run python scripts/check_docs.py             # docs lint: links, anchors, library front matter
 uv run python scripts/smoke_live.py             # live smoke of every integration (test mode)
 uv run lab-research                             # P1 web researcher (approve each search)
 uv run lab-rag                                  # P2 raw RAG graph (history / replay <i>)
@@ -179,10 +174,8 @@ Policy: [ADR-0004](docs/adr/0004-testing-and-evaluation-policy.md).
 - Low-tier models sometimes claim a tool action they never took, and delegation reliability
   depends on explicit tool-choice guidance in the system prompt.
 - Never delete or recreate a `.venv` while a session or the IDE may be using it: on Windows a
-  held `ruff.exe` made a recreate fail halfway and left it broken. Each worktree has its own
+  held `ruff.exe` made a recreate fail halfway and left it broken. Each checkout has its own
   ([dev environment](library/engineering/dev-environment.md)).
-- A worktree's `CLAUDE.local.md` must stay ignored: tracked, it would give every checkout the
-  same role.
 
 ## Ask before
 

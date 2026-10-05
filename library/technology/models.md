@@ -1,10 +1,10 @@
 ---
 title: Models at hand
-maintainer: lead
+maintainer: mentor
 status: current
-updated: 2026-10-05
+updated: 2026-10-06
 summary: The two model families as this repo runs them: the LLM tiers, fallback, and test mode; the decision models; which choices rest on measurement; and how tiers will be chosen.
-related: [radar.md, ../architecture/decision-models.md, ../../docs/adr/0014-weighted-model-tier-catalog.md, ../../docs/adr/0015-local-tier-and-test-mode-profiles.md, ../../offices/lead/research/briefs/BR-002-model-catalog-evidence-map/README.md]
+related: [radar.md, ../architecture/decision-models.md, ../../docs/adr/0014-weighted-model-tier-catalog.md, ../../docs/adr/0015-local-tier-and-test-mode-profiles.md, ../../mentor/research/briefs/BR-002-model-catalog-evidence-map/README.md]
 ---
 
 # Models at Hand
@@ -57,13 +57,13 @@ from R1 ([ADR-0021](../../docs/adr/0021-decision-models-as-a-second-model-family
 here on 2026-09-27: about 0.45 s and $0.00002 per decision; 22/23 on our grader and guard cases
 with no guard answer less strict than its label; routing 32/32 in three runs
 (`EV-2026-09-27-jev-openrouter`, `EV-2026-09-27-jev-harness-decisions`). Everything else about
-the class lives in the lead's research record,
-[landscape](../../offices/lead/research/landscape/decision-models/README.md).
+the class lives in the research record,
+[landscape](../../mentor/research/landscape/decision-models/README.md).
 
 ## What rests on measurement
 
-The lead's map of the eleven model choices in the code
-([BR-002](../../offices/lead/research/briefs/BR-002-model-catalog-evidence-map/README.md),
+The map of the eleven model choices in the code
+([BR-002](../../mentor/research/briefs/BR-002-model-catalog-evidence-map/README.md),
 2026-09-26): three rest on direct measurement, five on partial evidence, and three on none.
 
 - **The tier ranking itself is estimated:** its speed, power, and cost scores are hand estimates.

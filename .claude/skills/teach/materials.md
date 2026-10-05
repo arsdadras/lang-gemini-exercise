@@ -16,7 +16,7 @@ Gap:        "You predicted X; the output is Y. Which line makes the difference?"
 Run 2:      <the verified run>  -> expected: <output excerpt>
 Idea:       <named now: the decision this run exposes, and the alternative it rejected>
 Then:       one what-if; one "where in the code is that decided?" (a file link)
-Fallback:   <both runs' saved output in offices/mentor/sandbox/, if a live call misbehaves>
+Fallback:   <both runs' saved output in mentor/sandbox/, if a live call misbehaves>
 ```
 
 - One demo, one idea, named after the run; named before, the prediction is free.
@@ -43,9 +43,9 @@ verified code: A, since `search_results` raises it and `failure_kind` calls a 40
 | Fault injection | Runs the real system with a transient or permanent failure injected | The trace or envelope shows which layer handled it, and why that layer |
 | Eval probe | Runs an eval-lite set with one variable changed (prompt, tier, threshold) | The metric before and after, and whether the difference is noise |
 
-- Faults come from env vars, input, stubs, or a labeled copy in `offices/mentor/sandbox/`, never
-  from `src/`, `tests/`, the index, or any other repo file; a fault switch the code lacks is a
-  request to the lead. An env var goes on the command line (`load_dotenv()` doesn't
+- Faults come from env vars, input, stubs, or a labeled copy in `mentor/sandbox/`, never
+  from `src/`, `tests/`, the index, or any other repo file; a fault switch the code lacks is
+  added to the code first, with a test. An env var goes on the command line (`load_dotenv()` doesn't
   override a variable already set).
 - One fault per task, for one skill: localize a fault, read a trace, or name the owning layer.
 - The harness judges success (a test name, an output line, a trace shape, a metric), not me.

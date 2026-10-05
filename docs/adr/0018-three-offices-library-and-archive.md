@@ -30,7 +30,7 @@
   office"), `mentor` (teaches and implements), `research` (investigates and advises; decides
   nothing). Each office has a charter (`README.md`), `STATE.md`, `OUTBOX.md`, `artifacts/`, and
   an ignored `sandbox/`.
-- **One message protocol** ([protocol.md](../../library/governance/protocol.md)): every message
+- **One message protocol** ([protocol.md](../../mentor/README.md)): every message
   lives only in its sender's outbox, under a one-line heading
   `ID | to <role> | <type> | <status>`; `scripts/inbox.py <role>` lists what a role must act
   on; replies go in the replier's own outbox; the sender closes.

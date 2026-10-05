@@ -19,8 +19,8 @@ capstones then compose the specialists into workflows.
 | P6-P12 | Capstone I, documents (with vision), support ops, analytics, business actions, capstone II (P10 folded into P7) |
 | Term E | Production platform: shared runtime, distributed execution, one vertical product |
 
-Plan and order: [`offices/lead/ROADMAP.md`](offices/lead/ROADMAP.md). Live teaching status:
-[`offices/mentor/STATE.md`](offices/mentor/STATE.md).
+Plan and order: [`mentor/ROADMAP.md`](mentor/ROADMAP.md). Live teaching status:
+[`mentor/STATE.md`](mentor/STATE.md).
 
 ## Quickstart
 
@@ -54,13 +54,13 @@ Every app and command, with session modes: [`AGENTS.md`](AGENTS.md#commands).
 
 ## Documentation
 
-- [`CLAUDE.md`](CLAUDE.md): session roles (lead, mentor) and what every session loads
+- [`CLAUDE.md`](CLAUDE.md): the one role (the mentor) and what every session loads
 - [`AGENTS.md`](AGENTS.md): layout, conventions, commands, gotchas
-- [`library/`](library/README.md): shared knowledge: principles, coordination protocol,
-  ownership, git and dependency policies, development environment
-- [`offices/lead/`](offices/lead/README.md): roadmap, pedagogy, architecture, technology radar,
-  decisions, risks, backlog
-- [`offices/mentor/`](offices/mentor/README.md): how teaching sessions run, and the teaching state
+- [`library/`](library/README.md): principles, architecture standards, git and dependency
+  policies, development environment, pedagogy, technology
+- [`mentor/`](mentor/README.md): the charter, state, roadmap, backlog, decisions, risks, and the
+  research record
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): where the system stands and where it is going
 - [`docs/adr/`](docs/adr/README.md): architecture decisions
 - [`docs/design_cards/`](docs/design_cards/README.md): specialist contracts
 - [`docs/study_guides/`](docs/study_guides/): write-ups of finished projects

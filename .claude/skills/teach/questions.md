@@ -74,7 +74,7 @@ consequence.
 | Force | "The world changed: what is the smallest design change?" | "The search API now bills per call. What changes?" |
 | Adversary | "What if the input is hostile?" | "What if a search result contains an instruction to the agent?" |
 
-When the answer needs a live run, build a labeled variant in `offices/mentor/sandbox/` and run
+When the answer needs a live run, build a labeled variant in `mentor/sandbox/` and run
 it against the learner's prediction.
 
 ## Decision
@@ -96,7 +96,7 @@ When the learner reviews a component as a PR before my walkthrough.
 - Before the diff: "What must a correct change do? Two or three criteria."
 - With the tests: "Which behavior does this test pin, and what stays untested?"
 - After: "Two to four comments in a reviewer's voice: a question, a suggestion, or an approval
-  with its reason." A real finding goes to the lead.
+  with its reason." A real finding is fixed before the next step.
 
 ## Hint ladder
 

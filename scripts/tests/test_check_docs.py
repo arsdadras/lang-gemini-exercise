@@ -10,7 +10,7 @@ import check_docs
 
 LIBRARY_ENTRY = """---
 title: Entry
-maintainer: lead
+maintainer: mentor
 status: current
 updated: 2026-09-26
 summary: One sentence.
@@ -86,66 +86,27 @@ def test_library_entry_needs_front_matter_and_index(repo):
     write(
         repo,
         "library/governance/bad.md",
-        LIBRARY_ENTRY.replace("maintainer: lead", "maintainer: bob").replace(
+        LIBRARY_ENTRY.replace("maintainer: mentor", "maintainer: bob").replace(
             "updated: 2026-09-26", "updated: soon"
         ),
     )
     problems = check_docs.check_library(repo)
     assert problems == [
-        "library/governance/bad.md: maintainer must be 'lead', found 'bob'",
+        "library/governance/bad.md: maintainer must be 'mentor', found 'bob'",
         "library/governance/bad.md: 'updated' is not YYYY-MM-DD",
         "library/governance/bad.md: not listed in library/README.md",
         "library/governance/orphan.md: missing front matter",
     ]
 
 
-def test_library_entry_maintained_by_another_role_is_reported(repo):
+def test_library_entry_maintained_by_a_retired_role_is_reported(repo):
     write(repo, "library/README.md", "# Library\n\n[entry](governance/entry.md)\n")
-    for role in ("engineer", "mentor", "research"):
+    for role in ("lead", "engineer", "research"):
         write(
             repo,
             "library/governance/entry.md",
-            LIBRARY_ENTRY.replace("maintainer: lead", f"maintainer: {role}"),
+            LIBRARY_ENTRY.replace("maintainer: mentor", f"maintainer: {role}"),
         )
         assert check_docs.check_library(repo) == [
-            f"library/governance/entry.md: maintainer must be 'lead', found '{role}'"
+            f"library/governance/entry.md: maintainer must be 'mentor', found '{role}'"
         ]
-
-
-def test_outbox_grammar(repo):
-    write(
-        repo,
-        "offices/lead/OUTBOX.md",
-        "## Open\n\n"
-        "### LD-001 | to mentor | directive | open\n\nIssued.\n\n"
-        "### LD-002 | to research, user | request | closed\n\n"
-        "### LD-001 | to mentor | notice | open\n\n"
-        "### MN-003 | to lead | notice | open\n\n"
-        "### LD-004 | to boss | notice | pending\n\n"
-        "### LD-005 | to mentor | reply MN-001 | open\n\n"
-        "### Free-form heading\n",
-    )
-    write(repo, "offices/mentor/OUTBOX.md", "### MN-001 | to lead | directive | open\n")
-    problems = check_docs.run(repo, ["offices"])
-    assert problems == [
-        "offices/lead/OUTBOX.md:9: duplicate ID LD-001",
-        "offices/lead/OUTBOX.md:11: ID MN-003 must be LD-### in the lead outbox",
-        "offices/lead/OUTBOX.md:13: unknown recipient boss",
-        "offices/lead/OUTBOX.md:13: status must be open, closed, or withdrawn",
-        "offices/lead/OUTBOX.md:15: reply status must be done, partial, or declined",
-        "offices/lead/OUTBOX.md:17: heading is not 'ID | to <role> | <type> | <status>'",
-        "offices/mentor/OUTBOX.md:1: only the lead sends directives",
-    ]
-
-
-def test_retired_roles_stay_valid_recipients_but_have_no_office(repo):
-    write(
-        repo,
-        "offices/lead/OUTBOX.md",
-        "### LD-001 | to engineer, research, mentor | directive | closed\n",
-    )
-    write(repo, "offices/engineer/OUTBOX.md", "### EN-001 | to lead | notice | open\n")
-    problems = check_docs.run(repo, ["offices"])
-    assert problems == [
-        "offices/engineer/OUTBOX.md: outbox of unknown office 'engineer'"
-    ]

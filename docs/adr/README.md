@@ -3,15 +3,12 @@
 An ADR records one significant decision: the forces behind it, what was decided, what it
 costs, and what else was considered. Write one when a decision is hard to reverse,
 cross-cutting, or sets a convention, and whenever the user overrides a decision (record the
-dissent too). Smaller decisions go only in the lead's
-[decision register](../../offices/lead/DECISIONS.md).
+dissent too). Smaller decisions go only in the
+[decision register](../../mentor/DECISIONS.md).
 
-**Owner:** the lead writes every ADR, so numbers and quality stay consistent across concurrent
-sessions ([ADR-0016](0016-project-office-and-document-governance.md),
-[ADR-0018](0018-three-offices-library-and-archive.md)). Other roles send decision and record
-requests as messages ([protocol](../../library/governance/protocol.md)). ADRs up to 0015 were
-written by mentors, before the office existed. Evidence is cited by research record ID
-(`EV-...`, `BR-...`), not by path.
+**Owner:** the mentor writes every ADR ([ADR-0028](0028-one-mentor-one-branch.md)); ADRs 0016
+to 0027 were written by the lead while the project had separate roles. Evidence is cited by
+research record ID (`EV-...`, `BR-...`), not by path.
 
 Keep ADRs short. Never rewrite an accepted ADR's decision: supersede it with a new ADR and
 set the old one's status to `Superseded by ADR-XXXX`.
@@ -37,16 +34,17 @@ set the old one's status to `Superseded by ADR-XXXX`.
 | [0015](0015-local-tier-and-test-mode-profiles.md) | A `local` Ollama tier, and named test-mode profiles switchable mid-session | Accepted |
 | [0016](0016-project-office-and-document-governance.md) | A project office owns direction; the mentor teaches; one writer per file | Accepted |
 | [0017](0017-production-standards-as-design-yardstick.md) | Production engineering standards are the design yardstick | Accepted |
-| [0018](0018-three-offices-library-and-archive.md) | Three offices, a shared library, an archive, and one message protocol | Accepted; amended by ADR-0019, ADR-0022, ADR-0024, and ADR-0025 |
-| [0019](0019-role-worktrees-hooks-and-handoff.md) | One worktree and branch per role, session hooks, and a /handoff skill | Accepted; amended by ADR-0025 |
-| [0020](0020-ownership-guard-routing-and-message-awareness.md) | An ownership guard, worktree routing, and automatic message awareness | Accepted |
+| [0018](0018-three-offices-library-and-archive.md) | Three offices, a shared library, an archive, and one message protocol | Accepted; amended by ADR-0019, ADR-0022, ADR-0024, and ADR-0025; offices and messages superseded by ADR-0028 |
+| [0019](0019-role-worktrees-hooks-and-handoff.md) | One worktree and branch per role, session hooks, and a /handoff skill | Superseded by ADR-0028 |
+| [0020](0020-ownership-guard-routing-and-message-awareness.md) | An ownership guard, worktree routing, and automatic message awareness | Superseded by ADR-0028 |
 | [0021](0021-decision-models-as-a-second-model-family.md) | Decision models as a second model family, and one standard for every decision point | Accepted |
 | [0022](0022-engineer-role-and-division-of-labor.md) | An engineer role: building apart from teaching, research, and review | Superseded by ADR-0025 (step 4 of its flow amended by ADR-0023) |
 | [0023](0023-active-review-instead-of-typing.md) | The learner reviews verified code instead of typing it | Accepted |
 | [0024](0024-a-lead-curated-library-in-five-categories.md) | A library the lead alone writes and curates, in five categories | Accepted |
-| [0025](0025-two-roles-lead-and-mentor.md) | Two roles, the lead and the mentor: engineering and research fold into the lead | Accepted |
+| [0025](0025-two-roles-lead-and-mentor.md) | Two roles, the lead and the mentor: engineering and research fold into the lead | Superseded by ADR-0028 |
 | [0026](0026-the-specialist-contract.md) | The specialist contract: one result envelope, one `run_*` boundary, one failure contract, one eval harness | Accepted |
-| [0027](0027-the-mentor-directs-the-lead-assists.md) | The mentor directs, the lead assists; tests and evals are the mentor's; direct pushes to `main`; MN-024's decisions | Accepted |
+| [0027](0027-the-mentor-directs-the-lead-assists.md) | The mentor directs, the lead assists; tests and evals are the mentor's; direct pushes to `main`; MN-024's decisions | Superseded by ADR-0028, except MN-024's decisions |
+| [0028](0028-one-mentor-one-branch.md) | One mentor, one branch: every role folds into the mentor; everything on `main`; `/mentor` runs the whole session | Accepted |
 
 ## Template
 

@@ -98,7 +98,7 @@ for an experienced learner, and one line of evidence ([evidence.md](evidence.md)
 **When:** the architecture step or a fluent probe, where a competent engineer could choose
 otherwise.
 1. Show A (verified, diff-sized) and B (competent, one decision apart); B is labeled a variant
-   in its first line and lives in `offices/mentor/sandbox/`.
+   in its first line and lives in `mentor/sandbox/`.
 2. Name one scenario; the learner says where A and B diverge on it.
 3. The learner says which ships and what the other invites, with a production force as reason.
 4. Run both when the difference is observable.
@@ -141,18 +141,18 @@ judgment gap; at architecture scale it is the design kata ([ai-engineering.md](a
   until a coordinator selects specialists by metadata. Ablate ADR-0003 (`user_id` from
   `configurable`): `Runtime` has no `config`, so every user shares the default namespace.
 - **Backfires for this learner:** forces the context only implies; a record with no alternatives
-  (the lead fixes it first); a decision type already mastered.
+  (fixed first); a decision type already mastered.
 - **Evidence:** problem solving before instruction (MA, g = 0.36); no study of ADR exercises;
   moderate for the order ([evidence](evidence.md#learning)).
 
 ## Review the verified PR
 
-**When:** a fluent probe. It complements my walkthrough, never replaces it (the lead's call).
+**When:** a fluent probe. It complements my walkthrough, never replaces it.
 1. Intent first; the learner states two or three criteria a correct change must meet.
 2. Tests beside the diff: which behavior each key test pins, what stays untested.
 3. Three lenses: correctness under failure, conventions (`AGENTS.md`), the production path.
 4. The learner writes two to four reviewer comments: question, suggestion, or reasoned approval.
-5. My walkthrough sorts each: confirmed, answered by the design, or a finding for the lead.
+5. My walkthrough sorts each: confirmed, answered by the design, or a finding to fix.
 6. A seeded variant (one realistic defect) is labeled in its first line and lives in the sandbox.
 - **Repo example:** `rag_graph.py`. "Who resets `retries`?" The caller, per `RAGState`; `run_rag`
   starts at 0 (`test_rag_from_the_corpus_is_ok_with_file_sources`). "Which test pins the router

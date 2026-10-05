@@ -1,17 +1,17 @@
 ---
 title: Architecture standards
-maintainer: lead
+maintainer: mentor
 status: current
-updated: 2026-09-28
+updated: 2026-10-06
 summary: The principles every component meets, the scale seams that keep production load a swap, and the composition patterns to choose from.
-related: [decision-models.md, ../../offices/lead/ARCHITECTURE.md, ../governance/principles.md]
+related: [decision-models.md, ../../docs/ARCHITECTURE.md, ../governance/principles.md]
 ---
 
 # Architecture Standards
 
 The rules every design and every change meets. Where the system stands and where it is going
-(the system picture, the current and target system, the quality ladder) is the lead's
-[ARCHITECTURE.md](../../offices/lead/ARCHITECTURE.md). Decision points follow
+(the system picture, the current and target system, the quality ladder) is
+[ARCHITECTURE.md](../../docs/ARCHITECTURE.md). Decision points follow
 [decision-models.md](decision-models.md); coding conventions are in
 [`AGENTS.md`](../../AGENTS.md).
 

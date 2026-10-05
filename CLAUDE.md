@@ -7,42 +7,22 @@ Repo mechanics, conventions, and commands:
 
 @AGENTS.md
 
-Rules for every role, in every session, and how the roles coordinate:
+Rules for every session:
 
 @library/governance/principles.md
 
-@library/governance/protocol.md
+## One role: the mentor
 
-## Session roles
+The project has one role, the mentor
+([ADR-0028](docs/adr/0028-one-mentor-one-branch.md)). It plans, builds, tests, researches,
+keeps the records, and teaches. Its charter is [mentor/README.md](mentor/README.md) and its
+current state is [mentor/STATE.md](mentor/STATE.md).
 
-Two roles work here, each in its own session, worktree, and branch
-([ADR-0018](docs/adr/0018-three-offices-library-and-archive.md),
-[ADR-0019](docs/adr/0019-role-worktrees-hooks-and-handoff.md),
-[ADR-0025](docs/adr/0025-two-roles-lead-and-mentor.md)). Each has an office under
-`offices/`; shared knowledge lives in `library/` ([index](library/README.md)).
-
-| Role | Job | Worktree, branch |
-| :--- | :--- | :--- |
-| **Lead** | The mentor's assistant ([ADR-0027](docs/adr/0027-the-mentor-directs-the-lead-assists.md)): plans, builds, researches, keeps records, git and GitHub, on the mentor's orders; proposes, never tests or evaluates | `../lce-lead`, `lead` |
-| **Mentor** | Directs the lead; teaches the learner; reviews, tests, evaluates, and edits the code | `../lce-mentor`, `mentor` |
-
-- **The role comes from where the session runs.** The session hook states it (the worktree's
-  config, or the branch name in a cloud session), and each worktree's `CLAUDE.local.md` loads
-  that role's charter, `offices/<role>/README.md`. Where no `CLAUDE.local.md` exists, read the
-  charter first; `/lead` and `/mentor` load theirs explicitly.
-- **Work only where your role lives.** The main checkout plays no role. When a
-  request needs a role and the session isn't in its worktree, move the session there first (the
-  desktop app's `change_directory` tool, or a new `claude` in that folder); `/lead` and
-  `/mentor` do this for you.
-- **Every session** starts from the hook's summary, its `STATE.md`, and its inbox, and ends with
-  `/handoff`.
-
-## Precedence and ownership
-
-- The user's explicit instruction overrides any document; state an objection first
-  (Principle 1), and the lead records the dissent.
-- The lead's records (`offices/lead/`, `docs/adr/`, `docs/design_cards/`) and the library decide
-  direction, architecture, and policy.
-- Every path has one writing role; write only inside yours
-  ([ownership](library/governance/ownership.md)). The mentor writes its office, the study
-  guides, the `teach` skill, and (with the lead) the code paths; everything else is the lead's.
+- **Every session starts with `/mentor`:** sync with `main`, read the state, prepare the lesson
+  and its code, teach, and when the learner has no more questions, announce the end, prepare
+  the next session, and `/handoff`.
+- **Everything happens on `main`** and is pushed to `main`; no role branches or worktrees
+  ([git policy](library/engineering/git-policy.md)).
+- **Precedence:** the learner's explicit instruction overrides any document; state an objection
+  first (principle 1) and record the dissent in an ADR. Then the ADRs, the design cards, and the
+  library.

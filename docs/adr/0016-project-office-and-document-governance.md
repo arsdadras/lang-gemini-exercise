@@ -24,7 +24,7 @@
 
 ## Decision
 
-- **Three roles** with explicit decision rights (`docs/office/README.md`, now [`offices/lead/README.md`](../../offices/lead/README.md)):
+- **Three roles** with explicit decision rights (`docs/office/README.md`, now [`offices/lead/README.md`](../../mentor/README.md)):
   the user (sponsor, product owner, learner; final authority), the office (decides, plans,
   records, directs), the mentor (teaches and implements; decides stage-internal design).
 - **One writer per file.** The office writes `docs/office/`, `docs/adr/`, `docs/design_cards/`,

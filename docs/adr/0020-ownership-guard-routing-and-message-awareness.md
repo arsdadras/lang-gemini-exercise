@@ -1,6 +1,6 @@
 # ADR-0020: An ownership guard, worktree routing, and automatic message awareness
 
-- Status: Accepted
+- Status: Superseded by [ADR-0028](0028-one-mentor-one-branch.md)
 - Date: 2026-09-27
 - Origin: user direction (2026-09-27): make wrong-worktree sessions harmless even when nobody
   checks, and build the rest of the coordination features; design by the lead. Builds on

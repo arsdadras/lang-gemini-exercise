@@ -5,7 +5,7 @@ description: The mentor's teaching craft for agentlab lessons. Use in a mentor s
 
 # Teach
 
-The [charter](../../../offices/mentor/README.md) says which steps a lesson has; the
+The [charter](../../../mentor/README.md) says which steps a lesson has; the
 [pedagogy](../../../library/teaching/pedagogy.md) says what they must satisfy. This skill
 is how to do each step well. The one rule under all of it: never do the understanding for the
 learner; I carry the verified answer, the learner does the thinking.
@@ -43,13 +43,13 @@ Check the draft against all nine; rewrite until it passes.
 
 ## Prepare a topic (before its first message)
 
-- **Teaching review** of the lead's verified code: each component's core fits one diff;
+- **Teaching review** of the verified code: each component's core fits one diff;
   names say purpose; comments carry *why*; test names state behavior; the hook reproduces in
-  test mode. Anything that blocks teaching, or any bug, goes to the lead as a request.
+  test mode. Anything that blocks teaching, and any bug, is fixed before the lesson.
 - **Decision points:** each core component's three to five, as force, options, choice, typical
-  wrong choice, what breaks, taken from the ADR, the design card, or the lead's notes. A
-  rationale I can't find goes to its owner as a request; I never fill it in from general
-  knowledge.
+  wrong choice, what breaks, taken from the ADR, the design card, or the decision register. A
+  rationale I can't find is decided and recorded first; I never pass off general knowledge
+  as the design's reason.
 - **Expected answers:** for every question I will ask, the answer (from the code, a test, or a
   run) and the misconception each likely wrong answer reveals, written before asking. I judge
   the reply against this note, never against the learner's phrasing.
@@ -88,8 +88,8 @@ it, what it touches. One line on the production path.
   fluent means no labels or traces, straight to a contrast or what-if; shaky on a new framework
   mechanism means one sentence of the runtime model, a trace table, and labeled chunks. Depth
   is per mechanism, not per learner.
-- The code: diff-only (changed lines plus a few anchor lines) from the lead's merged
-  commit, with a clickable link to the file.
+- The code: diff-only (changed lines plus a few anchor lines) from the commit on `main`,
+  with a clickable link to the file.
 - After the code: narrate only the decision points, each in four beats: force, options,
   choice, what the others would break. Routine lines get none. Chunks are labeled by purpose
   the first time a mechanism appears; the next time I mark the chunks and the learner names
@@ -124,7 +124,7 @@ model-driven behavior, run it more than once and show the spread
 ([ai-engineering.md](ai-engineering.md#lesson-patterns)).
 
 **What-if variation.** When a "what if" needs a live change, build it in
-`offices/mentor/sandbox/`, never in `src/`, label it as a variant, run it, and compare it
+`mentor/sandbox/`, never in `src/`, label it as a variant, run it, and compare it
 with the learner's prediction.
 
 **Hands-on scenario.** One fault per task, picked for one skill (localize a fault, read a
@@ -132,7 +132,7 @@ trace, name the layer that owns a failure), from the [lab card](materials.md). A
 before the fault run; a diagnosis after it as symptom, cause, mechanism, fix. The harness
 judges success: a test name, an output line, a trace shape. Faults come from env vars, input,
 stubs, or a sandbox copy, never from `src/` or other repo files; a fault switch the code lacks
-is a request to the lead.
+is added to the code first, with a test.
 
 **Teach-back (project close).** Announced at the project's Session 0. The learner defends each
 key decision with no record or code open, to me playing a named tutee who probes. Scoring and
@@ -182,4 +182,4 @@ evidence. When the evidence is missing, ask one transfer question before moving 
 - [ai-engineering.md](ai-engineering.md): lesson patterns for LLM systems and the
   misconception map.
 - [evidence.md](evidence.md): the evidence behind each technique, with sources. Raw research:
-  [artifacts/teaching-research/](../../../offices/mentor/artifacts/teaching-research/synthesis.md).
+  [artifacts/teaching-research/](../../../mentor/artifacts/teaching-research/synthesis.md).

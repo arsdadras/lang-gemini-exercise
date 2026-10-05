@@ -1,6 +1,6 @@
 # ADR-0027: The mentor directs, the lead assists
 
-- Status: Accepted
+- Status: Superseded by [ADR-0028](0028-one-mentor-one-branch.md), except decision 5 (MN-024)
 - Date: 2026-10-05
 - Origin: the user (lead session 10), and the learner's standing instruction relayed by the
   mentor (MN-022) and its decisions of the day (MN-024).

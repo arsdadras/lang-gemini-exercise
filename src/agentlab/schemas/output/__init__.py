@@ -17,7 +17,6 @@ from agentlab.schemas.output.memory_consolidation_output_schema import (
 )
 from agentlab.schemas.output.middlewares_output_schema import (
     FinglishLines,
-    GroundednessVerdict,
     GuardVerdict,
 )
 from agentlab.schemas.output.rag_output_schema import GradeDocument, GradeHallucination
@@ -43,7 +42,6 @@ __all__ = [
     "FinglishLines",
     "GradeDocument",
     "GradeHallucination",
-    "GroundednessVerdict",
     "GuardVerdict",
     "MemoryEdit",
     "MemoryEdits",

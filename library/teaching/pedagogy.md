@@ -1,18 +1,18 @@
 ---
 title: Pedagogy
-maintainer: lead
+maintainer: mentor
 status: current
-updated: 2026-10-03
+updated: 2026-10-06
 summary: Learning outcomes, the learning method (active review), curriculum rules, readiness, delivery invariants, and assessment.
-related: [../../offices/lead/ROADMAP.md, ../../offices/mentor/README.md]
+related: [../../mentor/ROADMAP.md, ../../mentor/README.md]
 ---
 
 # Pedagogy
 
-How the curriculum is designed, and what every stage and lesson must satisfy. This is lead
+How the curriculum is designed, and what every stage and lesson must satisfy. This is the
 policy; the mentor's delivery procedure that implements it is
-[mentor charter](../../offices/mentor/README.md). The plan built with these rules is
-[ROADMAP.md](../../offices/lead/ROADMAP.md).
+[mentor charter](../../mentor/README.md). The plan built with these rules is
+[ROADMAP.md](../../mentor/ROADMAP.md).
 
 ## Method: backward design
 
@@ -53,7 +53,7 @@ The rules below exist for these reasons; change a rule only with its reason in v
 - **Spiral curriculum:** concepts come back at a higher level (the return pass; the capstones
   composing earlier specialists).
 - **Active review, not typing** (the learner's choice, 2026-09-28;
-  [ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)): the learner reviews the lead's
+  [ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)): the learner reviews the mentor's
   verified code instead of typing it, and writes code only when they choose, in their private
   area. Understanding is checked, never assumed: a prediction question before the code, "why
   this design?" and "what if X changed?" after it, a hands-on scenario after the demo, and a
@@ -96,7 +96,7 @@ A topic, framework feature, or practice enters a stage only when all three hold:
 
 A framework feature enters at the first stage with a real consumer, never as a tour. Beta APIs
 are re-verified against the pinned version when their stage starts. An item that fails the rule
-goes to [BACKLOG.md](../../offices/lead/BACKLOG.md) with the trigger that would admit it.
+goes to [BACKLOG.md](../../mentor/BACKLOG.md) with the trigger that would admit it.
 
 ### Phase contract
 
@@ -109,7 +109,7 @@ Every project has three phases ([ADR-0001](../../docs/adr/0001-three-phase-proje
 | **C: composable specialist** | Safe reuse by later workflows | Input/output contract, side-effect and risk declaration, failure contract, subagent or graph wrapper, eval-lite, one small composition exercise | Platform hardening (Term E) |
 
 Every project also moves each quality thread one step
-([ARCHITECTURE.md](../../offices/lead/ARCHITECTURE.md#quality-ladder)).
+([ARCHITECTURE.md](../../docs/ARCHITECTURE.md#quality-ladder)).
 
 ### Pacing
 
@@ -121,11 +121,11 @@ fits one sitting.
 A question above the current level is answered in a few lines (is the instinct right, where does
 it land) and parked; it never grows into the lesson. A worthwhile technique with no natural stage
 can get one optional **deep-dive** session at a project boundary, at most one per boundary,
-scheduled by the lead from [BACKLOG.md](../../offices/lead/BACKLOG.md).
+scheduled by the mentor from [BACKLOG.md](../../mentor/BACKLOG.md).
 
 ## Definition of Ready
 
-The lead makes a stage ready before the mentor opens it:
+The mentor makes a stage ready before it opens it:
 
 - its one hard concept and the competencies it advances are named;
 - scope in and out is explicit, including backlog items scheduled into it;
@@ -133,14 +133,13 @@ The lead makes a stage ready before the mentor opens it:
 - acceptance is concrete: the before/after demo scenario, and the tests or eval cases;
 - dependencies (earlier stages, library versions, directives) are in place;
 - it passes the admission rule;
-- the stage's verified reference implementation is merged by the lead, or the lead is
-  at least one topic ahead of the lesson ([ADR-0025](../../docs/adr/0025-two-roles-lead-and-mentor.md)).
+- the code for the next topic is built and verified before its lesson starts.
 
 ## Definition of Done
 
 The mentor closes a stage when `uv run pytest` and `uv run ruff check src tests` are green with
-real output, the stage's live scenario has run, the mentor's state is updated, every decision request
-has gone to the lead, and a commit has landed with the user's OK.
+real output, the stage's live scenario has run, the mentor's state is updated, every decision is recorded, and a commit has landed on `main`
+with the user's OK.
 
 ## Delivery invariants
 
@@ -148,12 +147,17 @@ Whatever the mentor's procedure looks like, it keeps these true:
 
 - Each topic is a vertical slice that ends in code the learner has watched run.
 - The problem is shown before the theory.
-- The learner reviews the lead's verified code: the mentor walks through the core
+- The learner reviews the mentor's verified code: the mentor walks through the core
   architecture code one component at a time, with a prediction question before it and "why"
   and "what if" questions after it; plumbing is shown with a link to every changed file. When
   a probe shows fluency, the learner may review the component as a pull request first, and the
   walkthrough becomes the reconciliation.
-- The repo is always the lead's verified, clean version; nothing is reset for typing.
+- The repo is always the verified, clean version; nothing is reset for typing.
+- **Nothing changes in the code without the learner hearing about it** (the learner's
+  instruction, 2026-10-06). Every lesson and every report names each file it added or changed
+  as a clickable link with its path, says what changed and why, and introduces each new
+  function that matters in a line or two, even when the lesson's walkthrough covers only the
+  core.
 - Messages to the learner teach, one idea at a time in full sentences; working notes stay out.
 - Each step waits for the learner's OK, carries a position marker, and ends with the next step.
 

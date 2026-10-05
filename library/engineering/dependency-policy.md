@@ -1,8 +1,8 @@
 ---
 title: Dependency policy
-maintainer: lead
+maintainer: mentor
 status: current
-updated: 2026-10-03
+updated: 2026-10-06
 summary: How the stack stays on the latest stable releases, LangChain's ecosystem above all.
 related: [git-policy.md, dev-environment.md, ../technology/radar.md, ../../.github/dependabot.yml]
 ---
@@ -30,15 +30,15 @@ wrong thing (Principle 2, "Stay current").
 - **Dependabot** (`.github/dependabot.yml`) checks `uv` dependencies daily and GitHub Actions
   weekly. The LangChain family (`langchain*`, `langgraph*`, `deepagents`, `langsmith`) arrives as
   one grouped pull request, everything else as another.
-- **The lead merges an update** when CI is green and, for the LangChain family or any model
+- **The mentor merges an update** when CI is green and, for the LangChain family or any model
   provider SDK, after reading the release notes and running `uv run python
   scripts/smoke_live.py` in test mode.
 - **Taught APIs wait for a boundary.** An update that changes an API the current stage teaches
-  is merged at the next topic boundary, with a notice to the mentor naming the change; the
+  is merged at the next topic boundary, and the lesson names the change; the
   stage's beta APIs are re-verified when it starts.
-- **Every session of the lead** checks drift (`uv lock --upgrade --dry-run`) and open Dependabot
+- **Every session** checks drift (`uv lock --upgrade --dry-run`) and open Dependabot
   pull requests, and follows LangChain's releases, changelog, and blog for changes to what the
-  curriculum teaches or plans (the lead's upstream watch goes deeper).
+  curriculum teaches or plans (the upstream watch goes deeper).
 
 ## Verification for any upgrade
 

@@ -9,8 +9,8 @@ RETRIEVER_TOP_K: int = 3
 DOC_FILES: tuple[str, ...] = (
     "README.md",
     "AGENTS.md",
-    "offices/lead/ROADMAP.md",
-    "offices/mentor/STATE.md",
+    "mentor/ROADMAP.md",
+    "mentor/STATE.md",
 )
 CODE_GLOB: str = "src/**/*.py"
 

@@ -1,6 +1,6 @@
 # ADR-0025: Two roles, the lead and the mentor
 
-- Status: Accepted
+- Status: Superseded by [ADR-0028](0028-one-mentor-one-branch.md)
 - Date: 2026-10-03
 - Origin: user direction (2026-10-03: "only two roles, the mentor and the lead; the lead does
   everything else and has the authority to coordinate"); design by the lead. Supersedes
@@ -32,7 +32,7 @@
 
 - **The engineer and research roles are retired.** Their offices move into `archive/offices/`.
   The research record (landscape, evidence, briefs, catalog) is live knowledge other records cite
-  by ID; it moves into the lead's office as `offices/lead/research/`.
+  by ID; it moves into the lead's office as `mentor/research/`.
 - **Ownership:** every path is the lead's except `offices/mentor/`, `docs/study_guides/`, and
   `.claude/skills/teach/` (the mentor's). The guard keeps reading the ownership map's Roles
   column; `ROLES` is `("lead", "mentor")`.
@@ -56,8 +56,8 @@
   states objections to the user before implementing, and the user's override is recorded as
   always.
 - **Closed or absorbed work:** open messages to the engineer and research are withdrawn; their
-  content became lead work in [STATE.md](../../offices/lead/STATE.md) and
-  [BACKLOG.md](../../offices/lead/BACKLOG.md).
+  content became lead work in [STATE.md](../../mentor/STATE.md) and
+  [BACKLOG.md](../../mentor/BACKLOG.md).
 
 ## Alternatives considered
 

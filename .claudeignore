@@ -52,8 +52,8 @@ last_threads.txt
 .agents/
 .gemini/
 .antigravity/
-offices/*/sandbox/*
-!offices/*/sandbox/README.md
+mentor/sandbox/*
+!mentor/sandbox/README.md
 CLAUDE.local.md
 .claude/settings.local.json
 .claude/*.lock
