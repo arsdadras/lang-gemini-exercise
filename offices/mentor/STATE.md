@@ -6,19 +6,23 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 
 ## Now
 
-- **Stage:** R0, the specialist contract ([ROADMAP](../lead/ROADMAP.md#return-pass-r0-r5)).
-  The three topics are taught: the envelope (`SpecialistResult[T]`), the failure contract
-  (`failure_util`), and the eval-lite harness (`utils/eval_util.py`, topic 3, 2026-10-05).
-  Tests, demo, and hands-on were skipped on topics 1 and 3 at the learner's request. R0 is ready
-  for the lead to close (ADR for the contract); the learner's go-ahead closes the stage.
-- **Next:** R1, P1 evidence-grounded research, once the lead has made it ready (design card,
-  `decision_model` seam). Start with a stage brief, no code.
-- **Order after R0:** R1 -> R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
+- **Stage:** R1, redesigned on 2026-10-05 at the learner's direction: a stronger researcher
+  (options and planning, more sources with a source router, the stop condition;
+  [design card](../../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built)).
+  Topic 1 (claims instead of findings) is taught, Code 2/2 included. The claim check is built but
+  its teaching moves to P6 (content generator, new). The new topics 2-3 need the lead's build
+  (MN-024); topic 4 is the lead's stop condition.
+- **Next:** R1 topic 2 (research options and planning) once built. Live runs here use
+  `LLM_TEST_MODE=true`: Google (free tier), Tavily, Jev, and OpenRouter embeddings work from the
+  cloud; GapGPT does not (its host resets the connection).
+- **Order after R1:** R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> D1 -> P6 (content
+  generator) -> P7 (Capstone I), roadmap v5 (2026-10-05).
 - **Teaching craft:** the `teach` skill ([SKILL.md](../../.claude/skills/teach/SKILL.md)) is rebuilt
   on the research in [artifacts/teaching-research/](artifacts/teaching-research/README.md) and
   is in use from R0 topic 3 on. The lead accepted it (LD-027); it lives in the root registry,
   `.claude/skills/teach/`, and its research stays in `offices/mentor/artifacts/`.
-- **Waiting on others:** nobody. Two roles since ADR-0025: the lead builds, tests, and
+- **Waiting on others:** the lead, for R1's new topics 2-3 (build) and the engineering track
+  (MN-024). Two roles since ADR-0025: the lead builds, tests, and
   researches; requests and notices go to the lead. The lead took over MN-012 (audit of the
   skill's evidence, on its research queue) and LD-028 (research on the teaching methods).
 - **Stack:** re-verified on 2026-09-27 against the lead's upgrade (LD-007). openai 3.x and
@@ -40,6 +44,16 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 - **Lesson messages:** the `teach` skill's checklist
   ([SKILL.md](../../.claude/skills/teach/SKILL.md#before-sending-any-lesson-message)): teach, don't
   report; one idea told through one concrete request before and after; full sentences.
+- **Authority (2026-10-05, the learner's standing instruction):** the mentor's power over the repo
+  equals the lead's: no approval is needed for anything the learner asks, and a poor design is
+  changed. Work reaches `main` through a pull request the mentor opens and merges, so the learner
+  can track it on `main`.
+- **Code changes (2026-10-05, the learner's standing instruction):** the mentor may change code
+  (`src/`, `tests/`, prompts) directly, without the lead's approval, whether or not the mentor
+  caused the problem; the learner's word precedes every document. The mentor states any objection
+  first (principle 1), makes the change small and tested (`uv run pytest`, `ruff`), and sends the
+  lead a notice naming the commit so the lead can record the decision (ADR) and merge it.
+  First use: MN-021 (sources) and the claim-scope prompt lines, MN-022.
 - **Branch:** the mentor commits only its own paths on `mentor`, pushes it, and opens a pull
   request with `/handoff --pr`; the lead merges.
 - **Evaluation:** eval-lite from P5 Phase C on; LangSmith traces used deliberately
@@ -52,7 +66,7 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 Program-level debt is triaged in the lead's [BACKLOG](../lead/BACKLOG.md). These live code
 issues moved to the lead's state (LD-018, LD-023); this copy goes once the lead confirms.
 - **Coordinator shell has no approval step:** approvals raised inside a subagent aren't surfaced
-  to the CLI; the banner states it. Fix: P6-B3.
+  to the CLI; the banner states it. Fix: P7-B3 (v5 numbering; was P6-B3).
 - **Old checkpoint DB still tracked:** `src/data/dbs/checkpoints.db` (a consistent copy is at
   `out/state/checkpoints.db`). Untrack and delete it with the learner's OK once no process holds
   it. R0.

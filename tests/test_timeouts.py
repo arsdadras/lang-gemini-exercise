@@ -72,8 +72,8 @@ def test_a_chat_model_gives_up_on_a_silent_server(
 def test_the_embedding_client_gives_up_on_a_silent_server(
     silent_server: str, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("GAPGPT_API_KEY", "k")
-    monkeypatch.setenv("GAPGPT_BASE_URL", silent_server)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "k")
+    monkeypatch.setenv("OPENROUTER_BASE_URL", silent_server)
     monkeypatch.setattr(
         index_retrieval,
         "EMBEDDING_SPEC",

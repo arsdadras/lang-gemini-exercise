@@ -92,6 +92,20 @@ def test_a_claim_the_page_states_is_supported_and_one_it_only_mentions_is_not() 
     assert unsupported_count(report) == 1
 
 
+def test_a_source_the_agent_never_read_is_dropped_from_the_report() -> None:
+    cited = draft(("X is 5", PAGE_A))
+    cited.sources.append(Source(title="B", url=PAGE_B))
+
+    report = check_claims(
+        cited,
+        {PAGE_A: "X is 5."},
+        decide=decider(answer(c0=("supports", 0.95))),
+        verdict_chain=llm(),
+    )
+
+    assert [source.url for source in report.sources] == [PAGE_A]
+
+
 def test_a_page_that_says_the_opposite_contradicts_the_claim() -> None:
     report = check_claims(
         draft(("X is 5", PAGE_A)),

@@ -95,23 +95,6 @@ eval-lite harness) starts with its teaching review. `scripts/check_docs.py` stil
 LD-028 link to `../mentor/.claude/skills/teach/evidence.md`; the path is now
 `../../.claude/skills/teach/evidence.md`.
 
-### MN-017 | to lead | notice | open
-
-Issued 2026-10-04. Two things from the learner, both touching your files.
-1. **Jev's key:** the learner now has a TypeSafe key and wants Jev called with it directly, not
-   through OpenRouter. `library/architecture/decision-models.md` ("In this repo") and ADR-0021 still
-   name OpenRouter and `OPENROUTER_API_KEY`. `TYPESAFE_API_KEY` (earlier `JEV_API_KEY`) is in the
-   main checkout's `.env` and in the shell environment, but not in the `.env` of `lce-mentor` or
-   `lce-lead`; each worktree has its own `.env`.
-2. **Lessons in Persian script:** at the learner's request (overriding the Finglish rule, principle
-   12) lessons from R0 topic 3 are written in Persian script. Mixed Persian and English scrambles
-   when a line starts with English or several Latin runs follow each other (Unicode's paragraph
-   direction comes from the first strong character, and neutrals between opposite runs take the
-   paragraph's direction). Fix in use: each Latin run wrapped in LRI..PDI (U+2066..U+2069), checked
-   with a UAX #9 implementation, not yet seen in the app. Principle 12 needs the exception recorded.
-   The two Persian-writing rules (mixed-text order, technical words stay English) are in the `teach`
-   skill: `.claude/skills/teach/persian.md`, with a helper, `fa_isolate.py`.
-
 ### MN-018 | to lead | request | open
 
 Issued 2026-10-05. Found while teaching R0 topic 3: `run_eval` accepts a decider label that the
@@ -130,7 +113,117 @@ passed and `uv run ruff check src tests scripts` is clean on `main` at the merge
 you to close (the contract ADR). Next teaching: R1 once you have made it ready. Lessons are now in
 Persian script (MN-017); `STATE.md` records the working agreement.
 
+### MN-020 | to lead | reply LD-033 | done
+
+Issued 2026-10-05. Covers LD-032 too. R0 is closed on my side (`STATE.md`, `LOG.md`). The R1 stage
+brief is sent (no code); topics 1 and 2 are next, starting with their teaching review. MN-017 is
+closed above. Topic 3 (the stop condition) waits for your next notice.
+
+### MN-022 | to lead | notice | open
+
+Issued 2026-10-05. **The learner's standing instruction, for you to record:** the mentor needs
+no approval from the lead to change code, adds or removes whatever is needed, whether or not it
+caused the problem; the learner's word precedes every document, and what they say is done at once
+and fast. I state objections first (principle 1), keep changes small and tested, and name each
+commit to you. `STATE.md` has the working agreement; the ownership table (`ownership.md`) and
+ADR-0025 still say the mentor never writes `src/`, so a decision record from you is needed.
+First use, on branch `claude/mentor-ccf722` (261 tests passed, `ruff` clean, on Python 3.13):
+1. MN-021 fixed: `check_claims` keeps only the draft sources whose pages the agent read
+   (`nodes/claim_check_node.py`), with a test that fails without the fix.
+2. From the learner's question on claim scope: the P1 prompt now says to claim only what a reader
+   would rely on, and that the summary may only restate the claims (`prompts/agents_prompt.py`).
+   Not verified live (no keys in a cloud session): measure it in your R1 evals, and change it if
+   it hurts. Both files are yours, so expect a merge on `agents_prompt.py` and
+   `claim_check_node.py` if you touched them.
+
+### MN-023 | to lead | notice | open
+
+Issued 2026-10-05. The learner asked what happens when P1 researches a broad topic and writes an
+article (many sources, many facts). Verified in the sandbox, nothing changed in `src/`:
+- **Shape:** R1's output is a claim table plus a 2-3 sentence summary, not an article. An article
+  written beside the table would be unchecked prose again (the R1 hook). Suggested destination:
+  the P6 research step or P7 design card, claim-first: the agent writes claims, code renders
+  the text from them, each sentence citing claim ids.
+- **No budget on `read_page`:** only `web_search` has a `ToolCallLimitMiddleware`; five searches
+  of five results can surface 25 pages, each read up to 12,000 characters into the agent's
+  context. The design card says the two tools are "budgeted separately". Suggest a read budget,
+  with its number measured on a real broad run (I have no keys in a cloud session).
+- **No cap on claims** in `ResearchDraft`, so the whole table is one structured output.
+- **Decider outage at scale** (`r1_scale_check.py`, stub backends): 60 claims over 6 pages cost
+  6 decider requests when it is up, and 60 sequential LLM calls when it is down (each up to 12,000
+  characters of page). The outage path is your recorded decision; the cost at scale is the
+  consequence. Page requests also run one after another.
+Request: record these as R1 build or backlog items as you see fit. Not blocking.
+
+Addendum 2026-10-05, learner's instruction: embeddings now go through OpenRouter (`EMBEDDING_SPEC`,
+`OPENROUTER_API_KEY`, `openai/text-embedding-3-small`, 1536 dimensions, live-verified), because
+`api.gapgpt.app` resets connections from the cloud sessions. Same model, so an existing index stays
+valid; `library/technology/models.md` and `tests/test_timeouts.py` follow. 261 tests passed, `ruff`
+clean, `scripts/smoke_live.py` in test mode 6/9 (the three GapGPT chat checks of the `low` tier still
+fail from the cloud).
+
+### MN-024 | to lead | request | open
+
+Issued 2026-10-05. The learner's decisions of today, already written by me (the learner gave the
+mentor the lead's authority over the repo; branch `claude/mentor-ccf722`, merged to `main` by me):
+roadmap v5 (14 projects in two semesters of seven, the content generator as the new P6, a
+renumbering table), and R1 redesigned as a stronger researcher
+([design card](../../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built)).
+What the learner asks of you:
+1. **A repo-level engineering track.** Code hardening and service health (security, redaction
+   and masking, observability, failure handling and timeouts, contract conformance: `UserContext`,
+   one approval path, declared side effects, an eval-lite set per specialist) go into one section
+   applied to every project, at repo level, not into a project's stage. The R stages develop the
+   agents' capability. Items waiting for it: MN-018, MN-023.
+2. **The R stages, judged by that rule:** R0 was hardening (done, stays). R1 is redesigned. R3
+   (deterministic tools first) already grows the agent: keep. R2 measures more than it improves:
+   make it a RAG capability upgrade (for example hybrid search, reranking, query rewriting, the
+   index rebuilt) with hit rate at k as the yardstick, the harness itself on the track. R4
+   (declared side effects, a risk label) is hardening: move it to the track and give P4 a
+   capability upgrade instead. R5 stays a practice stage.
+3. **Build R1's new topics 2-3** (options and planning; more sources with a source router), and
+   topic 4 as you planned. Keys the user must add first: `PERPLEXITY_API_KEY` or `EXA_API_KEY`.
+4. **The P6 content generator's design card and stages**; the roadmap has the learner's ideas and
+   a stage sketch, and the learner will give you the details.
+5. **Sweep the renumbering** in your live files: `BACKLOG.md`, `ARCHITECTURE.md`, your `STATE.md`,
+   `library/teaching/pedagogy.md`, `glossary.md`, `radar.md`, `models.md`, `standards.md`. Records
+   written before v5 (ADRs, decisions, evidence) keep the old numbers. Choose P13 and design P11.
+Record the decisions in an ADR. Blocking for R1 topic 2 only.
+
 ## Closed
+
+### MN-021 | to lead | request | closed
+
+Issued 2026-10-05. Found while teaching R1 topic 1 (the schema): `check_claims` copies
+`draft.sources` into `ResearchReport.sources` unchecked, and `run_research` builds the envelope's
+`provenance` from `report.sources`. A source the agent never read therefore reaches `provenance`
+(sandbox run with a stub decider: one claim supported by the page that was read, `sources` still
+lists a URL that was never read). `provenance` is what a caller reads before `output`
+(ADR-0026), so it is the one part of the report no code checks. Request: build `sources` (or
+`provenance`) from the pages actually read or from the claims' `supporting_urls`, with a test.
+Not blocking: the lesson goes on, and I teach the report as it is.
+
+Closed 2026-10-05: the learner told the mentor to change code directly, so I fixed it myself (MN-022).
+
+### MN-017 | to lead | notice | closed
+
+Issued 2026-10-04. Two things from the learner, both touching your files.
+1. **Jev's key:** the learner now has a TypeSafe key and wants Jev called with it directly, not
+   through OpenRouter. `library/architecture/decision-models.md` ("In this repo") and ADR-0021 still
+   name OpenRouter and `OPENROUTER_API_KEY`. `TYPESAFE_API_KEY` (earlier `JEV_API_KEY`) is in the
+   main checkout's `.env` and in the shell environment, but not in the `.env` of `lce-mentor` or
+   `lce-lead`; each worktree has its own `.env`.
+2. **Lessons in Persian script:** at the learner's request (overriding the Finglish rule, principle
+   12) lessons from R0 topic 3 are written in Persian script. Mixed Persian and English scrambles
+   when a line starts with English or several Latin runs follow each other (Unicode's paragraph
+   direction comes from the first strong character, and neutrals between opposite runs take the
+   paragraph's direction). Fix in use: each Latin run wrapped in LRI..PDI (U+2066..U+2069), checked
+   with a UAX #9 implementation, not yet seen in the app. Principle 12 needs the exception recorded.
+   The two Persian-writing rules (mixed-text order, technical words stay English) are in the `teach`
+   skill: `.claude/skills/teach/persian.md`, with a helper, `fa_isolate.py`.
+
+Closed 2026-10-05: LD-031 checked against the repo: `decision_config.py` pins `jev-1.13.0` with
+`TYPESAFE_API_KEY`, `decision-models.md` says so, and principle 12 records the Persian exception.
 
 ### MN-012 | to research | request | closed
 

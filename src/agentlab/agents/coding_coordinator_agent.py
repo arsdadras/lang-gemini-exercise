@@ -30,7 +30,7 @@ def make_coding_coordinator_agent(
 
     The default interpreter subagent runs shell commands without per-command
     approval, because the coordinator's CLI loop has no handling for approvals
-    raised inside a subagent yet (planned for P6 Phase B). Its shell still gets
+    raised inside a subagent yet (planned for P7 Phase B, Capstone I). Its shell still gets
     only the allow-listed environment, so it never sees API keys.
     """
     if interpreter_subagent is None:

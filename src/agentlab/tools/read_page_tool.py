@@ -16,12 +16,12 @@ from langchain_core.messages import AnyMessage, ToolMessage
 from langchain_core.tools import StructuredTool, ToolException
 from langchain_tavily._utilities import TAVILY_API_URL
 
+from agentlab.configs.research_config import MAX_PAGE_CHARS
 from agentlab.configs.timeouts_config import WEB_SEARCH_TIMEOUT_SECONDS
 from agentlab.tools.web_search_tool import WebSearchError
 
 READ_PAGE_TOOL_NAME = "read_page"
 TAVILY_KEY_ENV = "TAVILY_API_KEY"
-MAX_PAGE_CHARS = 12_000
 
 
 def read_page(url: str) -> str:

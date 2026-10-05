@@ -17,12 +17,14 @@ by environment variable; neither is copied here. Rings and versions:
 
 ## Embeddings
 
-The RAG index embeds with GapGPT's `text-embedding-3-small` (1536 dimensions), through the same
-OpenAI-compatible gateway as the paid tiers (`EMBEDDING_SPEC` in `configs/models_config.py`,
-live-verified 2026-10-03, with the same call timeout as every external client). It replaced
-Gemini's embeddings at the user's instruction, so Google serves only the `free` tier. Changing the
-embedding model means rebuilding `.chroma_index`: the old vectors are Gemini's and a different
-width, so the RAG graph answers nothing until the rebuild (R2).
+The RAG index embeds with `text-embedding-3-small` (1536 dimensions) through OpenRouter
+(`openai/text-embedding-3-small`, `OPENROUTER_API_KEY`; `EMBEDDING_SPEC` in
+`configs/models_config.py`, live-verified 2026-10-05, with the same call timeout as every external
+client). GapGPT served it before (2026-10-03) until its host began resetting connections from the
+cloud sessions; it is the same model, so an index built with either stays valid. Gemini's embeddings
+were replaced earlier at the user's instruction, so Google serves only the `free` tier. The old
+`.chroma_index` still holds Gemini's vectors, a different width, so the RAG graph answers nothing
+until the rebuild (R2).
 
 ## LLM tiers
 

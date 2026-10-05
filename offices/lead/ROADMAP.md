@@ -1,4 +1,4 @@
-# Roadmap (v4.2)
+# Roadmap (v5)
 
 What gets built and taught, in which order, and the gates between. Lead-owned.
 
@@ -12,22 +12,40 @@ What gets built and taught, in which order, and the gates between. Lead-owned.
   E2 context registry (DEC-011, DEC-013). v4.2 (2026-09-28) weaves decision points through the
   return pass and adds D1 (DEC-024, [ADR-0021](../../docs/adr/0021-decision-models-as-a-second-model-family.md)). Stages are re-cut at each phase start when
   the build shows a better split; the difficulty rules still apply.
+- **v5 (2026-10-05, the learner's decision, written by the mentor):** Term P becomes 14 projects in
+  two semesters of seven; a professional content generator is the new P6; R1 grows the
+  researcher's capability (its writing and fact-checking ideas move to P6); R1b is dropped. Projects
+  after P5 are renumbered (table under Program shape); records written before v5 keep the old
+  numbers.
 
 ## Now, next, later
 
-- **Now:** R1, P1 evidence-grounded research. Built and verified: the [design card](../../docs/design_cards/P1_research_agent.md), the `decision_model` seam, the claim table with `read_page`, and the claim check (topics 1 and 2); the stop condition (topic 3) is in the lead's build. R0 is closed ([ADR-0026](../../docs/adr/0026-the-specialist-contract.md)).
-- **Next:** R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> D1 -> P6.
-- **Later:** P7 -> P8 -> P9 -> P11 -> P12 -> Term E.
+- **Now:** R1, a stronger researcher ([design card](../../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built)): topic 1 (claims instead of findings) is taught; options and planning, more sources with a source router, and the stop condition come next. R0 is closed ([ADR-0026](../../docs/adr/0026-the-specialist-contract.md)).
+- **Next:** R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> D1 -> P6 (content generator) -> P7 (Capstone I).
+- **Later:** P8 -> P9 -> P10 -> P11 (Capstone, midterm II) -> P12 -> P13 -> P14 (Capstone II) -> Term E.
 
 ## Program shape
 
-- **Term P, 11 projects.** Specialists: P1-P5, P7-P9, P11. Capstones that compose them: P6 and
-  P12. P10 was folded into P7; numbers stay stable so records keep their meaning
-  ([ADR-0009](../../docs/adr/0009-stage-admission-rule.md)). Small composition exercises
-  (mini-workflows) recur inside the projects instead of waiting for the end.
+- **Term P, 14 projects in two semesters of seven.** Semester 1: P1-P5 (specialists), P6 (content
+  generator), P7 (Capstone I). Semester 2: P8-P10 (specialists), P11 (Capstone, midterm II), P12
+  and P13 (specialists), P14 (Capstone II). Small composition exercises (mini-workflows) recur
+  inside the projects instead of waiting for the end.
+
+  | v4 number | v5 number | Project |
+  | :--- | :--- | :--- |
+  | (new) | P6 | Content generator |
+  | P6 | P7 | Capstone I, Research-to-Decision workflow |
+  | P7 | P8 | Document intelligence (P10, visual perception, stays folded in) |
+  | P8 | P9 | Customer support operations |
+  | P9 | P10 | Data and SQL analytics |
+  | (new) | P11 | Capstone, midterm II |
+  | P11 | P12 | API and business operations |
+  | (new) | P13 | Open specialist slot, chosen by the lead |
+  | P12 | P14 | Capstone II, Business Operations Control Tower |
+
 - **Return pass (R0-R5)** between P5 and P6: one contract for P1-P5 and one real upgrade each
   ([ADR-0011](../../docs/adr/0011-return-pass-before-p6.md)).
-- **Term E** (productization and scale) starts only after P12, through the entry gate below.
+- **Term E** (productization and scale) starts only after P14, through the entry gate below.
 
 ## Done
 
@@ -61,7 +79,7 @@ scenario.
 | Stage | Hard concept | Advances |
 | :--- | :--- | :--- |
 | **R0, the specialist contract** | What a caller must know about a specialist: envelope, provenance, status, declared side effects, and the failure contract (what "partial" means, who retries) | C4, C5 |
-| **R1, P1 evidence-grounded research** | Claim-level provenance: read pages instead of snippets, map every claim to its sources, confidence from source agreement | C3 |
+| **R1, P1 a stronger researcher** | Multi-source research with provenance: research options and planning, more sources (web, private corpus, academic, a research API) chosen by a source router, every fact traceable to its source ([design card](../../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built)) | C3 |
 | **R2, P2 retrieval you can measure** | Retrieval evaluation: a labeled question set and hit rate at k, so changes are judged by numbers | C3, C8 |
 | **R3, P3 hybrid analysis** | Deterministic tools first, model second: `ruff` and AST findings feed the review; the model explains instead of hunting | C1, C9 |
 | **R4, P4 side effects as contract** | Declared side effects: the artifact diff becomes part of the result. Light by design | C4 |
@@ -72,9 +90,9 @@ Each stage also carries its scheduled items from [BACKLOG.md](BACKLOG.md).
 **Decision points in the return pass** (ADR-0021; the lead's [dossier](artifacts/jev-dossier.md),
 section 3). Each lives inside its stage's own hard concept, so none adds a second one:
 
-- **R1:** the `decision_model` seam with its first consumer, the claim check (one decision per
-  claim); confidence derived in code from those decisions; "is the evidence enough?" as the
-  search loop's stop condition inside the search budget.
+- **R1:** the `decision_model` seam with the source router (`research_sources@1`: which sources a
+  question needs) and "is the evidence enough?" as the search loop's stop condition inside the
+  budget. The claim check is built; its teaching moves to P6's fact-check stage.
 - **R2:** grading and reranking in one request; the entry questions asked at once; per-claim
   verification with reroutes; tier routing and the catalog measured on a labeled set that
   carries reference answers.
@@ -104,7 +122,38 @@ error budget. Advances C8, C9.
   scoring (atomic questions and a small fitted model); active learning from low-confidence
   cases. The tier system (a measured catalog, routing, verify-then-escalate) is built here.
 
-## P6: Capstone I, Research-to-Decision workflow (L5)
+## P6: Content generator (new, 2026-10-05)
+
+A professional content generator: from a brief (topic, audience, tone, length, format) to a
+publishable, fact-checked piece (article, report, post). It calls P1 as its researcher subagent
+and P2 for private knowledge. The learner's ideas and the decisions taken so far; the lead writes
+the design card and the stages.
+
+- **Pipeline (sketch):** brief intake -> research plan -> P1 research (the fact pool: claims with
+  URL and passage) -> fact check -> outline -> section writing -> grounding check -> editorial
+  passes -> citations -> approval -> export.
+- **Check first, then write.** Facts are checked before anyone writes (`check_claims`, decider
+  first, the LLM only for the unsure). `supported` facts go to the writer; `unsupported` ones are
+  omitted and listed (never silently); `doubtful` ones get one bounded re-research round and are
+  checked again. Needs a fitted threshold on the decider's `none` (today a weak `none` is trusted).
+- **Writer without tools,** natural prose with no per-sentence ids; a **grounding check** after it
+  (`sentence_grounded@1`: one request, a question per sentence, against the supported facts),
+  then one rewrite of the flagged sentences, then removal and `partial`.
+- **One pipeline, profiles not modes:** a router decision (`brief` or `broad`) sets the budget,
+  the planner, and the length; a specific question yields a short piece with few sources. `deep`
+  is a later, bigger profile with corroboration (a second source for one-source facts).
+- **Editorial passes:** outline approval (optional HITL), structure and coherence, a style guide,
+  humanizing, format and SEO; judged by a rubric (evaluator-optimizer), with style guides as
+  versioned skills.
+- **Rejected so far:** a fact-checker *agent* holding the `decide` tool (the check is a fixed
+  path; an agent would put `status` back under a model's opinion, against ADR-0026). An agent fits
+  later for corroboration.
+- **Stage sketch for the lead:** A1 brief to cited draft; B1 fact check, grounding check, doubtful
+  retry; B2 parallel sections (`Send`) and cross-section consistency; B3 editorial passes with a
+  rubric; C1 an eval set (groundedness, rubric score; the unsafe error is an unsupported fact in
+  published text); C2 human review gates; C3 a mini-workflow.
+
+## P7: Capstone I, Research-to-Decision workflow (L5)
 
 Turn an open question into a grounded decision brief: external research, private knowledge,
 optional analysis, verification, approval. Advances C4, C5, C8.
@@ -118,7 +167,7 @@ optional analysis, verification, approval. Advances C4, C5, C8.
 | **C1** | Deterministic vs model-directed control: the same eval set against the workflow with code rules, the workflow with decided branches, and a DeepAgents supervisor |
 | **C2** | Evaluator-optimizer: a graph loop vs `RubricMiddleware`; the control choice recorded in an ADR |
 
-## P7: Document intelligence (L5)
+## P8: Document intelligence (L5)
 
 Also covers visual perception (formerly P10), and compiled knowledge (DEC-013). Advances C3, C6, C4.
 
@@ -129,11 +178,11 @@ Also covers visual perception (formerly P10), and compiled knowledge (DEC-013). 
 | **B2** | Validation loops, and human review of ambiguous fields only (confidence-based escalation to a person) |
 | **C1** | Multi-document reasoning with provenance (page and region) and audit-ready output; reusable extraction skills |
 | **C2** | Knowledge compilation: entities and relations extracted at ingest into our own typed schemas, with provenance, and an LLM-maintained, interlinked wiki over them; graph traversal combined with vector retrieval; judged against plain vector RAG on R2's harness with multi-hop and global questions |
-| **C3** | Model-decided fan-out: an interpreter and dynamic subagents over many documents, against P6's code-decided `Send` |
+| **C3** | Model-decided fan-out: an interpreter and dynamic subagents over many documents, against P7's code-decided `Send` |
 | **C4** | Prompt injection carried in documents, including into model-written orchestration code, with a red-team scenario set |
-| **C5** | Mini-workflow, Document Intake Cell: P7 extraction -> P2 lookup -> validation gate -> P4 report (practice) |
+| **C5** | Mini-workflow, Document Intake Cell: P8 extraction -> P2 lookup -> validation gate -> P4 report (practice) |
 
-## P8: Customer support operations (L5)
+## P9: Customer support operations (L5)
 
 Advances C4, C6, C8, C9.
 
@@ -148,7 +197,7 @@ Advances C4, C6, C8, C9.
 | **C3** | Calibrated cascade (System-1/System-2): a fast decider answers triage when confident and escalates to the LLM below a threshold fitted on C2's labeled data; asymmetric on sensitive classes; promoted only through C2's gate, with accuracy, latency, and cost measured against the LLM alone |
 | **C4** | Mini-workflow (required), Support Resolution Cell: triage -> P2 -> P1 fallback -> critic -> approval -> response or controlled ticket update. Teaches response vs side effect (practice) |
 
-## P9: Data and SQL analytics (L5)
+## P10: Data and SQL analytics (L5)
 
 Advances C3, C9, C4.
 
@@ -159,9 +208,15 @@ Advances C3, C9, C4.
 | **B2** | Sandboxed multi-step analysis through P4, with measured tier and cost choices (token cost per question, prompt caching) |
 | **C1** | A semantic metric layer with provenance |
 | **C2** | Reusable analysis plans and anomaly explanation |
-| **C3** | Mini-workflow, Analytics-to-Report Cell: P9 analysis -> P4 artifacts -> P1 benchmark context -> verification (practice) |
+| **C3** | Mini-workflow, Analytics-to-Report Cell: P10 analysis -> P4 artifacts -> P1 benchmark context -> verification (practice) |
 
-## P11: API and business operations (L6)
+## P11: Capstone, midterm II (new, 2026-10-05)
+
+The second semester's midterm capstone, composing what semester 2 has built so far (P8 documents,
+P9 support, P10 analytics) with P6's content generator, for example an insight-to-publication
+workflow. The lead designs it.
+
+## P12: API and business operations (L6)
 
 Advances C5, C6, C4.
 
@@ -173,12 +228,17 @@ Advances C5, C6, C4.
 | **C1** | Transactional boundaries and compensation |
 | **C2** | Delegated authorization (the agent acts with the user's scoped credentials) and tenant isolation |
 | **C3** | A connector catalog, with tool search (a decider over the catalog) once it outgrows the context |
-| **C4** | Mini-workflow, Plan-to-Action Cell: plan -> context -> P11 proposal -> approval -> idempotent execution -> audit record (practice) |
+| **C4** | Mini-workflow, Plan-to-Action Cell: plan -> context -> P12 proposal -> approval -> idempotent execution -> audit record (practice) |
 
-## P12: Capstone II, Business Operations Control Tower (L6)
+## P13: Open specialist slot (new, 2026-10-05)
+
+Chosen by the lead before semester 2 starts. A candidate the mentor sees as uncovered: a browser
+and computer-use agent (acting in web applications that have no API).
+
+## P14: Capstone II, Business Operations Control Tower (L6)
 
 A bounded control-tower workflow, not a generic super-agent: it routes a business request across
-P5 context, P7 documents, P2 knowledge, P1 research, P9 analysis, P11 actions, and P4 artifacts.
+P5 context, P8 documents, P2 knowledge, P1 research, P10 analysis, P12 actions, and P4 artifacts.
 Advances C4, C5, C10, C11.
 
 | Stage | Hard concept |
@@ -190,7 +250,7 @@ Advances C4, C5, C10, C11.
 | **C1** | A typed capability catalog replacing hand-written routing (the first real registry consumer, [ADR-0006](../../docs/adr/0006-remove-agent-registry.md)); hierarchy only if the number of domains needs it |
 | **C2** | Replay and audit, and a documented line between deterministic control and model-directed agency |
 
-## Term E (after P12)
+## Term E (after P14)
 
 1. **E1, production hardening and evaluation:** eval datasets, trace taxonomy, timeouts and
    cancellation, idempotency, audit, authorization, sandbox and session isolation, threat modeling
@@ -211,8 +271,8 @@ Each E stage is planned in detail when it is reached.
 
 - the return pass complete;
 - every specialist project complete, or waived with a recorded reason;
-- P6 and P12 complete;
-- at least three mini-workflows built during P7-P11;
+- P7 and P14 complete;
+- at least three mini-workflows built during P8-P13;
 - design cards and composition contracts for every retained specialist;
 - deterministic and model-directed control compared at least once;
 - an approval boundary and a side-effect boundary exercised;
@@ -226,7 +286,7 @@ decision.
 
 | Out | Why |
 | :--- | :--- |
-| Training or fine-tuning neural models | A different discipline (ML engineering). In scope when a stage needs it: calibrating thresholds and fitting small classical classifiers on our own labeled data (P8-C3) |
+| Training or fine-tuning neural models | A different discipline (ML engineering). In scope when a stage needs it: calibrating thresholds and fitting small classical classifiers on our own labeled data (P9-C3) |
 | Temporal media and voice | Adds model plumbing, not agent architecture |
 | Frontend engineering beyond a thin client | Not the subject; E4 has one thin UI |
 | Editor and agent-to-agent protocols (ACP, A2A) | No cross-service consumer in Term P |
