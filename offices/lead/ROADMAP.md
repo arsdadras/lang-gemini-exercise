@@ -16,7 +16,7 @@ What gets built and taught, in which order, and the gates between. Lead-owned.
 ## Now, next, later
 
 - **Now:** R1, P1 evidence-grounded research. Built and verified: the [design card](../../docs/design_cards/P1_research_agent.md), the `decision_model` seam, the claim table with `read_page`, and the claim check (topics 1 and 2); the stop condition (topic 3) is in the lead's build. R0 is closed ([ADR-0026](../../docs/adr/0026-the-specialist-contract.md)).
-- **Next:** R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> D1 -> P6.
+- **Next:** R1b -> R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> D1 -> P6.
 - **Later:** P7 -> P8 -> P9 -> P11 -> P12 -> Term E.
 
 ## Program shape
@@ -62,6 +62,7 @@ scenario.
 | :--- | :--- | :--- |
 | **R0, the specialist contract** | What a caller must know about a specialist: envelope, provenance, status, declared side effects, and the failure contract (what "partial" means, who retries) | C4, C5 |
 | **R1, P1 evidence-grounded research** | Claim-level provenance: read pages instead of snippets, map every claim to its sources, confidence from source agreement | C3 |
+| **R1b, P1 report mode** | Text generated from checked claims: a router picks `lookup` or `report`; a planner, a tool-less writer, and a cite-check keep the article from carrying an unchecked fact ([design card](../../docs/design_cards/P1_research_agent.md#modes-and-the-report-pipeline-design-2026-10-05-not-built)) | C3 |
 | **R2, P2 retrieval you can measure** | Retrieval evaluation: a labeled question set and hit rate at k, so changes are judged by numbers | C3, C8 |
 | **R3, P3 hybrid analysis** | Deterministic tools first, model second: `ruff` and AST findings feed the review; the model explains instead of hunting | C1, C9 |
 | **R4, P4 side effects as contract** | Declared side effects: the artifact diff becomes part of the result. Light by design | C4 |

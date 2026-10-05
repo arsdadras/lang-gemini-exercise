@@ -19,7 +19,7 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
   environment (2026-10-05, `scripts/smoke_live.py` in test mode: 5/9 ok): Google (free tier), Tavily, and
   Jev work; GapGPT (`low` tier and embeddings) does not (`api.gapgpt.app:443` opens, then the server
   cuts the connection). Live runs here use `LLM_TEST_MODE=true` (the free tier, Gemini).
-- **Order after R1:** R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
+- **Order after R1:** R1b (report mode: router, planner, writer, cite-check; design card section 2026-10-05) -> R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
 - **Teaching craft:** the `teach` skill ([SKILL.md](../../.claude/skills/teach/SKILL.md)) is rebuilt
   on the research in [artifacts/teaching-research/](artifacts/teaching-research/README.md) and
   is in use from R0 topic 3 on. The lead accepted it (LD-027); it lives in the root registry,
