@@ -15,8 +15,10 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 - **Next:** R1 topic 1. Hook and concept are sent (2026-10-05; sandbox: `r1_hook_old_report.py`,
   `r1_concept_new_report.py`, runnable only in a Python 3.13 env: the cloud `.venv` is 3.14.0rc2
   and breaks pydantic). Strategy is sent (two schemas: who writes status and confidence; rationale ADR-0026 and the
-  schema docstring). Code review 1 (the schema) is sent; code review 2 (`read_page_tool.py`) comes next. No live agent
-  run is possible in a cloud session (no keys): hooks use sandbox traces and the repo's labeled cases.
+  schema docstring). Code review 1 (the schema) is sent; code review 2 (`read_page_tool.py`) comes next. Keys are now in the cloud
+  environment (2026-10-05, `scripts/smoke_live.py` in test mode: 5/9 ok): Google (free tier), Tavily, and
+  Jev work; GapGPT (`low` tier and embeddings) does not (`api.gapgpt.app:443` opens, then the server
+  cuts the connection). Live runs here use `LLM_TEST_MODE=true` (the free tier, Gemini).
 - **Order after R1:** R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
 - **Teaching craft:** the `teach` skill ([SKILL.md](../../.claude/skills/teach/SKILL.md)) is rebuilt
   on the research in [artifacts/teaching-research/](artifacts/teaching-research/README.md) and
