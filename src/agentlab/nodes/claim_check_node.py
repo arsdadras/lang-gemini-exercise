@@ -15,7 +15,7 @@ fit needs (``decision-models.md``).
 from collections.abc import Callable
 from typing import Literal
 
-from langchain_core.runnables import Runnable
+from langchain_core.runnables import Runnable, RunnableLambda
 from langchain_typesafe import Choice, ClassifierResponse, Question
 
 from agentlab.models import decision_model, llm_model
@@ -140,6 +140,16 @@ def _checked(claim: DraftClaim, verdicts: dict[str, Verdict]) -> Claim:
     )
 
 
+def _default_verdict_chain() -> Runnable:
+    """The LLM escalation, built only when a pair needs it: a sure decider builds no LLM client."""
+
+    def verdict(inputs: dict[str, str]) -> ClaimVerdict:
+        chain = CLAIM_VERDICT_PROMPT | llm_model.chain("low", structured=ClaimVerdict)
+        return chain.invoke(inputs)
+
+    return RunnableLambda(verdict)
+
+
 def check_claims(
     draft: ResearchDraft,
     pages: dict[str, str],
@@ -149,9 +159,7 @@ def check_claims(
 ) -> ResearchReport:
     """Check every claim of ``draft`` against ``pages`` (URL to text) and build the report."""
     decide = decide or decision_model.decide
-    verdict_chain = verdict_chain or (
-        CLAIM_VERDICT_PROMPT | llm_model.chain("low", structured=ClaimVerdict)
-    )
+    verdict_chain = verdict_chain or _default_verdict_chain()
     by_page: dict[str, dict[str, str]] = {}
     for index, claim in enumerate(draft.claims):
         for evidence in claim.evidence:
