@@ -15,8 +15,8 @@ What gets built and taught, in which order, and the gates between. Lead-owned.
 
 ## Now, next, later
 
-- **Now:** R0, the specialist contract (topic 2, the failure contract, in progress).
-- **Next:** R1 -> R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> D1 -> P6.
+- **Now:** R1, P1 evidence-grounded research, in the lead's build (the stage is ready for the mentor once the reference implementation is merged, per the Definition of Ready). Done: the [design card](../../docs/design_cards/P1_research_agent.md) and the `decision_model` seam. R0 is closed ([ADR-0026](../../docs/adr/0026-the-specialist-contract.md)).
+- **Next:** R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> D1 -> P6.
 - **Later:** P7 -> P8 -> P9 -> P11 -> P12 -> Term E.
 
 ## Program shape

@@ -23,19 +23,27 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 
 ## Open messages
 
-None open from the lead. The mentor's MN-017 (a notice) is open; read it next session.
+- **Mentor:** LD-032 (R0 closed; R1 not ready until the lead's reference implementation is
+  merged). LD-031 answers MN-017 (done).
+
+Details in [OUTBOX.md](OUTBOX.md).
 
 ## Build queue (taken over from the engineer, ADR-0025)
 
-R0's implementation (LD-019) is built, verified, and merged: the eval-lite harness, timeouts and
-GapGPT embeddings, evidence IDs, per-app checkpoint databases and the worker prompt. The old
-checkpoint database is deleted (`b2c8b37`), and the embedding change is recorded (the
-[models entry](../../library/technology/models.md#embeddings) and ADR-0014's update). Left:
+R0 is closed (ADR-0026, DEC-032). The `decision_model` seam is built and live-verified
+(DEC-033), and the P1 design card is written (DEC-035). **Now: R1's reference implementation,**
+which the stage needs before the mentor can teach it (Definition of Ready), in this order:
 
-1. **R0 close**, when the mentor has taught its topics: record the specialist contract as an ADR,
-   update [ARCHITECTURE.md](ARCHITECTURE.md) "Current system", then make R1 ready: the decision
-   seam (ADR-0021) ahead of the lesson.
-2. **Teaching:** the mentor started R0 topic 3 (the eval harness).
+1. `read_page` tool (Tavily extract) behind the same timeout and retry rules as `web_search`.
+2. The claim table: `Claim` and the new `ResearchReport` shape, confidence derived in code.
+3. The claim check (`claim_check@1`) on `decision_model`, the LLM escalating and never approving;
+   the labeled set (seeded from `evals/datasets/grounded.json`, grown to 50 with adversarial
+   pages and Finglish claims) run through the eval harness against Jev and an LLM tier.
+4. The stop condition (`evidence_enough@1`) inside the 5-search budget.
+5. `run_research` returns the new report; before/after demo of one question; tests; then a notice
+   to the mentor with the core code and a topic split.
+
+Other open items: record the consolidator reconciliation (research queue below).
 
 ## Live code issues
 
@@ -94,13 +102,11 @@ ready.
 
 ## Agenda for the next lead session
 
-1. Read MN-017; track the mentor's R0 progress.
-2. R0 close once the mentor reports its last topic, then make R1 ready.
-3. Write the P1 design card before R1 opens, with its decision points (point 17); then P2-P4
-   before their stages.
-4. Create the weekly upstream-watch routine once its procedure is written.
-5. At every phase and project boundary: curate the library (ADR-0024).
-6. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
+1. R1's reference implementation (build queue), then the notice to the mentor.
+2. Write the P2-P4 design cards before their stages (R2-R4).
+3. Create the weekly upstream-watch routine once its procedure is written.
+4. At every phase and project boundary: curate the library (ADR-0024).
+5. Every session: inbox, dependency drift and Dependabot pull requests, docs lint.
 
 ## Session log
 
@@ -143,3 +149,4 @@ ready.
   messages to them closed or withdrawn; the engineer's pull request #15 merged in (its CI had
   been fixed in `b2c8b37`); LD-030 to the mentor.
 - **2026-10-05, session 9 (local).** Verified and closed LD-027 and LD-030 (MN-015, MN-016); merged the mentor's PR #18 through this branch, with the one broken link in LD-028 fixed.
+- **2026-10-05, session 9 continued.** On the user's go-ahead: R0 closed (ADR-0026, DEC-032); the `decision_model` seam built and live-verified, Jev direct at TypeSafe with `jev-1.13.0` (DEC-033, `langchain-typesafe` in the lock); principle 12's Persian-lessons exception (DEC-034); the P1 design card (DEC-035); LD-031 and LD-032 to the mentor.

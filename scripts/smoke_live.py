@@ -2,7 +2,7 @@
 
 Always runs in LLM test mode: each profile routes every tier to one cheap tier, so the check
 exercises each provider SDK path (plain chat, structured output, tool binding) without
-production-tier spend. Embeddings and web search are called once each.
+production-tier spend. Embeddings, web search, and the decision model are called once each.
 
 Usage:
     uv run python scripts/smoke_live.py [--profiles default,cheapest,reliable] [--env-file PATH]
@@ -92,6 +92,19 @@ def _search() -> str:
     return f"{len(result.get('results', []))} result(s)"
 
 
+def _decision() -> str:
+    from langchain_typesafe import Noul
+
+    from agentlab.models import decision_model
+
+    response = decision_model.decide(
+        "Paris is the capital of France.",
+        {"geo": Noul(instructions="Does the text state a fact about a capital city?")},
+        question_set="smoke@1",
+    )
+    return f"{response.model}, p(yes)={response.nouls['geo'].noul:.2f}"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--profiles", default="default,cheapest,reliable")
@@ -106,6 +119,7 @@ def main() -> int:
         results.extend(_model_checks(profile.strip()))
     results.append(_run("embeddings", _embeddings))
     results.append(_run("web search", _search))
+    results.append(_run("decision model", _decision))
 
     failed = results.count(False)
     print(f"{len(results) - failed}/{len(results)} checks passed")

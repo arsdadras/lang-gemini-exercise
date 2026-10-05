@@ -8,6 +8,15 @@
 - Revisit when: a Jev release or an alias move; `langchain-typesafe` leaves alpha, or is still
   alpha at P8-C3; R2's measurement; a Finglish or Persian study.
 
+## Update (2026-10-05)
+
+The seam is built (`models/decision_model.py`, [decision-models.md](../../library/architecture/decision-models.md#in-this-repo)).
+At the user's direction Jev is called directly at TypeSafe with `TYPESAFE_API_KEY`, pinned to
+`jev-1.13.0`, instead of through OpenRouter's System One API; the protocol, the answers, and the
+price are the same, and OpenRouter stays the documented alternative. Nothing else in the
+decision changes: where this ADR says OpenRouter and `OPENROUTER_API_KEY`, read TypeSafe and
+`TYPESAFE_API_KEY`.
+
 ## Context
 
 - **The repo already decides with models in many places:** RAG relevance and hallucination
