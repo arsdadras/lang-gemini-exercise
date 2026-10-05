@@ -17,7 +17,7 @@ from langgraph.types import Interrupt
 
 from agentlab.nodes import code_review_node, rag_node
 from agentlab.schemas.output import code_review_output_schema as review_schemas
-from agentlab.schemas.output.research_output_schema import ResearchReport, Source
+from agentlab.schemas.output.research_output_schema import ResearchReport
 from agentlab.schemas.output.specialist_output_schema import (
     Provenance,
     SideEffect,
@@ -102,7 +102,7 @@ def test_the_output_type_is_validated() -> None:
     report = ResearchReport(
         topic="t",
         summary="s",
-        key_findings=[],
+        claims=[],
         sources=[],
         confidence=0.5,
     )
@@ -241,26 +241,6 @@ def test_research_stopped_at_an_approval_is_partial_without_output() -> None:
         result.reason == "Stopped before finishing: waiting for approval of web_search."
     )
     assert result.output is None
-
-
-def test_research_with_a_cited_report_is_ok() -> None:
-    report = ResearchReport(
-        topic="t",
-        summary="s",
-        key_findings=["f"],
-        sources=[Source(title="A", url="https://a.example")],
-        confidence=0.7,
-    )
-
-    result = run_research(
-        Returns({"messages": [], "structured_response": report}),
-        "topic",
-    )
-
-    assert result.status == "ok" and result.output == report
-    assert result.provenance == [
-        Provenance(kind="web", ref="https://a.example", title="A"),
-    ]
 
 
 def test_research_without_a_report_fails() -> None:

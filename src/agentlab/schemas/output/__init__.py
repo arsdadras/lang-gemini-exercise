@@ -22,6 +22,11 @@ from agentlab.schemas.output.middlewares_output_schema import (
 )
 from agentlab.schemas.output.rag_output_schema import GradeDocument, GradeHallucination
 from agentlab.schemas.output.research_output_schema import (
+    Claim,
+    ClaimVerdict,
+    DraftClaim,
+    Evidence,
+    ResearchDraft,
     ResearchFindings,
     ResearchReport,
     Source,
@@ -30,7 +35,11 @@ from agentlab.schemas.output.research_output_schema import (
 __all__ = [
     "ArtifactMetadata",
     "ArtifactType",
+    "Claim",
+    "ClaimVerdict",
     "CodeIssue",
+    "DraftClaim",
+    "Evidence",
     "FinglishLines",
     "GradeDocument",
     "GradeHallucination",
@@ -38,6 +47,7 @@ __all__ = [
     "GuardVerdict",
     "MemoryEdit",
     "MemoryEdits",
+    "ResearchDraft",
     "ResearchFindings",
     "ResearchReport",
     "ReviewResult",

@@ -1,0 +1,9 @@
+== jev
+claim_check: accuracy 91.2% on 34 cases (0 decider failures)
+  per class: supports 11/12, contradicts 8/9, none 12/13
+  unsafe errors: 2 (claim-20, claim-34)
+  latency: p50 443 ms, p95 724 ms
+  cost: $0.0006
+  finglish accuracy: 80.0%
+  paths: jev x34
+  at threshold 0.8: coverage 85.3% (29 covered, 5 escalate), accuracy on covered 100.0%

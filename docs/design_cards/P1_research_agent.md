@@ -19,16 +19,21 @@
    subagent; never writes memory or files.
 3. **Environment:** the open web through Tavily. **R1** adds page reading (`TavilyExtract`,
    `extract_depth`) so claims are checked against page text, not search snippets.
-4. **Tools:** `web_search` (HITL on every call, **built**); **R1** `read_page` (extract by URL,
-   no HITL: it reads pages the search already surfaced, so the approval stays at the search).
+4. **Tools:** `web_search` (HITL on every call, **built**; **R1** a budget of 5 per run through
+   `ToolCallLimitMiddleware`); **R1** `read_page` (Tavily extract by URL, text cut to 12,000
+   characters, a failed read goes back to the model as text; no HITL: it reads pages the search
+   already surfaced, so the approval stays at the search).
    They stay two tools because they fail differently (search quota vs. a page that won't parse)
    and are budgeted separately.
 5. **Input:** a topic string; runtime config `thread_id`; `context=UserContext(user_id=...)` when
    composed by a user-facing workflow (P5's `lab-brief`).
-6. **Output:** `SpecialistResult[ResearchReport]`. **R1** changes the report from "findings plus
-   sources" to claims: each `Claim` has its `text`, the `supporting` sources (URL plus the
-   passage that supports it), its `status` (`supported`, `contradicted`, `unsupported`), and the
-   report's `confidence` is derived in code from the claims, no longer written by the model.
+6. **Output:** `SpecialistResult[ResearchReport]`. **R1** (built 2026-10-05): the agent writes a
+   `ResearchDraft` (topic, summary, `DraftClaim`s each with `Evidence`: the URL of a page it read
+   and the passage, and sources); code checks it (`nodes/claim_check_node.py`) against the pages
+   in the agent's `read_page` results and builds the `ResearchReport`: each `Claim` has its
+   `status` (`supported`, `contradicted`, `unsupported`) and `supporting_urls`, and `confidence`
+   is derived in code (0.7 per claim with one supporting page, 1.0 with two, 0 otherwise; the
+   mean over claims), never written by the model.
 7. **State:** transient, in the agent's thread (checkpointed); durable, none; shared, none. The
    claim table lives in the report, not in memory.
 8. **Side effects:** none outside the run (search and read calls are billed, not state-changing).

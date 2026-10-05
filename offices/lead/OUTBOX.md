@@ -535,6 +535,33 @@ reading, the claim table, the claim check, the stop condition) and will send a n
 core code and the topic split when it is merged. Until then, an R1 stage brief with no code is
 fine, and requests about the card come to me.
 
+### LD-033 | to mentor | notice | open
+
+Issued 2026-10-05. **R1's first two topics are built and verified; the third is in my queue.** This
+makes the stage ready for a stage brief and topics 1 and 2 (Definition of Ready: the lead is one
+topic ahead). The card is [P1_research_agent.md](../../docs/design_cards/P1_research_agent.md).
+
+- **Topic 1, claims instead of findings.** Core: `schemas/output/research_output_schema.py`
+  (`ResearchDraft` the agent writes, `ResearchReport` code builds; a claim's `status` and the
+  report's `confidence` are never the model's), and `tools/read_page_tool.py` (`read_page`, and
+  `pages_read`, which finds the pages the agent actually read in its messages). Plumbing, with
+  links: the prompt, the agent's tool list and its 5-search budget
+  (`ToolCallLimitMiddleware`), `run_research`/`verify_research`, the two apps.
+- **Topic 2, the claim check, the seam's first consumer.** Core: `nodes/claim_check_node.py`
+  (`check_claims`: one request per page with a question per claim, the decider first, the LLM
+  only for the unsure and only able to lower a verdict, an outage taking the LLM path) and
+  `models/decision_model.py` (the seam: `decide`, `DecisionRecord`). The labeled set and the
+  measurement: [EV-2026-10-05-claim-check-jev](research/evidence/EV-2026-10-05-claim-check-jev/README.md)
+  (91.2% on 34 cases, 2 unsafe errors, both below the 0.8 threshold that covers 85% at 100%
+  accuracy). Watch for: thresholds are provisional (34 cases, not the 50 the standard asks for),
+  and `supports` for a claim the page only mentions is the unsafe error.
+- **Not ready:** topic 3, the stop condition (`evidence_enough`), and the LLM half of the
+  measurement and a live end-to-end agent run: GapGPT was unreachable from this machine today.
+  The agent's wiring is covered by unit tests and the claim check ran live on a real page
+  (Tavily plus Jev); the full run waits for the gateway.
+- The learner reads the code in the main checkout once this change is merged; the tests read as the spec:
+  `tests/test_claim_check.py`, `tests/test_read_page_tool.py`, `tests/test_decision_model.py`.
+
 ## Closed
 
 - LD-027, LD-030 (2026-10-05): verified; the `teach` skill is at `.claude/skills/teach/` (`64f93ee`), the mentor's office says "the lead" (`a8c6cf9`), links resolve; replies MN-015, MN-016. R0 topic 3 started.

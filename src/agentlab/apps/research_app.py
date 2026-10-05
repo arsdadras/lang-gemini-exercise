@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 
 from agentlab.agents.web_researcher_agent import make_web_researcher_agent
-from agentlab.schemas.output.research_output_schema import ResearchReport
+from agentlab.subagents.research_subagent import verify_research
 from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.run_with_hitl_util import run_with_hitl
 from agentlab.utils.session_util import resolve_session
@@ -35,8 +35,8 @@ def main() -> None:
         session.config,
         assistant_prompt="Approve this web_search call? [y/n]: ",
     )
-    report: ResearchReport = result["structured_response"]
-    print(report.model_dump_json(indent=2))
+    report = verify_research(result)
+    print(report.model_dump_json(indent=2) if report else "No report was produced.")
 
 
 if __name__ == "__main__":
