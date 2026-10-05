@@ -116,7 +116,7 @@ The strongest check that understanding is real. Ask it when the answers so far w
 restatements.
 
 - "Where else in the repo would the same rule apply?"
-- "P6 adds a new specialist that calls a payment API. What does its `run_*` need?"
+- "P12 adds a new specialist that calls a payment API. What does its `run_*` need?"
 - At a topic close: "In three to five sentences: the force, the decision, the mechanism, the
   rejected alternative, and what breaks if it's violated." A paraphrase of the ADR doesn't count;
   ask for one element the record lacks.

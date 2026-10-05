@@ -59,8 +59,8 @@
 14. **Privacy boundary:** reads public pages; sends queries to Tavily and claim text plus page
     passages to the decider off-site, under the same data policy as the LLM tiers. No user
     memory is read except through `lab-brief`'s context tool.
-15. **Phase C output:** the claim table and its status rules, reused by P6's research step and
-    P7's document answers; the labeled claim-check set, the first dataset of the decision workbench (D1).
+15. **Phase C output:** the claim table and its status rules, reused by P6's content generator
+    (its fact pool and fact check), P7's research step, and P8's document answers (v5 numbers); the labeled claim-check set, the first dataset of the decision workbench (D1).
 16. **Production path:** concurrent users share one Tavily and one decider client (pooled, with
     per-tenant rate budgets); the decider becomes a self-hosted server on the same protocol when
     pages or queries are private; claim checks batch per report; the decision log feeds
@@ -84,68 +84,40 @@
     built from the same question set. The lead builds both in R1's build; the mentor teaches
     from them.
 
-## One pipeline, two profiles (design, 2026-10-05; not built)
+## R1 redesign: a stronger researcher (2026-10-05; not built)
 
-The card above describes what R1 builds first: a checked claim table. A broad topic needs text, and
-text written beside the table is unchecked prose again. This section is the whole pipeline. It came
-from the learner's proposal and was revised twice at the learner's direction; the mentor kept one
-guard the learner didn't ask for (the grounding check, below) and stated why (principle 1). The lead
-records the decision (ADR) when it merges this.
+At the learner's direction R1 grows the researcher's **capability** instead of hardening its
+code. Long-form writing, the writer, and the fact-checking pipeline move to the content generator
+(P6, [roadmap](../../offices/lead/ROADMAP.md#p6-content-generator-new-2026-10-05)), which calls this
+researcher as a subagent. What R1 keeps from above: the claim table (topic 1, taught) is the
+researcher's output contract, because the content generator's fact check needs a URL and a passage
+per fact. The claim check stays wired as built; its teaching moves to P6's fact-check stage.
 
-**One pipeline for every question; two profiles.** A specific question and a broad topic differ in
-how much the pipeline does, not in what it does, so there is one code path and the router picks a
-profile (configuration: prompts, budget, whether a planner runs, how long the text is). A specific
-question has a clear query, so its checked facts are few and the writer's text comes out short with
-few sources; the prompt sets that. `deep` is the `broad` profile with a bigger budget and
-corroboration (a later stage, sequencing).
+**Hard concept:** multi-source research with provenance: choosing which sources fit a question,
+combining what they return, and keeping every fact traceable to where it came from.
 
-```
-router (decision: research_profile@1) -> brief | broad
-planner   (broad only: sub-questions; brief: the question itself)
-researcher (agent: key-term searches, read pages, extract facts, each with url + passage)
-   -> check_claims -> supported | unsupported | doubtful          (code sets the status)
-        supported  -> to the writer
-        unsupported -> omitted (listed, never silent)             (a page was read and doesn't say it)
-        doubtful   -> one re-research round for those claims, then checked again;
-                      still not supported -> omitted
-writer (no tools; only supported facts; natural prose, no per-sentence ids)
-grounding check (decider: each sentence against the supported facts)
-        unsupported sentences -> one rewrite with them listed; still unsupported -> removed, partial
-envelope: text + claim table (status per claim) + sources
-```
+**Topics (each ends with a live run in test mode):**
 
-- **Check first, then write.** Only `supported` facts reach the writer; the claim table stays in the
-  output for audit, so a caller sees what was omitted and why (`partial`, "N claims omitted").
-- **Doubtful is not unsupported.** Today a weak `none` from the decider is trusted
-  (`_decider_verdict` returns `sure=True` for `none`), and an unread or truncated page (the cut is
-  `MAX_PAGE_CHARS`) also ends as `unsupported`. Doubtful needs a threshold on `none` fitted on the
-  labeled set, plus "page unread or cut" as its own cause. The existing escalation (decider first,
-  LLM for the unsure, lowering only) runs before a claim counts as doubtful. The re-research round
-  is one batched call for all doubtful claims (search 2, read 3), so it can't loop.
-- **Grounding check, not per-sentence ids.** A writer without tools can still add a fact from its
-  own knowledge or bend one (the R1 hook). One decision after the writer closes that
-  (`sentence_grounded@1`: one request, a question per sentence, against the supported facts),
-  decider first, with the same cascade as the claim check. Per-sentence claim ids were rejected:
-  they make the writer's output clumsy, and the check doesn't need them.
-- **Router:** a decision point (`research_profile@1`, labels `brief` and `broad`), held to the one
-  standard: a labeled set of at least 50 with hard negatives, accuracy per class, thresholds. When
-  unsure it chooses `brief` and says so in `reason` (a thin answer is recoverable by re-running as
-  `broad`; a wasted broad run is not). The caller can force the profile. It sits in the
-  composition (`apps/`, `run_research`), not inside an agent.
-- **Budgets (provisional, to measure on a real run):** `brief`: 2 searches, 3 page reads, at most 5
-  claims. `broad`: at most 5 sub-questions, each 2 searches, 3 reads, 8 claims. They close the gaps
-  of MN-023 (no `read_page` budget, no claim cap); the other gap there, N sequential LLM calls when the
-  decider is down, needs a cap or parallel calls in the claim check.
-- **Rejected: a fact-checker agent holding the `decide` tool.** The check is a fixed path with a
-  known answer shape; an agent adds a model that chooses what to check and when (low-tier models
-  sometimes claim a tool action they never took, `AGENTS.md`), and "an agent issues the approval"
-  puts `status` back under the model's opinion, against ADR-0026. Independence from the researcher
-  already holds: `check_claims` is separate code with its own decider. An agent is justified later
-  for corroboration (a second source for a one-page claim), in `deep`.
-- **Rejected: one prompt for every question without profiles** (cost and depth differ by an order
-  of magnitude), and **a registry of profiles** (a profile is configuration; ADR-0006).
+1. **Claims instead of findings** (taught): `ResearchDraft`, `read_page`, `pages_read`.
+2. **Research options and query planning.** A `ResearchOptions` input: depth (`quick`, `standard`,
+   `deep`, each a search, read, and claim budget), recency, domains to include or exclude, source
+   types, language, and the output wanted (a short answer, or a fact pool for a caller such as P6).
+   A planner splits a broad topic into sub-questions, and the existing `researcher` subagent
+   researches them in parallel. The budgets close MN-023's gaps (no `read_page` budget, no claim cap).
+3. **More sources, and a source router.** New tools beside web search: the private corpus through
+   P2's retrieval (internal knowledge), academic search (arXiv), and a search API built for research
+   (Perplexity, `langchain-perplexity`: `ChatPerplexity`, `PerplexitySearchRetriever`; or Exa,
+   `langchain-exa`). Which sources a question needs is a decision point (`research_sources@1`,
+   multi-label: web, academic, private, news), the `decision_model` seam's consumer in R1, held to the
+   one standard. Each source's result carries its provenance kind (`web`, `corpus`, `academic`).
+   Keys to add before the build: `PERPLEXITY_API_KEY` or `EXA_API_KEY` (neither is in the
+   environment today); the arXiv API needs none.
+4. **Knowing when to stop:** `evidence_enough@1` per sub-question inside the budget (the lead's
+   topic 3, unchanged).
 
-**Build order.** R1 stays as taught: topics 1-3 (claim table, claim check, stop condition) are the
-core of the pipeline's front half. R1b adds the router, planner, writer, grounding check, and the
-doubtful retry (hard concept: text generated from checked facts and re-checked, so it can't carry an
-unchecked fact).
+**The contract with the content generator:** `run_research(agent, topic, options)` returns
+`SpecialistResult[ResearchReport]`; the fact pool is the claim table (text, evidence, source kind),
+and the summary is the short answer. P6 decides what to check and write; R1 never writes articles.
+
+**Out of R1, on purpose:** security, observability, and failure-handling work. It belongs to a
+repo-level engineering track applied to every project (MN-024), not to one project's stage.

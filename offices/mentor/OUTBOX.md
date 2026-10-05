@@ -162,6 +162,34 @@ valid; `library/technology/models.md` and `tests/test_timeouts.py` follow. 261 t
 clean, `scripts/smoke_live.py` in test mode 6/9 (the three GapGPT chat checks of the `low` tier still
 fail from the cloud).
 
+### MN-024 | to lead | request | open
+
+Issued 2026-10-05. The learner's decisions of today, already written by me (the learner gave the
+mentor the lead's authority over the repo; branch `claude/mentor-ccf722`, merged to `main` by me):
+roadmap v5 (14 projects in two semesters of seven, the content generator as the new P6, a
+renumbering table), and R1 redesigned as a stronger researcher
+([design card](../../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built)).
+What the learner asks of you:
+1. **A repo-level engineering track.** Code hardening and service health (security, redaction
+   and masking, observability, failure handling and timeouts, contract conformance: `UserContext`,
+   one approval path, declared side effects, an eval-lite set per specialist) go into one section
+   applied to every project, at repo level, not into a project's stage. The R stages develop the
+   agents' capability. Items waiting for it: MN-018, MN-023.
+2. **The R stages, judged by that rule:** R0 was hardening (done, stays). R1 is redesigned. R3
+   (deterministic tools first) already grows the agent: keep. R2 measures more than it improves:
+   make it a RAG capability upgrade (for example hybrid search, reranking, query rewriting, the
+   index rebuilt) with hit rate at k as the yardstick, the harness itself on the track. R4
+   (declared side effects, a risk label) is hardening: move it to the track and give P4 a
+   capability upgrade instead. R5 stays a practice stage.
+3. **Build R1's new topics 2-3** (options and planning; more sources with a source router), and
+   topic 4 as you planned. Keys the user must add first: `PERPLEXITY_API_KEY` or `EXA_API_KEY`.
+4. **The P6 content generator's design card and stages**; the roadmap has the learner's ideas and
+   a stage sketch, and the learner will give you the details.
+5. **Sweep the renumbering** in your live files: `BACKLOG.md`, `ARCHITECTURE.md`, your `STATE.md`,
+   `library/teaching/pedagogy.md`, `glossary.md`, `radar.md`, `models.md`, `standards.md`. Records
+   written before v5 (ADRs, decisions, evidence) keep the old numbers. Choose P13 and design P11.
+Record the decisions in an ADR. Blocking for R1 topic 2 only.
+
 ## Closed
 
 ### MN-021 | to lead | request | closed
