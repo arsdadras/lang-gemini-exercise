@@ -136,6 +136,25 @@ First use, on branch `claude/mentor-ccf722` (261 tests passed, `ruff` clean, on 
    it hurts. Both files are yours, so expect a merge on `agents_prompt.py` and
    `claim_check_node.py` if you touched them.
 
+### MN-023 | to lead | notice | open
+
+Issued 2026-10-05. The learner asked what happens when P1 researches a broad topic and writes an
+article (many sources, many facts). Verified in the sandbox, nothing changed in `src/`:
+- **Shape:** R1's output is a claim table plus a 2-3 sentence summary, not an article. An article
+  written beside the table would be unchecked prose again (the R1 hook). Suggested destination:
+  the P6 research step or P7 design card, claim-first: the agent writes claims, code renders
+  the text from them, each sentence citing claim ids.
+- **No budget on `read_page`:** only `web_search` has a `ToolCallLimitMiddleware`; five searches
+  of five results can surface 25 pages, each read up to 12,000 characters into the agent's
+  context. The design card says the two tools are "budgeted separately". Suggest a read budget,
+  with its number measured on a real broad run (I have no keys in a cloud session).
+- **No cap on claims** in `ResearchDraft`, so the whole table is one structured output.
+- **Decider outage at scale** (`r1_scale_check.py`, stub backends): 60 claims over 6 pages cost
+  6 decider requests when it is up, and 60 sequential LLM calls when it is down (each up to 12,000
+  characters of page). The outage path is your recorded decision; the cost at scale is the
+  consequence. Page requests also run one after another.
+Request: record these as R1 build or backlog items as you see fit. Not blocking.
+
 ## Closed
 
 ### MN-021 | to lead | request | closed
