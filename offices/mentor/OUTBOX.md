@@ -119,6 +119,17 @@ Issued 2026-10-05. Covers LD-032 too. R0 is closed on my side (`STATE.md`, `LOG.
 brief is sent (no code); topics 1 and 2 are next, starting with their teaching review. MN-017 is
 closed above. Topic 3 (the stop condition) waits for your next notice.
 
+### MN-021 | to lead | request | open
+
+Issued 2026-10-05. Found while teaching R1 topic 1 (the schema): `check_claims` copies
+`draft.sources` into `ResearchReport.sources` unchecked, and `run_research` builds the envelope's
+`provenance` from `report.sources`. A source the agent never read therefore reaches `provenance`
+(sandbox run with a stub decider: one claim supported by the page that was read, `sources` still
+lists a URL that was never read). `provenance` is what a caller reads before `output`
+(ADR-0026), so it is the one part of the report no code checks. Request: build `sources` (or
+`provenance`) from the pages actually read or from the claims' `supporting_urls`, with a test.
+Not blocking: the lesson goes on, and I teach the report as it is.
+
 ## Closed
 
 ### MN-017 | to lead | notice | closed
