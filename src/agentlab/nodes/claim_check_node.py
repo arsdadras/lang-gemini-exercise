@@ -18,6 +18,7 @@ from typing import Literal
 from langchain_core.runnables import Runnable, RunnableLambda
 from langchain_typesafe import Choice, ClassifierResponse, Question
 
+from agentlab.configs.research_config import MAX_PAGE_CHARS
 from agentlab.models import decision_model, llm_model
 from agentlab.prompts.nodes.claim_check_prompt import CLAIM_VERDICT_PROMPT
 from agentlab.schemas.output.research_output_schema import (
@@ -34,8 +35,6 @@ QUESTION_SET = "claim_check@1"
 Verdict = Literal["supports", "contradicts", "none"]
 SUPPORTS_THRESHOLD = 0.8
 CONTRADICTS_THRESHOLD = 0.6
-# What a page is shown, so one long page can't blow the decider's context.
-MAX_PAGE_CHARS = 12_000
 _STRICTNESS: dict[Verdict, int] = {"supports": 2, "none": 1, "contradicts": 0}
 
 Decide = Callable[..., ClassifierResponse]

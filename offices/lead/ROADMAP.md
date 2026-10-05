@@ -62,7 +62,7 @@ scenario.
 | :--- | :--- | :--- |
 | **R0, the specialist contract** | What a caller must know about a specialist: envelope, provenance, status, declared side effects, and the failure contract (what "partial" means, who retries) | C4, C5 |
 | **R1, P1 evidence-grounded research** | Claim-level provenance: read pages instead of snippets, map every claim to its sources, confidence from source agreement | C3 |
-| **R1b, P1 report mode** | Text generated from checked claims: a router picks `lookup` or `report`; a planner, a tool-less writer, and a cite-check keep the article from carrying an unchecked fact ([design card](../../docs/design_cards/P1_research_agent.md#modes-and-the-report-pipeline-design-2026-10-05-not-built)) | C3 |
+| **R1b, P1 report pipeline** | Text generated from checked facts: a router picks a profile, a tool-less writer writes from `supported` facts only, a grounding check re-checks its sentences, and doubtful claims get one re-research round ([design card](../../docs/design_cards/P1_research_agent.md#one-pipeline-two-profiles-design-2026-10-05-not-built)) | C3 |
 | **R2, P2 retrieval you can measure** | Retrieval evaluation: a labeled question set and hit rate at k, so changes are judged by numbers | C3, C8 |
 | **R3, P3 hybrid analysis** | Deterministic tools first, model second: `ruff` and AST findings feed the review; the model explains instead of hunting | C1, C9 |
 | **R4, P4 side effects as contract** | Declared side effects: the artifact diff becomes part of the result. Light by design | C4 |

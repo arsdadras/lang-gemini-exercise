@@ -84,63 +84,68 @@
     built from the same question set. The lead builds both in R1's build; the mentor teaches
     from them.
 
-## Modes and the report pipeline (design, 2026-10-05; not built)
+## One pipeline, two profiles (design, 2026-10-05; not built)
 
-The card above describes **lookup** (a question answered by a checked claim table). A broad topic needs
-text, and text written beside the table is unchecked prose again. This section adds the second
-mode. It came from the learner's proposal, with three changes the mentor made (principle 1); the
-learner decided the rest. The lead records the decision (ADR) when it merges this.
+The card above describes what R1 builds first: a checked claim table. A broad topic needs text, and
+text written beside the table is unchecked prose again. This section is the whole pipeline. It came
+from the learner's proposal and was revised twice at the learner's direction; the mentor kept one
+guard the learner didn't ask for (the grounding check, below) and stated why (principle 1). The lead
+records the decision (ADR) when it merges this.
 
-**Two modes, not three.**
-
-| | `lookup` | `report` |
-| :--- | :--- | :--- |
-| Input | A question that has a short answer (one fact or a few) | A broad topic |
-| Output | 1-5 checked claims with sources, rendered by code | Sections of sentences, each citing claim ids |
-| Pipeline | researcher -> `check_claims` | planner -> researcher per sub-question -> `check_claims` -> writer -> cite-check |
-| Budget (provisional, to be measured on a real run) | 2 searches, 3 page reads, at most 5 claims | at most 5 sub-questions, each 2 searches, 3 reads, 8 claims |
-
-- "Simple" and "specific" questions differ in degree (how many claims), not in kind: the same
-  pipeline with a budget bounds both, so they are one mode. `report` differs in kind: it adds a
-  planner before and a writer plus cite-check after. `deep` is a depth setting of `report`
-  (bigger budget, corroboration of single-source claims), a later stage (sequencing), not a third
-  mode.
-- **One checking mechanism for both:** the researcher writes a `ResearchDraft`, `check_claims`
-  checks it, code sets each claim's `status`. It is the same code; only what happens after it differs.
-
-**Check first, then write.** Only `supported` claims reach the writer. The others are not dropped
-silently: they are listed as omitted, and the envelope is `partial` with the reason ("N claims
-omitted: not supported by the pages read").
+**One pipeline for every question; two profiles.** A specific question and a broad topic differ in
+how much the pipeline does, not in what it does, so there is one code path and the router picks a
+profile (configuration: prompts, budget, whether a planner runs, how long the text is). A specific
+question has a clear query, so its checked facts are few and the writer's text comes out short with
+few sources; the prompt sets that. `deep` is the `broad` profile with a bigger budget and
+corroboration (a later stage, sequencing).
 
 ```
-router (decision: research_mode@1) -> lookup | report
-report:  planner -> sub-questions -> [researcher -> ResearchDraft] x N
-         -> check_claims (decider first, LLM only for the unsure) -> supported claims, with ids
-         -> writer (no tools; sentences + claim_ids)
-         -> cite-check (code): every id exists and is supported; a sentence with no id is removed and counted
-         -> SpecialistResult[ResearchReport | Article]
+router (decision: research_profile@1) -> brief | broad
+planner   (broad only: sub-questions; brief: the question itself)
+researcher (agent: key-term searches, read pages, extract facts, each with url + passage)
+   -> check_claims -> supported | unsupported | doubtful          (code sets the status)
+        supported  -> to the writer
+        unsupported -> omitted (listed, never silent)             (a page was read and doesn't say it)
+        doubtful   -> one re-research round for those claims, then checked again;
+                      still not supported -> omitted
+writer (no tools; only supported facts; natural prose, no per-sentence ids)
+grounding check (decider: each sentence against the supported facts)
+        unsupported sentences -> one rewrite with them listed; still unsupported -> removed, partial
+envelope: text + claim table (status per claim) + sources
 ```
 
-- **Router:** a decision point (`research_mode@1`, labels `lookup` and `report`), held to the one
+- **Check first, then write.** Only `supported` facts reach the writer; the claim table stays in the
+  output for audit, so a caller sees what was omitted and why (`partial`, "N claims omitted").
+- **Doubtful is not unsupported.** Today a weak `none` from the decider is trusted
+  (`_decider_verdict` returns `sure=True` for `none`), and an unread or truncated page (the cut is
+  `MAX_PAGE_CHARS`) also ends as `unsupported`. Doubtful needs a threshold on `none` fitted on the
+  labeled set, plus "page unread or cut" as its own cause. The existing escalation (decider first,
+  LLM for the unsure, lowering only) runs before a claim counts as doubtful. The re-research round
+  is one batched call for all doubtful claims (search 2, read 3), so it can't loop.
+- **Grounding check, not per-sentence ids.** A writer without tools can still add a fact from its
+  own knowledge or bend one (the R1 hook). One decision after the writer closes that
+  (`sentence_grounded@1`: one request, a question per sentence, against the supported facts),
+  decider first, with the same cascade as the claim check. Per-sentence claim ids were rejected:
+  they make the writer's output clumsy, and the check doesn't need them.
+- **Router:** a decision point (`research_profile@1`, labels `brief` and `broad`), held to the one
   standard: a labeled set of at least 50 with hard negatives, accuracy per class, thresholds. When
-  unsure it chooses `lookup` and says so in `reason` (a thin answer is recoverable by re-running
-  with `report`; a wasted broad run is not). The caller can force the mode. It sits in the
+  unsure it chooses `brief` and says so in `reason` (a thin answer is recoverable by re-running as
+  `broad`; a wasted broad run is not). The caller can force the profile. It sits in the
   composition (`apps/`, `run_research`), not inside an agent.
-- **Writer:** no tools, so it cannot bring in a fact the checked table doesn't hold. Cite-check
-  proves each cited claim exists and is `supported`; it does not prove the sentence is faithful to
-  it. Faithfulness is a second decision (`sentence_grounded@1`: sentence against its cited
-  claims), decider first, same cascade as the claim check.
+- **Budgets (provisional, to measure on a real run):** `brief`: 2 searches, 3 page reads, at most 5
+  claims. `broad`: at most 5 sub-questions, each 2 searches, 3 reads, 8 claims. They close the gaps
+  of MN-023 (no `read_page` budget, no claim cap); the other gap there, N sequential LLM calls when the
+  decider is down, needs a cap or parallel calls in the claim check.
 - **Rejected: a fact-checker agent holding the `decide` tool.** The check is a fixed path with a
   known answer shape; an agent adds a model that chooses what to check and when (low-tier models
   sometimes claim a tool action they never took, `AGENTS.md`), and "an agent issues the approval"
-  puts `status` back under the model's opinion, against ADR-0026. Independence from the
-  researcher already holds: `check_claims` is separate code with its own decider. An agent is
-  justified later for *corroboration* (search a second source for a claim with one page), in `deep`.
-- **Rejected: one prompt for every question** (cost and depth differ by an order of magnitude),
-  and **a registry of modes** (a mode is configuration: prompt, tools, budget, schema; ADR-0006).
+  puts `status` back under the model's opinion, against ADR-0026. Independence from the researcher
+  already holds: `check_claims` is separate code with its own decider. An agent is justified later
+  for corroboration (a second source for a one-page claim), in `deep`.
+- **Rejected: one prompt for every question without profiles** (cost and depth differ by an order
+  of magnitude), and **a registry of profiles** (a profile is configuration; ADR-0006).
 
-**Build order.** R1 stays as taught: lookup, topics 1-3 (claim table, claim check, stop condition).
-R1b adds the router, planner, writer, and cite-check (hard concept: text generated from checked
-claims, so it can't carry an unchecked fact). The known gaps from MN-023 (no `read_page` budget, no
-claim cap, N sequential LLM calls when the decider is down) are closed by the budgets above, built in R1.
-
+**Build order.** R1 stays as taught: topics 1-3 (claim table, claim check, stop condition) are the
+core of the pipeline's front half. R1b adds the router, planner, writer, grounding check, and the
+doubtful retry (hard concept: text generated from checked facts and re-checked, so it can't carry an
+unchecked fact).
