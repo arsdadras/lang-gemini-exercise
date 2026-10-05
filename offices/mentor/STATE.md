@@ -6,14 +6,16 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 
 ## Now
 
-- **Stage:** R0, the specialist contract ([ROADMAP](../lead/ROADMAP.md#return-pass-r0-r5)).
-  The three topics are taught: the envelope (`SpecialistResult[T]`), the failure contract
-  (`failure_util`), and the eval-lite harness (`utils/eval_util.py`, topic 3, 2026-10-05).
-  Tests, demo, and hands-on were skipped on topics 1 and 3 at the learner's request. R0 is ready
-  for the lead to close (ADR for the contract); the learner's go-ahead closes the stage.
-- **Next:** R1, P1 evidence-grounded research, once the lead has made it ready (design card,
-  `decision_model` seam). Start with a stage brief, no code.
-- **Order after R0:** R1 -> R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
+- **Stage:** R1, P1 evidence-grounded research ([ROADMAP](../lead/ROADMAP.md#return-pass-r0-r5)).
+  R0 is closed by the lead ([ADR-0026](../../docs/adr/0026-the-specialist-contract.md), LD-032).
+  The stage brief (no code) was sent 2026-10-05; it waits on the learner's OK. Ready to teach
+  (LD-033, the lead is one topic ahead): topic 1, claims instead of findings (`ResearchDraft`,
+  `ResearchReport`, `read_page`), and topic 2, the claim check (`nodes/claim_check_node.py`, the
+  `decision_model` seam). Topic 3, the stop condition, waits for the lead's next notice.
+- **Next:** topic 1's preparation (teaching review of the merged code, the `teach` skill's prep
+  list), then its hook: a real run of the current research agent on a question whose cited page
+  doesn't say what the finding says.
+- **Order after R1:** R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
 - **Teaching craft:** the `teach` skill ([SKILL.md](../../.claude/skills/teach/SKILL.md)) is rebuilt
   on the research in [artifacts/teaching-research/](artifacts/teaching-research/README.md) and
   is in use from R0 topic 3 on. The lead accepted it (LD-027); it lives in the root registry,

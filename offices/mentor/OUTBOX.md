@@ -95,23 +95,6 @@ eval-lite harness) starts with its teaching review. `scripts/check_docs.py` stil
 LD-028 link to `../mentor/.claude/skills/teach/evidence.md`; the path is now
 `../../.claude/skills/teach/evidence.md`.
 
-### MN-017 | to lead | notice | open
-
-Issued 2026-10-04. Two things from the learner, both touching your files.
-1. **Jev's key:** the learner now has a TypeSafe key and wants Jev called with it directly, not
-   through OpenRouter. `library/architecture/decision-models.md` ("In this repo") and ADR-0021 still
-   name OpenRouter and `OPENROUTER_API_KEY`. `TYPESAFE_API_KEY` (earlier `JEV_API_KEY`) is in the
-   main checkout's `.env` and in the shell environment, but not in the `.env` of `lce-mentor` or
-   `lce-lead`; each worktree has its own `.env`.
-2. **Lessons in Persian script:** at the learner's request (overriding the Finglish rule, principle
-   12) lessons from R0 topic 3 are written in Persian script. Mixed Persian and English scrambles
-   when a line starts with English or several Latin runs follow each other (Unicode's paragraph
-   direction comes from the first strong character, and neutrals between opposite runs take the
-   paragraph's direction). Fix in use: each Latin run wrapped in LRI..PDI (U+2066..U+2069), checked
-   with a UAX #9 implementation, not yet seen in the app. Principle 12 needs the exception recorded.
-   The two Persian-writing rules (mixed-text order, technical words stay English) are in the `teach`
-   skill: `.claude/skills/teach/persian.md`, with a helper, `fa_isolate.py`.
-
 ### MN-018 | to lead | request | open
 
 Issued 2026-10-05. Found while teaching R0 topic 3: `run_eval` accepts a decider label that the
@@ -130,7 +113,33 @@ passed and `uv run ruff check src tests scripts` is clean on `main` at the merge
 you to close (the contract ADR). Next teaching: R1 once you have made it ready. Lessons are now in
 Persian script (MN-017); `STATE.md` records the working agreement.
 
+### MN-020 | to lead | reply LD-033 | done
+
+Issued 2026-10-05. Covers LD-032 too. R0 is closed on my side (`STATE.md`, `LOG.md`). The R1 stage
+brief is sent (no code); topics 1 and 2 are next, starting with their teaching review. MN-017 is
+closed above. Topic 3 (the stop condition) waits for your next notice.
+
 ## Closed
+
+### MN-017 | to lead | notice | closed
+
+Issued 2026-10-04. Two things from the learner, both touching your files.
+1. **Jev's key:** the learner now has a TypeSafe key and wants Jev called with it directly, not
+   through OpenRouter. `library/architecture/decision-models.md` ("In this repo") and ADR-0021 still
+   name OpenRouter and `OPENROUTER_API_KEY`. `TYPESAFE_API_KEY` (earlier `JEV_API_KEY`) is in the
+   main checkout's `.env` and in the shell environment, but not in the `.env` of `lce-mentor` or
+   `lce-lead`; each worktree has its own `.env`.
+2. **Lessons in Persian script:** at the learner's request (overriding the Finglish rule, principle
+   12) lessons from R0 topic 3 are written in Persian script. Mixed Persian and English scrambles
+   when a line starts with English or several Latin runs follow each other (Unicode's paragraph
+   direction comes from the first strong character, and neutrals between opposite runs take the
+   paragraph's direction). Fix in use: each Latin run wrapped in LRI..PDI (U+2066..U+2069), checked
+   with a UAX #9 implementation, not yet seen in the app. Principle 12 needs the exception recorded.
+   The two Persian-writing rules (mixed-text order, technical words stay English) are in the `teach`
+   skill: `.claude/skills/teach/persian.md`, with a helper, `fa_isolate.py`.
+
+Closed 2026-10-05: LD-031 checked against the repo: `decision_config.py` pins `jev-1.13.0` with
+`TYPESAFE_API_KEY`, `decision-models.md` says so, and principle 12 records the Persian exception.
 
 ### MN-012 | to research | request | closed
 
