@@ -14,8 +14,8 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
   `decision_model` seam). Topic 3, the stop condition, waits for the lead's next notice.
 - **Next:** R1 topic 1. Hook and concept are sent (2026-10-05; sandbox: `r1_hook_old_report.py`,
   `r1_concept_new_report.py`, runnable only in a Python 3.13 env: the cloud `.venv` is 3.14.0rc2
-  and breaks pydantic). Strategy and architecture comes next (why draft and report are two
-  schemas), then the code review (`research_output_schema.py`, `read_page_tool.py`). No live agent
+  and breaks pydantic). Strategy is sent (two schemas: who writes status and confidence; rationale ADR-0026 and the
+  schema docstring). The code review comes next (`research_output_schema.py`, `read_page_tool.py`). No live agent
   run is possible in a cloud session (no keys): hooks use sandbox traces and the repo's labeled cases.
 - **Order after R1:** R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
 - **Teaching craft:** the `teach` skill ([SKILL.md](../../.claude/skills/teach/SKILL.md)) is rebuilt
