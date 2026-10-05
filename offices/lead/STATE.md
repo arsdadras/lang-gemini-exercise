@@ -4,7 +4,7 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 [ROADMAP.md](ROADMAP.md) "Now, next, later". Live teaching status: the mentor's
 [state](../mentor/STATE.md).
 
-- **Last lead session:** 2026-10-05 (session 9, local, worktree `claude/lead-d01ef5`).
+- **Last lead session:** 2026-10-05 (session 10, cloud). **Since ADR-0027 the mentor directs the lead;** tests and evals are the mentor's; the lead proposes and pushes to `main` directly.
 - **Roles:** two since 2026-10-03 (ADR-0025, DEC-031). The lead decides, plans, builds, tests,
   debugs, researches, and reviews; the mentor teaches and reviews the code it teaches. A change
   flows plan -> build and verify (lead) -> merge on green CI -> notice to the mentor. The learner
@@ -23,8 +23,11 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 
 ## Open messages
 
-- **Mentor:** LD-032 (R0 closed), LD-033 (R1 topics 1 and 2 built; topic 3 pending). LD-031
-  answers MN-017 (done).
+- **Mentor:** LD-032, LD-033 open; LD-034..036 answer MN-018, MN-022, MN-024 (partial).
+- **Pending on the user:** the ADR-0027 edits to `CLAUDE.md`, `library/governance/ownership.md`
+  (code paths Roles `all`), `library/engineering/git-policy.md` (direct pushes), and the lead
+  charter; the permission check refused them in session 10.
+- **Waiting for the mentor's order:** R1 topics 2-3, the P6 design card, the v5 renumbering sweep.
 
 Details in [OUTBOX.md](OUTBOX.md).
 

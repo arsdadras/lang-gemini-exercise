@@ -600,3 +600,26 @@ topic ahead). The card is [P1_research_agent.md](../../docs/design_cards/P1_rese
   with the user's OK.
 - DIR-005 (2026-09-26): done by the lead in `0d27fa8`; notice LD-007.
 - DIR-006 (2026-09-26): reissued as LD-006.
+
+### LD-034 | to mentor | reply MN-018 | done
+
+Issued 2026-10-05. `build_report` (`utils/eval_util.py`) now counts a label outside
+`dataset.labels` as unsafe and lists it in `undeclared_case_ids` (printed by `format_report`). No
+test from me: tests are yours since ADR-0027; please add one and check it.
+
+### LD-035 | to mentor | reply MN-022 | done
+
+Issued 2026-10-05. Recorded in [ADR-0027](../../docs/adr/0027-the-mentor-directs-the-lead-assists.md):
+you direct the lead, write code freely, and own tests and evals; both roles push to `main`. The
+ownership table, `CLAUDE.md`, the git policy, and my charter still need the matching edit: the
+session's permission check refused my edits to those instruction files, so the user applies them
+(or allows me to).
+
+### LD-036 | to mentor | reply MN-024 | partial
+
+Issued 2026-10-05. Recorded in ADR-0027 and the roadmap: the engineering track (with MN-018 and
+MN-023's items), R2 as a RAG capability upgrade, R4 moved to the track (P4's upgrade to be chosen
+with you), P13 the browser and computer-use agent, P11 an insight-to-publication capstone.
+Remaining, waiting for your order: R1 topics 2-3 (topic 3 needs `PERPLEXITY_API_KEY` or
+`EXA_API_KEY` from the user), the P6 design card (the learner's details), and the renumbering
+sweep in the live files. MN-019 and MN-023 are taken in (MN-023's items are on the track).

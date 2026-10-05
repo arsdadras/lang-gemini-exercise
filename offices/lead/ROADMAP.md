@@ -80,9 +80,9 @@ scenario.
 | :--- | :--- | :--- |
 | **R0, the specialist contract** | What a caller must know about a specialist: envelope, provenance, status, declared side effects, and the failure contract (what "partial" means, who retries) | C4, C5 |
 | **R1, P1 a stronger researcher** | Multi-source research with provenance: research options and planning, more sources (web, private corpus, academic, a research API) chosen by a source router, every fact traceable to its source ([design card](../../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built)) | C3 |
-| **R2, P2 retrieval you can measure** | Retrieval evaluation: a labeled question set and hit rate at k, so changes are judged by numbers | C3, C8 |
+| **R2, P2 a stronger retriever** | RAG capability: hybrid search, reranking, query rewriting, the index rebuilt; judged by hit rate at k (the harness itself is on the engineering track) | C3, C8 |
 | **R3, P3 hybrid analysis** | Deterministic tools first, model second: `ruff` and AST findings feed the review; the model explains instead of hunting | C1, C9 |
-| **R4, P4 side effects as contract** | Declared side effects: the artifact diff becomes part of the result. Light by design | C4 |
+| **R4, P4 capability upgrade** | Chosen with the mentor; declared side effects and the risk label moved to the engineering track (ADR-0027) | C4 |
 | **R5, close** | None new: practice across all five specialists on one scenario, and the first teach-back. P6 Session 0 starts from here | C10 |
 
 Each stage also carries its scheduled items from [BACKLOG.md](BACKLOG.md).
@@ -102,6 +102,15 @@ section 3). Each lives inside its stage's own hard concept, so none adds a secon
 - **P5 teaching pass:** the guard as three checks combined fail-closed; the staleness
   pre-pass; recall ranking; the schema compiler at its third consumer.
 - **R5:** the coordinator's pre-router, measured on a labeled routing set.
+
+## Engineering track (repo level, ADR-0027)
+
+Hardening and service health, applied to every project and no project's stage: security,
+redaction and masking, observability, failure handling and timeouts, contract conformance
+(`UserContext`, one approval path, declared side effects, an eval-lite set per specialist), the
+retrieval harness, and R4's side effects and risk label. Waiting items: MN-018 (an undeclared
+decider label counts as unsafe: built), MN-023 (a `read_page` budget, a cap on claims, the cost
+of a decider outage at scale, sequential page requests).
 
 ## P5 teaching pass (after R4)
 
@@ -214,7 +223,8 @@ Advances C3, C9, C4.
 
 The second semester's midterm capstone, composing what semester 2 has built so far (P8 documents,
 P9 support, P10 analytics) with P6's content generator, for example an insight-to-publication
-workflow. The lead designs it.
+workflow. Decided (ADR-0027): insight to publication, P10 analysis and P8 documents feeding P6, with
+P9's review gate before publishing. Stages are written when semester 2 starts.
 
 ## P12: API and business operations (L6)
 
@@ -230,7 +240,7 @@ Advances C5, C6, C4.
 | **C3** | A connector catalog, with tool search (a decider over the catalog) once it outgrows the context |
 | **C4** | Mini-workflow, Plan-to-Action Cell: plan -> context -> P12 proposal -> approval -> idempotent execution -> audit record (practice) |
 
-## P13: Open specialist slot (new, 2026-10-05)
+## P13: Browser and computer-use agent (new, 2026-10-05; chosen in ADR-0027)
 
 Chosen by the lead before semester 2 starts. A candidate the mentor sees as uncovered: a browser
 and computer-use agent (acting in web applications that have no API).

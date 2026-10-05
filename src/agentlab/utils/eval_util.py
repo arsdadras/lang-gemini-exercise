@@ -105,6 +105,9 @@ class EvalReport(BaseModel):
     per_class: dict[str, ClassStats]
     unsafe_errors: int
     unsafe_case_ids: list[str]
+    """Includes every undeclared label: a label outside the dataset's list can't be shown safe."""
+    undeclared_case_ids: list[str] = Field(default_factory=list)
+    """Cases where the decider answered a label the dataset never declared (MN-018)."""
     failures: int
     """Cases where the decider hit an external failure; each counts as wrong."""
     finglish_accuracy: float | None
@@ -215,6 +218,13 @@ def build_report(
             correct=right,
             accuracy=_ratio(right, len(of_class)),
         )
+    declared = set(dataset.labels)
+    undeclared = [
+        r.case_id
+        for r in results
+        if r.predicted is not None and r.predicted not in declared
+    ]
+    unsafe_ids = [r.case_id for r in results if r.unsafe or r.case_id in undeclared]
     finglish = [r for r in results if r.finglish]
     latencies = [r.latency_s for r in results]
     coverage = None
@@ -238,8 +248,9 @@ def build_report(
         total=len(results),
         accuracy=_ratio(sum(r.correct for r in results), len(results)),
         per_class=per_class,
-        unsafe_errors=sum(r.unsafe for r in results),
-        unsafe_case_ids=[r.case_id for r in results if r.unsafe],
+        unsafe_errors=len(unsafe_ids),
+        unsafe_case_ids=unsafe_ids,
+        undeclared_case_ids=undeclared,
         failures=sum(r.error is not None for r in results),
         finglish_accuracy=(
             sum(r.correct for r in finglish) / len(finglish) if finglish else None
@@ -267,6 +278,12 @@ def format_report(report: EvalReport) -> str:
         ),
         f"  unsafe errors: {report.unsafe_errors}"
         + (f" ({', '.join(report.unsafe_case_ids)})" if report.unsafe_case_ids else ""),
+        f"  undeclared labels: {len(report.undeclared_case_ids)}"
+        + (
+            f" ({', '.join(report.undeclared_case_ids)})"
+            if report.undeclared_case_ids
+            else ""
+        ),
         f"  latency: p50 {report.p50_latency_s * 1000:.0f} ms, p95 {report.p95_latency_s * 1000:.0f} ms",
         f"  cost: ${report.total_cost:.4f}",
     ]

@@ -46,6 +46,7 @@ set the old one's status to `Superseded by ADR-XXXX`.
 | [0024](0024-a-lead-curated-library-in-five-categories.md) | A library the lead alone writes and curates, in five categories | Accepted |
 | [0025](0025-two-roles-lead-and-mentor.md) | Two roles, the lead and the mentor: engineering and research fold into the lead | Accepted |
 | [0026](0026-the-specialist-contract.md) | The specialist contract: one result envelope, one `run_*` boundary, one failure contract, one eval harness | Accepted |
+| [0027](0027-the-mentor-directs-the-lead-assists.md) | The mentor directs, the lead assists; tests and evals are the mentor's; direct pushes to `main`; MN-024's decisions | Accepted |
 
 ## Template
 
