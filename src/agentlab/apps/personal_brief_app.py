@@ -18,7 +18,7 @@ from agentlab.agents.web_researcher_agent import make_web_researcher_agent
 from agentlab.configs.personal_assistant_config import ASSISTANT_STORE_DB_PATH
 from agentlab.data.sqlite_db_data import get_sqlite_store
 from agentlab.schemas.context.user_context_schema import UserContext
-from agentlab.schemas.output.research_output_schema import ResearchReport
+from agentlab.subagents.research_subagent import verify_research
 from agentlab.tools.user_context_tool import (
     USER_CONTEXT_TOOL_NAME,
     make_user_context_tool,
@@ -78,9 +78,7 @@ def main() -> None:
         context=UserContext(user_id=user_id),
         assistant_prompt="Approve this web_search call? [y/n]: ",
     )
-    report: ResearchReport | None = agent.get_state(config).values.get(
-        "structured_response",
-    )
+    report = verify_research(agent.get_state(config).values)
     print(report.model_dump_json(indent=2) if report else "No report was produced.")
 
 
