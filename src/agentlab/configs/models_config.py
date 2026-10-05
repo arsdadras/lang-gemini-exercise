@@ -221,20 +221,12 @@ TIER_CASCADE_ORDER: tuple[str, ...] = ("high", "medium", "low")
 # on prompts or routing without spending higher-tier quota.
 TEST_MODE_ENV = "LLM_TEST_MODE"
 
-# The best tier for iteration, picked the same way as a tier's primary provider:
-# highest weighted(speed, power, cost) among each candidate tier's own primary,
-# under test-mode weights that favor cost and speed over power (cheap, fast
-# feedback loops while prompt-tuning don't need frontier reasoning). "free" loses
-# to "opensource" here despite costing nothing, because its rate-limit-throttled
-# speed score drags its total below glm-5.3's.
-_TEST_MODE_WEIGHT = ModelScore(speed=0.35, power=0.15, cost=0.50)
-_TEST_TIER_CANDIDATES = ("free", "opensource", "low")
-TEST_TIER = max(
-    _TEST_TIER_CANDIDATES,
-    key=lambda tier: _CANDIDATE_SCORES[tier][next(iter(MODEL_TIERS[tier]))].weighted(
-        _TEST_MODE_WEIGHT
-    ),
-)
+# Test mode routes every request to the ``free`` tier: Gemini 3.5 Flash-Lite called directly on
+# Google's own API with ``GOOGLE_API_KEY``, no gateway or router in between (the user's decision,
+# 2026-10-05). It costs nothing; its quota is rate-limited, which test-mode loops live with. A
+# paid or gateway tier is an explicit opt-in (``LLM_TEST_PROFILE=reliable``). It was
+# the computed best of free/opensource/low until then, and the computation went away with it.
+TEST_TIER = "free"
 
 # Test-mode profiles: with LLM_TEST_MODE=true, ``LLM_TEST_PROFILE=<name>`` picks which cheap
 # tier every request routes to, read fresh on each call (models.registry_model), so switching
@@ -242,12 +234,11 @@ TEST_TIER = max(
 # when the current one keeps failing a specific task (swap to another cheap tier that handles
 # it better) or when the scenario's cost/reliability trade-off changes (offline work, a task
 # that can tolerate more token-burn savings, or trying the local model once it's usable). See
-# ADR-0015 for why each of these four, and not more, earned a profile.
+# ADR-0015 for why each of these, and not more, earned a profile.
 TEST_MODE_PROFILE_ENV = "LLM_TEST_PROFILE"
 DEFAULT_TEST_PROFILE = "default"
 TEST_MODE_PROFILES: dict[str, str] = {
-    "default": TEST_TIER,  # best speed/power/cost mix across free/opensource/low; see TEST_TIER
-    "cheapest": "free",  # $0 via Google directly; accept its rate limit and lower power
+    "default": TEST_TIER,  # Gemini 3.5 Flash-Lite directly on Google's API; see TEST_TIER
     "reliable": "low",  # a real paid provider tier, for when a cheap model mishandles a task
     "local": "local",  # $0, no rate limit, needs `ollama serve` with the model already pulled
 }

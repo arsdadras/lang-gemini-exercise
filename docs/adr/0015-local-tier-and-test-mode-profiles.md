@@ -85,3 +85,12 @@ interactive call sites already on `opensource`.
 - **Wait until the model is downloaded and tested before adding any of this:** rejected for the
   tier/profile plumbing (cheap, reversible, and needed regardless of which local model ends up
   pulled) but is exactly why `local` stays unscored and out of automatic selection until then.
+
+## Update (2026-10-05)
+
+At the user's direction, test mode calls Gemini 3.5 Flash-Lite directly on Google's API, with no
+gateway or router: `TEST_TIER` is now `free` instead of the computed best of free, opensource, and
+low (`opensource` on 2026-09-28), so `default` routes there. `cheapest` pointed at `free` too,
+so it is gone; the profiles are `default`, `reliable`, and `local`. Nothing else here changes:
+`reliable` (`low`, through GapGPT) stays an explicit opt-in.
+

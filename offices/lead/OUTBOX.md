@@ -555,10 +555,12 @@ topic ahead). The card is [P1_research_agent.md](../../docs/design_cards/P1_rese
   (91.2% on 34 cases, 2 unsafe errors, both below the 0.8 threshold that covers 85% at 100%
   accuracy). Watch for: thresholds are provisional (34 cases, not the 50 the standard asks for),
   and `supports` for a claim the page only mentions is the unsafe error.
-- **Not ready:** topic 3, the stop condition (`evidence_enough`), and the LLM half of the
-  measurement and a live end-to-end agent run: GapGPT was unreachable from this machine today.
-  The agent's wiring is covered by unit tests and the claim check ran live on a real page
-  (Tavily plus Jev); the full run waits for the gateway.
+- **Not ready:** topic 3, the stop condition (`evidence_enough`), and a live end-to-end agent
+  run. The agent's wiring is covered by unit tests, and the claim check ran live on a real page
+  (Tavily plus Jev). The LLM half of the measurement is done since: Gemini 3.5 Flash-Lite got
+  34/34 with no false citation but a 20 s p95
+  ([EV-2026-10-05-claim-check-flash-lite](research/evidence/EV-2026-10-05-claim-check-flash-lite/README.md)).
+  Test mode now calls Google directly (DEC-036), because GapGPT was unreachable today.
 - The learner reads the code in the main checkout once this change is merged; the tests read as the spec:
   `tests/test_claim_check.py`, `tests/test_read_page_tool.py`, `tests/test_decision_model.py`.
 

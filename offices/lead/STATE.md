@@ -41,8 +41,7 @@ agent writes a `ResearchDraft`, code builds the `ResearchReport`), the claim che
 Left:
 
 1. **The stop condition** (`evidence_enough@1`, a `noul` over the claims so far) inside the budget.
-2. **The LLM half of the measurement,** and a live end-to-end run of the agent: both wait for
-   GapGPT, unreachable from this machine on 2026-10-05 (`evals/claim_check_eval.py --only llm`).
+2. **A live end-to-end run of the agent** in test mode (Google direct now answers; the LLM half of the measurement is done: [EV-2026-10-05-claim-check-flash-lite](research/evidence/EV-2026-10-05-claim-check-flash-lite/README.md), 100% against Jev's 91.2% on 34 cases). Decide which is primary once the set has 50 cases.
 3. **Grow the claim-check set from 34 to 50** (then 200 before fitting thresholds), and fit
    `SUPPORTS_THRESHOLD` and `CONTRADICTS_THRESHOLD` from the numbers.
 4. A topic-3 notice to the mentor with the core code when the stop condition is merged.
