@@ -49,14 +49,46 @@ def test_quick_depth_researches_the_topic_itself_without_planning() -> None:
     assert (questions, cut) == (["topic"], [])
 
 
-def test_the_plan_drops_blanks_and_repeats_and_returns_what_the_cap_cut() -> None:
+def test_the_plan_drops_blanks_and_repeats_without_a_replan() -> None:
     questions, cut = plan_research(
-        "topic", STANDARD, plan_chain=planner("A", "  ", "A ", "B", "C", "D", "E")
+        "topic", STANDARD, plan_chain=planner("A", "  ", "A ", "B", "C")
     )
+
+    assert (questions, cut) == (["A", "B", "C"], [])
+
+
+def plans(*answers: list[str]) -> tuple[RunnableLambda, list[dict[str, Any]]]:
+    """A planner that gives one answer per call, and the inputs it was called with."""
+    calls: list[dict[str, Any]] = []
+
+    def answer(inputs: dict[str, Any]) -> ResearchPlan:
+        calls.append(inputs)
+        return ResearchPlan(sub_questions=answers[len(calls) - 1])
+
+    return RunnableLambda(answer), calls
+
+
+def test_a_plan_over_the_cap_is_replanned_once_told_what_it_did() -> None:
+    chain, calls = plans(["A", "B", "C", "D", "E"], ["A", "B and D", "C"])
+
+    questions, cut = plan_research("topic", STANDARD, plan_chain=chain)
+
+    assert (questions, cut) == (["A", "B and D", "C"], [])
+    assert len(calls) == 2
+    assert calls[0]["feedback"] == ""
+    assert "5 sub-questions, over the limit of 3" in calls[1]["feedback"]
+    assert "- E" in calls[1]["feedback"]
+
+
+def test_a_replan_still_over_the_cap_is_cut_and_returns_what_was_cut() -> None:
+    chain, calls = plans(["A", "B", "C", "D"], ["A", "B", "C", "D", "E"])
+
+    questions, cut = plan_research("topic", STANDARD, plan_chain=chain)
 
     assert questions == ["A", "B", "C"]
     assert len(questions) == DEPTH_BUDGETS["standard"].sub_questions
     assert cut == ["D", "E"]
+    assert len(calls) == 2
 
 
 def test_an_empty_plan_falls_back_to_the_topic() -> None:
