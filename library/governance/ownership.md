@@ -33,7 +33,7 @@ belongs to the lead.
 | `docs/adr/`, `docs/design_cards/` | Architecture decision records; specialist contracts | Lead | lead |
 | `docs/study_guides/` | Write-ups of finished projects | Mentor | mentor |
 | `archive/` | Retired documents, frozen ([archive/README.md](../../archive/README.md)) | The retiring file's owner moves it in; nobody edits it after | all |
-| `src/`, `tests/`, `evals/`, `examples/` | The `agentlab` package, its tests, live eval sets, sample inputs | Lead; the mentor reviews what it teaches and requests changes by message | lead |
+| `src/`, `tests/`, `evals/`, `examples/` | The `agentlab` package, its tests, live eval sets, sample inputs | Lead and mentor: the lead proposes; the mentor tests, evaluates, and edits freely ([ADR-0027](../../docs/adr/0027-the-mentor-directs-the-lead-assists.md)) | all |
 | `scripts/`, `.github/` | Repo tooling (docs lint, inbox, session hooks, handoff, worktree setup, reports, live smoke) and their tests; CI, Dependabot, and the message report | Lead | lead |
 | `.claude/skills/` | Claude Code skills: role bootstraps, `/handoff`, `/inbox`, `decision-points` | Lead | lead |
 | `.claude/skills/teach/` | The mentor's teaching skill and its reference files | Mentor | mentor |

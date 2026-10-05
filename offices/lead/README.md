@@ -24,8 +24,8 @@ other role.
 | Role | Owns | Never |
 | :--- | :--- | :--- |
 | **User** | Sponsor, product owner, and learner; final authority; the go-ahead to close or start a stage | Has to choose between options (Principle 10) |
-| **Lead** | Direction, curriculum, roadmap, architecture, technology, governance, specialist contracts, the library, git and GitHub; the code, tests, evals, tooling, CI, and dependencies; research and evidence; every review | Teaches; writes the mentor's files |
-| **Mentor** | Teaching; reviewing the code it teaches; lesson design inside an approved plan; study guides | Writes code; changes direction, contracts, conventions, dependencies, or policy on its own |
+| **Lead** | The mentor's assistant ([ADR-0027](../../docs/adr/0027-the-mentor-directs-the-lead-assists.md)): acts on the mentor's orders; plans, builds, and proposes code; the library, records, git and GitHub; tooling, CI, dependencies; research | Teaches; tests or evaluates (the mentor's job); writes the mentor's files |
+| **Mentor** | Directs the lead; teaching; reviewing, testing, evaluating, and editing the code; study guides | Writes the lead's office |
 
 The engineer and research roles are retired: their charters, states, and outboxes are in
 [`archive/offices/`](../../archive/README.md), and the research record lives on in

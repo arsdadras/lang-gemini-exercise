@@ -23,8 +23,8 @@ Two roles work here, each in its own session, worktree, and branch
 
 | Role | Job | Worktree, branch |
 | :--- | :--- | :--- |
-| **Lead** | Decides, plans, builds, researches, and reviews: direction, curriculum, architecture, technology, governance, code and tooling, evidence, git and GitHub; everything except teaching | `../lce-lead`, `lead` |
-| **Mentor** | Teaches the learner; reviews the code it teaches | `../lce-mentor`, `mentor` |
+| **Lead** | The mentor's assistant ([ADR-0027](docs/adr/0027-the-mentor-directs-the-lead-assists.md)): plans, builds, researches, keeps records, git and GitHub, on the mentor's orders; proposes, never tests or evaluates | `../lce-lead`, `lead` |
+| **Mentor** | Directs the lead; teaches the learner; reviews, tests, evaluates, and edits the code | `../lce-mentor`, `mentor` |
 
 - **The role comes from where the session runs.** The session hook states it (the worktree's
   config, or the branch name in a cloud session), and each worktree's `CLAUDE.local.md` loads
@@ -45,4 +45,4 @@ Two roles work here, each in its own session, worktree, and branch
   direction, architecture, and policy.
 - Every path has one writing role; write only inside yours
   ([ownership](library/governance/ownership.md)). The mentor writes its office, the study
-  guides, and the `teach` skill; everything else is the lead's.
+  guides, the `teach` skill, and (with the lead) the code paths; everything else is the lead's.

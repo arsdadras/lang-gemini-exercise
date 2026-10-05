@@ -22,9 +22,9 @@ Each role works in its own git worktree, on its own long-lived branch
 | Lead | `../lce-lead` | `lead` |
 | Mentor | `../lce-mentor` | `mentor` |
 
-- **`main`** is the integration branch, and nobody commits to it directly. Every change reaches
-  it by pull request: the role opens one from its branch (`/handoff --pr`), CI runs, and the
-  lead merges when CI is green, its own pull requests included.
+- **`main`** is the integration branch. Both roles may push to it directly
+  ([ADR-0027](../../docs/adr/0027-the-mentor-directs-the-lead-assists.md)); a pull request
+  (`/handoff --pr`) is optional. CI runs on every push.
 - **The lead merges whenever it judges a pull request ready, and never asks first** (the user's
   standing direction, 2026-09-27). Readiness means CI green, the Messages report read, and any
   file outside the branch's role accounted for.
@@ -55,7 +55,7 @@ Each role works in its own git worktree, on its own long-lived branch
   worktree, pushes your branch, and prints a three-line summary. Unfinished work is committed
   as `wip(<role>): ...`; a role branch may be red between sessions.
 - **Only verified states reach `main`.** A pull request is opened when the suite and the linters
-  pass. Code reaches `main` only through pull requests, the lead's own included, with CI green; nothing is ever reset for
+  pass. Code reaches `main` with its linters passing, and CI judges every push; nothing is ever reset for
   the learner to type ([ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)).
 - **Conventional commits:** `type(scope): summary` in English, imperative, at most 72
   characters. Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `ci`. Documentation
@@ -77,5 +77,5 @@ Each role works in its own git worktree, on its own long-lived branch
 ## Never
 
 - Force-push, rebase, or amend anything already pushed.
-- Commit to `main` directly, rewrite its history, or merge with CI red.
+- Rewrite `main`'s history, or merge with CI red.
 - Commit another role's work as your own; send it a message instead.
