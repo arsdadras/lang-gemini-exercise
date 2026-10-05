@@ -24,9 +24,11 @@ Read first in every lead session; rewrite it, don't append. Program status in on
 ## Open messages
 
 - **Mentor:** LD-032, LD-033 open; LD-034..036 answer MN-018, MN-022, MN-024 (partial).
-- **Pending on the user:** the ADR-0027 edits to `CLAUDE.md`, `library/governance/ownership.md`
-  (code paths Roles `all`), `library/engineering/git-policy.md` (direct pushes), and the lead
-  charter; the permission check refused them in session 10.
+- **Ownership guard removed** (2026-10-05, the user's instruction): its code and tests are gone
+  from `scripts/session_hooks.py`, and the docs no longer cite it. Its hook registration had already
+  left `.claude/settings.json` in `b2c8b37`.
+- **Pending on the user:** the remaining ADR-0027 edits to `library/governance/ownership.md` (code
+  paths Roles `all`), `library/engineering/git-policy.md` (direct pushes), and the lead charter.
 - **Waiting for the mentor's order:** R1 topics 2-3, the P6 design card, the v5 renumbering sweep.
 
 Details in [OUTBOX.md](OUTBOX.md).

@@ -49,9 +49,8 @@ Each role works in its own git worktree, on its own long-lived branch
 ## Commits
 
 - **Your worktree holds only your work.** Every path you change must list your role in
-  [ownership.md](../governance/ownership.md)'s Roles column; the session guard refuses other
-  edits, and the Messages report on each pull request lists any that slipped through a shell
-  command. When your own move breaks another role's links, send the lead a request listing them.
+  [ownership.md](../governance/ownership.md)'s Roles column; the Messages report on each pull request lists any
+  that don't. When your own move breaks another role's links, send the lead a request listing them.
 - **End every session with `/handoff`:** it updates your state, commits everything in your
   worktree, pushes your branch, and prints a three-line summary. Unfinished work is committed
   as `wip(<role>): ...`; a role branch may be red between sessions.

@@ -2,19 +2,16 @@
 
     python scripts/session_hooks.py start   # SessionStart: role, sync, status, STATE head, inbox
     python scripts/session_hooks.py prompt  # UserPromptSubmit: messages that arrived since
-    python scripts/session_hooks.py guard   # PreToolUse on edits: the ownership guard
     python scripts/session_hooks.py stop    # Stop: one non-blocking warning about unsaved work
 
-`start` and `prompt` print plain text, which Claude Code adds to the session's context; `guard`
-prints a JSON denial when an edit is out of bounds; `stop` prints a JSON `systemMessage`, which
-the user sees without the session being blocked. Every hook exits 0, and a failing hook lets the
+`start` and `prompt` print plain text, which Claude Code adds to the session's context; `stop`
+prints a JSON `systemMessage`, which the user sees without the session being blocked. Every hook exits 0, and a failing hook lets the
 session carry on (ADR-0019, ADR-0020). Standard library only.
 """
 
 from __future__ import annotations
 
 import json
-import os
 import re
 import sys
 import time
@@ -27,14 +24,10 @@ from workspace import (
     ROLES,
     ROOT,
     ahead_behind,
-    checkouts,
     current_branch,
     detect_role,
     fetch,
     git_dir,
-    may_write,
-    owners,
-    ownership_rules,
     status_lines,
     worktree_path,
 )
@@ -43,8 +36,6 @@ STATE_HEAD_LINES = 12
 STATUS_LINES = 10
 FETCH_EVERY_SECONDS = 300
 SESSION_FILES_KEPT_DAYS = 7
-EDIT_TOOLS = frozenset({"Edit", "Write", "MultiEdit", "NotebookEdit"})
-GUARD_OFF_ENV = "AGENTLAB_GUARD"
 
 
 # ---------------------------------------------------------------- session memory of the hooks
@@ -127,10 +118,7 @@ def routing_lines(root: Path) -> list[str]:
     """What a session outside the role worktrees must do before any change."""
     homes = ", ".join(f"{r}: {worktree_path(r, root)}" for r in ROLES)
     return [
-        (
-            f"Role work runs only in the role worktrees ({homes}); the ownership guard "
-            "refuses edits here."
-        ),
+        (f"Role work runs only in the role worktrees ({homes})."),
         (
             "Before any change, take the session to the worktree of the role the request "
             "needs (lead for decisions, plans, code, tooling, research, reviews, and git; mentor "
@@ -206,54 +194,6 @@ def prompt_report(root: Path, session_id: str, online_check: bool = True) -> str
     )
 
 
-# ---------------------------------------------------------------- PreToolUse guard
-
-
-def guard_reason(root: Path, payload: dict) -> str | None:
-    """Why an edit must not happen, or None to let it through (ADR-0020)."""
-    if os.environ.get(GUARD_OFF_ENV, "").lower() == "off":
-        return None
-    if payload.get("tool_name") not in EDIT_TOOLS:
-        return None
-    tool_input = payload.get("tool_input") or {}
-    raw = tool_input.get("file_path") or tool_input.get("notebook_path")
-    if not raw:
-        return None
-    target = Path(raw)
-    if not target.is_absolute():
-        target = Path(payload.get("cwd") or root) / target
-    target = target.resolve()
-    homes = sorted(checkouts(root), key=lambda p: len(str(p)), reverse=True)
-    home = next((h for h in homes if target == h or h in target.parents), None)
-    if home is None:
-        return None  # outside this repository: not the guard's business
-    role = detect_role(root)
-    here = root.resolve()
-    if role is None:
-        return " ".join(
-            [
-                f"This checkout ({here}) plays no role, so it takes no edits.",
-                *routing_lines(root),
-            ]
-        )
-    if home != here:
-        return (
-            f"{target} is in another checkout ({home}); a {role} session edits only its own "
-            f"worktree ({here}). Send that role a message instead "
-            "(library/governance/protocol.md)."
-        )
-    rel = target.relative_to(home).as_posix()
-    rules = ownership_rules(root)
-    if may_write(role, rel, rules):
-        return None
-    allowed = ", ".join(sorted(owners(rel, rules)))
-    return (
-        f"{rel} belongs to {allowed} (library/governance/ownership.md), so a {role} session "
-        "can't edit it. Send the owner a message; if the user wants that role's work done, "
-        "move the session to that role's worktree."
-    )
-
-
 # ---------------------------------------------------------------- Stop
 
 
@@ -301,24 +241,15 @@ def main(argv: list[str]) -> int:
             report = prompt_report(ROOT, session_id)
             if report:
                 print(report)
-        elif command == "guard":
-            reason = guard_reason(ROOT, payload)
-            if reason:
-                decision = {
-                    "hookEventName": "PreToolUse",
-                    "permissionDecision": "deny",
-                    "permissionDecisionReason": reason,
-                }
-                print(json.dumps({"hookSpecificOutput": decision}))
         elif command == "stop":
             message = stop_message(ROOT)
             if message:
                 print(json.dumps({"systemMessage": message}))
         else:
-            print("usage: session_hooks.py start|prompt|guard|stop")
+            print("usage: session_hooks.py start|prompt|stop")
     except Exception as exc:  # noqa: BLE001 - a hook must never break the session
         failure = f"agentlab {command} hook failed: {type(exc).__name__}: {exc}"
-        if command in ("guard", "stop"):
+        if command == "stop":
             print(json.dumps({"systemMessage": failure}))
         else:
             print(failure)

@@ -18,7 +18,7 @@ is reviewable in a diff and readable by any session.
 
 - **Only the lead writes here** ([ADR-0024](../docs/adr/0024-a-lead-curated-library-in-five-categories.md)).
   Every role reads the library; a role that wants an entry changed sends the lead a message
-  ([protocol.md](governance/protocol.md)). The ownership guard enforces it.
+  ([protocol.md](governance/protocol.md)).
 - **The lead curates.** At every phase and project boundary, and whenever a record becomes
   knowledge other roles rely on, the lead brings it here from whichever office holds it and
   whoever wrote it, and files it under its category.
@@ -81,7 +81,7 @@ compiled into interlinked pages, and the whole is linted.
 | :--- | :--- |
 | [principles.md](governance/principles.md) | The rules every role follows in every session |
 | [protocol.md](governance/protocol.md) | How the roles coordinate: offices, outboxes, sessions |
-| [ownership.md](governance/ownership.md) | Repository map: every path, its one writer, and the Roles the guard enforces |
+| [ownership.md](governance/ownership.md) | Repository map: every path, its one writer, and its Roles |
 | [glossary.md](governance/glossary.md) | Terms with a specific meaning in this repo |
 
 ### Engineering

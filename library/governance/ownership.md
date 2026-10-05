@@ -3,7 +3,7 @@ title: Repository map and ownership
 maintainer: lead
 status: current
 updated: 2026-10-03
-summary: Every top-level area, what it holds, and which role writes it (one writer per path); the guard reads the Roles column.
+summary: Every top-level area, what it holds, and which role writes it (one writer per path); the pull-request report reads the Roles column.
 related: [protocol.md, principles.md, ../../AGENTS.md, ../../scripts/workspace.py]
 ---
 
@@ -17,9 +17,8 @@ numbers free of collisions. Everyone else reads, links, or sends the owner a mes
 
 ## Map
 
-The **Roles** column is machine-read: the session guard (`scripts/session_hooks.py`) lets a
-role's session edit a path only when that role is listed, and the pull-request report warns about
-the rest ([ADR-0020](../../docs/adr/0020-ownership-guard-routing-and-message-awareness.md)).
+The **Roles** column is machine-read: the pull-request report warns about a change by a role
+that isn't listed (the session guard was removed on 2026-10-05) ([ADR-0020](../../docs/adr/0020-ownership-guard-routing-and-message-awareness.md)).
 Values are role names, `all`, or `none`. The longest matching path wins; a path not listed here
 belongs to the lead.
 

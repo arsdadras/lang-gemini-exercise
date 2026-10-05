@@ -187,43 +187,6 @@ def test_the_repositorys_ownership_map_parses():
     assert workspace.owners("a-new-top-level-file.txt", rules) == {"lead"}
 
 
-def edit(path: Path, tool: str = "Edit") -> dict:
-    return {"tool_name": tool, "tool_input": {"file_path": str(path)}}
-
-
-def test_guard_keeps_each_role_inside_its_own_paths(project, monkeypatch):
-    monkeypatch.delenv(session_hooks.GUARD_OFF_ENV, raising=False)
-    mentor, lead = worktree(project, "mentor"), worktree(project, "lead")
-    assert session_hooks.guard_reason(mentor, edit(mentor / "src" / "a.py")) is None
-    assert session_hooks.guard_reason(mentor, edit(mentor / "archive" / "x.md")) is None
-    owned = session_hooks.guard_reason(mentor, edit(mentor / "offices/lead/STATE.md"))
-    assert "offices/lead/STATE.md belongs to lead" in owned
-    foreign = session_hooks.guard_reason(mentor, edit(lead / "offices/lead/STATE.md"))
-    assert "another checkout" in foreign
-    assert (
-        session_hooks.guard_reason(mentor, edit(project.parent / "outside.txt")) is None
-    )
-    assert (
-        session_hooks.guard_reason(mentor, {"tool_name": "Read", "tool_input": {}})
-        is None
-    )
-    relative = {"tool_name": "Write", "tool_input": {"file_path": "offices/lead/x.md"}}
-    reason = session_hooks.guard_reason(mentor, {**relative, "cwd": str(mentor)})
-    assert "belongs to lead" in reason
-
-
-def test_guard_refuses_edits_in_a_checkout_with_no_role(project, monkeypatch):
-    monkeypatch.delenv(session_hooks.GUARD_OFF_ENV, raising=False)
-    worktree(project, "lead")
-    reason = session_hooks.guard_reason(project, edit(project / "offices/lead/x.md"))
-    assert "plays no role" in reason
-    assert "change_directory" in reason
-    monkeypatch.setenv(session_hooks.GUARD_OFF_ENV, "off")
-    assert (
-        session_hooks.guard_reason(project, edit(project / "offices/lead/x.md")) is None
-    )
-
-
 def test_prompt_hook_announces_each_new_message_once(project):
     mentor, lead = worktree(project, "mentor"), worktree(project, "lead")
     session_hooks.start_report(mentor, online=False, session_id="s1")

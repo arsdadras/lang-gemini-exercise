@@ -3,7 +3,7 @@ title: Development environment
 maintainer: lead
 status: current
 updated: 2026-10-03
-summary: Python, uv, the role worktrees and their environments, session hooks and the ownership guard, sandboxes, secrets, and live runs.
+summary: Python, uv, the role worktrees and their environments, session hooks, sandboxes, secrets, and live runs.
 related: [dependency-policy.md, git-policy.md, ../../AGENTS.md, ../../scripts/setup_worktrees.py, ../../.claude/settings.json]
 ---
 
@@ -62,18 +62,13 @@ that has none; run it with no app running.
 - **UserPromptSubmit** adds any message that arrived since the session last heard: it fetches at
   most every five minutes and announces each message once (its memory is under the worktree's
   git directory, `agentlab/`).
-- **PreToolUse** on `Edit`, `Write`, `MultiEdit`, and `NotebookEdit` is the ownership guard: it
-  refuses an edit when this checkout plays no role, when the file is in another checkout, or
-  when [ownership.md](../governance/ownership.md)'s Roles column doesn't list the role. Files
-  outside the repository pass. Shell commands aren't checked.
 - **Stop** shows one warning, never a block, when a role worktree has uncommitted or unpushed
   work: end the session with `/handoff`.
 
 A session outside the role worktrees (the main checkout, a fresh clone on another branch) plays
 no role: the hook tells it to move to the right worktree first (the desktop app's
-`change_directory` tool, or a new `claude` in that folder), and the guard refuses its edits
-until it does. `/lead` and `/mentor` route the same way. Only the user can switch
-the guard off, for one session, by starting Claude Code with `AGENTLAB_GUARD=off`.
+`change_directory` tool, or a new `claude` in that folder). `/lead` and `/mentor` route the
+same way. The ownership guard (ADR-0020) was removed on 2026-10-05 at the user's request.
 
 For a long session, `/loop 15m /inbox` checks the inbox on a timer; on GitHub, the `Messages`
 workflow summarizes new messages and out-of-role files on every pull request, and the open

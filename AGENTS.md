@@ -182,9 +182,6 @@ Policy: [ADR-0004](docs/adr/0004-testing-and-evaluation-policy.md).
   ([dev environment](library/engineering/dev-environment.md)).
 - A worktree's `CLAUDE.local.md` must stay ignored: tracked, it would give every checkout the
   same role.
-- The ownership guard refuses edits outside your role's paths and in any checkout that plays no
-  role; it reads the Roles column of `library/governance/ownership.md`, so keep that table's
-  shape. A denial says where the work belongs: move the session there, don't work around it.
 
 ## Ask before
 
