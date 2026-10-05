@@ -155,6 +155,13 @@ article (many sources, many facts). Verified in the sandbox, nothing changed in 
   consequence. Page requests also run one after another.
 Request: record these as R1 build or backlog items as you see fit. Not blocking.
 
+Addendum 2026-10-05, learner's instruction: embeddings now go through OpenRouter (`EMBEDDING_SPEC`,
+`OPENROUTER_API_KEY`, `openai/text-embedding-3-small`, 1536 dimensions, live-verified), because
+`api.gapgpt.app` resets connections from the cloud sessions. Same model, so an existing index stays
+valid; `library/technology/models.md` and `tests/test_timeouts.py` follow. 261 tests passed, `ruff`
+clean, `scripts/smoke_live.py` in test mode 6/9 (the three GapGPT chat checks of the `low` tier still
+fail from the cloud).
+
 ## Closed
 
 ### MN-021 | to lead | request | closed

@@ -5,8 +5,7 @@ Anthropic, Gemini), all routed through the GapGPT gateway. ``opensource`` is a
 cheap tier of well-known open-weight models, also through GapGPT. ``free`` is the
 only tier that bypasses GapGPT entirely: it calls Gemini Flash-Lite directly
 against Google's own API, so it costs nothing even with no GapGPT credit.
-OpenRouter is deferred for now (no tier routes through it); add an
-``_openrouter()`` builder back when a real use case needs it.
+OpenRouter serves only the embedding model (``EMBEDDING_SPEC``); no chat tier routes through it.
 
 Each tier's provider order (first = primary, rest = same-tier fallback, per
 ``models.registry_model``) is not hand-picked: it's the descending order of a
@@ -24,7 +23,7 @@ The two Gemini IDs were checked on Google's own API, not through GapGPT. ``claud
 a ``/v1/models`` listing and a live call before relying on it in production.
 """
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 
 from agentlab.configs.timeouts_config import (
     CHAT_MODEL_TIMEOUT_SECONDS,
@@ -202,10 +201,16 @@ MODEL_TIERS: dict[str, dict[str, ModelSpec]] = {
     },
 }
 
-# The embedding model, through GapGPT like the paid tiers (OpenAI-compatible /v1/embeddings).
-# Live-verified 2026-10-03: 1536 dimensions. Changing it needs an index rebuild.
-EMBEDDING_SPEC = replace(
-    _gapgpt("text-embedding-3-small"),
+# The embedding model, through OpenRouter (OpenAI-compatible /api/v1/embeddings): GapGPT's host
+# resets connections from the cloud sessions. Live-verified 2026-10-05: the same
+# ``text-embedding-3-small``, 1536 dimensions, so an index built with GapGPT's copy stays valid.
+# ``OPENROUTER_BASE_URL`` overrides the host (tests point it at a local server).
+EMBEDDING_SPEC = ModelSpec(
+    model="openai/text-embedding-3-small",
+    model_provider="openai",
+    api_key_env="OPENROUTER_API_KEY",
+    base_url="https://openrouter.ai/api/v1",
+    base_url_env="OPENROUTER_BASE_URL",
     timeout_seconds=EMBEDDING_TIMEOUT_SECONDS,
 )
 
