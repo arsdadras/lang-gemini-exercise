@@ -43,8 +43,9 @@ width, so the RAG graph answers nothing until the rebuild (R2).
   falls down the tiers (`high`, `medium`, `low`); it becomes the "fallback order" when the
   quality escalation lands (DEC-025).
 - **Test mode:** `LLM_TEST_MODE=true` routes every tier to a test tier, per command, never by
-  editing `.env`. `LLM_TEST_PROFILE` picks `default` (computed from the scores; `opensource` on
-  2026-09-28), `cheapest` (`free`), `reliable` (`low`), or `local`
+  editing `.env`. `LLM_TEST_PROFILE` picks `default` (`free`: Gemini 3.5 Flash-Lite directly on
+  Google's API with `GOOGLE_API_KEY`, no gateway; the user's decision, 2026-10-05), `reliable` (`low`,
+  through the GapGPT gateway), or `local`
   ([ADR-0015](../../docs/adr/0015-local-tier-and-test-mode-profiles.md)).
 
 ## Decision models
