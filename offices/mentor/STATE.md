@@ -12,12 +12,11 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
   (LD-033, the lead is one topic ahead): topic 1, claims instead of findings (`ResearchDraft`,
   `ResearchReport`, `read_page`), and topic 2, the claim check (`nodes/claim_check_node.py`, the
   `decision_model` seam). Topic 3, the stop condition, waits for the lead's next notice.
-- **Next:** R1 topic 1, step 1. The hook is sent (2026-10-05): the pre-R1 schema, run in the
-  sandbox (`sandbox/r1_hook_old_report.py`, a labeled variant), accepts an unsupported finding
-  with a model-typed confidence. The concept (claim = text + evidence; status and confidence
-  from code) comes next, then strategy, then the code review (`research_output_schema.py`,
-  `read_page_tool.py`). No live agent run is possible in a cloud session (no keys), so hooks
-  here use sandbox traces and the repo's labeled cases.
+- **Next:** R1 topic 1. Hook and concept are sent (2026-10-05; sandbox: `r1_hook_old_report.py`,
+  `r1_concept_new_report.py`, runnable only in a Python 3.13 env: the cloud `.venv` is 3.14.0rc2
+  and breaks pydantic). Strategy and architecture comes next (why draft and report are two
+  schemas), then the code review (`research_output_schema.py`, `read_page_tool.py`). No live agent
+  run is possible in a cloud session (no keys): hooks use sandbox traces and the repo's labeled cases.
 - **Order after R1:** R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> P6.
 - **Teaching craft:** the `teach` skill ([SKILL.md](../../.claude/skills/teach/SKILL.md)) is rebuilt
   on the research in [artifacts/teaching-research/](artifacts/teaching-research/README.md) and
