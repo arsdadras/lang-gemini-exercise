@@ -57,5 +57,5 @@ def make_coding_coordinator_agent(
             make_researcher_subagent(),
             *extra_subagents,
         ],
-        middleware=[make_model_fallback(tier), TodoListMiddleware()],
+        middleware=[*make_model_fallback(tier), TodoListMiddleware()],
     )

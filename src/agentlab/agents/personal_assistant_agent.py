@@ -71,7 +71,7 @@ def make_personal_assistant_agent(
         store=store,
         context_schema=UserContext,
         middleware=[
-            make_model_fallback(tier, primary=provider),
+            *make_model_fallback(tier, primary=provider),
             make_finglish_output_guard(),
         ],
     )

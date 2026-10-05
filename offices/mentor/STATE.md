@@ -6,24 +6,26 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 
 ## Now
 
-- **Stage:** R1, redesigned on 2026-10-05 at the learner's direction: a stronger researcher
-  (options and planning, more sources with a source router, the stop condition;
-  [design card](../../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built)).
-  Topic 1 (claims instead of findings) is taught, Code 2/2 included. The claim check is built but
-  its teaching moves to P6 (content generator, new). The new topics 2-3 need the lead's build
-  (MN-024); topic 4 is the lead's stop condition.
-- **Next:** R1 topic 2 (research options and planning) once built. Live runs here use
-  `LLM_TEST_MODE=true`: Google (free tier), Tavily, Jev, and OpenRouter embeddings work from the
-  cloud; GapGPT does not (its host resets the connection).
+- **Stage:** R1, a stronger researcher
+  ([design card](../../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built)).
+  Topic 1 is taught. Topic 2 (options and query planning) is built by the lead (LD-037),
+  reviewed, tested, and run live by the mentor (MN-025; two bugs fixed); its lesson starts with the
+  hook. Topic 3 (more sources, a source router) waits for the lead's build and a research-API key
+  (MN-026); topic 4 is the stop condition.
+- **Next:** R1 topic 2 lesson: hook (the same broad topic with and without planning, live:
+  [artifacts/r1-topic2-live-runs-2026-10-05.md](artifacts/r1-topic2-live-runs-2026-10-05.md)), concept,
+  strategy, code review (`ResearchOptions` and `DEPTH_BUDGETS`, `plan_research`, `run_research`).
+  Live runs use `LLM_TEST_MODE=true` (Google free tier, Tavily, Jev, OpenRouter embeddings work
+  from the cloud; GapGPT does not).
 - **Order after R1:** R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> D1 -> P6 (content
   generator) -> P7 (Capstone I), roadmap v5 (2026-10-05).
 - **Teaching craft:** the `teach` skill ([SKILL.md](../../.claude/skills/teach/SKILL.md)) is rebuilt
   on the research in [artifacts/teaching-research/](artifacts/teaching-research/README.md) and
   is in use from R0 topic 3 on. The lead accepted it (LD-027); it lives in the root registry,
   `.claude/skills/teach/`, and its research stays in `offices/mentor/artifacts/`.
-- **Waiting on others:** the lead, for R1's new topics 2-3 (build) and the engineering track
-  (MN-024). Two roles since ADR-0025: the lead builds, tests, and
-  researches; requests and notices go to the lead. The lead took over MN-012 (audit of the
+- **Waiting on others:** the lead, for the renumbering sweep and R1 topic 3 (MN-026); the user,
+  for `PERPLEXITY_API_KEY` or `EXA_API_KEY`. Since ADR-0027 the mentor directs and the lead
+  assists; the mentor owns tests and evals. The lead took over MN-012 (audit of the
   skill's evidence, on its research queue) and LD-028 (research on the teaching methods).
 - **Stack:** re-verified on 2026-09-27 against the lead's upgrade (LD-007). openai 3.x and
   anthropic 1.x raise timeouts and refusals from `httpx2`; `failure_util` now classifies them,

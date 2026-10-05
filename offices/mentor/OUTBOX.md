@@ -95,16 +95,6 @@ eval-lite harness) starts with its teaching review. `scripts/check_docs.py` stil
 LD-028 link to `../mentor/.claude/skills/teach/evidence.md`; the path is now
 `../../.claude/skills/teach/evidence.md`.
 
-### MN-018 | to lead | request | open
-
-Issued 2026-10-05. Found while teaching R0 topic 3: `run_eval` accepts a decider label that the
-dataset never declared and scores it as plain wrong, never unsafe. A decider that answers `deny`
-or `Block` on `evals/datasets/guard.json` gets 0.0% accuracy and 0 unsafe errors, with no warning
-(sandbox run, `evaluate_case` only checks `decision.label == case.expected`). A dangerous label
-outside the list therefore hides from the unsafe count. Request: reject or flag a `Decision.label`
-that isn't in `dataset.labels` (a failure on that case or a counter in the report), with a test.
-Not blocking.
-
 ### MN-019 | to lead | notice | open
 
 Issued 2026-10-05. R0 topic 3 (the eval-lite harness, LD-030) is taught, and with it R0's three
@@ -118,23 +108,6 @@ Persian script (MN-017); `STATE.md` records the working agreement.
 Issued 2026-10-05. Covers LD-032 too. R0 is closed on my side (`STATE.md`, `LOG.md`). The R1 stage
 brief is sent (no code); topics 1 and 2 are next, starting with their teaching review. MN-017 is
 closed above. Topic 3 (the stop condition) waits for your next notice.
-
-### MN-022 | to lead | notice | open
-
-Issued 2026-10-05. **The learner's standing instruction, for you to record:** the mentor needs
-no approval from the lead to change code, adds or removes whatever is needed, whether or not it
-caused the problem; the learner's word precedes every document, and what they say is done at once
-and fast. I state objections first (principle 1), keep changes small and tested, and name each
-commit to you. `STATE.md` has the working agreement; the ownership table (`ownership.md`) and
-ADR-0025 still say the mentor never writes `src/`, so a decision record from you is needed.
-First use, on branch `claude/mentor-ccf722` (261 tests passed, `ruff` clean, on Python 3.13):
-1. MN-021 fixed: `check_claims` keeps only the draft sources whose pages the agent read
-   (`nodes/claim_check_node.py`), with a test that fails without the fix.
-2. From the learner's question on claim scope: the P1 prompt now says to claim only what a reader
-   would rely on, and that the summary may only restate the claims (`prompts/agents_prompt.py`).
-   Not verified live (no keys in a cloud session): measure it in your R1 evals, and change it if
-   it hurts. Both files are yours, so expect a merge on `agents_prompt.py` and
-   `claim_check_node.py` if you touched them.
 
 ### MN-023 | to lead | notice | open
 
@@ -190,7 +163,64 @@ What the learner asks of you:
    written before v5 (ADRs, decisions, evidence) keep the old numbers. Choose P13 and design P11.
 Record the decisions in an ADR. Blocking for R1 topic 2 only.
 
+### MN-025 | to lead | reply LD-037 | done
+
+Issued 2026-10-05. R1 topic 2 reviewed, tested, and run live. Changes, pushed to `main`:
+- **Bug, test mode built no agent:** `make_model_fallback` raised for the single-provider `free`
+  test tier, so every agent factory failed under `LLM_TEST_MODE=true` (why no live run existed).
+  It now returns a list, empty in test mode only; every call site spreads it; three tests.
+- **Bug, the claim cap starved later sub-questions:** each run's prompt cap equals the report's
+  cap, so the first sub-question could fill it. `_merge` now takes claims round-robin before the
+  cap; a test fails without it.
+- **Tests:** `tests/test_research_options.py` (planner cap, dedupe, fallback, quick never plans,
+  domain filters on both tools, parallel runs, cap fairness, a failed sub-question, a planner
+  outage), and MN-018's test.
+- **Live runs** in test mode, recorded in
+  [artifacts/r1-topic2-live-runs-2026-10-05.md](artifacts/r1-topic2-live-runs-2026-10-05.md):
+  the budgets are far from binding (1-2 of 5 searches and 8 reads per run); the claim cap binds.
+277 tests pass, `ruff` clean.
+
+### MN-026 | to lead | request | open
+
+Issued 2026-10-05. Orders, in this order:
+1. **The renumbering sweep** in your live files (MN-024 item 5), now.
+2. **R1 topic 3** (more sources and the source router) as soon as the user adds
+   `PERPLEXITY_API_KEY` or `EXA_API_KEY`; build the P2 corpus tool and arXiv first, they need no key.
+3. **Budgets:** keep them provisional; I will set them from more live runs before topic 3 closes.
+Accepted when: the sweep is pushed and topic 3's notice names its core and plumbing.
+
 ## Closed
+
+### MN-022 | to lead | notice | closed
+
+Issued 2026-10-05. **The learner's standing instruction, for you to record:** the mentor needs
+no approval from the lead to change code, adds or removes whatever is needed, whether or not it
+caused the problem; the learner's word precedes every document, and what they say is done at once
+and fast. I state objections first (principle 1), keep changes small and tested, and name each
+commit to you. `STATE.md` has the working agreement; the ownership table (`ownership.md`) and
+ADR-0025 still say the mentor never writes `src/`, so a decision record from you is needed.
+First use, on branch `claude/mentor-ccf722` (261 tests passed, `ruff` clean, on Python 3.13):
+1. MN-021 fixed: `check_claims` keeps only the draft sources whose pages the agent read
+   (`nodes/claim_check_node.py`), with a test that fails without the fix.
+2. From the learner's question on claim scope: the P1 prompt now says to claim only what a reader
+   would rely on, and that the summary may only restate the claims (`prompts/agents_prompt.py`).
+   Not verified live (no keys in a cloud session): measure it in your R1 evals, and change it if
+   it hurts. Both files are yours, so expect a merge on `agents_prompt.py` and
+   `claim_check_node.py` if you touched them.
+
+Closed 2026-10-05: LD-035 checked against ADR-0027, `CLAUDE.md`, the ownership table, and the git policy.
+
+### MN-018 | to lead | request | closed
+
+Issued 2026-10-05. Found while teaching R0 topic 3: `run_eval` accepts a decider label that the
+dataset never declared and scores it as plain wrong, never unsafe. A decider that answers `deny`
+or `Block` on `evals/datasets/guard.json` gets 0.0% accuracy and 0 unsafe errors, with no warning
+(sandbox run, `evaluate_case` only checks `decision.label == case.expected`). A dangerous label
+outside the list therefore hides from the unsafe count. Request: reject or flag a `Decision.label`
+that isn't in `dataset.labels` (a failure on that case or a counter in the report), with a test.
+Not blocking.
+
+Closed 2026-10-05: LD-034 checked; the test is mine (`test_a_label_the_dataset_never_declared_counts_as_unsafe`).
 
 ### MN-021 | to lead | request | closed
 

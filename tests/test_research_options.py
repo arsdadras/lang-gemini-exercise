@@ -1,0 +1,215 @@
+"""R1 topic 2: research options, depth budgets, the planner, and the parallel research boundary."""
+
+from types import SimpleNamespace
+from typing import Any
+from unittest.mock import patch
+
+import pytest
+from langchain_core.messages import HumanMessage, ToolMessage
+from langchain_core.runnables import RunnableLambda
+
+from agentlab.configs.research_config import DEPTH_BUDGETS
+from agentlab.nodes import claim_check_node
+from agentlab.nodes.research_plan_node import plan_research
+from agentlab.schemas.input.research_input_schema import ResearchOptions
+from agentlab.schemas.output.research_output_schema import (
+    DraftClaim,
+    Evidence,
+    ResearchDraft,
+    ResearchPlan,
+    Source,
+)
+from agentlab.subagents.research_subagent import run_research
+from agentlab.tools.read_page_tool import (
+    READ_PAGE_TOOL_NAME,
+    domain_allowed,
+    make_read_page_tool,
+)
+from agentlab.tools.web_search_tool import make_web_search_tool
+
+STANDARD = ResearchOptions(depth="standard")
+
+
+def planner(*questions: str) -> RunnableLambda:
+    return RunnableLambda(lambda _input: ResearchPlan(sub_questions=list(questions)))
+
+
+def never_called(_input: Any) -> Any:
+    raise AssertionError("the planner must not run")
+
+
+# --- the planner -------------------------------------------------------------------------
+
+
+def test_quick_depth_researches_the_topic_itself_without_planning() -> None:
+    questions = plan_research(
+        "topic", ResearchOptions(depth="quick"), plan_chain=RunnableLambda(never_called)
+    )
+
+    assert questions == ["topic"]
+
+
+def test_the_plan_is_capped_by_depth_and_drops_blanks_and_repeats() -> None:
+    questions = plan_research(
+        "topic", STANDARD, plan_chain=planner("A", "  ", "A ", "B", "C", "D")
+    )
+
+    assert questions == ["A", "B", "C"]
+    assert len(questions) == DEPTH_BUDGETS["standard"].sub_questions
+
+
+def test_an_empty_plan_falls_back_to_the_topic() -> None:
+    assert plan_research("topic", STANDARD, plan_chain=planner(" ")) == ["topic"]
+
+
+# --- domain filters on both tools --------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("url", "include", "exclude", "allowed"),
+    [
+        ("https://docs.python.org/3/", ["python.org"], [], True),
+        ("https://python.org.evil.com/", ["python.org"], [], False),
+        ("https://WWW.Example.com/a", [], ["example.com"], False),
+        ("https://a.org/x", [], [], True),
+        ("https://a.org/x", ["a.org"], ["a.org"], False),
+    ],
+)
+def test_domain_allowed_matches_hosts_and_subdomains_not_lookalikes(
+    url: str, include: list[str], exclude: list[str], allowed: bool
+) -> None:
+    assert domain_allowed(url, include, exclude) is allowed
+
+
+def test_reading_a_page_outside_the_allowed_domains_returns_an_error_without_a_call() -> (
+    None
+):
+    tool = make_read_page_tool(include_domains=["a.org"])
+
+    with patch("agentlab.tools.read_page_tool.requests.post") as post:
+        result = tool.invoke({"url": "https://b.com/page"})
+
+    assert "outside the domains" in result
+    post.assert_not_called()
+
+
+def test_the_search_tool_carries_the_callers_filters() -> None:
+    tool = make_web_search_tool(
+        include_domains=["a.org"],
+        exclude_domains=["b.com"],
+        time_range="week",
+        topic="news",
+    )
+
+    assert (tool.include_domains, tool.exclude_domains) == (["a.org"], ["b.com"])
+    assert (tool.time_range, tool.topic) == ("week", "news")
+
+
+# --- the research boundary ---------------------------------------------------------------
+
+
+def read(url: str, text: str) -> ToolMessage:
+    return ToolMessage(
+        content=f"{url}\n\n{text}", name=READ_PAGE_TOOL_NAME, tool_call_id=url
+    )
+
+
+def finished(url: str, *claims: str) -> dict[str, Any]:
+    """A sub-question run that read ``url`` and drafted ``claims`` citing it."""
+    draft = ResearchDraft(
+        topic="t",
+        summary=f"about {url}",
+        claims=[
+            DraftClaim(text=text, evidence=[Evidence(url=url, passage="p")])
+            for text in claims
+        ],
+        sources=[Source(title=url, url=url)],
+    )
+    return {"messages": [read(url, "page text")], "structured_response": draft}
+
+
+class ByQuestion:
+    """An agent stand-in: each question gets its own final state, or raises its error."""
+
+    def __init__(self, outcomes: dict[str, Any]) -> None:
+        self.outcomes = outcomes
+        self.asked: list[str] = []
+
+    def invoke(self, payload: Any, config: Any = None) -> Any:
+        message: HumanMessage = payload["messages"][0]
+        self.asked.append(message.content)
+        outcome = self.outcomes[message.content]
+        if isinstance(outcome, Exception):
+            raise outcome
+        return outcome
+
+
+def supports_everything(_page: str, questions: dict[str, Any], **_: Any) -> Any:
+    choice = SimpleNamespace(choice="supports", probabilities={"supports": 0.95})
+    return SimpleNamespace(choices={key: choice for key in questions})
+
+
+def research(agent: ByQuestion, *questions: str) -> Any:
+    registry = SimpleNamespace(decide=supports_everything)
+    with patch.object(claim_check_node, "decision_model", registry):
+        return run_research(agent, "topic", STANDARD, plan_chain=planner(*questions))
+
+
+def test_each_sub_question_gets_its_own_run_and_claims_are_checked_against_its_pages() -> (
+    None
+):
+    agent = ByQuestion(
+        {
+            "Q1": finished("https://a.org/1", "a1"),
+            "Q2": finished("https://b.org/2", "b1"),
+        }
+    )
+
+    result = research(agent, "Q1", "Q2")
+
+    assert sorted(agent.asked) == ["Q1", "Q2"]
+    assert result.status == "ok"
+    assert [c.status for c in result.output.claims] == ["supported", "supported"]
+    assert {p.ref for p in result.provenance} == {"https://a.org/1", "https://b.org/2"}
+
+
+def test_the_claim_cap_keeps_every_sub_question_in_the_report() -> None:
+    cap = DEPTH_BUDGETS["standard"].claims
+    many = [f"a{i}" for i in range(cap + 1)]
+    agent = ByQuestion(
+        {
+            "Q1": finished("https://a.org/1", *many),
+            "Q2": finished("https://b.org/2", "b1", "b2"),
+        }
+    )
+
+    result = research(agent, "Q1", "Q2")
+
+    texts = [c.text for c in result.output.claims]
+    assert len(texts) == cap
+    assert {"b1", "b2"} <= set(texts)
+    assert result.status == "partial"
+    assert f"3 claims over the cap of {cap} were dropped." in result.reason
+
+
+def test_a_failed_sub_question_leaves_a_partial_report_that_names_it() -> None:
+    agent = ByQuestion(
+        {"Q1": finished("https://a.org/1", "a1"), "Q2": TimeoutError("read timed out")}
+    )
+
+    result = research(agent, "Q1", "Q2")
+
+    assert result.status == "partial"
+    assert result.reason.startswith("'Q2': ")
+    assert [c.text for c in result.output.claims] == ["a1"]
+
+
+def test_a_planner_outage_fails_the_envelope() -> None:
+    def down(_input: Any) -> Any:
+        raise TimeoutError("planner timed out")
+
+    result = run_research(
+        ByQuestion({}), "topic", STANDARD, plan_chain=RunnableLambda(down)
+    )
+
+    assert result.status == "failed" and result.output is None

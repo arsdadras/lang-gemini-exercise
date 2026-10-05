@@ -77,7 +77,7 @@ def make_web_researcher_agent(
         else get_sqlite_checkpointer(checkpoint_db_path("research")),
         response_format=ResearchDraft,
         middleware=[
-            make_model_fallback(tier),
+            *make_model_fallback(tier),
             hitl_for(WEB_SEARCH_TOOL_NAME),
             ToolCallLimitMiddleware(
                 tool_name=WEB_SEARCH_TOOL_NAME,

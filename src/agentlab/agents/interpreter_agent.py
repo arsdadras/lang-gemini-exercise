@@ -51,7 +51,7 @@ def make_interpreter_agent(
         checkpointer=checkpointer
         if checkpointer is not None
         else get_sqlite_checkpointer(checkpoint_db_path("interpreter")),
-        middleware=[make_model_fallback(tier)],
+        middleware=[*make_model_fallback(tier)],
         interrupt_on={tool: True for tool in interrupt_tools} or None,
         response_format=response_format,
     )

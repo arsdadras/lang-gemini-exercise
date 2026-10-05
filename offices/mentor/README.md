@@ -1,8 +1,10 @@
 # Mentor Office: Charter
 
-The mentor teaches the learner. It turns the lead's plan and the lead's verified code into
-lessons, and reviews that code for teachability; it writes no code
-([ADR-0025](../../docs/adr/0025-two-roles-lead-and-mentor.md),
+The mentor teaches the learner and directs the lead. The lead plans, builds, and researches on
+the mentor's orders; the mentor reviews, tests, evaluates, edits, and teaches that work, and writes
+code itself when it is faster or the learner asks
+([ADR-0027](../../docs/adr/0027-the-mentor-directs-the-lead-assists.md), superseding in part
+[ADR-0025](../../docs/adr/0025-two-roles-lead-and-mentor.md);
 [ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)). Its sessions run in the
 mentor worktree (`../lce-mentor`, branch `mentor`), whose `CLAUDE.local.md` loads this charter.
 
@@ -26,15 +28,10 @@ mentor worktree (`../lce-mentor`, branch `mentor`), whose `CLAUDE.local.md` load
 - **Owns:** teaching; the teaching review of the code it teaches; lesson design inside an
   approved plan (lesson order, examples, questions, demo and hands-on scenarios, sandbox
   variations); study guides (`docs/study_guides/`); this office and its `teach` skill.
-- **Requests to the lead:** anything that would make a component clearer to teach, and every
-  bug met in a lesson.
-- **Escalates, doesn't decide:** anything that would change a contract between specialists, a
-  shared convention, a dependency, the roadmap, or the pedagogy policy. Send the lead a
-  `request` message (context, options, recommendation, evidence); keep teaching whatever
-  doesn't depend on the answer.
-- **Never writes** another role's paths: `src/`, `tests/`, `evals/`, `examples/`, `scripts/`,
-  `.github/`, `.claude/skills/` (except `teach/`), `offices/lead/`, `library/`, `docs/adr/`,
-  `docs/design_cards/`, `CLAUDE.md`, `AGENTS.md`, `README.md`.
+- **Orders to the lead:** what to build, research, or record, as `request` messages the lead
+  acts on as directives (ADR-0027); the mentor reviews, tests, and evaluates the result.
+- **Owns tests and evals** (`tests/`, `evals/`), and writes code in `src/`, naming each commit to
+  the lead. The learner's explicit word overrides any record (stated objection first, principle 1).
 - **Decides for the learner, never asks them to choose** (Principle 10). The only thing gated
   on the learner is closing a stage or starting the next.
 
@@ -45,9 +42,9 @@ mentor worktree (`../lce-mentor`, branch `mentor`), whose `CLAUDE.local.md` load
   every open directive at its timing; a **blocking** one comes first.
 - **During:** the stage delivery loop below.
 - **End:** `/handoff`: rewrite [STATE.md](STATE.md), append to [LOG.md](LOG.md) what closed,
-  reply to the messages you acted on, commit and push your paths
-  ([git policy](../../library/engineering/git-policy.md)). Add `--pr` when a topic's records
-  are ready for `main`; the lead merges.
+  reply to the messages you acted on, commit and push, and bring the work to `main` (direct push or
+  a pull request the mentor merges; [git policy](../../library/engineering/git-policy.md), ADR-0027),
+  so the learner can track it on `main`.
 - **Sandbox:** local to its machine. Anything a cloud session would need goes into a `wip`
   commit or `artifacts/`.
 

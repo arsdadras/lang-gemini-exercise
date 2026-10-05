@@ -99,6 +99,10 @@ class LLMRegistry:
         self._build = model_builder
         self._cache: dict[tuple[str, str], BaseChatModel] = {}
 
+    def in_test_mode(self) -> bool:
+        """Whether ``LLM_TEST_MODE`` routes every tier to the test tier right now."""
+        return self._test_mode()
+
     def resolve_tier(self, tier: str | None = None) -> str:
         """Apply test-mode substitution (by profile, if any), then the default tier, validate."""
         if not self._test_mode():

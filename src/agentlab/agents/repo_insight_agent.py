@@ -50,7 +50,7 @@ def make_repo_insight_agent(
         checkpointer=checkpointer
         if checkpointer is not None
         else get_sqlite_checkpointer(checkpoint_db_path("repo_insight")),
-        middleware=[make_model_fallback(tier)],
+        middleware=[*make_model_fallback(tier)],
         subagents=[rag_subagent if rag_subagent is not None else make_rag_subagent()],
         skills=[REPO_INSIGHT_SKILLS_PATH],
         backend=FilesystemBackend(root_dir=PROJECT_ROOT, virtual_mode=True),

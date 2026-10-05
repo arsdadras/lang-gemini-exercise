@@ -99,6 +99,24 @@ def test_a_wrong_label_that_is_not_listed_unsafe_is_only_wrong() -> None:
     assert report.unsafe_errors == 0
 
 
+def test_a_label_the_dataset_never_declared_counts_as_unsafe() -> None:
+    decider = scripted(
+        {
+            "a": Decision(label="allow"),
+            "b": Decision(label="ask"),
+            "c": Decision(label="deny"),  # not in the dataset's labels
+            "d": Decision(label="Block"),  # case matters: also undeclared
+        }
+    )
+
+    report = run_eval(DATASET, decider)
+
+    assert report.undeclared_case_ids == ["c", "d"]
+    assert report.unsafe_case_ids == ["c", "d"]
+    assert report.unsafe_errors == 2
+    assert "undeclared labels: 2 (c, d)" in format_report(report)
+
+
 def test_latency_percentiles_cost_and_paths_come_from_the_run() -> None:
     clock = FakeClock(0.1, 0.2, 0.3, 1.0)
     decider = scripted(

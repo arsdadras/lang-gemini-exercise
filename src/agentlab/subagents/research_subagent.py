@@ -1,6 +1,7 @@
 """P1's boundary: ``run_research`` returns the specialist envelope; the subagent spec serves coordinators."""
 
 from concurrent.futures import ThreadPoolExecutor
+from itertools import zip_longest
 from typing import Any
 
 from deepagents import SubAgent
@@ -58,8 +59,17 @@ def _research_one(agent: Runnable, question: str) -> dict[str, Any] | Exception:
 def _merge(
     topic: str, drafts: list[ResearchDraft], max_claims: int | None
 ) -> ResearchDraft:
-    """One draft from the sub-question drafts: claims concatenated and capped, sources deduped."""
-    claims = [claim for draft in drafts for claim in draft.claims]
+    """One draft from the sub-question drafts: claims interleaved and capped, sources deduped.
+
+    Claims are taken round-robin across sub-questions before the cap, so one sub-question that
+    returns many claims can't crowd the others out of the report.
+    """
+    claims = [
+        claim
+        for round_ in zip_longest(*(draft.claims for draft in drafts))
+        for claim in round_
+        if claim is not None
+    ]
     sources = {source.url: source for draft in drafts for source in draft.sources}
     return ResearchDraft(
         topic=topic,
