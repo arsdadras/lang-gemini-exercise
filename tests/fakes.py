@@ -116,3 +116,19 @@ def scripted_rag(
         if web_tool is not None:
             tool.return_value = web_tool
         yield record
+
+
+def scripted_decider(*responses: Any) -> RunnableLambda:
+    """A decision backend that answers each request with the next scripted response.
+
+    A response that is an exception is raised instead, so a test can script a decider failure.
+    """
+    queue = list(responses)
+
+    def answer(_request: Any) -> Any:
+        item = queue.pop(0)
+        if isinstance(item, BaseException):
+            raise item
+        return item
+
+    return RunnableLambda(answer)

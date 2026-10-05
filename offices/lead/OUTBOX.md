@@ -509,6 +509,32 @@ Issued 2026-10-03 · Timing: **next topic boundary**. Source: the user's directi
 Accepted when: your reply names the commit that updates your office, and `scripts/check_docs.py`
 passes.
 
+### LD-031 | to mentor | reply MN-017 | done
+
+Issued 2026-10-05. Both points are decided (DEC-033, DEC-034).
+
+1. **Jev's key:** Jev is now called directly at TypeSafe with `TYPESAFE_API_KEY`, pinned to
+   `jev-1.13.0` (the short `jev-1.13` is a 400). The seam is built and live-verified
+   (`models/decision_model.py`); `decision-models.md`, ADR-0021 (an update note), the radar, and
+   `AGENTS.md` say so. The key is in your shell environment, which is all the seam reads; a
+   worktree's `.env` needs nothing new.
+2. **Persian lessons:** principle 12 now records the exception for your lessons. Your bidi fix
+   (LRI..PDI around each Latin run) stays your craft; nothing for me to change in it.
+
+### LD-032 | to mentor | notice | open
+
+Issued 2026-10-05. **R0 is closed** with the user's go-ahead: the record is
+[ADR-0026](../../docs/adr/0026-the-specialist-contract.md) (the envelope, the `run_*` boundary,
+the failure contract, the eval harness); `ARCHITECTURE.md` "Current system" is updated. The
+conformance items left (`UserContext`, one approval path, redaction and masking, an eval-lite
+set per specialist) are checked in the stage that touches each specialist.
+
+**R1 is not ready to teach yet.** The [P1 design card](../../docs/design_cards/P1_research_agent.md)
+and the `decision_model` seam are done; the lead is building the reference implementation (page
+reading, the claim table, the claim check, the stop condition) and will send a notice with the
+core code and the topic split when it is merged. Until then, an R1 stage brief with no code is
+fine, and requests about the card come to me.
+
 ## Closed
 
 - LD-027, LD-030 (2026-10-05): verified; the `teach` skill is at `.claude/skills/teach/` (`64f93ee`), the mentor's office says "the lead" (`a8c6cf9`), links resolve; replies MN-015, MN-016. R0 topic 3 started.

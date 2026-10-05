@@ -2,7 +2,7 @@
 title: Models at hand
 maintainer: lead
 status: current
-updated: 2026-10-03
+updated: 2026-10-05
 summary: The two model families as this repo runs them: the LLM tiers, fallback, and test mode; the decision models; which choices rest on measurement; and how tiers will be chosen.
 related: [radar.md, ../architecture/decision-models.md, ../../docs/adr/0014-weighted-model-tier-catalog.md, ../../docs/adr/0015-local-tier-and-test-mode-profiles.md, ../../offices/lead/research/briefs/BR-002-model-catalog-evidence-map/README.md]
 ---
@@ -49,7 +49,7 @@ width, so the RAG graph answers nothing until the rebuild (R2).
 
 ## Decision models
 
-Jev, pinned to `typesafe/jev-1.13`, through OpenRouter's System One API, behind `decision_model`
+Jev, pinned to `jev-1.13.0`, called directly at TypeSafe (key `TYPESAFE_API_KEY`; OpenRouter's System One API is the alternative), behind `decision_model`
 from R1 ([ADR-0021](../../docs/adr/0021-decision-models-as-a-second-model-family.md)). Measured
 here on 2026-09-27: about 0.45 s and $0.00002 per decision; 22/23 on our grader and guard cases
 with no guard answer less strict than its label; routing 32/32 in three runs

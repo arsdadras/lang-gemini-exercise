@@ -24,7 +24,7 @@ mechanics: [`AGENTS.md`](../../AGENTS.md). Why each significant choice was made:
                        vector index | sandbox | search/HTTP clients | tracing
 ```
 
-## Current system (2026-09-26)
+## Current system (2026-10-05)
 
 | Part | Built as | Composed by |
 | :--- | :--- | :--- |
@@ -33,11 +33,13 @@ mechanics: [`AGENTS.md`](../../AGENTS.md). Why each significant choice was made:
 | P3 code review | Parent graph over three subgraphs; sandboxed pytest; `interrupt()` refactor gate | Coding coordinator |
 | P4 interpreter | DeepAgents agent over `LocalShellBackend` (virtual mode, allow-listed env); artifact diff | Coding coordinator (shell without per-command approval until P6-B3) |
 | P5 memory assistant | DeepAgents agent reading memory; gated store backend; background consolidator graph; skill designer graph; context-provider tool | `lab-brief` (P5 + P1) |
+| Specialist contract | `SpecialistResult[T]` envelope, a `run_*` boundary per specialist (P1-P4), the failure contract (`failure_util`), timeouts on every external client, the eval-lite harness | Every specialist and every caller ([ADR-0026](../../docs/adr/0026-the-specialist-contract.md)) |
+| Decisions | `decision_model` seam (Jev direct, `jev-1.13.0`), one `DecisionRecord` per decision; no consumer yet (the claim check is R1's) | R1 onward ([ADR-0021](../../docs/adr/0021-decision-models-as-a-second-model-family.md)) |
 | Models | 6 tiers (`high`/`medium`/`low`/`opensource`/`free`/`local`), weighted ranking, fallback middleware, test-mode profiles | Every agent and node ([ADR-0014](../../docs/adr/0014-weighted-model-tier-catalog.md), [ADR-0015](../../docs/adr/0015-local-tier-and-test-mode-profiles.md)) |
-| Persistence | SQLite checkpointer shared by the apps under `out/state/`; P5 has its own SQLite store and checkpointer; in-memory savers as defaults for tests | Apps |
+| Persistence | One SQLite checkpointer database per app under `out/state/` (`<app>_checkpoints.db`), and a `delegations` one for delegated runs; P5 has its own SQLite store and checkpointer; in-memory savers as defaults for tests | Apps |
 
-In flight: R0 (the specialist envelope and failure contract across P1-P5). Live issues:
-the mentor's [state](../mentor/STATE.md). Planned debt work: [BACKLOG.md](BACKLOG.md).
+In flight: R1 (P1 evidence-grounded research; the design card is written). Live issues:
+the lead's [state](STATE.md). Planned debt work: [BACKLOG.md](BACKLOG.md).
 
 ## Target system
 

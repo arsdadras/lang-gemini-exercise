@@ -2,7 +2,7 @@
 title: Decision models
 maintainer: lead
 status: current
-updated: 2026-10-03
+updated: 2026-10-05
 summary: The rule for every AI decision point (which of code, a decision model, or an LLM takes it), the one standard each is held to, and how decision models are called here.
 related: [../governance/principles.md, ../../docs/adr/0021-decision-models-as-a-second-model-family.md, ../../offices/lead/research/landscape/decision-models/README.md, ../../offices/lead/artifacts/jev-dossier.md]
 ---
@@ -93,17 +93,25 @@ Choosing which schema applies is a `choice` over contracts. Verifying a field an
 
 ## In this repo
 
-- **The seam:** `decision_model` beside `llm_model` in `models/`, from R1 (ADR-0021). Until then,
-  decision points run on LLM tiers and are measured the same way.
-- **Backend:** Jev through OpenRouter's System One API, pinned to `typesafe/jev-1.13`, with the
-  key named `OPENROUTER_API_KEY`. The client, `langchain-typesafe`, stays behind the seam; no
-  call site imports it.
-- **Conventions:** an explicit timeout and one retry layer on the calling node (the client has
-  none); in a cascade, a decider error takes the LLM path.
+- **The seam:** `decision_model` beside `llm_model` in `models/decision_model.py` (built
+  2026-10-05, ahead of R1): `decision_model.decide(state, questions, question_set="name@1")`
+  returns the typed response and writes one `DecisionRecord`; `decision_model.get()` is the
+  backend, which tests replace with `scripted_decider` (`tests/fakes.py`).
+- **Backend:** Jev called directly at TypeSafe (`POST https://api.typesafe.ai/v1/systemone`),
+  pinned to the versioned `jev-1.13.0` (the short `jev-1.13` is a 400; `jev-latest` resolves to
+  it), with the key named `TYPESAFE_API_KEY` ([config](../../src/agentlab/configs/decision_config.py)).
+  OpenRouter's System One API serves the same protocol with the same answers and stays the
+  documented alternative (`typesafe/jev-1.13`, `OPENROUTER_API_KEY`, base URL
+  `https://openrouter.ai/api`). The client, `langchain-typesafe`, stays behind the seam; no call
+  site imports it.
+- **Conventions:** an explicit timeout (10 s, `DECISION_MODEL_TIMEOUT_SECONDS`) and one retry
+  layer on the calling node (the seam has none); in a cascade, a decider error takes the LLM path.
 - **Tests:** a scripted fake decider in unit tests; live checks run in eval-lite, in test mode.
 - **The decision log** records the state's hash, the question set's version, the served snapshot,
-  the probabilities, the path taken, latency, and cost from input tokens.
-- **Limits:** 32,000 tokens per request through OpenRouter, and 255 options per `choice`.
+  the probabilities, the path taken, latency, and cost from input tokens, as a JSON line on the
+  `agentlab.decisions` logger; a failed decision is recorded too, with its error class.
+- **Limits:** 64,000 tokens per request direct (32,000 for the state plus the longest question;
+  32,000 in all through OpenRouter), and 255 options per `choice`.
 - **Data:** a hosted decision sends its state off-site, as the LLM tiers do, under the same data
   policy. A local server on the same protocol is the production path for private state.
 

@@ -29,6 +29,7 @@ dependencies = [
     "python-dotenv>=1.2.3",
     "pyyaml>=6.0.3",
     "requests>=2.34.2",
+    "langchain-typesafe>=0.0.1a3",
 ]
 
 [project.scripts]

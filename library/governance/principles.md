@@ -2,7 +2,7 @@
 title: Project principles
 maintainer: lead
 status: current
-updated: 2026-09-26
+updated: 2026-10-05
 summary: The rules every role follows in every session; loaded by CLAUDE.md.
 related: [protocol.md, ownership.md, ../../docs/adr/0017-production-standards-as-design-yardstick.md]
 ---
@@ -146,6 +146,9 @@ user said need their approval. Reports have no "next steps" section unless the w
 ## 12. Communication
 
 - Talk to the user in Finglish (Persian in Latin letters), never in Perso-Arabic script.
+  One exception, at the user's request (2026-10-04, DEC-034): the mentor's lessons are written
+  in Persian script, with technical words left in English (the `teach` skill's `persian.md`).
+  Everything else, the lead's reports included, stays Finglish.
 - Everything technical is English: code, comments, docstrings, identifiers, file names, commit
   messages, and docs.
 - Short by default. Go deep only for architecture, trade-offs, real bugs, and new concepts.
