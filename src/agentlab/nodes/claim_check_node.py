@@ -185,7 +185,8 @@ def check_claims(
         topic=draft.topic,
         summary=draft.summary,
         claims=checked,
-        sources=draft.sources,
+        # Provenance is a fact about the run: only pages the agent actually read can be sources.
+        sources=[source for source in draft.sources if source.url in pages],
         confidence=derive_confidence(checked),
     )
 

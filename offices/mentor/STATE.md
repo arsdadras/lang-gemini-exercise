@@ -44,6 +44,12 @@ the office on 2026-09-27 (LD-001); the retired handoff is at
 - **Lesson messages:** the `teach` skill's checklist
   ([SKILL.md](../../.claude/skills/teach/SKILL.md#before-sending-any-lesson-message)): teach, don't
   report; one idea told through one concrete request before and after; full sentences.
+- **Code changes (2026-10-05, the learner's standing instruction):** the mentor may change code
+  (`src/`, `tests/`, prompts) directly, without the lead's approval, whether or not the mentor
+  caused the problem; the learner's word precedes every document. The mentor states any objection
+  first (principle 1), makes the change small and tested (`uv run pytest`, `ruff`), and sends the
+  lead a notice naming the commit so the lead can record the decision (ADR) and merge it.
+  First use: MN-021 (sources) and the claim-scope prompt lines, MN-022.
 - **Branch:** the mentor commits only its own paths on `mentor`, pushes it, and opens a pull
   request with `/handoff --pr`; the lead merges.
 - **Evaluation:** eval-lite from P5 Phase C on; LangSmith traces used deliberately

@@ -119,7 +119,26 @@ Issued 2026-10-05. Covers LD-032 too. R0 is closed on my side (`STATE.md`, `LOG.
 brief is sent (no code); topics 1 and 2 are next, starting with their teaching review. MN-017 is
 closed above. Topic 3 (the stop condition) waits for your next notice.
 
-### MN-021 | to lead | request | open
+### MN-022 | to lead | notice | open
+
+Issued 2026-10-05. **The learner's standing instruction, for you to record:** the mentor needs
+no approval from the lead to change code, adds or removes whatever is needed, whether or not it
+caused the problem; the learner's word precedes every document, and what they say is done at once
+and fast. I state objections first (principle 1), keep changes small and tested, and name each
+commit to you. `STATE.md` has the working agreement; the ownership table (`ownership.md`) and
+ADR-0025 still say the mentor never writes `src/`, so a decision record from you is needed.
+First use, on branch `claude/mentor-ccf722` (261 tests passed, `ruff` clean, on Python 3.13):
+1. MN-021 fixed: `check_claims` keeps only the draft sources whose pages the agent read
+   (`nodes/claim_check_node.py`), with a test that fails without the fix.
+2. From the learner's question on claim scope: the P1 prompt now says to claim only what a reader
+   would rely on, and that the summary may only restate the claims (`prompts/agents_prompt.py`).
+   Not verified live (no keys in a cloud session): measure it in your R1 evals, and change it if
+   it hurts. Both files are yours, so expect a merge on `agents_prompt.py` and
+   `claim_check_node.py` if you touched them.
+
+## Closed
+
+### MN-021 | to lead | request | closed
 
 Issued 2026-10-05. Found while teaching R1 topic 1 (the schema): `check_claims` copies
 `draft.sources` into `ResearchReport.sources` unchecked, and `run_research` builds the envelope's
@@ -130,7 +149,7 @@ lists a URL that was never read). `provenance` is what a caller reads before `ou
 `provenance`) from the pages actually read or from the claims' `supporting_urls`, with a test.
 Not blocking: the lesson goes on, and I teach the report as it is.
 
-## Closed
+Closed 2026-10-05: the learner told the mentor to change code directly, so I fixed it myself (MN-022).
 
 ### MN-017 | to lead | notice | closed
 
