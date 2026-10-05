@@ -42,24 +42,25 @@ def never_called(_input: Any) -> Any:
 
 
 def test_quick_depth_researches_the_topic_itself_without_planning() -> None:
-    questions = plan_research(
+    questions, cut = plan_research(
         "topic", ResearchOptions(depth="quick"), plan_chain=RunnableLambda(never_called)
     )
 
-    assert questions == ["topic"]
+    assert (questions, cut) == (["topic"], [])
 
 
-def test_the_plan_is_capped_by_depth_and_drops_blanks_and_repeats() -> None:
-    questions = plan_research(
-        "topic", STANDARD, plan_chain=planner("A", "  ", "A ", "B", "C", "D")
+def test_the_plan_drops_blanks_and_repeats_and_returns_what_the_cap_cut() -> None:
+    questions, cut = plan_research(
+        "topic", STANDARD, plan_chain=planner("A", "  ", "A ", "B", "C", "D", "E")
     )
 
     assert questions == ["A", "B", "C"]
     assert len(questions) == DEPTH_BUDGETS["standard"].sub_questions
+    assert cut == ["D", "E"]
 
 
 def test_an_empty_plan_falls_back_to_the_topic() -> None:
-    assert plan_research("topic", STANDARD, plan_chain=planner(" ")) == ["topic"]
+    assert plan_research("topic", STANDARD, plan_chain=planner(" ")) == (["topic"], [])
 
 
 # --- domain filters on both tools --------------------------------------------------------
@@ -93,7 +94,10 @@ def test_reading_a_page_outside_the_allowed_domains_returns_an_error_without_a_c
     post.assert_not_called()
 
 
-def test_the_search_tool_carries_the_callers_filters() -> None:
+def test_the_search_tool_carries_the_callers_filters(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("TAVILY_API_KEY", "test-key")  # built, never called
     tool = make_web_search_tool(
         include_domains=["a.org"],
         exclude_domains=["b.com"],
@@ -189,7 +193,53 @@ def test_the_claim_cap_keeps_every_sub_question_in_the_report() -> None:
     assert len(texts) == cap
     assert {"b1", "b2"} <= set(texts)
     assert result.status == "partial"
-    assert f"3 claims over the cap of {cap} were dropped." in result.reason
+    assert (
+        f"3 claims over the cap of {cap} were dropped (3 supported)." in result.reason
+    )
+
+
+def test_the_claim_cap_keeps_supported_claims_before_unsupported_ones() -> None:
+    cap = DEPTH_BUDGETS["standard"].claims
+    weak = [f"weak{i}" for i in range(cap)]
+    agent = ByQuestion(
+        {
+            "Q1": finished("https://a.org/1", *weak),
+            "Q2": finished("https://b.org/2", "strong1", "strong2"),
+        }
+    )
+
+    def supports_strong_only(_page: str, questions: dict[str, Any], **_: Any) -> Any:
+        def choice(question: Any) -> Any:
+            label = "none" if "weak" in question.instructions else "supports"
+            return SimpleNamespace(choice=label, probabilities={label: 0.95})
+
+        return SimpleNamespace(choices={k: choice(q) for k, q in questions.items()})
+
+    registry = SimpleNamespace(decide=supports_strong_only)
+    with patch.object(claim_check_node, "decision_model", registry):
+        result = run_research(agent, "topic", STANDARD, plan_chain=planner("Q1", "Q2"))
+
+    texts = [c.text for c in result.output.claims]
+    assert len(texts) == cap
+    assert {"strong1", "strong2"} <= set(texts)
+    assert (
+        f"2 claims over the cap of {cap} were dropped (2 unsupported)." in result.reason
+    )
+    assert result.output.confidence == round(2 * 0.7 / cap, 3)
+
+
+def test_sub_questions_cut_by_the_cap_are_named_in_the_reason() -> None:
+    agent = ByQuestion(
+        {q: finished(f"https://{q}.org", f"{q}1") for q in ("Q1", "Q2", "Q3")}
+    )
+
+    result = research(agent, "Q1", "Q2", "Q3", "Q4")
+
+    assert sorted(agent.asked) == ["Q1", "Q2", "Q3"]
+    assert result.status == "partial"
+    assert (
+        "1 sub-questions over the cap of 3 were not researched: 'Q4'." in result.reason
+    )
 
 
 def test_a_failed_sub_question_leaves_a_partial_report_that_names_it() -> None:

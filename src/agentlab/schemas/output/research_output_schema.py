@@ -83,7 +83,8 @@ class ResearchPlan(BaseModel):
     """The planner's split of a broad topic into sub-questions, each researched on its own."""
 
     sub_questions: list[str] = Field(
-        description="Distinct, specific sub-questions that together cover the topic; no overlap"
+        description="Distinct, specific sub-questions that together cover the topic, most "
+        "important first; no overlap"
     )
 
 

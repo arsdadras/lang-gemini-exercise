@@ -1,5 +1,6 @@
 """P1's boundary: ``run_research`` returns the specialist envelope; the subagent spec serves coordinators."""
 
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from itertools import zip_longest
 from typing import Any
@@ -9,11 +10,16 @@ from langchain_core.messages import HumanMessage
 from langchain_core.runnables import Runnable
 
 from agentlab.configs.research_config import DEPTH_BUDGETS
-from agentlab.nodes.claim_check_node import check_claims, unsupported_count
+from agentlab.nodes.claim_check_node import (
+    check_claims,
+    derive_confidence,
+    unsupported_count,
+)
 from agentlab.nodes.research_plan_node import plan_research
 from agentlab.prompts.subagents_prompt import RESEARCHER_SUBAGENT_PROMPT
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.schemas.output.research_output_schema import (
+    Claim,
     ResearchDraft,
     ResearchFindings,
     ResearchReport,
@@ -56,13 +62,11 @@ def _research_one(agent: Runnable, question: str) -> dict[str, Any] | Exception:
         return error
 
 
-def _merge(
-    topic: str, drafts: list[ResearchDraft], max_claims: int | None
-) -> ResearchDraft:
-    """One draft from the sub-question drafts: claims interleaved and capped, sources deduped.
+def _merge(topic: str, drafts: list[ResearchDraft]) -> ResearchDraft:
+    """One draft from the sub-question drafts: claims interleaved, sources deduped.
 
-    Claims are taken round-robin across sub-questions before the cap, so one sub-question that
-    returns many claims can't crowd the others out of the report.
+    Claims are taken round-robin across sub-questions, so when the cap later drops claims of
+    equal evidence, one sub-question that returned many can't crowd the others out.
     """
     claims = [
         claim
@@ -74,9 +78,29 @@ def _merge(
     return ResearchDraft(
         topic=topic,
         summary=" ".join(draft.summary for draft in drafts),
-        claims=claims if max_claims is None else claims[:max_claims],
+        claims=claims,
         sources=list(sources.values()),
     )
+
+
+# Which claims the cap gives up last: evidence first, then the merge's round-robin order.
+_CAP_ORDER = {"supported": 0, "unsupported": 1, "contradicted": 2}
+
+
+def _cap(report: ResearchReport, max_claims: int) -> tuple[ResearchReport, list[Claim]]:
+    """The report cut to ``max_claims`` claims, supported ones kept first, and the dropped ones.
+
+    The cap runs after the claim check so it drops by evidence, not by position: a supported
+    claim never gives way to an unsupported one. Confidence is derived again from what is kept,
+    so it still describes the table the caller reads; the dropped claims go into the reason.
+    """
+    ranked = sorted(report.claims, key=lambda claim: _CAP_ORDER[claim.status])
+    kept_ids = {id(claim) for claim in ranked[:max_claims]}
+    kept = [claim for claim in report.claims if id(claim) in kept_ids]
+    capped = report.model_copy(
+        update={"claims": kept, "confidence": derive_confidence(kept)}
+    )
+    return capped, ranked[max_claims:]
 
 
 def run_research(
@@ -95,8 +119,8 @@ def run_research(
     own run, so every claim is checked against the pages its own run read.
     """
     try:
-        questions = (
-            [topic]
+        questions, cut = (
+            ([topic], [])
             if options is None
             else plan_research(topic, options, plan_chain=plan_chain)
         )
@@ -117,6 +141,11 @@ def run_research(
     drafts: list[ResearchDraft] = []
     pages: dict[str, str] = {}
     problems: list[str] = []
+    if cut:
+        problems.append(
+            f"{len(cut)} sub-questions over the cap of {len(questions)} were not "
+            "researched: " + "; ".join(f"'{question}'" for question in cut) + "."
+        )
     for question, outcome in zip(questions, outcomes, strict=True):
         label = f"'{question}': " if len(questions) > 1 else ""
         if isinstance(outcome, Exception):
@@ -138,14 +167,8 @@ def run_research(
             reason=" ".join(problems),
         )
 
-    max_claims = None if options is None else DEPTH_BUDGETS[options.depth].claims
-    total_claims = sum(len(draft.claims) for draft in drafts)
-    if max_claims is not None and total_claims > max_claims:
-        problems.append(
-            f"{total_claims - max_claims} claims over the cap of {max_claims} were dropped."
-        )
     try:
-        report = check_claims(_merge(topic, drafts, max_claims), pages)
+        report = check_claims(_merge(topic, drafts), pages)
     except Exception as error:
         if failure_kind(error) is None:
             raise
@@ -153,6 +176,15 @@ def run_research(
             specialist=RESEARCH_SPECIALIST,
             status="failed",
             reason=failure_reason(error),
+        )
+    max_claims = None if options is None else DEPTH_BUDGETS[options.depth].claims
+    if max_claims is not None and len(report.claims) > max_claims:
+        report, dropped = _cap(report, max_claims)
+        counts = Counter(claim.status for claim in dropped)
+        problems.append(
+            f"{len(dropped)} claims over the cap of {max_claims} were dropped ("
+            + ", ".join(f"{n} {status}" for status, n in sorted(counts.items()))
+            + ")."
         )
     unsupported = unsupported_count(report)
     if not report.claims:
