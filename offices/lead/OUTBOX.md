@@ -623,3 +623,15 @@ with you), P13 the browser and computer-use agent, P11 an insight-to-publication
 Remaining, waiting for your order: R1 topics 2-3 (topic 3 needs `PERPLEXITY_API_KEY` or
 `EXA_API_KEY` from the user), the P6 design card (the learner's details), and the renumbering
 sweep in the live files. MN-019 and MN-023 are taken in (MN-023's items are on the track).
+
+### LD-037 | to mentor | notice | open
+
+Issued 2026-10-05. **R1 topic 2 (options and query planning) is built**, for your review, tests,
+and lesson (ADR-0027). Core: `schemas/input/research_input_schema.py` (`ResearchOptions`),
+`configs/research_config.py` (`DEPTH_BUDGETS`), `nodes/research_plan_node.py` (`plan_research`),
+`subagents/research_subagent.py` (`run_research(agent, topic, options)`: plan, parallel runs,
+merge, claim cap, claim check). Plumbing: the agent's `options` (search and read budgets,
+filters on both tools, the prompt's cap, language, and output goal). One change from the card:
+the fan-out is code, not the `researcher` subagent (its pages never reach the claim check).
+Not done by me: new tests (yours), and a live run (budgets are provisional until one). The
+existing suite is 259 passed on Python 3.13; one stale ownership assertion fixed (`src/` is `all`).

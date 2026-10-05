@@ -104,6 +104,13 @@ combining what they return, and keeping every fact traceable to where it came fr
    types, language, and the output wanted (a short answer, or a fact pool for a caller such as P6).
    A planner splits a broad topic into sub-questions, and the existing `researcher` subagent
    researches them in parallel. The budgets close MN-023's gaps (no `read_page` budget, no claim cap).
+   **Built 2026-10-05:** `schemas/input/research_input_schema.py` (`ResearchOptions`),
+   `configs/research_config.py` (`DEPTH_BUDGETS`, provisional), `nodes/research_plan_node.py`
+   (`plan_research`), `run_research(agent, topic, options)` (sub-questions run in parallel, one
+   agent run each, merged, capped, then claim-checked). **Changed from this card:** the fan-out is
+   code, not the `researcher` subagent, because a subagent's `read_page` results never reach the
+   parent's messages, so the claim check could support none of its claims. Domain filters apply to
+   `read_page` as well as the search.
 3. **More sources, and a source router.** New tools beside web search: the private corpus through
    P2's retrieval (internal knowledge), academic search (arXiv), and a search API built for research
    (Perplexity, `langchain-perplexity`: `ChatPerplexity`, `PerplexitySearchRetriever`; or Exa,

@@ -2,7 +2,7 @@
 
 import json
 import re
-from typing import Any
+from typing import Any, Literal
 
 import aiohttp
 import requests
@@ -73,11 +73,26 @@ class _TimeoutSearchWrapper(TavilySearchAPIWrapper):
             return json.loads(await response.text())
 
 
-def make_web_search_tool(max_results: int = 5) -> TavilySearch:
-    """Build the web search tool; reads ``TAVILY_API_KEY`` from the environment."""
+def make_web_search_tool(
+    max_results: int = 5,
+    *,
+    include_domains: list[str] | None = None,
+    exclude_domains: list[str] | None = None,
+    time_range: Literal["day", "week", "month", "year"] | None = None,
+    topic: Literal["general", "news"] | None = None,
+) -> TavilySearch:
+    """Build the web search tool; reads ``TAVILY_API_KEY`` from the environment.
+
+    Filters set here win over any the model passes per call (``TavilySearch._run``), so a
+    caller's options can't be widened by the model.
+    """
     return TavilySearch(
         api_wrapper=_TimeoutSearchWrapper(),  # type: ignore[call-arg]
         max_results=max_results,
+        include_domains=include_domains or None,
+        exclude_domains=exclude_domains or None,
+        time_range=time_range,
+        topic=topic,
         name=WEB_SEARCH_TOOL_NAME,
         description=(
             "Search the web for current, factual information about any topic. "

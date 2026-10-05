@@ -29,7 +29,8 @@ Read first in every lead session; rewrite it, don't append. Program status in on
   left `.claude/settings.json` in `b2c8b37`.
 - **ADR-0027 applied** to `CLAUDE.md`, `ownership.md` (code paths Roles `all`), the git policy
   (direct pushes to `main`), and the lead charter.
-- **Waiting for the mentor's order:** R1 topics 2-3, the P6 design card, the v5 renumbering sweep.
+- **R1 topic 2 built** (LD-037), for the mentor's tests and lesson.
+- **Waiting for the mentor's order:** R1 topic 3 (needs `PERPLEXITY_API_KEY` or `EXA_API_KEY`), the P6 design card, the v5 renumbering sweep.
 
 Details in [OUTBOX.md](OUTBOX.md).
 

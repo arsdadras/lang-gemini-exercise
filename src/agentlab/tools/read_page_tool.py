@@ -9,7 +9,9 @@ agent can try another page; the failure still classifies like any external failu
 """
 
 import os
+from collections.abc import Sequence
 from typing import Any
+from urllib.parse import urlparse
 
 import requests
 from langchain_core.messages import AnyMessage, ToolMessage
@@ -61,10 +63,38 @@ def _read_or_report(url: str) -> str:
         raise ToolException(str(error)) from error
 
 
-def make_read_page_tool() -> StructuredTool:
-    """Build the page reading tool; reads ``TAVILY_API_KEY`` from the environment per call."""
+def domain_allowed(
+    url: str, include: Sequence[str] = (), exclude: Sequence[str] = ()
+) -> bool:
+    """Whether ``url``'s host is inside ``include`` (when given) and outside ``exclude``."""
+    host = (urlparse(url).hostname or "").lower()
+
+    def matches(domain: str) -> bool:
+        domain = domain.lower().lstrip(".")
+        return host == domain or host.endswith(f".{domain}")
+
+    if any(matches(d) for d in exclude):
+        return False
+    return not include or any(matches(d) for d in include)
+
+
+def make_read_page_tool(
+    include_domains: Sequence[str] = (), exclude_domains: Sequence[str] = ()
+) -> StructuredTool:
+    """Build the page reading tool; reads ``TAVILY_API_KEY`` from the environment per call.
+
+    The caller's domain filters apply to reading too: a page the search would never return
+    can't be read from a URL the model guessed.
+    """
+
+    def read_allowed(url: str) -> str:
+        if not domain_allowed(url, include_domains, exclude_domains):
+            msg = f"{url} is outside the domains this research may read. Pick another page."
+            raise ToolException(msg)
+        return _read_or_report(url)
+
     return StructuredTool.from_function(
-        _read_or_report,
+        read_allowed,
         name=READ_PAGE_TOOL_NAME,
         description=read_page.__doc__,
         handle_tool_error=True,

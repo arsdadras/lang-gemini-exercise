@@ -28,7 +28,8 @@ src/agentlab/
   models/          tier x provider model registry (llm_model)
   prompts/         prompt text by role (agents, subagents, nodes/, middlewares, template/)
   schemas/         typed contracts by role, not construction method: output/ (Pydantic
-                   response contracts), state/ (graph-state TypedDicts), context/ (runtime
+                   response contracts), input/ (what a caller asks of a specialist, e.g.
+                   ResearchOptions), state/ (graph-state TypedDicts), context/ (runtime
                    context, e.g. UserContext)
   data/            persistence adapters (SQLite checkpoints)
   utils/           shared helpers (sessions, sandbox, streaming, HITL loop, memory backend)

@@ -2,9 +2,24 @@
 
 from agentlab.prompts.template.builder import build_system_prompt
 
+_OUTPUT_GOALS = {
+    "answer": "Make the claims that answer the topic; the summary is the short answer.",
+    "fact_pool": (
+        "A caller will write from your claims: make as many distinct, useful claims as your "
+        "budget allows; the summary only names what the claims cover."
+    ),
+}
 
-def build_web_researcher_prompt() -> str:
-    """Build the P1 web-researcher agent's system prompt."""
+
+def build_web_researcher_prompt(
+    *,
+    searches: int = 3,
+    reads: int = 5,
+    claims: int = 15,
+    language: str = "English",
+    output: str = "answer",
+) -> str:
+    """Build the P1 web-researcher agent's system prompt for one run's budget and options."""
     return build_system_prompt(
         assistant_name="Research Agent",
         role="a focused web research assistant",
@@ -15,15 +30,17 @@ def build_web_researcher_prompt() -> str:
         ),
         tools=(
             "Use `web_search` to find pages for any factual, current, or research question; "
-            "you have a budget of 5 searches per run, so cover distinct sub-questions with "
-            "specific queries. Then use `read_page` on the pages you will cite: a search "
-            "snippet is not enough to cite. If `web_search` is blocked, write the report from "
-            "the pages you have read."
+            f"you have a budget of {searches} searches per run, so use specific queries. Then "
+            f"use `read_page` on the pages you will cite (a budget of {reads} pages): a search "
+            "snippet is not enough to cite. If `web_search` or `read_page` is blocked, write "
+            "the report from the pages you have read."
         ),
         output_format=(
             "Return a topic, a 2-3 sentence summary, the claims, and the sources. Each claim "
             "is one verifiable statement with its evidence: the URL of a page you read with "
-            "`read_page` and the passage of it that supports the claim, copied as it appears."
+            "`read_page` and the passage of it that supports the claim, copied as it appears. "
+            f"At most {claims} claims. {_OUTPUT_GOALS[output]} Write the summary and the "
+            f"claims in {language}; copy passages in the page's own language."
         ),
         constraints=(
             "- Never state a fact you did not read on a page via read_page.\n"

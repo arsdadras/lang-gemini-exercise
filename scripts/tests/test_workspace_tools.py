@@ -175,7 +175,8 @@ def test_setup_ignores_claude_local_on_branches_without_the_gitignore(project):
 
 def test_the_repositorys_ownership_map_parses():
     rules = workspace.ownership_rules(workspace.ROOT)
-    assert workspace.owners("src/agentlab/apps/rag_app.py", rules) == {"lead"}
+    # ADR-0027: both roles write code.
+    assert workspace.owners("src/agentlab/apps/rag_app.py", rules) == {"all"}
     assert workspace.owners("scripts/inbox.py", rules) == {"lead"}
     assert workspace.owners(".claude/skills/lead/SKILL.md", rules) == {"lead"}
     assert workspace.owners("AGENTS.md", rules) == {"lead"}

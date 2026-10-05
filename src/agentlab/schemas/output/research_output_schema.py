@@ -79,6 +79,14 @@ class ClaimVerdict(BaseModel):
     )
 
 
+class ResearchPlan(BaseModel):
+    """The planner's split of a broad topic into sub-questions, each researched on its own."""
+
+    sub_questions: list[str] = Field(
+        description="Distinct, specific sub-questions that together cover the topic; no overlap"
+    )
+
+
 class ResearchFindings(BaseModel):
     """Structured findings returned by the researcher subagent."""
 
