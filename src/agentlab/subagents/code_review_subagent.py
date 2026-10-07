@@ -1,9 +1,7 @@
 """P3's boundary: ``run_code_review`` returns the specialist envelope; the adapter serves coordinators."""
 
-from typing import Any
-
 from deepagents import CompiledSubAgent
-from langchain_core.runnables import Runnable, RunnableLambda
+from langchain_core.runnables import Runnable
 
 from agentlab.configs.paths_config import DELEGATIONS_APP, checkpoint_db_path
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
@@ -14,8 +12,7 @@ from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import (
     new_delegation_config,
     pending_approvals,
-    task_text_from_state,
-    to_subagent_reply,
+    specialist_subagent,
 )
 
 CODE_REVIEW_SPECIALIST = "code_review"
@@ -129,8 +126,9 @@ def make_code_review_subagent(
         )
     )
 
-    def run(state: dict[str, Any]) -> dict[str, Any]:
-        result = run_code_review(review_graph, task_text_from_state(state))
-        return to_subagent_reply(result.to_text(render=render_outcome))
-
-    return {"name": name, "description": description, "runnable": RunnableLambda(run)}
+    return specialist_subagent(
+        name,
+        description,
+        lambda task: run_code_review(review_graph, task),
+        render=render_outcome,
+    )

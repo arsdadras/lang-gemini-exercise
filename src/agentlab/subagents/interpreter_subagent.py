@@ -1,11 +1,10 @@
 """P4's boundary: ``run_interpreter`` returns the specialist envelope; the adapter serves coordinators."""
 
 from pathlib import Path
-from typing import Any
 
 from deepagents import CompiledSubAgent
 from langchain_core.messages import HumanMessage
-from langchain_core.runnables import Runnable, RunnableLambda
+from langchain_core.runnables import Runnable
 
 from agentlab.configs.interpreter_config import DEFAULT_SANDBOX_DIR
 from agentlab.schemas.output.specialist_output_schema import (
@@ -21,8 +20,7 @@ from agentlab.utils.sandbox_util import (
 from agentlab.utils.subagent_util import (
     new_delegation_config,
     pending_approvals,
-    task_text_from_state,
-    to_subagent_reply,
+    specialist_subagent,
 )
 
 INTERPRETER_SPECIALIST = "interpreter"
@@ -97,12 +95,8 @@ def make_interpreter_subagent(
     module never depends on ``agents/``.
     """
 
-    def run(state: dict[str, Any]) -> dict[str, Any]:
-        result = run_interpreter(
-            agent,
-            task_text_from_state(state),
-            sandbox_dir=sandbox_dir,
-        )
-        return to_subagent_reply(result.to_text())
-
-    return {"name": name, "description": description, "runnable": RunnableLambda(run)}
+    return specialist_subagent(
+        name,
+        description,
+        lambda task: run_interpreter(agent, task, sandbox_dir=sandbox_dir),
+    )

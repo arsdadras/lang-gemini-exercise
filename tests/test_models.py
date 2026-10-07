@@ -114,3 +114,31 @@ def test_a_spec_caps_output_tokens_and_its_env_var_overrides_the_host(
 
     assert model.max_tokens == 4096
     assert model.openai_api_base == "http://127.0.0.1:9/v1"
+
+
+def test_each_provider_is_followed_by_its_backup_gateway() -> None:
+    def via_gateway(model: str) -> ModelSpec:
+        return ModelSpec(
+            model, "openai", "KEY", backup=ModelSpec(f"{model}@router", "openai", "KEY")
+        )
+
+    registry = LLMRegistry(
+        {"high": {"a": via_gateway("high-a"), "b": via_gateway("high-b")}},
+        default_tier="high",
+        cascade_order=("high",),
+        test_tier="high",
+        test_mode=lambda: False,
+        model_builder=lambda spec: spec.model,  # type: ignore[arg-type,return-value]
+    )
+
+    assert registry.get("high") == "high-a"
+    assert registry.fallback_models("high") == [
+        "high-a@router",
+        "high-b",
+        "high-b@router",
+    ]
+    assert registry.fallback_models("high", primary="b") == [
+        "high-b@router",
+        "high-a",
+        "high-a@router",
+    ]

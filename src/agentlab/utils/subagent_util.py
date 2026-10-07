@@ -7,11 +7,14 @@ translation contract a subagent adapter exists to own, and stays in ``subagents/
 """
 
 import uuid
+from collections.abc import Callable
 from typing import Any
 
+from deepagents import CompiledSubAgent
 from langchain_core.messages import AIMessage
-from langchain_core.runnables import RunnableConfig
+from langchain_core.runnables import RunnableConfig, RunnableLambda
 
+from agentlab.schemas.output.specialist_output_schema import SpecialistResult
 from agentlab.utils.get_text_util import get_text
 
 
@@ -44,3 +47,30 @@ def pending_approvals(state: dict[str, Any]) -> str:
         ]
         names.extend(str(request.get("name", "an action")) for request in requests)
     return ", ".join(names)
+
+
+def specialist_subagent(
+    name: str,
+    description: str,
+    run: Callable[[str], SpecialistResult[Any]],
+    *,
+    render: Callable[[Any], str] | None = None,
+) -> CompiledSubAgent:
+    """A specialist's ``run_*`` boundary as a ``CompiledSubAgent`` a coordinator delegates to.
+
+    The coordinator's task text goes to ``run``; its envelope comes back as one final-answer
+    message (``SpecialistResult.to_text``, with ``render`` for the output), so the coordinator
+    sees the status, the reason, and the sources too. What differs per specialist (which graph
+    or agent ``run`` closes over, and how its output reads) stays in ``subagents/``.
+    """
+
+    def delegate(state: dict[str, Any]) -> dict[str, Any]:
+        return to_subagent_reply(
+            run(task_text_from_state(state)).to_text(render=render)
+        )
+
+    return {
+        "name": name,
+        "description": description,
+        "runnable": RunnableLambda(delegate),
+    }

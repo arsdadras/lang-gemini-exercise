@@ -45,6 +45,7 @@ set the old one's status to `Superseded by ADR-XXXX`.
 | [0026](0026-the-specialist-contract.md) | The specialist contract: one result envelope, one `run_*` boundary, one failure contract, one eval harness | Accepted |
 | [0027](0027-the-mentor-directs-the-lead-assists.md) | The mentor directs, the lead assists; tests and evals are the mentor's; direct pushes to `main`; MN-024's decisions | Superseded by ADR-0028, except MN-024's decisions |
 | [0028](0028-one-mentor-one-branch.md) | One mentor, one branch: every role folds into the mentor; everything on `main`; `/mentor` runs the whole session | Accepted |
+| [0029](0029-no-general-purpose-subagent-and-backup-gateways.md) | No general-purpose subagent anywhere; every gateway model has an OpenRouter backup; one specialist-subagent adapter | Accepted |
 
 ## Template
 

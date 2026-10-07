@@ -95,11 +95,12 @@ Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
 - **Gemini 3.8 Flash (`strong`), 2026-10-07:** one single run read 2 pages and cited only
   those (Flash-Lite read 0-1); a second single run and the full graph run (310 s) ended on the
   OpenRouter fallback with 402 (no credit). Why Google handed over is not in the output yet.
-- **Test mode works again (2026-10-07):** the learner fixed the Google key; Gemini answers and
-  the research graph ran end to end (22 s). OpenRouter's `gpt-6-luna` is the fallback, but its
-  key's credit covers about 7,800 output tokens per request, and a placeholder
-  `OPENROUTER_API_KEY` in the Windows user environment shadows `.env` until the learner removes
-  it. `OPENROUTER_MAX_OUTPUT_TOKENS` stays 4096 until the credit allows 8192.
+- **Models (2026-10-08, ADR-0029):** GapGPT answers again (the 2026-10-07 failures were an
+  outage); the catalog's IDs were updated and all answered live; every GapGPT model has its
+  OpenRouter twin as backup; test mode is Gemini 3.5 Flash-Lite, then Claude Haiku 5.5 (not on
+  GapGPT yet, so OpenRouter). The OpenRouter key can't afford one 4096-token reservation, so
+  every OpenRouter path (backups, Haiku) answers 402 until the learner tops it up. The learner
+  removed the placeholder `OPENROUTER_API_KEY`; sessions started before that still carry it.
 - **No retry layer on the agents' tools:** convention 11 asks for `ToolRetryMiddleware` on an
   agent's external tools; no agent has one (the research tools turn errors into text the model
   reads). Decide with the engineering track.

@@ -3,10 +3,10 @@
 The draft is checked against the pages the agent read (``subagents.research_subagent.verify_research``)
 before it becomes a ``ResearchReport``.
 
-A plain ``create_agent``, not a deep agent: a deep agent adds filesystem tools and a ``task`` tool
-whose default general-purpose subagent gets this agent's tools without its middleware, so its
-searches would skip the approval gate and the budgets, and the pages it read would never reach
-this run's messages, where the claim check looks for them.
+A plain ``create_agent``, not a deep agent: the researcher needs only ``web_search`` and
+``read_page``, and every tool it has is one its budgets, approval gate, and claim check must
+cover. A deep agent would add filesystem tools it never uses (its general-purpose subagent is
+off everywhere, ``utils/deep_agent_util.py``).
 """
 
 from collections.abc import Sequence

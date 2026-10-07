@@ -33,3 +33,25 @@ def test_to_subagent_reply_wraps_a_single_ai_message() -> None:
     assert to_subagent_reply("final answer") == {
         "messages": [AIMessage(content="final answer")],
     }
+
+
+def test_a_specialist_subagent_runs_the_task_and_replies_with_its_envelope() -> None:
+    from langchain_core.messages import HumanMessage
+
+    from agentlab.schemas.output.specialist_output_schema import SpecialistResult
+    from agentlab.utils.subagent_util import specialist_subagent
+
+    asked: list[str] = []
+
+    def run(task: str) -> SpecialistResult[str]:
+        asked.append(task)
+        return SpecialistResult[str](
+            specialist="echo", status="ok", output=task.upper()
+        )
+
+    spec = specialist_subagent("echo", "Echoes.", run, render=lambda out: f"<{out}>")
+    reply = spec["runnable"].invoke({"messages": [HumanMessage(content="hi")]})
+
+    assert (spec["name"], spec["description"], asked) == ("echo", "Echoes.", ["hi"])
+    text = reply["messages"][-1].content
+    assert text.startswith("[echo] status: ok") and text.endswith("<HI>")

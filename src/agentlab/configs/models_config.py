@@ -1,12 +1,11 @@
 """Chat model catalog: capability tier x provider, ranked by a weighted score.
 
-Five tiers. ``high``/``medium``/``low`` are the three paid provider tiers (OpenAI,
-Anthropic, Gemini), all routed through the GapGPT gateway. ``opensource`` is a
-cheap tier of well-known open-weight models, also through GapGPT. ``free`` is the
-only tier that bypasses GapGPT entirely: it calls Gemini Flash-Lite directly
-against Google's own API, so it costs nothing even with no GapGPT credit, and falls back to
-``gpt-6-luna`` on OpenRouter when Google refuses. OpenRouter also serves the embedding model
-(``EMBEDDING_SPEC``).
+``high``/``medium``/``low`` are the paid provider tiers (OpenAI, Anthropic, Gemini) and
+``opensource`` a cheap tier of open-weight models, all through the GapGPT gateway. Every GapGPT
+model has a ``backup``: the same model on OpenRouter, tried right after it, so a GapGPT outage
+costs one failed call per request, not the request. ``free`` and ``strong`` (opt-in, test mode)
+call Gemini directly on Google's API and fall back to Claude Haiku 5.5. ``local`` runs on Ollama.
+OpenRouter also serves the embedding model (``EMBEDDING_SPEC``).
 
 Each tier's provider order (first = primary, rest = same-tier fallback, per
 ``models.registry_model``) is not hand-picked: it's the descending order of a
@@ -15,13 +14,11 @@ weights chosen per tier in ``TIER_WEIGHTS``. So a tier's primary changes
 automatically if a provider's scored profile changes, instead of silently
 drifting out of sync with a hardcoded order.
 
-What backs each ID is in EV-2026-08-26-gapgpt-model-ids. Only the GPT IDs and
-``claude-sonnet-5`` were checked against GapGPT's ``/v1/models`` with a live call (2026-08-26).
-The two Gemini IDs were checked on Google's own API, not through GapGPT. ``claude-opus-5-5`` and
-``claude-haiku-4-5-20251001`` come from model knowledge, and ``gemini-3.8-pro`` and the
-``opensource`` entries (GLM, Qwen, DeepSeek) are illustrative picks never checked; only
-``glm-5.3`` has answered a live call since (EV-2026-09-25-laya-zero-shot). Verify any new ID with
-a ``/v1/models`` listing and a live call before relying on it in production.
+Every ID here answered a live call on 2026-10-08, on GapGPT and on OpenRouter (Gemini also on
+Google's API). Claude Haiku 5.5 is not on GapGPT yet (``model_not_found`` for every spelling
+tried), so it is OpenRouter-only until GapGPT lists it; then it moves to ``_gapgpt`` with
+OpenRouter as its backup like the rest. Verify any new ID with a ``/v1/models`` listing and a
+live call before relying on it.
 """
 
 from dataclasses import dataclass
@@ -56,6 +53,9 @@ class ModelSpec:
     max_tokens: int | None = None
     """Output cap. OpenRouter reserves credit for the model's whole output window unless one
     is set, so a key with a small balance refuses every request without it."""
+    backup: "ModelSpec | None" = None
+    """The same model through another gateway, tried right after this one: a gateway outage
+    then never takes the model away (``models.registry_model``)."""
 
 
 @dataclass(frozen=True)
@@ -89,12 +89,14 @@ def _gemini(model: str) -> ModelSpec:
     )
 
 
-def _gapgpt(model: str) -> ModelSpec:
+def _gapgpt(model: str, openrouter: str) -> ModelSpec:
+    """A model on GapGPT, backed by the same model on OpenRouter (``openrouter`` is its ID there)."""
     return ModelSpec(
         model=model,
         model_provider="openai",
         api_key_env="GAPGPT_API_KEY",
         base_url_env="GAPGPT_BASE_URL",
+        backup=_openrouter(openrouter),
     )
 
 
@@ -174,55 +176,59 @@ def _ranked(tier: str, specs: dict[str, ModelSpec]) -> dict[str, ModelSpec]:
     return {name: specs[name] for name in order}
 
 
+# Claude Haiku 5.5: OpenRouter-only until GapGPT serves it (see the module docstring).
+HAIKU = _openrouter("anthropic/claude-haiku-5.5")
+
 MODEL_TIERS: dict[str, dict[str, ModelSpec]] = {
     "high": _ranked(
         "high",
         {
-            "openai": _gapgpt("gpt-5.6-sol"),
-            "anthropic": _gapgpt("claude-opus-5-5"),
-            "gemini": _gapgpt("gemini-3.8-pro"),
+            "openai": _gapgpt("gpt-5.6-sol", "openai/gpt-5.6-sol"),
+            "anthropic": _gapgpt("claude-opus-5-5", "anthropic/claude-opus-5.5"),
+            "gemini": _gapgpt(
+                "gemini-3.1-pro-preview", "google/gemini-3.1-pro-preview"
+            ),
         },
     ),
     "medium": _ranked(
         "medium",
         {
-            "gemini": _gapgpt("gemini-3.8-flash"),
-            "openai": _gapgpt("gpt-5.6-terra"),
-            "anthropic": _gapgpt("claude-sonnet-5"),
+            "gemini": _gapgpt("gemini-3.8-flash", "google/gemini-3.8-flash"),
+            "openai": _gapgpt("gpt-5.6-terra", "openai/gpt-5.6-terra"),
+            "anthropic": _gapgpt("claude-sonnet-5-5", "anthropic/claude-sonnet-5.5"),
         },
     ),
     "low": _ranked(
         "low",
         {
-            "gemini": _gapgpt("gemini-3.5-flash-lite"),
-            "openai": _gapgpt("gpt-5.6-luna"),
-            "anthropic": _gapgpt("claude-haiku-4-5-20251001"),
+            "gemini": _gapgpt("gemini-3.5-flash-lite", "google/gemini-3.5-flash-lite"),
+            "openai": _gapgpt("gpt-5.6-luna", "openai/gpt-5.6-luna"),
+            "anthropic": HAIKU,
         },
     ),
     "opensource": _ranked(
         "opensource",
         {
-            "glm": _gapgpt("glm-5.3"),
-            "qwen": _gapgpt("qwen3-235b-a22b-instruct"),
-            "deepseek": _gapgpt("deepseek-v4"),
+            "glm": _gapgpt("glm-5.3", "z-ai/glm-5.3"),
+            "qwen": _gapgpt(
+                "qwen3-235b-a22b-instruct-2507", "qwen/qwen3-235b-a22b-2507"
+            ),
+            "deepseek": _gapgpt("deepseek-v4-pro", "deepseek/deepseek-v4-pro"),
         },
     ),
-    # Opt-in only: never the default tier and never part of a paid tier's fallback
-    # or cascade (see TIER_CASCADE_ORDER). Like "strong", it bypasses GapGPT. The order is the
-    # user's (2026-10-07), not ``_ranked``'s: Google's no-cost quota first, then OpenRouter's
-    # ``gpt-6-luna`` (paid, $0.10/$0.50 per 1M tokens, tools and structured output; listed on
-    # OpenRouter's /api/v1/models on 2026-10-07) when Google refuses or is down.
+    # Opt-in only: never the default tier and never part of a paid tier's fallback or cascade
+    # (see TIER_CASCADE_ORDER). The order is the user's, not ``_ranked``'s: Google's no-cost
+    # quota first, then Claude Haiku 5.5 when Google refuses or is down (2026-10-08).
     "free": {
         "gemini": _gemini("gemini-3.5-flash-lite"),
-        "openrouter": _openrouter("openai/gpt-6-luna"),
+        "anthropic": HAIKU,
     },
     # Opt-in only, same as "free": the test-mode step up when a free-tier result is weak
-    # because of the model (the user's rule, 2026-10-07). Gemini 3.8 Flash on Google's API
-    # (listed by its /v1beta/models and answered a live call on 2026-10-07), with the same
-    # OpenRouter fallback as "free".
+    # because of the model (the user's rule, 2026-10-07). Gemini 3.8 Flash on Google's API,
+    # then Claude Haiku 5.5.
     "strong": {
         "gemini": _gemini("gemini-3.8-flash"),
-        "openrouter": _openrouter("openai/gpt-6-luna"),
+        "anthropic": HAIKU,
     },
     # Opt-in only, same as "free". $0 and no rate limit, but needs `ollama serve` running
     # with the model already pulled locally; nothing falls back to it automatically.
@@ -260,10 +266,8 @@ TIER_CASCADE_ORDER: tuple[str, ...] = ("high", "medium", "low")
 TEST_MODE_ENV = "LLM_TEST_MODE"
 
 # Test mode routes every request to the ``free`` tier: Gemini 3.5 Flash-Lite called directly on
-# Google's own API with ``GOOGLE_API_KEY`` (the user's decision, 2026-10-05), with OpenRouter's
-# ``gpt-6-luna`` as its fallback (2026-10-07). It costs nothing; its quota is rate-limited, which test-mode loops live with. A
-# paid or gateway tier is an explicit opt-in (``LLM_TEST_PROFILE=reliable``). It was
-# the computed best of free/opensource/low until then, and the computation went away with it.
+# Google's own API with ``GOOGLE_API_KEY`` (the user's decision, 2026-10-05), with Claude Haiku
+# 5.5 as its fallback (2026-10-08). ``LLM_TEST_PROFILE=strong`` steps up to Gemini 3.8 Flash.
 TEST_TIER = "free"
 
 # Test-mode profiles: with LLM_TEST_MODE=true, ``LLM_TEST_PROFILE=<name>`` picks which cheap
@@ -277,8 +281,7 @@ TEST_MODE_PROFILE_ENV = "LLM_TEST_PROFILE"
 DEFAULT_TEST_PROFILE = "default"
 TEST_MODE_PROFILES: dict[str, str] = {
     "default": TEST_TIER,  # Gemini 3.5 Flash-Lite directly on Google's API; see TEST_TIER
-    # A stronger model for when the free tier's result is weak because of the model; the paid
-    # gateway tiers (GapGPT) are unreachable since 2026-10-07.
+    # A stronger model for when the free tier's result is weak because of the model.
     "strong": "strong",
     "local": "local",  # $0, no rate limit, needs `ollama serve` with the model already pulled
 }

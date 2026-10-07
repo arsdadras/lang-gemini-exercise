@@ -173,23 +173,35 @@ class LLMRegistry:
     ) -> list[BaseChatModel]:
         """Return fallbacks for a model built with ``get(tier, primary)``.
 
-        Same-tier providers other than ``primary`` come first. With ``cascade=True``
+        The primary's backup (the same model through another gateway) comes first, then each
+        other same-tier provider followed by its backup. With ``cascade=True``
         every provider of each lower tier follows, in ``TIER_CASCADE_ORDER``.
         """
         resolved = self.resolve_tier(tier)
         primary_name = self.resolve_provider(resolved, primary)
-        models = [
-            self.get(resolved, name)
-            for name in self._tiers[resolved]
-            if name != primary_name
-        ]
+        models = self._backups(resolved, primary_name)
+        for name in self._tiers[resolved]:
+            if name != primary_name:
+                models += [self.get(resolved, name), *self._backups(resolved, name)]
         if cascade and not self._test_mode() and resolved in self._cascade_order:
             start = self._cascade_order.index(resolved) + 1
             for lower_tier in self._cascade_order[start:]:
-                models.extend(
-                    self.get(lower_tier, name) for name in self._tiers[lower_tier]
-                )
+                for name in self._tiers[lower_tier]:
+                    models += [
+                        self.get(lower_tier, name),
+                        *self._backups(lower_tier, name),
+                    ]
         return models
+
+    def _backups(self, tier: str, name: str) -> list[BaseChatModel]:
+        """The provider's backup (the same model through another gateway), if it has one."""
+        backup = self._tiers[tier][name].backup
+        if backup is None:
+            return []
+        key = (tier, f"{name}:backup")
+        if key not in self._cache:
+            self._cache[key] = self._build(backup)
+        return [self._cache[key]]
 
     def chain(
         self,

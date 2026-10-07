@@ -1,9 +1,7 @@
 """P2's boundary: ``run_rag`` returns the specialist envelope; the adapter serves DeepAgents coordinators."""
 
-from typing import Any
-
 from deepagents import CompiledSubAgent
-from langchain_core.runnables import Runnable, RunnableLambda
+from langchain_core.runnables import Runnable
 
 from agentlab.graphs.rag_graph import build_rag_graph
 from agentlab.schemas.output.specialist_output_schema import (
@@ -13,8 +11,7 @@ from agentlab.schemas.output.specialist_output_schema import (
 from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import (
     new_delegation_config,
-    task_text_from_state,
-    to_subagent_reply,
+    specialist_subagent,
 )
 
 RAG_SPECIALIST = "rag"
@@ -82,13 +79,4 @@ def make_rag_subagent(
     """
     rag_graph = graph if graph is not None else build_rag_graph()
 
-    def run(state: dict[str, Any]) -> dict[str, Any]:
-        return to_subagent_reply(
-            run_rag(rag_graph, task_text_from_state(state)).to_text()
-        )
-
-    return {
-        "name": name,
-        "description": description,
-        "runnable": RunnableLambda(run),
-    }
+    return specialist_subagent(name, description, lambda task: run_rag(rag_graph, task))
