@@ -92,6 +92,9 @@ Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
   marks those claims unsupported (a full graph run: 13 of 15). The prompt already forbids it.
   Next build: a gate that hands a draft citing unread pages back to the model (read it or drop
   the claim) before it can finish, the "send back, don't drop" rule the learner set.
+- **Gemini 3.8 Flash (`strong`), 2026-10-07:** one single run read 2 pages and cited only
+  those (Flash-Lite read 0-1); a second single run and the full graph run (310 s) ended on the
+  OpenRouter fallback with 402 (no credit). Why Google handed over is not in the output yet.
 - **Test mode works again (2026-10-07):** the learner fixed the Google key; Gemini answers and
   the research graph ran end to end (22 s). OpenRouter's `gpt-6-luna` is the fallback, but its
   key's credit covers about 7,800 output tokens per request, and a placeholder
