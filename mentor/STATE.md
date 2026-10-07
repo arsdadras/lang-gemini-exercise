@@ -82,6 +82,16 @@ Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
   take three timeouts (3 x 120 s) per provider before the fallback switches. Pick `max_retries`.
 - **`_TimeoutSearchWrapper`** (`tools/web_search_tool.py`) works around langchain-tavily setting
   no timeout; remove it once the library takes one (`tests/test_timeouts.py` shows what to check).
+- **Google test tier is down (2026-10-07):** `GOOGLE_API_KEY` answers 401 "The bound service
+  account is deleted or disabled", so default test mode fails; live runs use
+  `LLM_TEST_PROFILE=reliable` until the learner replaces the key.
+- **The `low` tier cites pages it never read:** in the 2026-10-07 live run of the research graph,
+  two of three runs cited only search results and two garbled URLs, so the claim check rightly
+  marked their claims unsupported (10 of 10). Gemini 3.5 Flash-Lite supported most claims on
+  2026-10-05. Prompt or tier fix in R1 topic 4's live runs.
+- **No retry layer on the agents' tools:** convention 11 asks for `ToolRetryMiddleware` on an
+  agent's external tools; no agent has one (the research tools turn errors into text the model
+  reads). Decide with the engineering track.
 - **The claim check's cost has no hard cap:** it now checks every drafted claim before the cap,
   and the number of drafted claims is bounded only by the agent prompt's "at most N".
 

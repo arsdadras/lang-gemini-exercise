@@ -9,8 +9,10 @@ from langchain_core.messages import HumanMessage, ToolMessage
 from langchain_core.runnables import RunnableLambda
 
 from agentlab.configs.research_config import DEPTH_BUDGETS
+from agentlab.graphs.research_graph import build_research_graph
 from agentlab.nodes import claim_check_node
-from agentlab.nodes.research_plan_node import plan_research
+from agentlab.nodes.claim_check_node import make_check_node
+from agentlab.nodes.research_node import make_plan_node, plan_research
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.schemas.output.research_output_schema import (
     DraftClaim,
@@ -295,3 +297,56 @@ def test_a_planner_outage_fails_the_envelope() -> None:
     )
 
     assert result.status == "failed" and result.output is None
+
+
+# --- the research graph ------------------------------------------------------------------
+
+
+def test_the_graph_is_plan_then_research_then_check() -> None:
+    graph = build_research_graph(ByQuestion({}), plan_chain=planner("Q1"))
+
+    assert set(graph.get_graph().nodes) == {
+        "__start__",
+        "plan",
+        "research",
+        "check",
+        "__end__",
+    }
+
+
+def test_the_check_runs_once_after_every_parallel_run() -> None:
+    pages_asked: list[str] = []
+
+    def count_pages(page: str, questions: dict[str, Any], **_: Any) -> Any:
+        pages_asked.append(page)
+        return supports_everything(page, questions)
+
+    agent = ByQuestion(
+        {
+            "Q1": finished("https://a.org/1", "a1"),
+            "Q2": finished("https://b.org/2", "b1"),
+            "Q3": finished("https://c.org/3", "c1"),
+        }
+    )
+    graph = build_research_graph(
+        agent, plan_chain=planner("Q1", "Q2", "Q3"), decide=count_pages
+    )
+
+    state = graph.invoke({"topic": "topic", "options": STANDARD})
+
+    assert sorted(agent.asked) == ["Q1", "Q2", "Q3"]
+    assert len(pages_asked) == 3  # one request per page, in one check
+    assert sorted(c.text for c in state["report"].claims) == ["a1", "b1", "c1"]
+
+
+def test_without_options_the_plan_node_researches_the_topic_itself() -> None:
+    plan = make_plan_node(RunnableLambda(never_called))
+
+    assert plan({"topic": "topic", "options": None}) == {
+        "questions": ["topic"],
+        "cut": [],
+    }
+
+
+def test_the_check_node_writes_nothing_when_no_run_produced_a_draft() -> None:
+    assert make_check_node()({"topic": "topic", "options": STANDARD}) == {}

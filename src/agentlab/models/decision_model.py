@@ -11,8 +11,9 @@ import ``decision_model`` and never the client library behind it.
   probabilities, latency, and cost from input tokens.
 
 There is no retry here and no fallback. A decider's failure is an external failure like any
-other: the calling node retries it once (``failure_util.TRANSIENT_RETRY``), and a cascade sends
-a decider error down the LLM path (``decision-models.md``, "In this repo").
+other, and the caller decides what it costs: a node whose only external call is the decider
+retries it once (``failure_util.TRANSIENT_RETRY``); a cascade, such as the claim check, sends
+the error down the LLM path instead (``decision-models.md``, "In this repo").
 """
 
 import hashlib

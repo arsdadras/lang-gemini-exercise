@@ -104,10 +104,12 @@ combining what they return, and keeping every fact traceable to where it came fr
    A planner splits a broad topic into sub-questions, and the existing `researcher` subagent
    researches them in parallel. The budgets close MN-023's gaps (no `read_page` budget, no claim cap).
    **Built 2026-10-05:** `schemas/input/research_input_schema.py` (`ResearchOptions`),
-   `configs/research_config.py` (`DEPTH_BUDGETS`, provisional), `nodes/research_plan_node.py`
-   (`plan_research`), `run_research(agent, topic, options)` (sub-questions run in parallel, one
-   agent run each, merged, capped, then claim-checked). **Changed from this card:** the fan-out is
-   code, not the `researcher` subagent, because a subagent's `read_page` results never reach the
+   `configs/research_config.py` (`DEPTH_BUDGETS`, provisional), and since 2026-10-07 a real
+   LangGraph graph, `graphs/research_graph.py`: `plan` -> `research` once per sub-question, in
+   parallel through `Send` -> `check` (merge, claim check, cap by evidence), with its nodes in
+   `nodes/research_node.py` and `nodes/claim_check_node.py` and its state in
+   `schemas/state/research_state.py`; `run_research(agent, topic, options)` invokes it and builds
+   the envelope. **Changed from this card:** the fan-out is the graph's, not the `researcher` subagent, because a subagent's `read_page` results never reach the
    parent's messages, so the claim check could support none of its claims. Domain filters apply to
    `read_page` as well as the search.
 3. **More sources, and a source router.** New tools beside web search: the private corpus through

@@ -10,15 +10,20 @@ page read, the page doesn't address it, or the check wasn't sure.
 ``confidence`` is arithmetic over the table, never a model's guess. The thresholds are provisional
 until the labeled set (``evals/datasets/claim_check.json``) has the 200 cases a security-grade
 fit needs (``decision-models.md``).
+
+``make_check_node`` is the research graph's last node: it merges the sub-question drafts, checks
+them, and caps the report by evidence, so a supported claim never gives way to an unsupported one.
 """
 
+from collections import Counter
 from collections.abc import Callable
+from itertools import zip_longest
 from typing import Literal
 
 from langchain_core.runnables import Runnable, RunnableLambda
 from langchain_typesafe import Choice, ClassifierResponse, Question
 
-from agentlab.configs.research_config import MAX_PAGE_CHARS
+from agentlab.configs.research_config import DEPTH_BUDGETS, MAX_PAGE_CHARS
 from agentlab.models import decision_model, llm_model
 from agentlab.prompts.nodes.claim_check_prompt import CLAIM_VERDICT_PROMPT
 from agentlab.schemas.output.research_output_schema import (
@@ -29,6 +34,7 @@ from agentlab.schemas.output.research_output_schema import (
     ResearchDraft,
     ResearchReport,
 )
+from agentlab.schemas.state.research_state import ResearchState
 from agentlab.utils.failure_util import failure_kind
 
 QUESTION_SET = "claim_check@1"
@@ -193,3 +199,81 @@ def check_claims(
 def unsupported_count(report: ResearchReport) -> int:
     """How many claims of ``report`` no cited page supports (unsupported or contradicted)."""
     return sum(claim.status != "supported" for claim in report.claims)
+
+
+def _merge(topic: str, drafts: list[ResearchDraft]) -> ResearchDraft:
+    """One draft from the sub-question drafts: claims interleaved, sources deduped.
+
+    Claims are taken round-robin across sub-questions, so when the cap later drops claims of
+    equal evidence, one sub-question that returned many can't crowd the others out.
+    """
+    claims = [
+        claim
+        for round_ in zip_longest(*(draft.claims for draft in drafts))
+        for claim in round_
+        if claim is not None
+    ]
+    sources = {source.url: source for draft in drafts for source in draft.sources}
+    return ResearchDraft(
+        topic=topic,
+        summary=" ".join(draft.summary for draft in drafts),
+        claims=claims,
+        sources=list(sources.values()),
+    )
+
+
+# Which claims the cap gives up last: evidence first, then the merge's round-robin order.
+_CAP_ORDER = {"supported": 0, "unsupported": 1, "contradicted": 2}
+
+
+def _cap(report: ResearchReport, max_claims: int) -> tuple[ResearchReport, list[Claim]]:
+    """The report cut to ``max_claims`` claims, supported ones kept first, and the dropped ones.
+
+    The cap runs after the claim check so it drops by evidence, not by position. Confidence is
+    derived again from what is kept, so it still describes the table the caller reads; the
+    dropped claims go into the problems.
+    """
+    ranked = sorted(report.claims, key=lambda claim: _CAP_ORDER[claim.status])
+    kept_ids = {id(claim) for claim in ranked[:max_claims]}
+    kept = [claim for claim in report.claims if id(claim) in kept_ids]
+    capped = report.model_copy(
+        update={"claims": kept, "confidence": derive_confidence(kept)}
+    )
+    return capped, ranked[max_claims:]
+
+
+def make_check_node(
+    *,
+    decide: Decide | None = None,
+    verdict_chain: Runnable | None = None,
+) -> Callable[[ResearchState], dict]:
+    """Build the node that merges the drafts, checks every claim, and applies the claim cap.
+
+    With no draft (every run failed or waits for approval) it writes nothing: there is no report.
+    The cap comes from the options' depth; without options there is none.
+    """
+
+    def check(state: ResearchState) -> dict:
+        drafts = state.get("drafts", [])
+        if not drafts:
+            return {}
+        report = check_claims(
+            _merge(state["topic"], drafts),
+            state.get("pages", {}),
+            decide=decide,
+            verdict_chain=verdict_chain,
+        )
+        problems: list[str] = []
+        options = state.get("options")
+        max_claims = None if options is None else DEPTH_BUDGETS[options.depth].claims
+        if max_claims is not None and len(report.claims) > max_claims:
+            report, dropped = _cap(report, max_claims)
+            counts = Counter(claim.status for claim in dropped)
+            problems.append(
+                f"{len(dropped)} claims over the cap of {max_claims} were dropped ("
+                + ", ".join(f"{n} {status}" for status, n in sorted(counts.items()))
+                + ")."
+            )
+        return {"report": report, "problems": problems}
+
+    return check

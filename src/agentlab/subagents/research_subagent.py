@@ -1,25 +1,15 @@
 """P1's boundary: ``run_research`` returns the specialist envelope; the subagent spec serves coordinators."""
 
-from collections import Counter
-from concurrent.futures import ThreadPoolExecutor
-from itertools import zip_longest
 from typing import Any
 
 from deepagents import SubAgent
-from langchain_core.messages import HumanMessage
 from langchain_core.runnables import Runnable
 
-from agentlab.configs.research_config import DEPTH_BUDGETS
-from agentlab.nodes.claim_check_node import (
-    check_claims,
-    derive_confidence,
-    unsupported_count,
-)
-from agentlab.nodes.research_plan_node import plan_research
+from agentlab.graphs.research_graph import build_research_graph
+from agentlab.nodes.claim_check_node import check_claims, unsupported_count
 from agentlab.prompts.subagents_prompt import RESEARCHER_SUBAGENT_PROMPT
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.schemas.output.research_output_schema import (
-    Claim,
     ResearchDraft,
     ResearchFindings,
     ResearchReport,
@@ -31,7 +21,6 @@ from agentlab.schemas.output.specialist_output_schema import (
 from agentlab.tools.read_page_tool import pages_read
 from agentlab.tools.web_search_tool import make_web_search_tool
 from agentlab.utils.failure_util import failure_kind, failure_reason
-from agentlab.utils.subagent_util import new_delegation_config, pending_approvals
 
 RESEARCH_SPECIALIST = "research"
 RESEARCHER_SUBAGENT_NAME = "researcher"
@@ -49,60 +38,6 @@ def verify_research(state: dict[str, Any]) -> ResearchReport | None:
     return check_claims(draft, pages_read(state.get("messages", [])))
 
 
-def _research_one(agent: Runnable, question: str) -> dict[str, Any] | Exception:
-    """One run of the agent on ``question``: its final state, or the external failure it hit."""
-    try:
-        return agent.invoke(
-            {"messages": [HumanMessage(content=question)]},
-            config=new_delegation_config(),
-        )
-    except Exception as error:
-        if failure_kind(error) is None:
-            raise
-        return error
-
-
-def _merge(topic: str, drafts: list[ResearchDraft]) -> ResearchDraft:
-    """One draft from the sub-question drafts: claims interleaved, sources deduped.
-
-    Claims are taken round-robin across sub-questions, so when the cap later drops claims of
-    equal evidence, one sub-question that returned many can't crowd the others out.
-    """
-    claims = [
-        claim
-        for round_ in zip_longest(*(draft.claims for draft in drafts))
-        for claim in round_
-        if claim is not None
-    ]
-    sources = {source.url: source for draft in drafts for source in draft.sources}
-    return ResearchDraft(
-        topic=topic,
-        summary=" ".join(draft.summary for draft in drafts),
-        claims=claims,
-        sources=list(sources.values()),
-    )
-
-
-# Which claims the cap gives up last: evidence first, then the merge's round-robin order.
-_CAP_ORDER = {"supported": 0, "unsupported": 1, "contradicted": 2}
-
-
-def _cap(report: ResearchReport, max_claims: int) -> tuple[ResearchReport, list[Claim]]:
-    """The report cut to ``max_claims`` claims, supported ones kept first, and the dropped ones.
-
-    The cap runs after the claim check so it drops by evidence, not by position: a supported
-    claim never gives way to an unsupported one. Confidence is derived again from what is kept,
-    so it still describes the table the caller reads; the dropped claims go into the reason.
-    """
-    ranked = sorted(report.claims, key=lambda claim: _CAP_ORDER[claim.status])
-    kept_ids = {id(claim) for claim in ranked[:max_claims]}
-    kept = [claim for claim in report.claims if id(claim) in kept_ids]
-    capped = report.model_copy(
-        update={"claims": kept, "confidence": derive_confidence(kept)}
-    )
-    return capped, ranked[max_claims:]
-
-
 def run_research(
     agent: Runnable,
     topic: str,
@@ -110,20 +45,18 @@ def run_research(
     *,
     plan_chain: Runnable | None = None,
 ) -> SpecialistResult[ResearchReport]:
-    """Research ``topic`` with an injected P1 agent on fresh threads.
+    """Research ``topic`` through the research graph and return the specialist envelope.
 
     Build the agent with the same ``options`` (``make_web_researcher_agent(options=...)``): the
-    agent holds the per-run search and read budgets, and this boundary holds the plan and the
-    claim cap. Without ``options`` it is one run on the topic, no plan and no cap. With them, the
+    agent holds the per-run search and read budgets, and the graph holds the plan and the claim
+    cap. Without ``options`` it is one run on the topic, no plan and no cap. With them, the
     planner splits the topic into sub-questions (R1 topic 2), researched in parallel, each on its
-    own run, so every claim is checked against the pages its own run read.
+    own run, so every claim is checked against the pages its own run read
+    (``graphs/research_graph.py``).
     """
+    graph = build_research_graph(agent, plan_chain=plan_chain)
     try:
-        questions, cut = (
-            ([topic], [])
-            if options is None
-            else plan_research(topic, options, plan_chain=plan_chain)
-        )
+        state = graph.invoke({"topic": topic, "options": options})
     except Exception as error:
         if failure_kind(error) is None:
             raise
@@ -132,59 +65,14 @@ def run_research(
             status="failed",
             reason=failure_reason(error),
         )
-    if len(questions) == 1:
-        outcomes = [_research_one(agent, questions[0])]
-    else:
-        with ThreadPoolExecutor(max_workers=len(questions)) as pool:
-            outcomes = list(pool.map(lambda q: _research_one(agent, q), questions))
-
-    drafts: list[ResearchDraft] = []
-    pages: dict[str, str] = {}
-    problems: list[str] = []
-    if cut:
-        problems.append(
-            f"{len(cut)} sub-questions over the cap of {len(questions)} were not "
-            "researched: " + "; ".join(f"'{question}'" for question in cut) + "."
-        )
-    for question, outcome in zip(questions, outcomes, strict=True):
-        label = f"'{question}': " if len(questions) > 1 else ""
-        if isinstance(outcome, Exception):
-            problems.append(label + failure_reason(outcome))
-        elif waiting := pending_approvals(outcome):
-            problems.append(
-                f"{label}Stopped before finishing: waiting for approval of {waiting}."
-            )
-        elif (draft := outcome.get("structured_response")) is None:
-            problems.append(label + "No report was produced.")
-        else:
-            drafts.append(draft)
-            pages.update(pages_read(outcome.get("messages", [])))
-    if not drafts:
+    problems = list(state.get("problems", []))
+    report: ResearchReport | None = state.get("report")
+    if report is None:
         waiting = any("waiting for approval" in problem for problem in problems)
         return SpecialistResult[ResearchReport](
             specialist=RESEARCH_SPECIALIST,
             status="partial" if waiting else "failed",
             reason=" ".join(problems),
-        )
-
-    try:
-        report = check_claims(_merge(topic, drafts), pages)
-    except Exception as error:
-        if failure_kind(error) is None:
-            raise
-        return SpecialistResult[ResearchReport](
-            specialist=RESEARCH_SPECIALIST,
-            status="failed",
-            reason=failure_reason(error),
-        )
-    max_claims = None if options is None else DEPTH_BUDGETS[options.depth].claims
-    if max_claims is not None and len(report.claims) > max_claims:
-        report, dropped = _cap(report, max_claims)
-        counts = Counter(claim.status for claim in dropped)
-        problems.append(
-            f"{len(dropped)} claims over the cap of {max_claims} were dropped ("
-            + ", ".join(f"{n} {status}" for status, n in sorted(counts.items()))
-            + ")."
         )
     unsupported = unsupported_count(report)
     if not report.claims:
