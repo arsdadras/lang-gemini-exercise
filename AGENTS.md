@@ -165,6 +165,9 @@ Policy: [ADR-0004](docs/adr/0004-testing-and-evaluation-policy.md).
 - `HumanInTheLoopMiddleware` matches exact tool names; an `InterruptOnConfig` `when` predicate
   narrows it per call (by args). Its `action_requests` entries are flat:
   `{name, args, description}`.
+- DeepAgents adds a `general-purpose` subagent to every deep agent; it gets the parent's tools
+  but none of its middleware, so it skips approval gates, budgets, and guards. Build deep agents
+  only through `utils/deep_agent_util.create_deep_agent`, which turns it off.
 - `LocalShellBackend(virtual_mode=True)` confines the file tools, not shell commands. On Windows
   the shell needs `PATH` and `SYSTEMROOT` in its environment.
 - A checkpointer snapshots graph state, not files on disk: time travel doesn't rewind the sandbox.

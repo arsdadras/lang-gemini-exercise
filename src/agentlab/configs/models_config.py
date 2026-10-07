@@ -208,12 +208,20 @@ MODEL_TIERS: dict[str, dict[str, ModelSpec]] = {
         },
     ),
     # Opt-in only: never the default tier and never part of a paid tier's fallback
-    # or cascade (see TIER_CASCADE_ORDER). The one tier that bypasses GapGPT. The order is the
+    # or cascade (see TIER_CASCADE_ORDER). Like "strong", it bypasses GapGPT. The order is the
     # user's (2026-10-07), not ``_ranked``'s: Google's no-cost quota first, then OpenRouter's
     # ``gpt-6-luna`` (paid, $0.10/$0.50 per 1M tokens, tools and structured output; listed on
     # OpenRouter's /api/v1/models on 2026-10-07) when Google refuses or is down.
     "free": {
         "gemini": _gemini("gemini-3.5-flash-lite"),
+        "openrouter": _openrouter("openai/gpt-6-luna"),
+    },
+    # Opt-in only, same as "free": the test-mode step up when a free-tier result is weak
+    # because of the model (the user's rule, 2026-10-07). Gemini 3.8 Flash on Google's API
+    # (listed by its /v1beta/models and answered a live call on 2026-10-07), with the same
+    # OpenRouter fallback as "free".
+    "strong": {
+        "gemini": _gemini("gemini-3.8-flash"),
         "openrouter": _openrouter("openai/gpt-6-luna"),
     },
     # Opt-in only, same as "free". $0 and no rate limit, but needs `ollama serve` running
@@ -269,6 +277,8 @@ TEST_MODE_PROFILE_ENV = "LLM_TEST_PROFILE"
 DEFAULT_TEST_PROFILE = "default"
 TEST_MODE_PROFILES: dict[str, str] = {
     "default": TEST_TIER,  # Gemini 3.5 Flash-Lite directly on Google's API; see TEST_TIER
-    "reliable": "low",  # a real paid provider tier, for when a cheap model mishandles a task
+    # A stronger model for when the free tier's result is weak because of the model; the paid
+    # gateway tiers (GapGPT) are unreachable since 2026-10-07.
+    "strong": "strong",
     "local": "local",  # $0, no rate limit, needs `ollama serve` with the model already pulled
 }

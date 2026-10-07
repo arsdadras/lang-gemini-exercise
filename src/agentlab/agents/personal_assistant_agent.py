@@ -1,6 +1,5 @@
 """P5 memory-rich personal assistant: per-user long-term memory, procedural skills, web search."""
 
-from deepagents import create_deep_agent
 from deepagents.middleware.filesystem import FilesystemPermission
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
@@ -21,6 +20,7 @@ from agentlab.models import llm_model
 from agentlab.prompts.agents_prompt import build_personal_assistant_prompt
 from agentlab.schemas.context.user_context_schema import UserContext
 from agentlab.tools.web_search_tool import make_web_search_tool
+from agentlab.utils.deep_agent_util import create_deep_agent
 from agentlab.utils.memory_backend_util import make_memory_composite_backend
 
 # The assistant reads memory and skills but changes neither. Memory has one writer, the

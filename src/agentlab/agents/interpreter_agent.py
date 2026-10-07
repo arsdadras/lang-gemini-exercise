@@ -2,7 +2,6 @@
 
 from collections.abc import Sequence
 
-from deepagents import create_deep_agent
 from deepagents.backends import LocalShellBackend
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph.state import CompiledStateGraph
@@ -15,6 +14,7 @@ from agentlab.middlewares.fallback_middleware import make_model_fallback
 from agentlab.models import llm_model
 from agentlab.prompts.agents_prompt import build_interpreter_agent_prompt
 from agentlab.prompts.subagents_prompt import build_interpreter_worker_prompt
+from agentlab.utils.deep_agent_util import create_deep_agent
 from agentlab.utils.sandbox_util import make_sandbox_backend
 
 

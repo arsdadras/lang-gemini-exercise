@@ -5,7 +5,7 @@ read-only filesystem tools. The packaged ``retrieval-strategy`` skill describes
 when to pick which.
 """
 
-from deepagents import CompiledSubAgent, create_deep_agent
+from deepagents import CompiledSubAgent
 from deepagents.backends import FilesystemBackend
 from deepagents.middleware.filesystem import FilesystemPermission
 from langgraph.checkpoint.base import BaseCheckpointSaver
@@ -21,6 +21,7 @@ from agentlab.middlewares.fallback_middleware import make_model_fallback
 from agentlab.models import llm_model
 from agentlab.prompts.agents_prompt import build_repo_insight_prompt
 from agentlab.subagents.rag_subagent import make_rag_subagent
+from agentlab.utils.deep_agent_util import create_deep_agent
 
 # The backend's virtual root is the repository, so skill paths are repo-relative.
 REPO_INSIGHT_SKILLS_PATH = (

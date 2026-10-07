@@ -2,7 +2,7 @@
 
 from collections.abc import Sequence
 
-from deepagents import CompiledSubAgent, SubAgent, create_deep_agent
+from deepagents import CompiledSubAgent, SubAgent
 from langchain.agents.middleware import TodoListMiddleware
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph.state import CompiledStateGraph
@@ -16,6 +16,7 @@ from agentlab.prompts.agents_prompt import build_coding_coordinator_prompt
 from agentlab.subagents.code_review_subagent import make_code_review_subagent
 from agentlab.subagents.interpreter_subagent import make_interpreter_subagent
 from agentlab.subagents.research_subagent import make_researcher_subagent
+from agentlab.utils.deep_agent_util import create_deep_agent
 
 
 def make_coding_coordinator_agent(

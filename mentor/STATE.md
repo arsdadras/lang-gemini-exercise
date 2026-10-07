@@ -60,6 +60,9 @@ Read first every session; rewrite it, don't append. The charter is [README.md](R
   choice, in `alireza/`.
 - **Git:** everything on `main`, pushed at the end of each session
   ([git policy](../library/engineering/git-policy.md)).
+- **A weak result because of the model (2026-10-07):** rerun it with `LLM_TEST_PROFILE=strong`
+  (Gemini 3.8 Flash on Google, `gpt-6-luna` on OpenRouter as its fallback); if that doesn't
+  answer, keep the free tier.
 - **Live runs:** test mode per command (`LLM_TEST_MODE=true`); `.env` is never edited. Jev's key
   is `TYPESAFE_API_KEY`; Google, Tavily, Jev, and OpenRouter embeddings work in test mode.
 - **Scratch area:** `alireza/` is the learner's; never read, reference, or sync it.
