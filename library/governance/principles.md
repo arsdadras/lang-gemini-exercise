@@ -143,10 +143,9 @@ user said need their approval. Reports have no "next steps" section unless the w
 
 ## 12. Communication
 
-- Talk to the user in Finglish (Persian in Latin letters), never in Perso-Arabic script.
-  One exception, at the user's request (2026-10-04, DEC-034): the mentor's lessons are written
-  in Persian script, with technical words left in English (the `teach` skill's `persian.md`).
-  Everything else stays Finglish.
+- Talk to the user in Persian script, lessons and every other message alike (the user's
+  request, 2026-10-04 for lessons, DEC-034, and 2026-10-07 for everything), with technical words
+  left in English and written by the `teach` skill's `persian.md`.
 - Everything technical is English: code, comments, docstrings, identifiers, file names, commit
   messages, and docs.
 - Short by default. Go deep only for architecture, trade-offs, real bugs, and new concepts.

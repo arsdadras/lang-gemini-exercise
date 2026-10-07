@@ -42,9 +42,10 @@ Read first every session; rewrite it, don't append. The charter is [README.md](R
 
 ## Working agreements
 
-- **Language:** lessons are in Persian script, written by the `teach` skill's
+- **Language:** everything to the learner is in Persian script (lessons since 2026-10-04,
+  every other message since 2026-10-07), written by the `teach` skill's
   [persian.md](../.claude/skills/teach/persian.md) through `fa_isolate.py`; technical words stay
-  English; every concept starts from an example. Other talk with the learner is Finglish.
+  English; every concept starts from an example.
 - **Lesson shape (the learner's repeated instruction):** concepts and core code only. No
   trailing questions, and no tests, observe, eval, demo, or hands-on steps unless the learner
   asks. "edame" means go on to the next step.
@@ -89,6 +90,10 @@ Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
   two of three runs cited only search results and two garbled URLs, so the claim check rightly
   marked their claims unsupported (10 of 10). Gemini 3.5 Flash-Lite supported most claims on
   2026-10-05. Prompt or tier fix in R1 topic 4's live runs.
+- **The researcher can delegate to DeepAgents' general-purpose subagent** (`task`), which has
+  the same `web_search` and `read_page`; pages it reads never reach the researcher's messages, so
+  the claim check can't support their claims. Not yet checked against the 2026-10-07 run's
+  trace. Fix candidate: drop the default subagent for the researcher, then a live run.
 - **No retry layer on the agents' tools:** convention 11 asks for `ToolRetryMiddleware` on an
   agent's external tools; no agent has one (the research tools turn errors into text the model
   reads). Decide with the engineering track.
