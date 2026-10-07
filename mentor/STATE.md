@@ -90,10 +90,9 @@ Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
   two of three runs cited only search results and two garbled URLs, so the claim check rightly
   marked their claims unsupported (10 of 10). Gemini 3.5 Flash-Lite supported most claims on
   2026-10-05. Prompt or tier fix in R1 topic 4's live runs.
-- **The researcher can delegate to DeepAgents' general-purpose subagent** (`task`), which has
-  the same `web_search` and `read_page`; pages it reads never reach the researcher's messages, so
-  the claim check can't support their claims. Not yet checked against the 2026-10-07 run's
-  trace. Fix candidate: drop the default subagent for the researcher, then a live run.
+- **Live runs blocked (2026-10-07):** the `low` tier's provider (GapGPT) refuses connections and
+  the Google key is disabled, so no chat model answers in test mode. The fix below is covered by
+  tests only; its live run waits for either provider.
 - **No retry layer on the agents' tools:** convention 11 asks for `ToolRetryMiddleware` on an
   agent's external tools; no agent has one (the research tools turn errors into text the model
   reads). Decide with the engineering track.

@@ -2,12 +2,17 @@
 
 The draft is checked against the pages the agent read (``subagents.research_subagent.verify_research``)
 before it becomes a ``ResearchReport``.
+
+A plain ``create_agent``, not a deep agent: a deep agent adds filesystem tools and a ``task`` tool
+whose default general-purpose subagent gets this agent's tools without its middleware, so its
+searches would skip the approval gate and the budgets, and the pages it read would never reach
+this run's messages, where the claim check looks for them.
 """
 
 from collections.abc import Sequence
 from typing import Any
 
-from deepagents import create_deep_agent
+from langchain.agents import create_agent
 from langchain.agents.middleware import AgentMiddleware, ToolCallLimitMiddleware
 from langchain_core.tools import BaseTool
 from langgraph.checkpoint.base import BaseCheckpointSaver
@@ -53,7 +58,7 @@ def make_web_researcher_agent(
     """
     options = options or ResearchOptions()
     budget = DEPTH_BUDGETS[options.depth]
-    return create_deep_agent(
+    return create_agent(
         model=llm_model.get(tier),
         system_prompt=build_web_researcher_prompt(
             searches=budget.searches,
