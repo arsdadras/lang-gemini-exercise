@@ -92,3 +92,25 @@ def test_unknown_tier_or_provider_is_rejected() -> None:
         registry.get("ultra")
     with pytest.raises(ValueError, match="no provider"):
         registry.get("low", "a")
+
+
+def test_a_spec_caps_output_tokens_and_its_env_var_overrides_the_host(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from agentlab.models.registry_model import build_chat_model
+
+    monkeypatch.setenv("ROUTER_KEY", "test-key")
+    monkeypatch.setenv("ROUTER_URL", "http://127.0.0.1:9/v1")
+    spec = ModelSpec(
+        model="vendor/model",
+        model_provider="openai",
+        api_key_env="ROUTER_KEY",
+        base_url="https://router.example/v1",
+        base_url_env="ROUTER_URL",
+        max_tokens=4096,
+    )
+
+    model = build_chat_model(spec)
+
+    assert model.max_tokens == 4096
+    assert model.openai_api_base == "http://127.0.0.1:9/v1"

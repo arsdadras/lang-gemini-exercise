@@ -4,8 +4,9 @@ Five tiers. ``high``/``medium``/``low`` are the three paid provider tiers (OpenA
 Anthropic, Gemini), all routed through the GapGPT gateway. ``opensource`` is a
 cheap tier of well-known open-weight models, also through GapGPT. ``free`` is the
 only tier that bypasses GapGPT entirely: it calls Gemini Flash-Lite directly
-against Google's own API, so it costs nothing even with no GapGPT credit.
-OpenRouter serves only the embedding model (``EMBEDDING_SPEC``); no chat tier routes through it.
+against Google's own API, so it costs nothing even with no GapGPT credit, and falls back to
+``gpt-6-luna`` on OpenRouter when Google refuses. OpenRouter also serves the embedding model
+(``EMBEDDING_SPEC``).
 
 Each tier's provider order (first = primary, rest = same-tier fallback, per
 ``models.registry_model``) is not hand-picked: it's the descending order of a
@@ -31,6 +32,11 @@ from agentlab.configs.timeouts_config import (
     LOCAL_MODEL_TIMEOUT_SECONDS,
 )
 
+# Covers a ``standard`` ResearchDraft (15 claims with passages); a ``deep`` one (30) may need
+# about twice that. Sized to the key's current credit (2026-10-07: 7807 tokens affordable per
+# request); raise it to 8192 once the key has more. See ``ModelSpec.max_tokens``.
+OPENROUTER_MAX_OUTPUT_TOKENS = 4096
+
 
 @dataclass(frozen=True)
 class ModelSpec:
@@ -47,6 +53,9 @@ class ModelSpec:
     temperature: float = 0.0
     top_p: float | None = None
     timeout_seconds: float = CHAT_MODEL_TIMEOUT_SECONDS
+    max_tokens: int | None = None
+    """Output cap. OpenRouter reserves credit for the model's whole output window unless one
+    is set, so a key with a small balance refuses every request without it."""
 
 
 @dataclass(frozen=True)
@@ -86,6 +95,18 @@ def _gapgpt(model: str) -> ModelSpec:
         model_provider="openai",
         api_key_env="GAPGPT_API_KEY",
         base_url_env="GAPGPT_BASE_URL",
+    )
+
+
+def _openrouter(model: str) -> ModelSpec:
+    """A model on OpenRouter's OpenAI-compatible API (``OPENROUTER_BASE_URL`` overrides the host)."""
+    return ModelSpec(
+        model=model,
+        model_provider="openai",
+        api_key_env="OPENROUTER_API_KEY",
+        base_url="https://openrouter.ai/api/v1",
+        base_url_env="OPENROUTER_BASE_URL",
+        max_tokens=OPENROUTER_MAX_OUTPUT_TOKENS,
     )
 
 
@@ -187,9 +208,13 @@ MODEL_TIERS: dict[str, dict[str, ModelSpec]] = {
         },
     ),
     # Opt-in only: never the default tier and never part of a paid tier's fallback
-    # or cascade (see TIER_CASCADE_ORDER). The one tier that bypasses GapGPT.
+    # or cascade (see TIER_CASCADE_ORDER). The one tier that bypasses GapGPT. The order is the
+    # user's (2026-10-07), not ``_ranked``'s: Google's no-cost quota first, then OpenRouter's
+    # ``gpt-6-luna`` (paid, $0.10/$0.50 per 1M tokens, tools and structured output; listed on
+    # OpenRouter's /api/v1/models on 2026-10-07) when Google refuses or is down.
     "free": {
         "gemini": _gemini("gemini-3.5-flash-lite"),
+        "openrouter": _openrouter("openai/gpt-6-luna"),
     },
     # Opt-in only, same as "free". $0 and no rate limit, but needs `ollama serve` running
     # with the model already pulled locally; nothing falls back to it automatically.
@@ -227,8 +252,8 @@ TIER_CASCADE_ORDER: tuple[str, ...] = ("high", "medium", "low")
 TEST_MODE_ENV = "LLM_TEST_MODE"
 
 # Test mode routes every request to the ``free`` tier: Gemini 3.5 Flash-Lite called directly on
-# Google's own API with ``GOOGLE_API_KEY``, no gateway or router in between (the user's decision,
-# 2026-10-05). It costs nothing; its quota is rate-limited, which test-mode loops live with. A
+# Google's own API with ``GOOGLE_API_KEY`` (the user's decision, 2026-10-05), with OpenRouter's
+# ``gpt-6-luna`` as its fallback (2026-10-07). It costs nothing; its quota is rate-limited, which test-mode loops live with. A
 # paid or gateway tier is an explicit opt-in (``LLM_TEST_PROFILE=reliable``). It was
 # the computed best of free/opensource/low until then, and the computation went away with it.
 TEST_TIER = "free"

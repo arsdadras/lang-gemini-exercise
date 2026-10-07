@@ -56,13 +56,17 @@ def build_chat_model(spec: ModelSpec) -> BaseChatModel:
     }
     if spec.api_key_env is not None:
         kwargs["api_key"] = os.getenv(spec.api_key_env)
-    base_url = spec.base_url or (
+    # The env var wins over the catalog's URL, as for the embeddings: tests and self-hosted
+    # gateways repoint a provider without a code change.
+    base_url = (
         os.getenv(spec.base_url_env) if spec.base_url_env else None
-    )
+    ) or spec.base_url
     if base_url:
         kwargs["base_url"] = base_url
     if spec.top_p is not None:
         kwargs["top_p"] = spec.top_p
+    if spec.max_tokens is not None:
+        kwargs["max_tokens"] = spec.max_tokens
     if spec.model_provider == "ollama":
         # ChatOllama has no timeout field; its httpx client takes it.
         kwargs["client_kwargs"] = {"timeout": spec.timeout_seconds}

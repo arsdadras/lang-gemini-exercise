@@ -83,16 +83,18 @@ Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
   take three timeouts (3 x 120 s) per provider before the fallback switches. Pick `max_retries`.
 - **`_TimeoutSearchWrapper`** (`tools/web_search_tool.py`) works around langchain-tavily setting
   no timeout; remove it once the library takes one (`tests/test_timeouts.py` shows what to check).
-- **Google test tier is down (2026-10-07):** `GOOGLE_API_KEY` answers 401 "The bound service
-  account is deleted or disabled", so default test mode fails; live runs use
-  `LLM_TEST_PROFILE=reliable` until the learner replaces the key.
 - **The `low` tier cites pages it never read:** in the 2026-10-07 live run of the research graph,
   two of three runs cited only search results and two garbled URLs, so the claim check rightly
   marked their claims unsupported (10 of 10). Gemini 3.5 Flash-Lite supported most claims on
   2026-10-05. Prompt or tier fix in R1 topic 4's live runs.
-- **Live runs blocked (2026-10-07):** the `low` tier's provider (GapGPT) refuses connections and
-  the Google key is disabled, so no chat model answers in test mode. The fix below is covered by
-  tests only; its live run waits for either provider.
+- **Live runs blocked (2026-10-07):** test mode now falls back from Google's Gemini 3.5
+  Flash-Lite to OpenRouter's `gpt-6-luna` (verified: Google's 401 fell through to luna). But the
+  Google key is disabled, GapGPT refuses connections, and the OpenRouter key's credit covers
+  about 7,800 output tokens per request, so three parallel research runs get 402. Two more
+  learner-side items: a placeholder `OPENROUTER_API_KEY` (9 characters) set in the shell
+  environment shadows the real one in `.env` (`load_dotenv` never overrides), and
+  `OPENROUTER_MAX_OUTPUT_TOKENS` stays 4096 until the credit allows 8192 (a `deep` draft needs it).
+  The researcher's tool-surface fix (`209fec4`) still waits for its live run.
 - **No retry layer on the agents' tools:** convention 11 asks for `ToolRetryMiddleware` on an
   agent's external tools; no agent has one (the research tools turn errors into text the model
   reads). Decide with the engineering track.
