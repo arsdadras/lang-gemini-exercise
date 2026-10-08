@@ -244,7 +244,10 @@ MODEL_TIERS: dict[str, dict[str, ModelSpec]] = {
     # Flash-Lite on Google's free API first, then on GapGPT (OpenRouter backs it) when Google's
     # per-minute or daily cap is hit. Measured 2026-10-08 on a tool call and a structured output:
     # Google's free copy 2.9 s and 1.8 s, GapGPT's 4.1 s and 1.5 s, and OpenRouter's free
-    # Nemotron 3 Super 2.5 s and 10.8 s, so the free NVIDIA model is not used. Nothing above
+    # Nemotron 3 Super 2.5 s and 10.8 s. Quality, same day: on the claim check's labeled set
+    # (34 cases) Flash-Lite scored 33/34 (1 unsafe) and Nemotron 30/34 (2 unsafe); on eight
+    # source-tool choices Flash-Lite picked 8/8 and Nemotron 3-5/8 (it never picked
+    # academic_search). So the free NVIDIA model is not used. Nothing above
     # this tier falls back to it or the other way round: a better model is chosen, never fallen
     # into.
     "free": {
