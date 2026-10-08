@@ -99,8 +99,16 @@ it, what it touches. One line on the production path.
   fluent means no labels or traces, straight to a contrast or what-if; shaky on a new framework
   mechanism means one sentence of the runtime model, a trace table, and labeled chunks. Depth
   is per mechanism, not per learner.
-- The code: diff-only (changed lines plus a few anchor lines) from the commit on `main`,
-  with a clickable link to the file.
+- The code, verbatim (the learner's rule, 2026-10-08): every new file in full, and every new
+  or changed part of an old file exactly as committed on `main`, never summarized, shortened, or
+  rewritten. Each block opens with its exact address: the clickable file link, new or changed,
+  and the function or class it belongs to. Show only what changed in an old file, with the old
+  lines it replaces when that explains the change.
+- One file at a time, in dependency order: a name is explained where it first appears, and
+  nothing (a function, a constant, a parameter) is used in an explanation before it was
+  introduced. When code calls something from a later step, say what it is in one line and
+  name the step where its code comes.
+- Plumbing that the step's code uses (constants, a timeout) is shown verbatim too, briefly.
 - After the code: narrate only the decision points, each in four beats: force, options,
   choice, what the others would break. Routine lines get none. Chunks are labeled by purpose
   the first time a mechanism appears; the next time I mark the chunks and the learner names
@@ -109,7 +117,8 @@ it, what it touches. One line on the production path.
   one "what if X changed?" that builds on it. When the probe showed fluency, the learner may
   review the component first as a PR against stated criteria, and my walkthrough becomes the
   reconciliation.
-- Plumbing: a two-line summary and a clickable link to each changed file; no walkthrough.
+- Plumbing outside the step's code: a two-line summary and a clickable link to each changed
+  file; no walkthrough.
 
 **Answering the learner.**
 - Right: confirm in one line, add the one thing the answer missed, move on. Praise names the
