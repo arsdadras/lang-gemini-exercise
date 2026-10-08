@@ -137,6 +137,7 @@ combining what they return, and keeping every fact traceable to where it came fr
    `nodes/source_route_node.py`, `middlewares/source_route_middleware.py`;
    `ResearchOptions.sources` limits the sources a caller allows. The router's documents question
    names what the source holds (this project, or the given files), so it is `research_sources@2`.
+   The whole graph, node by node: [research_graph.svg](../diagrams/research_graph.svg).
 4. **Knowing when to stop:** `evidence_enough@1` per sub-question inside the budget (unchanged).
 
 **The contract with the content generator:** `run_research(agent, topic, options)` returns

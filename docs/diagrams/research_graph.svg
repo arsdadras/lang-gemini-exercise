@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 1640" width="1240" height="1640" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#374151"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b91c1c"/>
+    </marker>
+    <style>
+      .title { font-size: 26px; font-weight: 700; fill: #111827; }
+      .subtitle { font-size: 14px; fill: #4b5563; }
+      .nodeName { font-size: 18px; font-weight: 700; fill: #111827; }
+      .nodeFile { font-size: 11.5px; fill: #6b7280; font-family: Consolas, Menlo, monospace; }
+      .body { font-size: 13px; fill: #1f2937; }
+      .mono { font-size: 12px; fill: #1f2937; font-family: Consolas, Menlo, monospace; }
+      .data { font-size: 12px; fill: #1d4ed8; font-family: Consolas, Menlo, monospace; }
+      .warn { font-size: 12px; fill: #b91c1c; }
+      .legend { font-size: 12.5px; fill: #374151; }
+      .tag { font-size: 11px; font-weight: 700; fill: #ffffff; }
+      .flow { stroke: #374151; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .dataflow { stroke: #2563eb; stroke-width: 1.6; stroke-dasharray: 6 4; fill: none; marker-end: url(#arrowBlue); }
+      .fail { stroke: #b91c1c; stroke-width: 1.6; stroke-dasharray: 3 3; fill: none; marker-end: url(#arrowRed); }
+    </style>
+  </defs>
+
+  <rect width="1240" height="1640" fill="#ffffff"/>
+
+  <!-- Header -->
+  <text x="40" y="48" class="title">P1 research graph (R1, topic 3)</text>
+  <text x="40" y="74" class="subtitle">src/agentlab/graphs/research_graph.py  ·  state: src/agentlab/schemas/state/research_state.py</text>
+  <text x="40" y="94" class="subtitle">invoked by run_research(agent, topic, options) in src/agentlab/subagents/research_subagent.py</text>
+
+  <!-- Legend -->
+  <g transform="translate(860,28)">
+    <rect x="0" y="0" width="340" height="104" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+    <line x1="14" y1="22" x2="58" y2="22" class="flow"/>
+    <text x="68" y="26" class="legend">control flow (graph edge)</text>
+    <line x1="14" y1="46" x2="58" y2="46" class="dataflow"/>
+    <text x="68" y="50" class="legend">data written to / read from state</text>
+    <line x1="14" y1="70" x2="58" y2="70" class="fail"/>
+    <text x="68" y="74" class="legend">failure or loss path (never silent)</text>
+    <rect x="14" y="84" width="40" height="14" rx="3" fill="#7c3aed"/>
+    <text x="68" y="96" class="legend">decision point on the Jev seam</text>
+  </g>
+
+  <!-- START -->
+  <ellipse cx="420" cy="140" rx="70" ry="24" fill="#111827"/>
+  <text x="420" y="146" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">START</text>
+  <text x="510" y="136" class="data">in: topic, options (ResearchOptions:</text>
+  <text x="510" y="152" class="data">depth, sources, documents, domains, ...)</text>
+  <line x1="420" y1="164" x2="420" y2="196" class="flow"/>
+
+  <!-- PLAN -->
+  <rect x="140" y="198" width="560" height="150" rx="10" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
+  <text x="160" y="226" class="nodeName">plan</text>
+  <text x="210" y="226" class="nodeFile">nodes/research_node.py · make_plan_node → plan_research</text>
+  <text x="160" y="252" class="body">LLM ("low" tier, structured ResearchPlan) splits the topic into sub-questions,</text>
+  <text x="160" y="270" class="body">most important first. Cap = DEPTH_BUDGETS[depth].sub_questions.</text>
+  <text x="160" y="290" class="body">Over the cap → one re-plan told what it did (it can merge); still over → cut.</text>
+  <text x="160" y="310" class="body">depth "quick" or no options → no plan, the topic itself is the one question.</text>
+  <text x="160" y="334" class="data">writes: questions[]   cut[]</text>
+  <line x1="700" y1="300" x2="880" y2="300" class="fail"/>
+  <text x="712" y="292" class="warn">cut sub-questions →</text>
+  <line x1="420" y1="348" x2="420" y2="388" class="flow"/>
+
+  <!-- ROUTE -->
+  <rect x="140" y="390" width="560" height="214" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <rect x="610" y="402" width="76" height="18" rx="4" fill="#7c3aed"/>
+  <text x="648" y="415" text-anchor="middle" class="tag">DECISION</text>
+  <text x="160" y="418" class="nodeName">route</text>
+  <text x="218" y="418" class="nodeFile">nodes/source_route_node.py · route_sources</text>
+  <text x="160" y="444" class="body">Jev, question set research_sources@2, ONE request for the whole plan:</text>
+  <text x="160" y="462" class="body">one yes / no / unclear question per (sub-question, source).</text>
+  <text x="160" y="482" class="body">Sources available: web always · academic if EXA_API_KEY · documents if</text>
+  <text x="160" y="500" class="body">P2's index exists or options.documents lists files (--docs).</text>
+  <text x="160" y="522" class="body">Code combines:  skip a source only on a sure "no" (p ≥ 0.6);</text>
+  <text x="160" y="540" class="body">"unclear" keeps it · nothing left → web · Jev down → keep every source.</text>
+  <text x="160" y="562" class="body">Measured: 97.1% on 69 labeled cases, 0 unsafe (lost-source) errors.</text>
+  <text x="160" y="590" class="data">writes: routes{ sub-question → [sources] }</text>
+  <line x1="700" y1="540" x2="880" y2="540" class="fail"/>
+  <text x="712" y="532" class="warn">requested but unavailable →</text>
+
+  <!-- FAN OUT -->
+  <line x1="420" y1="604" x2="420" y2="640" class="flow"/>
+  <polygon points="420,642 520,684 420,726 320,684" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+  <text x="420" y="680" text-anchor="middle" font-size="14" font-weight="700" fill="#111827">fan_out</text>
+  <text x="420" y="698" text-anchor="middle" class="nodeFile">conditional edge</text>
+  <text x="540" y="672" class="body">One Send per sub-question, all in parallel:</text>
+  <text x="540" y="692" class="data">Send("research", {question, sources, label})</text>
+
+  <line x1="380" y1="712" x2="230" y2="770" class="flow"/>
+  <line x1="420" y1="726" x2="420" y2="770" class="flow"/>
+  <line x1="460" y1="712" x2="610" y2="770" class="flow"/>
+  <text x="250" y="752" class="body" font-style="italic">sub-question 1</text>
+  <text x="432" y="756" class="body" font-style="italic">2</text>
+  <text x="560" y="752" class="body" font-style="italic">… N</text>
+
+  <!-- RESEARCH (x N) -->
+  <rect x="96" y="772" width="660" height="380" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <rect x="108" y="784" width="660" height="380" rx="10" fill="none" stroke="#93c5fd" stroke-width="1.2" transform="translate(6,6)" opacity="0.7"/>
+  <text x="116" y="800" class="nodeName">research   (× N, one run per sub-question, fresh thread)</text>
+  <text x="116" y="818" class="nodeFile">nodes/research_node.py · make_research_node(agent) · agent: agents/web_researcher_agent.py</text>
+
+  <rect x="116" y="832" width="620" height="116" rx="8" fill="#ffffff" stroke="#93c5fd"/>
+  <text x="130" y="852" class="body" font-weight="700">Agent middleware (in order)</text>
+  <text x="130" y="872" class="mono">SourceRouteMiddleware  offers only the routed sources' tools; refuses others</text>
+  <text x="130" y="890" class="mono">HITL (hitl_for)        approval before web_search / academic_search</text>
+  <text x="130" y="908" class="mono">ToolCallLimit × tool   per-run budget: searches each, read_page reads</text>
+  <text x="130" y="926" class="mono">model fallback         GapGPT → OpenRouter backup (per tier)</text>
+  <text x="130" y="942" class="nodeFile">middlewares/source_route_middleware.py · middlewares/hitl_middleware.py</text>
+
+  <text x="116" y="972" class="body" font-weight="700">Source tools (each returns text for the model + SourceDocument artifacts)</text>
+  <rect x="116" y="982" width="198" height="78" rx="6" fill="#ffffff" stroke="#60a5fa"/>
+  <text x="126" y="1000" class="body" font-weight="700">web</text>
+  <text x="126" y="1018" class="mono">web_search (Tavily)</text>
+  <text x="126" y="1034" class="mono">read_page → full page</text>
+  <text x="126" y="1050" class="nodeFile">kind = "web"</text>
+  <rect x="326" y="982" width="198" height="78" rx="6" fill="#ffffff" stroke="#60a5fa"/>
+  <text x="336" y="1000" class="body" font-weight="700">academic</text>
+  <text x="336" y="1018" class="mono">academic_search (Exa,</text>
+  <text x="336" y="1034" class="mono">research papers + text)</text>
+  <text x="336" y="1050" class="nodeFile">kind = "academic"</text>
+  <rect x="536" y="982" width="200" height="78" rx="6" fill="#ffffff" stroke="#60a5fa"/>
+  <text x="546" y="1000" class="body" font-weight="700">documents</text>
+  <text x="546" y="1018" class="mono">search_documents</text>
+  <text x="546" y="1034" class="mono">project index | --docs</text>
+  <text x="546" y="1050" class="nodeFile">kind = "corpus"</text>
+
+  <text x="116" y="1084" class="body">Output: ResearchDraft (claims, each citing a URL + passage). documents_read(messages)</text>
+  <text x="116" y="1102" class="body">collects every artifact; two reads of one file are joined, never overwritten.</text>
+  <text x="116" y="1130" class="data">writes: drafts[+]   pages{url→text, joined}   kinds{url→kind}   problems[+]</text>
+  <line x1="756" y1="1060" x2="880" y2="1060" class="fail"/>
+  <text x="772" y="1036" class="warn">failed run,</text>
+  <text x="772" y="1052" class="warn">waiting run,</text>
+  <text x="772" y="1076" class="warn">no draft →</text>
+
+  <!-- reducers note -->
+  <line x1="420" y1="1170" x2="420" y2="1210" class="flow"/>
+  <text x="436" y="1196" class="body" font-style="italic">all N runs finish; parallel writes merged by the state reducers</text>
+
+  <!-- CHECK -->
+  <rect x="140" y="1212" width="560" height="200" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <rect x="610" y="1224" width="76" height="18" rx="4" fill="#7c3aed"/>
+  <text x="648" y="1237" text-anchor="middle" class="tag">DECISION</text>
+  <text x="160" y="1240" class="nodeName">check</text>
+  <text x="218" y="1240" class="nodeFile">nodes/claim_check_node.py · make_check_node</text>
+  <text x="160" y="1266" class="body">1. merge drafts round-robin across sub-questions</text>
+  <text x="160" y="1286" class="body">2. claim check: one Jev request per document (claim_check@1);</text>
+  <text x="178" y="1304" class="body">unsure → LLM, which may lower a verdict, never raise it</text>
+  <text x="160" y="1324" class="body">3. status per claim from code: supported / contradicted / unsupported,</text>
+  <text x="178" y="1342" class="body">source_kinds from the supporting documents; confidence = arithmetic</text>
+  <text x="160" y="1362" class="body">4. cap by evidence: supported claims kept first, the rest reported</text>
+  <text x="160" y="1394" class="data">writes: report (ResearchReport)   problems[+]</text>
+  <line x1="700" y1="1362" x2="880" y2="1362" class="fail"/>
+  <text x="712" y="1354" class="warn">dropped over the cap →</text>
+
+  <!-- END -->
+  <line x1="420" y1="1412" x2="420" y2="1448" class="flow"/>
+  <ellipse cx="420" cy="1472" rx="70" ry="24" fill="#111827"/>
+  <text x="420" y="1478" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">END</text>
+
+  <!-- envelope -->
+  <line x1="490" y1="1472" x2="560" y2="1472" class="flow"/>
+  <rect x="562" y="1430" width="320" height="120" rx="10" fill="#f9fafb" stroke="#6b7280" stroke-width="1.5"/>
+  <text x="578" y="1456" class="body" font-weight="700">run_research → SpecialistResult</text>
+  <text x="578" y="1478" class="body">status: ok · partial (any problem) · failed</text>
+  <text x="578" y="1498" class="body">reason: every problem, in words</text>
+  <text x="578" y="1518" class="body">output: ResearchReport (claim table)</text>
+  <text x="578" y="1538" class="body">provenance: each source with its kind</text>
+
+  <!-- problems collector -->
+  <rect x="884" y="270" width="316" height="1120" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="904" y="298" class="nodeName">state.problems[ ]</text>
+  <text x="904" y="318" class="body">appended by any node (reducer: add)</text>
+  <text x="904" y="356" class="body">• sub-questions cut by the plan cap</text>
+  <text x="904" y="560" class="body">• requested sources not available</text>
+  <text x="904" y="1060" class="body">• a run's external failure, a run</text>
+  <text x="918" y="1078" class="body">waiting for approval, no draft</text>
+  <text x="904" y="1366" class="body">• claims dropped over the cap,</text>
+  <text x="918" y="1384" class="body">by status</text>
+  <line x1="1042" y1="1390" x2="882" y2="1520" class="dataflow"/>
+  <text x="986" y="1460" class="data">→ envelope reason</text>
+
+  <!-- Footer -->
+  <text x="40" y="1600" class="subtitle">No node has a retry policy (convention 11): plan and research call models (SDK retries + provider fallback); route and check fall back when Jev fails.</text>
+  <text x="40" y="1620" class="subtitle">Not yet: the graph does not wait for approvals (a waiting run becomes a problem); fixed with P7-B3 by running the agent as a subgraph.</text>
+</svg>
