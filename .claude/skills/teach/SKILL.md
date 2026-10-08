@@ -64,7 +64,16 @@ Check the draft against all nine; rewrite until it passes.
 named by what it makes work. No code, no mechanism. Context is given here once and never
 repeated in topic messages.
 
-**Hook (topic start).** One retrieval question first, on an earlier idea this topic reuses.
+**Topic bookends (the learner's rule, 2026-10-08).** A topic's first message is its
+introduction and nothing else: the problem it solves, the big picture of what it builds, its
+steps in order, and what is in and out of scope. Then one step per message. The topic's last
+message is a summary: what was built, the ideas learned, and what carries forward. Every
+message's first line names the stage (with its name), the topic (with its name), and the step.
+A build report is never part of a lesson message; it goes before the lesson, on its own.
+Every code explanation gives a short summary of the code and the file's full path, as a link,
+in the same place.
+
+**Hook (topic start, after the introduction).** One retrieval question first, on an earlier idea this topic reuses.
 Then show the failure: a real run, its output, or its trace; real beats described. Before the
 cause, one prediction question ([questions.md](questions.md#prediction)); the learner commits,
 then the answer comes. The hook worked when the learner can say what is broken before any
