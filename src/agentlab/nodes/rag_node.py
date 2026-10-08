@@ -13,10 +13,10 @@ from agentlab.prompts.nodes.rag_prompt import (
     REWRITE_PROMPT,
 )
 from agentlab.retrieval.index_retrieval import get_retriever
-from agentlab.schemas.output.rag_output_schema import GradeDocument, GradeHallucination
+from agentlab.schemas.output.rag_output_schema import GradeChunk, GradeHallucination
 from agentlab.schemas.state.rag_state import RAGState
 from agentlab.tools.web_search_tool import make_web_search_tool, search_results
-from agentlab.utils.get_docs_context_util import get_docs_context
+from agentlab.utils.format_chunks_util import format_chunks
 from agentlab.utils.get_text_util import get_text
 
 UNVERIFIED_ANSWER = (
@@ -27,32 +27,32 @@ NO_ANSWER = "I couldn't find anything relevant in the indexed corpus or on the w
 
 
 def retrieve_node(state: RAGState) -> dict:
-    """Fetch candidate documents for the current search query."""
+    """Fetch candidate chunks for the current search query."""
     query = state.get("search_query", state["question"])
-    return {"documents": get_retriever().invoke(query)}
+    return {"chunks": get_retriever().invoke(query)}
 
 
-def grade_documents_node(state: RAGState) -> dict:
-    """Keep only documents an LLM judges relevant (one grading call per document)."""
+def grade_chunks_node(state: RAGState) -> dict:
+    """Keep only chunks an LLM judges relevant (one grading call per chunk)."""
     grader = GRADE_PROMPT | llm_model.chain(
         "opensource",
-        structured=GradeDocument,
+        structured=GradeChunk,
     )
     relevant = [
-        document
-        for document in state.get("documents", [])
+        chunk
+        for chunk in state.get("chunks", [])
         if cast(
-            GradeDocument,
+            GradeChunk,
             grader.invoke(
                 {
                     "question": state["question"],
-                    "document": document.page_content,
+                    "chunk": chunk.page_content,
                 },
             ),
         ).binary_score
         == "yes"
     ]
-    return {"documents": relevant}
+    return {"chunks": relevant}
 
 
 def query_rewrite_node(state: RAGState) -> dict:
@@ -69,20 +69,20 @@ def query_rewrite_node(state: RAGState) -> dict:
 
 
 def generate_node(state: RAGState) -> dict:
-    """Answer the question from the surviving documents."""
+    """Answer the question from the surviving chunks."""
     # "medium": the user-facing answer itself, not a gate (see ADR-0014).
-    context = get_docs_context(state.get("documents", []))
+    context = format_chunks(state.get("chunks", []))
     response = (GENERATE_PROMPT | llm_model.chain("medium")).invoke(
         {"question": state["question"], "context": context},
     )
-    return {"generation": get_text(response)}
+    return {"answer": get_text(response)}
 
 
 def check_hallucination_node(state: RAGState) -> dict:
-    """Replace the answer with a disclaimer when the documents don't support it."""
+    """Replace the answer with a disclaimer when the chunks don't support it."""
     # Trust gate, kept on a paid tier deliberately: this is P2's core anti-hallucination
     # guarantee, with no live-verified opensource-tier baseline yet (ADR-0014).
-    context = get_docs_context(state.get("documents", []))
+    context = format_chunks(state.get("chunks", []))
     grader = HALLUCINATION_PROMPT | llm_model.chain(
         "low",
         structured=GradeHallucination,
@@ -92,20 +92,20 @@ def check_hallucination_node(state: RAGState) -> dict:
         grader.invoke(
             {
                 "context": context,
-                "generation": state.get("generation", ""),
+                "answer": state.get("answer", ""),
             },
         ),
     )
     if verdict.binary_score == "yes":
         return {"answer_source": "corpus"}
     return {
-        "generation": UNVERIFIED_ANSWER,
+        "answer": UNVERIFIED_ANSWER,
         "answer_source": "unverified",
     }
 
 
 def web_search_node(state: RAGState) -> dict:
-    """Search the web when the local corpus had nothing relevant; results become documents.
+    """Search the web when the local corpus had nothing relevant; results become chunks.
 
     Only the search happens here, so a retry policy on this node retries the search alone.
     """
@@ -113,22 +113,22 @@ def web_search_node(state: RAGState) -> dict:
         make_web_search_tool().invoke({"query": state["question"]})
     )
     if not results:
-        return {"generation": NO_ANSWER, "answer_source": "none", "documents": []}
-    documents = [
+        return {"answer": NO_ANSWER, "answer_source": "none", "chunks": []}
+    chunks = [
         Document(page_content=result["content"], metadata={"source": result["url"]})
         for result in results
     ]
-    return {"documents": documents}
+    return {"chunks": chunks}
 
 
 def generate_from_web_node(state: RAGState) -> dict:
     """Answer from the web search results."""
     context = "\n\n".join(
-        f"[{document.metadata['source']}]\n{document.page_content}"
-        for document in state.get("documents", [])
+        f"[{chunk.metadata['source']}]\n{chunk.page_content}"
+        for chunk in state.get("chunks", [])
     )
     # "low", not "opensource": this is the user-facing answer, same reasoning as generate_node.
     answer = (GENERATE_FROM_WEB_PROMPT | llm_model.chain("low")).invoke(
         {"question": state["question"], "context": context},
     )
-    return {"generation": get_text(answer), "answer_source": "web"}
+    return {"answer": get_text(answer), "answer_source": "web"}

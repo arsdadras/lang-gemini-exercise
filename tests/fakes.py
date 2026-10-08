@@ -13,7 +13,7 @@ from langchain_core.runnables import RunnableLambda
 
 from agentlab.nodes import rag_node
 from agentlab.schemas.output.middlewares_output_schema import GuardVerdict
-from agentlab.schemas.output.rag_output_schema import GradeDocument, GradeHallucination
+from agentlab.schemas.output.rag_output_schema import GradeChunk, GradeHallucination
 
 CORPUS_DOC = Document(page_content="The corpus says X.", metadata={"source": "a.md"})
 
@@ -89,9 +89,9 @@ def scripted_rag(
     record: dict = {"retriever": retriever, "rewrites": 0, "web_searches": 0}
 
     def chain(tier: str, structured: type | None = None) -> RunnableLambda:
-        if structured is GradeDocument:
+        if structured is GradeChunk:
             return RunnableLambda(
-                lambda _: GradeDocument(binary_score="yes" if relevant else "no"),
+                lambda _: GradeChunk(binary_score="yes" if relevant else "no"),
             )
         if structured is GradeHallucination:
             return RunnableLambda(lambda _: GradeHallucination(binary_score="yes"))

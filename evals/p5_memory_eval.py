@@ -137,7 +137,7 @@ def touches(edits: list[MemoryEdit], line: str) -> list[MemoryEdit]:
     return [
         edit
         for edit in edits
-        if edit.kind in ("replace", "remove") and edit.old.strip() == line
+        if edit.action in ("replace", "remove") and edit.old.strip() == line
     ]
 
 

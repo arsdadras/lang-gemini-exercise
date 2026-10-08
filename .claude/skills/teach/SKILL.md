@@ -207,4 +207,4 @@ evidence. When the evidence is missing, ask one transfer question before moving 
 - [ai-engineering.md](ai-engineering.md): lesson patterns for LLM systems and the
   misconception map.
 - [evidence.md](evidence.md): the evidence behind each technique, with sources. Raw research:
-  [artifacts/teaching-research/](../../../mentor/artifacts/teaching-research/synthesis.md).
+  [artifacts/teaching-research/](../../../mentor/attachments/teaching-research/synthesis.md).

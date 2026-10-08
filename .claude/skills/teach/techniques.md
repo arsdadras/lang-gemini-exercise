@@ -28,7 +28,7 @@ for an experienced learner, and one line of evidence ([evidence.md](evidence.md)
 5. Keep the scaffold where experience misleads: a sequential call stack, "a retry is harmless".
 6. Instant right answers drop a level at once; re-probe at the next new mechanism.
 - **Repo example:** before `route_after_grading`: "Grading keeps nothing, every round. Which
-  node runs after the third `grade_documents`?" Expected `web_search`: two rewrites made
+  node runs after the third `grade_chunks`?" Expected `web_search`: two rewrites made
   `retries` 2, and `2 < MAX_RETRIES` (2) is false. "`query_rewrite`" means partial: trace next.
 - **Backfires for this learner:** full scaffolding on a mechanism read fluently adds load and
   reads as distrust. Fluent Python is not fluent reducers: expertise is per mechanism.
@@ -48,12 +48,12 @@ for an experienced learner, and one line of evidence ([evidence.md](evidence.md)
   no reducer is overwritten; the router reads the merged state; every step is checkpointed."
   ```text
   step | node            | writes                      | retries | router -> next
-  1    | retrieve        | documents=[d1..d3]          | 0       | -> grade_documents
-  2    | grade_documents | documents=[]  (overwrite)   | 0       | 0<2 -> query_rewrite
+  1    | retrieve        | chunks=[d1..d3]             | 0       | -> grade_chunks
+  2    | grade_chunks | chunks=[]  (overwrite)      | 0       | 0<2 -> query_rewrite
   3    | query_rewrite   | search_query=..., retries=1 | 1       | -> retrieve
   ```
   Failure overlay: `TRANSIENT_RETRY` on `retrieve` re-runs only the embedding call;
-  `grade_documents` gets no node retry, since `llm_model.chain` has SDK retries and a fallback.
+  `grade_chunks` gets no node retry, since `llm_model.chain` has SDK retries and a fallback.
 - **Backfires for this learner:** tracing a node body read at a glance; several overlays at once.
 - **Evidence:** a tracing strategy with a memory table (RCT, 24 intro-course students); weak for
   experienced readers ([evidence](evidence.md#code-reading-and-design-judgment)).
@@ -69,7 +69,7 @@ for an experienced learner, and one line of evidence ([evidence.md](evidence.md)
 - **Repo example:** first appearance, `build_rag_graph`:
   ```text
   # 1. Register nodes; a retry policy only where a non-model external call lives
-  # 2. Fixed spine START -> retrieve -> grade_documents, then branch on route_after_grading
+  # 2. Fixed spine START -> retrieve -> grade_chunks, then branch on route_after_grading
   # 3. Close the loop: query_rewrite -> retrieve
   # 4. Terminal paths; compile with a checkpointer (InMemorySaver by default)
   ```
@@ -201,7 +201,7 @@ judgment gap; at architecture scale it is the design kata ([ai-engineering.md](a
 2. The five most important lines, picked by each of us independently, then compared.
 3. The why of two decisions: the assumption behind each and one alternative (the ladder).
 4. Skip the club's other exercises (name lists, random lines, timed rounds).
-- **Repo example:** my five in `rag_graph.py`: the conditional edge on `grade_documents`, the
+- **Repo example:** my five in `rag_graph.py`: the conditional edge on `grade_chunks`, the
   `query_rewrite -> retrieve` edge, `retries < MAX_RETRIES`, `TRANSIENT_RETRY` on `retrieve`,
   the `InMemorySaver()` default. Five `add_node` lines mean the design center was missed.
 - **Backfires for this learner:** timed rounds on a short file; a pick of mine that isn't honest.

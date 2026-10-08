@@ -17,7 +17,7 @@ Asked before the code or the run. The learner commits, with a one-line reason; t
 | Placement | "Where would you put X, and why there?" | "Where does the retry for an embeddings call belong: the client, the node, or `run_rag`?" |
 | Count | "Out of N runs, how many pass?" | "We run this scenario five times in test mode. How many end `ok`?" |
 | Path | "Which node or tool runs after X?" | "The grader rejects every document. Which node runs next?" |
-| State | "After X, what does Y hold?" | "`grade_documents_node` returns `{"documents": relevant}`. After two rounds, what does `generate` see?" |
+| State | "After X, what does Y hold?" | "`grade_chunks_node` returns `{"chunks": relevant}`. After two rounds, what does `generate` see?" |
 | Shape | "What does the output look like?" | "What `status` and `reason` does the coordinator see in the envelope after a 429 that outlives its retries?" |
 
 Rules:
@@ -37,7 +37,7 @@ clear. Judge: correct, purpose-level, unambiguous; give feedback on the weakest;
 "for every input?".
 
 Example, `route_after_grading`:
-- Line-by-line: "if documents, generate; else if retries < MAX_RETRIES, rewrite; else web."
+- Line-by-line: "if chunks, generate; else if retries < MAX_RETRIES, rewrite; else web."
 - Purpose-level: "Answer from the corpus if grading kept anything; otherwise rewrite and retry,
   then fall back to the web."
 

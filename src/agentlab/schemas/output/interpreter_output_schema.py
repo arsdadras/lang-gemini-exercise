@@ -4,23 +4,23 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-ArtifactType = Literal["csv", "json", "chart", "markdown", "text", "binary", "other"]
+DeliverableType = Literal["csv", "json", "chart", "markdown", "text", "binary", "other"]
 
 
-class ArtifactMetadata(BaseModel):
-    """Metadata describing one deliverable file under the sandbox's ``artifacts/``."""
+class Deliverable(BaseModel):
+    """Metadata describing one deliverable file under the sandbox's ``deliverables/``."""
 
-    name: str = Field(description="File name of the artifact (e.g. sales_trend.png)")
+    name: str = Field(description="File name of the deliverable (e.g. sales_trend.png)")
     path: str = Field(
-        description="Path relative to the sandbox root (e.g. artifacts/sales_trend.png)",
+        description="Path relative to the sandbox root (e.g. deliverables/sales_trend.png)",
     )
-    artifact_type: ArtifactType = Field(
+    deliverable_type: DeliverableType = Field(
         default="other",
-        description="Type of the artifact: csv, json, chart, markdown, text, binary, other",
+        description="Type of the deliverable: csv, json, chart, markdown, text, binary, other",
     )
     description: str = Field(
         default="",
-        description="Short description of what this artifact contains",
+        description="Short description of what this deliverable contains",
     )
     size_bytes: int | None = Field(
         default=None,

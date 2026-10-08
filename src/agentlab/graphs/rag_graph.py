@@ -12,7 +12,7 @@ from agentlab.nodes.rag_node import (
     check_hallucination_node,
     generate_from_web_node,
     generate_node,
-    grade_documents_node,
+    grade_chunks_node,
     query_rewrite_node,
     retrieve_node,
     web_search_node,
@@ -24,8 +24,8 @@ from agentlab.utils.failure_util import TRANSIENT_RETRY
 def route_after_grading(
     state: RAGState,
 ) -> Literal["generate", "query_rewrite", "web_search"]:
-    """Relevant docs -> generate; none yet with retries left -> rewrite and retry; else the web."""
-    if state.get("documents"):
+    """Relevant chunks -> generate; none yet with retries left -> rewrite and retry; else the web."""
+    if state.get("chunks"):
         return "generate"
     if state.get("retries", 0) < MAX_RETRIES:
         return "query_rewrite"
@@ -34,7 +34,7 @@ def route_after_grading(
 
 def route_after_web_search(state: RAGState) -> Literal["generate_from_web", "__end__"]:
     """Results -> answer from them; none -> end with the no-answer reply."""
-    return "generate_from_web" if state.get("documents") else END
+    return "generate_from_web" if state.get("chunks") else END
 
 
 def build_rag_graph(
@@ -44,7 +44,7 @@ def build_rag_graph(
     graph = StateGraph(RAGState)
     # The two nodes whose external call has no retry of its own: embeddings and web search.
     graph.add_node("retrieve", retrieve_node, retry_policy=TRANSIENT_RETRY)
-    graph.add_node("grade_documents", grade_documents_node)
+    graph.add_node("grade_chunks", grade_chunks_node)
     graph.add_node("query_rewrite", query_rewrite_node)
     graph.add_node("generate", generate_node)
     graph.add_node("web_search", web_search_node, retry_policy=TRANSIENT_RETRY)
@@ -52,8 +52,8 @@ def build_rag_graph(
     graph.add_node("check_hallucination", check_hallucination_node)
 
     graph.add_edge(START, "retrieve")
-    graph.add_edge("retrieve", "grade_documents")
-    graph.add_conditional_edges("grade_documents", route_after_grading)
+    graph.add_edge("retrieve", "grade_chunks")
+    graph.add_conditional_edges("grade_chunks", route_after_grading)
     graph.add_edge("query_rewrite", "retrieve")
     graph.add_edge("generate", "check_hallucination")
     graph.add_conditional_edges("web_search", route_after_web_search)

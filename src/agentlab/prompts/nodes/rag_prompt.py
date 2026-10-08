@@ -5,14 +5,14 @@ GRADE_PROMPT = ChatPromptTemplate.from_messages(
         (
             "system",
             (
-                "You grade whether a retrieved document is relevant to a user question. "
-                "Give a binary score 'yes' or 'no'. Be lenient — 'yes' if the document "
+                "You grade whether a retrieved chunk is relevant to a user question. "
+                "Give a binary score 'yes' or 'no'. Be lenient — 'yes' if the chunk "
                 "contains any information that could help answer the question."
             ),
         ),
         (
             "human",
-            "Question: {question}\n\nDocument:\n{document}",
+            "Question: {question}\n\nChunk:\n{chunk}",
         ),
     ],
 )
@@ -25,7 +25,7 @@ GENERATE_PROMPT = ChatPromptTemplate.from_messages(
             (
                 "Answer the question using only the provided context. If the context "
                 "doesn't contain the answer, say you don't know. Cite the source file "
-                "for each claim using the document's 'source' metadata."
+                "for each claim using the chunk's 'source' metadata."
             ),
         ),
         (
@@ -42,9 +42,9 @@ REWRITE_PROMPT = ChatPromptTemplate.from_messages(
             "system",
             (
                 "You rewrite search queries for a vector-retrieval system. The previous "
-                "query returned no relevant documents. Produce a single improved search "
+                "query returned no relevant chunks. Produce a single improved search "
                 "query \u2014 more specific, or using different terminology \u2014 that is "
-                "more likely to match relevant documents. Return only the rewritten query, "
+                "more likely to match relevant chunks. Return only the rewritten query, "
                 "nothing else."
             ),
         ),
@@ -68,7 +68,7 @@ HALLUCINATION_PROMPT = ChatPromptTemplate.from_messages(
         ),
         (
             "human",
-            "Context:\n{context}\n\nGenerated answer:\n{generation}",
+            "Context:\n{context}\n\nGenerated answer:\n{answer}",
         ),
     ],
 )
@@ -80,7 +80,7 @@ GENERATE_FROM_WEB_PROMPT = ChatPromptTemplate.from_messages(
             "system",
             (
                 "Answer the question using only the provided web search results. The "
-                "local document corpus had nothing relevant, so mention that this answer "
+                "local corpus had nothing relevant, so mention that this answer "
                 "comes from the web instead. Cite the source URL for each claim."
             ),
         ),

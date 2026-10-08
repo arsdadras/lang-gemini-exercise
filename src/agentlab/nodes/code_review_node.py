@@ -15,14 +15,14 @@ from agentlab.prompts.nodes.code_review_prompt import (
     TEST_FIX_PROMPT,
     TEST_GEN_PROMPT,
 )
-from agentlab.schemas.output.code_review_output_schema import ReviewResult, TestSuite
+from agentlab.schemas.output.code_review_output_schema import CodeReview, TestSuite
 from agentlab.schemas.state.code_review_state import CodeReviewState
 from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.sandbox_util import run_tests_in_sandbox
 
 
-def _format_review_summary(review: ReviewResult | None) -> str:
-    """Helper to convert structured ReviewResult into readable text for the test prompt."""
+def _format_review_summary(review: CodeReview | None) -> str:
+    """Helper to convert structured CodeReview into readable text for the test prompt."""
     if not review:
         return "No prior review findings available."
 
@@ -51,7 +51,7 @@ def review_code_node(state: CodeReviewState) -> dict:
     try:
         chain = REVIEW_PROMPT | llm_model.chain(
             "medium",
-            structured=ReviewResult,
+            structured=CodeReview,
             cascade=True,
         )
         result = chain.invoke(
@@ -61,7 +61,7 @@ def review_code_node(state: CodeReviewState) -> dict:
                 "code": state["code"],
             },
         )
-        return {"review": cast(ReviewResult, result), "error": None}
+        return {"review": cast(CodeReview, result), "error": None}
     except Exception as e:
         if failure_kind(e) is None:
             raise
@@ -99,13 +99,13 @@ def generate_tests_node(state: CodeReviewState) -> dict:
 def execute_tests_node(state: CodeReviewState) -> dict:
     """Execute generated test suite in an isolated sandbox environment."""
     if not state.get("tests") or not state["tests"].test_code:
-        return {"test_execution": None}
+        return {"test_run": None}
 
     result = run_tests_in_sandbox(
         code=state["code"],
         test_code=state["tests"].test_code,
     )
-    return {"test_execution": result}
+    return {"test_run": result}
 
 
 def fix_tests_node(state: CodeReviewState) -> dict:
@@ -115,8 +115,8 @@ def fix_tests_node(state: CodeReviewState) -> dict:
         framework = "pytest" if language.lower() == "python" else "standard test runner"
         failing_test_code = state.get("tests").test_code if state.get("tests") else ""
         error_output = (
-            state.get("test_execution").output
-            if state.get("test_execution")
+            state.get("test_run").output
+            if state.get("test_run")
             else "Unknown execution failure."
         )
 

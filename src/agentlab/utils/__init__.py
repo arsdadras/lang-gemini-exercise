@@ -1,7 +1,7 @@
 """Shared utilities used across projects."""
 
 from agentlab.utils.console_util import configure_utf8_stdout
-from agentlab.utils.get_docs_context_util import get_docs_context
+from agentlab.utils.format_chunks_util import format_chunks
 from agentlab.utils.get_text_util import get_text
 from agentlab.utils.memory_backend_util import (
     make_memory_composite_backend,
@@ -11,12 +11,12 @@ from agentlab.utils.run_with_hitl_util import run_with_hitl
 from agentlab.utils.sandbox_util import (
     SandboxBackend,
     build_sandbox_env,
-    diff_sandbox_artifacts,
-    get_artifact_path,
-    list_sandbox_artifacts,
+    diff_sandbox_deliverables,
+    get_deliverable_path,
+    list_sandbox_deliverables,
     make_sandbox_backend,
     run_tests_in_sandbox,
-    snapshot_sandbox_artifacts,
+    snapshot_sandbox_deliverables,
 )
 from agentlab.utils.session_util import (
     ResolvedSession,
@@ -36,21 +36,21 @@ __all__ = [
     "SandboxBackend",
     "build_sandbox_env",
     "configure_utf8_stdout",
-    "diff_sandbox_artifacts",
+    "diff_sandbox_deliverables",
     "fork_from_checkpoint",
+    "format_chunks",
     "format_session_list",
-    "get_artifact_path",
-    "get_docs_context",
+    "get_deliverable_path",
     "get_text",
     "inspect_state_history",
-    "list_sandbox_artifacts",
+    "list_sandbox_deliverables",
     "make_memory_composite_backend",
     "make_sandbox_backend",
     "new_delegation_config",
     "resolve_session",
     "run_tests_in_sandbox",
     "run_with_hitl",
-    "snapshot_sandbox_artifacts",
+    "snapshot_sandbox_deliverables",
     "stream_agent_with_observability",
     "task_text_from_state",
     "to_subagent_reply",

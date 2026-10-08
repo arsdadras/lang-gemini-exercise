@@ -87,7 +87,7 @@ scenario.
 
 Each stage also carries its scheduled items from [BACKLOG.md](BACKLOG.md).
 
-**Decision points in the return pass** (ADR-0021; the [dossier](artifacts/jev-dossier.md),
+**Decision points in the return pass** (ADR-0021; the [dossier](attachments/jev-dossier.md),
 section 3). Each lives inside its stage's own hard concept, so none adds a second one:
 
 - **R1:** the `decision_model` seam with the source router (`research_sources@1`: which sources a

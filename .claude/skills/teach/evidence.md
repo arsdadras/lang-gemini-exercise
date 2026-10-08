@@ -11,7 +11,7 @@ guidance that helps novices can reverse with expertise.
 
 Rows compiled 2026-09-28: every DOI checked against Crossref. Rows marked † were added or
 changed on 2026-09-29 from the mentor's
-[teaching-research notes](../../../mentor/artifacts/teaching-research/synthesis.md): only their DOI
+[teaching-research notes](../../../mentor/attachments/teaching-research/synthesis.md): only their DOI
 links were matched to Crossref titles; their claims, labels, and other links are not yet
 checked; the audit is on the research queue, [MN-012](../../../archive/offices/mentor/OUTBOX.md).
 

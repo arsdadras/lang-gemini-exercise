@@ -5,7 +5,7 @@ from pathlib import Path
 from agentlab.configs.paths_config import OUT_DIR
 
 DEFAULT_SANDBOX_DIR: Path = OUT_DIR / "sandbox"
-DEFAULT_ARTIFACTS_DIR: Path = DEFAULT_SANDBOX_DIR / "artifacts"
+DEFAULT_DELIVERABLES_DIR: Path = DEFAULT_SANDBOX_DIR / "deliverables"
 
 DEFAULT_EXECUTE_TIMEOUT: int = 60
 DEFAULT_MAX_OUTPUT_BYTES: int = 100_000

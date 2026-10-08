@@ -150,7 +150,7 @@ def test_a_review_survives_an_app_restart(
     assistant = FakeAssistant()
     model = RecordingModel(
         MemoryEdit(
-            kind="replace",
+            action="replace",
             path="/memories/user_profile.md",
             old="- Lives in Tehran",
             new="- Lives in Karaj",
@@ -202,7 +202,7 @@ def test_another_users_session_never_sees_the_proposal(
     assistant = FakeAssistant()
     model = RecordingModel(
         MemoryEdit(
-            kind="add",
+            action="add",
             path="/memories/user_profile.md",
             new="- Plays chess",
             reason="The user said so.",

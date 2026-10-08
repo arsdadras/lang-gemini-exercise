@@ -1,4 +1,4 @@
-"""Tests for sandbox helpers: path aliasing, environment allowlist, artifacts."""
+"""Tests for sandbox helpers: path aliasing, environment allowlist, deliverables."""
 
 from pathlib import Path
 
@@ -7,10 +7,10 @@ import pytest
 from agentlab.utils.sandbox_util import (
     SandboxBackend,
     build_sandbox_env,
-    diff_sandbox_artifacts,
-    get_artifact_path,
-    list_sandbox_artifacts,
-    snapshot_sandbox_artifacts,
+    diff_sandbox_deliverables,
+    get_deliverable_path,
+    list_sandbox_deliverables,
+    snapshot_sandbox_deliverables,
 )
 
 
@@ -24,8 +24,8 @@ def test_workspace_alias_maps_to_sandbox_root(tmp_path: Path) -> None:
     assert backend._resolve_path("/workspace") == root
     assert backend._resolve_path("workspace") == root
     assert (
-        backend._resolve_path("/workspace/artifacts/report.csv")
-        == root / "artifacts" / "report.csv"
+        backend._resolve_path("/workspace/deliverables/report.csv")
+        == root / "deliverables" / "report.csv"
     )
     assert (
         backend._resolve_path("my_workspace/test.py")
@@ -65,45 +65,49 @@ def test_sandbox_shell_cannot_read_process_secrets(
     assert "None" in result.output
 
 
-def test_list_sandbox_artifacts_and_path_validation(tmp_path: Path) -> None:
-    artifacts_dir = tmp_path / "artifacts"
-    artifacts_dir.mkdir()
+def test_list_sandbox_deliverables_and_path_validation(tmp_path: Path) -> None:
+    deliverables_dir = tmp_path / "deliverables"
+    deliverables_dir.mkdir()
     (tmp_path / "runner.py").write_text("print('script')", encoding="utf-8")
-    (artifacts_dir / "data.csv").write_text("a,b\n1,2", encoding="utf-8")
-    (artifacts_dir / "chart.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    (deliverables_dir / "data.csv").write_text("a,b\n1,2", encoding="utf-8")
+    (deliverables_dir / "chart.png").write_bytes(b"\x89PNG\r\n\x1a\n")
 
-    by_path = {artifact.path: artifact for artifact in list_sandbox_artifacts(tmp_path)}
+    by_path = {
+        deliverable.path: deliverable
+        for deliverable in list_sandbox_deliverables(tmp_path)
+    }
 
-    assert set(by_path) == {"artifacts/data.csv", "artifacts/chart.png"}
-    assert by_path["artifacts/data.csv"].artifact_type == "csv"
-    assert by_path["artifacts/chart.png"].artifact_type == "chart"
-    assert by_path["artifacts/data.csv"].size_bytes is not None
+    assert set(by_path) == {"deliverables/data.csv", "deliverables/chart.png"}
+    assert by_path["deliverables/data.csv"].deliverable_type == "csv"
+    assert by_path["deliverables/chart.png"].deliverable_type == "chart"
+    assert by_path["deliverables/data.csv"].size_bytes is not None
     assert (
-        get_artifact_path("artifacts/data.csv", tmp_path)
-        == (artifacts_dir / "data.csv").resolve()
+        get_deliverable_path("deliverables/data.csv", tmp_path)
+        == (deliverables_dir / "data.csv").resolve()
     )
     with pytest.raises(ValueError, match="Path traversal attempt"):
-        get_artifact_path("../sensitive.txt", tmp_path)
+        get_deliverable_path("../sensitive.txt", tmp_path)
 
 
-def test_diff_sandbox_artifacts_reports_new_and_modified(tmp_path: Path) -> None:
-    artifacts_dir = tmp_path / "artifacts"
-    artifacts_dir.mkdir()
-    (artifacts_dir / "unchanged.txt").write_text("same", encoding="utf-8")
-    (artifacts_dir / "will_change.txt").write_text("before", encoding="utf-8")
+def test_diff_sandbox_deliverables_reports_new_and_modified(tmp_path: Path) -> None:
+    deliverables_dir = tmp_path / "deliverables"
+    deliverables_dir.mkdir()
+    (deliverables_dir / "unchanged.txt").write_text("same", encoding="utf-8")
+    (deliverables_dir / "will_change.txt").write_text("before", encoding="utf-8")
 
-    before = snapshot_sandbox_artifacts(tmp_path)
-    (artifacts_dir / "will_change.txt").write_text(
+    before = snapshot_sandbox_deliverables(tmp_path)
+    (deliverables_dir / "will_change.txt").write_text(
         "after, longer content",
         encoding="utf-8",
     )
-    (artifacts_dir / "brand_new.csv").write_text("a,b\n1,2", encoding="utf-8")
+    (deliverables_dir / "brand_new.csv").write_text("a,b\n1,2", encoding="utf-8")
 
     changes = {
-        artifact.path: tag for tag, artifact in diff_sandbox_artifacts(before, tmp_path)
+        deliverable.path: tag
+        for tag, deliverable in diff_sandbox_deliverables(before, tmp_path)
     }
 
     assert changes == {
-        "artifacts/will_change.txt": "modified",
-        "artifacts/brand_new.csv": "new",
+        "deliverables/will_change.txt": "modified",
+        "deliverables/brand_new.csv": "new",
     }

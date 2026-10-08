@@ -2,14 +2,14 @@
 
 from agentlab.schemas.output.code_review_output_schema import (
     CodeIssue,
-    ReviewResult,
+    CodeReview,
     TestCase,
-    TestExecutionResult,
+    TestRun,
     TestSuite,
 )
 from agentlab.schemas.output.interpreter_output_schema import (
-    ArtifactMetadata,
-    ArtifactType,
+    Deliverable,
+    DeliverableType,
 )
 from agentlab.schemas.output.memory_consolidation_output_schema import (
     MemoryEdit,
@@ -19,7 +19,7 @@ from agentlab.schemas.output.middlewares_output_schema import (
     FinglishLines,
     GuardVerdict,
 )
-from agentlab.schemas.output.rag_output_schema import GradeDocument, GradeHallucination
+from agentlab.schemas.output.rag_output_schema import GradeChunk, GradeHallucination
 from agentlab.schemas.output.research_output_schema import (
     Citation,
     Claim,
@@ -32,16 +32,17 @@ from agentlab.schemas.output.research_output_schema import (
 )
 
 __all__ = [
-    "ArtifactMetadata",
-    "ArtifactType",
     "Citation",
     "Claim",
     "ClaimVerdict",
     "CodeIssue",
+    "CodeReview",
+    "Deliverable",
+    "DeliverableType",
     "DraftClaim",
     "Evidence",
     "FinglishLines",
-    "GradeDocument",
+    "GradeChunk",
     "GradeHallucination",
     "GuardVerdict",
     "MemoryEdit",
@@ -49,8 +50,7 @@ __all__ = [
     "ResearchDraft",
     "ResearchFindings",
     "ResearchReport",
-    "ReviewResult",
     "TestCase",
-    "TestExecutionResult",
+    "TestRun",
     "TestSuite",
 ]

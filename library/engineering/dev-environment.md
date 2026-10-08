@@ -43,7 +43,7 @@ from `origin/main` and push to `main` ([git policy](git-policy.md)).
 
 `mentor/sandbox/` holds scratch work: throwaway scripts, downloads, experiment output, "what
 if" variations of verified code. Git ignores everything in it except its `README.md`; anything
-worth keeping moves to `mentor/artifacts/` and is linked from a record.
+worth keeping moves to `mentor/attachments/` and is linked from a record.
 
 ## Secrets and live runs
 

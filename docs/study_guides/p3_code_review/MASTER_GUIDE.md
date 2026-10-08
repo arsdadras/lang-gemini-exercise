@@ -19,11 +19,11 @@ START -> reviewer -> [error?] -> test_generator -> [refactored code?] -> refacto
   node returns a partial update. `error` is a fail-fast channel that routers check before
   continuing.
 - **Schemas** (`schemas/output/code_review_output_schema.py`):
-  - `ReviewResult` (score 1-10, summary, `CodeIssue` list, optional `refactored_code`);
+  - `CodeReview` (score 1-10, summary, `CodeIssue` list, optional `refactored_code`);
   - `TestSuite` (framework, `test_code`, `TestCase` list);
-  - `TestExecutionResult` (status, passed, exit code, output).
+  - `TestRun` (status, passed, exit code, output).
 - **Structured calls** (`nodes/code_review_node.py`):
-  `REVIEW_PROMPT | llm_model.chain("medium", structured=ReviewResult, cascade=True)`. The model
+  `REVIEW_PROMPT | llm_model.chain("medium", structured=CodeReview, cascade=True)`. The model
   must answer in the schema, and if the medium tier fails the call cascades to lower tiers.
 
 ## Phase B: execution, loops, approval, persistence

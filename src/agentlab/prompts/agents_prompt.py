@@ -29,7 +29,7 @@ _SOURCE_GUIDES: dict[str, str] = {
 }
 
 
-def build_web_researcher_prompt(
+def build_researcher_prompt(
     *,
     searches: int = 3,
     reads: int = 5,
@@ -108,18 +108,18 @@ INTERPRETER_MISSION = (
 INTERPRETER_TOOLS = (
     "You operate in a sandboxed workspace with full filesystem and shell access:\n"
     "- Use `write_file` to author complete Python scripts or data files directly in sandbox root.\n"
-    "- Save all final deliverable files (CSVs, charts, images, reports, summaries) into the `artifacts/` "
-    "directory (e.g. `artifacts/sales.csv`, `artifacts/trend_chart.png`). Keep execution scripts in root.\n"
+    "- Save all final deliverable files (CSVs, charts, images, reports, summaries) into the `deliverables/` "
+    "directory (e.g. `deliverables/sales.csv`, `deliverables/trend_chart.png`). Keep execution scripts in root.\n"
     "- Use `execute` to run commands (e.g. `python script.py`) and inspect stdout/stderr.\n"
     "- Use `edit_file` for targeted modifications or bug fixes in existing scripts.\n"
-    "- Use `read_file`, `ls`, `glob`, and `grep` to inspect workspace contents and generated artifacts.\n"
+    "- Use `read_file`, `ls`, `glob`, and `grep` to inspect workspace contents and generated deliverables.\n"
     "- If a command fails or raises an error, analyze the traceback, fix the script, and re-execute."
 )
 
 INTERPRETER_OUTPUT_FORMAT = (
     "Provide clear, concise answers summarizing your computational findings. "
-    "Always explicitly list all generated deliverables with their relative paths under `artifacts/` "
-    "(e.g. `artifacts/data.csv`) and brief descriptions."
+    "Always explicitly list all generated deliverables with their relative paths under `deliverables/` "
+    "(e.g. `deliverables/data.csv`) and brief descriptions."
 )
 
 INTERPRETER_CONSTRAINTS = (
@@ -128,7 +128,7 @@ INTERPRETER_CONSTRAINTS = (
     "- All tools operate directly in the sandbox root directory. Always use plain relative file paths without "
     "any directory prefix (e.g. `write_file(file_path='script.py', ...)`, `execute(command='python script.py')`; "
     "never use `/workspace/` or `workspace/`).\n"
-    "- When writing scripts that generate charts, datasets, or reports, configure them to save output files into `artifacts/`.\n"
+    "- When writing scripts that generate charts, datasets, or reports, configure them to save output files into `deliverables/`.\n"
     "- Always verify script execution succeeds (exit code 0) before reporting final results."
 )
 
@@ -169,22 +169,22 @@ def build_coding_coordinator_prompt() -> str:
             "Call this subagent whenever the objective depends on current external data or technical documentation.\n"
             "2. `code_interpreter`: Specialist in computational execution, data engineering, and file generation. Operates exclusively in an isolated "
             "sandbox workspace. Dispatches Python scripts, parses data, runs calculations, and creates deliverable files (CSVs, charts, markdown briefings) "
-            "in `artifacts/`.\n"
+            "in `deliverables/`.\n"
             "3. `code_review_subagent`: Specialist in software quality assurance, static analysis, security auditing, and test generation. "
             "Call this subagent to rigorously evaluate, score, and verify any Python scripts authored during the execution pipeline.\n\n"
             "### Autonomous Pipeline & Handoff Patterns\n"
             "You must autonomously chain and bridge information between subagents:\n"
             "- Pattern 1 (Data Acquisition -> Ingestion): Feed facts and numerical data returned by `researcher` directly into `code_interpreter`'s "
-            "task prompt so it can structure, compute, and persist the data into `artifacts/`.\n"
+            "task prompt so it can structure, compute, and persist the data into `deliverables/`.\n"
             "- Pattern 2 (Implementation -> Quality Gate): Whenever `code_interpreter` authors a new script or pipeline, pass that source code to "
             "`code_review_subagent` to audit for bugs, security risks, and verify test execution before presenting results to the user.\n"
             "- Pattern 3 (Multi-Format Deliverables): When the user requires analysis, ensure `code_interpreter` produces diverse, tangible deliverables: "
-            "structured datasets (`.csv`), visual representations (e.g. scalable SVG charts or plot images), and executive text documents (`.md` or `.txt`) in `artifacts/`."
+            "structured datasets (`.csv`), visual representations (e.g. scalable SVG charts or plot images), and executive text documents (`.md` or `.txt`) in `deliverables/`."
         ),
         output_format=(
             "Synthesize findings from your delegated subagents into a unified, executive technical response:\n"
             "1. Executive Summary: High-level overview of the objective, methodology, and key analytical takeaways.\n"
-            "2. Deliverable Artifacts: Full listing of all generated deliverable files under `artifacts/`.\n"
+            "2. Deliverables: Full listing of all generated deliverable files under `deliverables/`.\n"
             "3. Code Review & QA Findings: Pass/fail status, overall quality score (out of 10), identified issues, and security assessment.\n"
             "4. Strategic Recommendations & Next Steps: Actionable business or engineering recommendations based on the findings."
         ),
@@ -193,8 +193,8 @@ def build_coding_coordinator_prompt() -> str:
             "- Do not execute shell commands or write code directly; always delegate execution to `code_interpreter`.\n"
             "- When delegating to subagents, provide explicit, self-contained task instructions including all required data, schema requirements, and file paths.\n"
             "- If a subagent encounters an error or failing test, instruct it to inspect the traceback and self-correct.\n"
-            "- Whenever a subagent reply has a `Changed:` line, list every file from it, with its action (created/modified) and exact relative path, in your final Deliverable Artifacts section. Never omit, guess, or summarize away file paths.\n"
-            "- Always verify that deliverable files were produced in `artifacts/` before concluding computational tasks."
+            "- Whenever a subagent reply has a `Changed:` line, list every file from it, with its action (created/modified) and exact relative path, in your final Deliverables section. Never omit, guess, or summarize away file paths.\n"
+            "- Always verify that deliverable files were produced in `deliverables/` before concluding computational tasks."
         ),
     )
 

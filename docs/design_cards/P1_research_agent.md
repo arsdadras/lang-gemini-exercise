@@ -3,7 +3,7 @@
 - Created: 2026-10-05 by the lead, for stage R1 ([roadmap](../../mentor/ROADMAP.md#return-pass-r0-r5)).
   P1 was built before design cards existed; this card describes what is built and what R1 adds,
   marked **built** and **R1**.
-- Code: `agents/web_researcher_agent.py`, `subagents/research_subagent.py` (`run_research`,
+- Code: `agents/researcher_agent.py`, `subagents/research_subagent.py` (`run_research`,
   the `researcher` subagent spec), `tools/web_search_tool.py`, `schemas/output/research_output_schema.py`,
   `apps/research_app.py` (`lab-research`), composed by `apps/personal_brief_app.py` (`lab-brief`)
   and the coding coordinator. Decisions: [ADR-0026](../adr/0026-the-specialist-contract.md),
@@ -101,9 +101,9 @@ item a tool returned:
   paper, or a corpus file, with its URL, title, `kind` (the source it came from), and text.
   Documents travel as the tool message's artifact, `documents_read` collects them, and they are
   the claim check's only evidence.
-- **chunk**: a piece of a corpus file as a retriever returns it (LangChain's `Document` class,
-  whose `metadata["source"]` holds the file's path). `search_corpus` joins a file's chunks into
-  one document.
+- **chunk**: a piece of text a retriever or a search returns (LangChain's `Document` class,
+  whose `metadata["source"]` holds its file path or URL). `search_corpus` joins a file's chunks
+  into one document; P2 grades and answers from chunks (`RAGState.chunks`).
 - **citation** (`Citation`): a document the report cites, by title and URL
   (`ResearchDraft.citations`, `ResearchReport.citations`, whose `citation_kinds` give each one's
   source kind). It was the `Source` class until 2026-10-08.

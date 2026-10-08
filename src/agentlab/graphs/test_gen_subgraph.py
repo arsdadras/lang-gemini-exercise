@@ -26,7 +26,7 @@ def route_after_execution(
 ) -> str:
     """Determine next step after sandbox execution: finish if passed or retries
     exhausted, else fix."""
-    execution = state.get("test_execution")
+    execution = state.get("test_run")
     if not execution or execution.passed:
         return "__end__"
 

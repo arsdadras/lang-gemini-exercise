@@ -11,8 +11,8 @@ from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langchain_core.tools import tool
 from langgraph.checkpoint.memory import InMemorySaver
 
-from agentlab.agents import web_researcher_agent
-from agentlab.agents.web_researcher_agent import make_web_researcher_agent
+from agentlab.agents import researcher_agent
+from agentlab.agents.researcher_agent import make_researcher_agent
 from agentlab.middlewares.source_route_middleware import SourceRouteMiddleware
 from agentlab.nodes import claim_check_node
 from agentlab.nodes.claim_check_node import check_claims
@@ -425,9 +425,9 @@ def scripted_model(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("TAVILY_API_KEY", "test-key")  # tools are built, never called
     model = ScriptedToolModel(messages=iter([done()]))
     monkeypatch.setattr(
-        web_researcher_agent, "llm_model", SimpleNamespace(get=lambda *_: model)
+        researcher_agent, "llm_model", SimpleNamespace(get=lambda *_: model)
     )
-    monkeypatch.setattr(web_researcher_agent, "make_model_fallback", lambda *_: [])
+    monkeypatch.setattr(researcher_agent, "make_model_fallback", lambda *_: [])
 
 
 def tool_names(agent: Any) -> set[str]:
@@ -439,7 +439,7 @@ def test_the_agent_gets_every_available_sources_tools(
 ) -> None:
     sources_available(monkeypatch, "web", "academic", "corpus")
 
-    agent = make_web_researcher_agent(InMemorySaver())
+    agent = make_researcher_agent(InMemorySaver())
 
     assert tool_names(agent) == {
         "web_search",
@@ -454,14 +454,14 @@ def test_outbound_searches_wait_for_approval_and_document_search_does_not(
 ) -> None:
     sources_available(monkeypatch, "web", "academic", "corpus")
     gated: list[list[str]] = []
-    real = web_researcher_agent.hitl_for
+    real = researcher_agent.hitl_for
     monkeypatch.setattr(
-        web_researcher_agent,
+        researcher_agent,
         "hitl_for",
         lambda names, **kw: gated.append(list(names)) or real(names, **kw),
     )
 
-    make_web_researcher_agent(InMemorySaver())
+    make_researcher_agent(InMemorySaver())
 
     assert gated == [["web_search", "academic_search"]]
 
@@ -471,7 +471,7 @@ def test_the_callers_sources_limit_the_agents_tools(
 ) -> None:
     sources_available(monkeypatch, "web", "academic", "corpus")
 
-    agent = make_web_researcher_agent(
+    agent = make_researcher_agent(
         InMemorySaver(), options=ResearchOptions(sources=["corpus"])
     )
 

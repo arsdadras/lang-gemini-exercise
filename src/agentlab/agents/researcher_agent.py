@@ -31,7 +31,7 @@ from agentlab.middlewares.fallback_middleware import make_model_fallback
 from agentlab.middlewares.hitl_middleware import hitl_for
 from agentlab.middlewares.source_route_middleware import SourceRouteMiddleware
 from agentlab.models import llm_model
-from agentlab.prompts.agents_prompt import build_web_researcher_prompt
+from agentlab.prompts.agents_prompt import build_researcher_prompt
 from agentlab.retrieval.corpus_retrieval import build_corpus_retriever
 from agentlab.retrieval.index_retrieval import get_retriever
 from agentlab.schemas.input.research_input_schema import ResearchOptions
@@ -49,7 +49,7 @@ from agentlab.tools.research_source_tool import corpus_description, research_sou
 from agentlab.tools.web_search_tool import WEB_SEARCH_TOOL_NAME, make_web_search_tool
 
 
-def make_web_researcher_agent(
+def make_researcher_agent(
     checkpointer: BaseCheckpointSaver | None = None,
     *,
     tier: str = "low",  # paid tier only: tool-calling loop, not opensource/free (ADR-0014)
@@ -133,7 +133,7 @@ def make_web_researcher_agent(
         )
     return create_agent(
         model=llm_model.get(tier),
-        system_prompt=build_web_researcher_prompt(
+        system_prompt=build_researcher_prompt(
             searches=budget.searches,
             reads=budget.reads,
             claims=budget.claims,

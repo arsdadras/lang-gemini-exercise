@@ -4,7 +4,7 @@ maintainer: mentor
 status: current
 updated: 2026-10-08
 summary: The rule for every AI decision point (which of code, a decision model, or an LLM takes it), the one standard each is held to, and how decision models are called here.
-related: [../governance/principles.md, ../../docs/adr/0021-decision-models-as-a-second-model-family.md, ../../mentor/research/landscape/decision-models/README.md, ../../mentor/artifacts/jev-dossier.md]
+related: [../governance/principles.md, ../../docs/adr/0021-decision-models-as-a-second-model-family.md, ../../mentor/research/landscape/decision-models/README.md, ../../mentor/attachments/jev-dossier.md]
 ---
 
 # Decision Models
@@ -12,7 +12,7 @@ related: [../governance/principles.md, ../../docs/adr/0021-decision-models-as-a-
 Binding rules for every decision point ([ADR-0021](../../docs/adr/0021-decision-models-as-a-second-model-family.md)).
 What the models are, how well they measure, and who builds what with them lives in the research record,
 [decision-model landscape](../../mentor/research/landscape/decision-models/README.md); the
-patterns and the program are in the [Jev dossier](../../mentor/artifacts/jev-dossier.md).
+patterns and the program are in the [Jev dossier](../../mentor/attachments/jev-dossier.md).
 
 ## Two model families
 

@@ -30,7 +30,7 @@ TEHRAN_PROFILE = "# User Profile\n\n## Identity\n- Lives in Tehran\n- Backend de
 
 def add(new: str, section: str = "", path: str = PROFILE) -> MemoryEdit:
     return MemoryEdit(
-        kind="add",
+        action="add",
         path=path,
         section=section,
         new=new,
@@ -40,7 +40,7 @@ def add(new: str, section: str = "", path: str = PROFILE) -> MemoryEdit:
 
 def replace(old: str, new: str, path: str = PROFILE) -> MemoryEdit:
     return MemoryEdit(
-        kind="replace",
+        action="replace",
         path=path,
         old=old,
         new=new,
@@ -49,7 +49,7 @@ def replace(old: str, new: str, path: str = PROFILE) -> MemoryEdit:
 
 
 def remove(old: str, path: str = PROFILE) -> MemoryEdit:
-    return MemoryEdit(kind="remove", path=path, old=old, reason="The user said so.")
+    return MemoryEdit(action="remove", path=path, old=old, reason="The user said so.")
 
 
 class ScriptedConsolidator:

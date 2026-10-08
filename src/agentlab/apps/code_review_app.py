@@ -19,8 +19,8 @@ from agentlab.configs.paths_config import checkpoint_db_path
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
 from agentlab.graphs.code_review_parentgraph import build_code_review_graph
 from agentlab.schemas.output.code_review_output_schema import (
-    ReviewResult,
-    TestExecutionResult,
+    CodeReview,
+    TestRun,
     TestSuite,
 )
 from agentlab.utils.console_util import configure_utf8_stdout
@@ -45,7 +45,7 @@ def _make_graph(checkpointer: BaseCheckpointSaver | None) -> CompiledStateGraph:
     )
 
 
-def _print_review(review: ReviewResult) -> None:
+def _print_review(review: CodeReview) -> None:
     print(f"\n{_RULE}\nCODE REVIEW REPORT (quality score: {review.score}/10)\n{_RULE}")
     print(f"\nSummary:\n{review.summary}\n")
     if not review.issues:
@@ -59,7 +59,7 @@ def _print_review(review: ReviewResult) -> None:
         print(f"Suggested refactoring:\n\n{review.refactored_code}\n")
 
 
-def _print_tests(tests: TestSuite, execution: TestExecutionResult | None) -> None:
+def _print_tests(tests: TestSuite, execution: TestRun | None) -> None:
     print(f"\n{_RULE}\nGENERATED TEST SUITE (framework: {tests.framework})\n{_RULE}")
     print(f"Planned test cases ({len(tests.test_cases)}):")
     for case in tests.test_cases:
@@ -94,7 +94,7 @@ def _stream_pipeline(
                 print(
                     f"  [ok] Test suite generated: {len(tests.test_cases)} test case(s)",
                 )
-            if execution := delta.get("test_execution"):
+            if execution := delta.get("test_run"):
                 print(
                     f"  [ok] Sandbox run: {'PASSED' if execution.passed else 'FAILED'}",
                 )
@@ -153,7 +153,7 @@ def run_code_review(
 
     _print_review(final["review"])
     if final.get("tests"):
-        _print_tests(final["tests"], final.get("test_execution"))
+        _print_tests(final["tests"], final.get("test_run"))
     applied = final.get("applied_code")
     label = (
         "APPROVED (refactored version)"

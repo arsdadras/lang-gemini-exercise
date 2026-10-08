@@ -102,7 +102,7 @@
   <rect x="96" y="772" width="660" height="380" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
   <rect x="108" y="784" width="660" height="380" rx="10" fill="none" stroke="#93c5fd" stroke-width="1.2" transform="translate(6,6)" opacity="0.7"/>
   <text x="116" y="800" class="nodeName">research   (× N, one run per sub-question, fresh thread)</text>
-  <text x="116" y="818" class="nodeFile">nodes/research_node.py · make_research_node(agent) · agent: agents/web_researcher_agent.py</text>
+  <text x="116" y="818" class="nodeFile">nodes/research_node.py · make_research_node(agent) · agent: agents/researcher_agent.py</text>
 
   <rect x="116" y="832" width="620" height="116" rx="8" fill="#ffffff" stroke="#93c5fd"/>
   <text x="130" y="852" class="body" font-weight="700">Agent middleware (in order)</text>

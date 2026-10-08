@@ -38,7 +38,7 @@ def build_research_graph(
     """Compile the research graph around an injected P1 agent.
 
     Args:
-        agent: The researcher agent (``make_web_researcher_agent``), built with the same options
+        agent: The researcher agent (``make_researcher_agent``), built with the same options
             the graph is invoked with: the agent holds the per-run budgets and the tools of
             the sources it may use.
         plan_chain: The planner's structured chain; defaults to the ``low`` tier.

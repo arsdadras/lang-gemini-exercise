@@ -51,7 +51,7 @@ def _open_store() -> Chroma:
     )
 
 
-def _load_source_documents() -> list[Document]:
+def _load_corpus_files() -> list[Document]:
     """Load the configured docs and every source file, tagged with repo-relative paths."""
     documents = [
         Document(
@@ -75,7 +75,7 @@ def _load_source_documents() -> list[Document]:
 def build_index() -> Chroma:
     """Rebuild the collection from scratch, embedding in paced batches."""
     splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
-    chunks = splitter.split_documents(_load_source_documents())
+    chunks = splitter.split_documents(_load_corpus_files())
     store = _open_store()
     store.reset_collection()
     for start in range(0, len(chunks), EMBED_BATCH_SIZE):

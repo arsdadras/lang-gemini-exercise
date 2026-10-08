@@ -26,23 +26,23 @@ def _replay(graph: CompiledStateGraph, config: dict, raw_index: str) -> None:
         print("Invalid checkpoint index.")
         return
     result = graph.invoke(None, config=snapshot.config)
-    print(f"\nFinal Answer:\n\n{result.get('generation')}")
+    print(f"\nFinal Answer:\n\n{result.get('answer')}")
 
 
 def _ask(graph: CompiledStateGraph, config: dict, question: str) -> None:
     # search_query and retries have no reducer: reset them for every new question.
     inputs = {"question": question, "search_query": question, "retries": 0}
-    generation = None
+    answer = None
     for update in graph.stream(inputs, config=config, stream_mode="updates"):
         for delta in update.values():
             if not delta:
                 continue
-            if "documents" in delta:
-                print(f"-> Kept {len(delta['documents'])} document(s).")
+            if "chunks" in delta:
+                print(f"-> Kept {len(delta['chunks'])} chunk(s).")
             if "search_query" in delta:
                 print(f"-> Rewritten query: {delta['search_query']}")
-            generation = delta.get("generation", generation)
-    print(f"\nFinal Answer:\n\n{generation}")
+            answer = delta.get("answer", answer)
+    print(f"\nFinal Answer:\n\n{answer}")
 
 
 def main() -> None:

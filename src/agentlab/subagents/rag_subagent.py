@@ -17,7 +17,7 @@ from agentlab.utils.subagent_util import (
 RAG_SPECIALIST = "rag"
 DEFAULT_RAG_SUBAGENT_NAME = "rag_subagent"
 DEFAULT_RAG_SUBAGENT_DESCRIPTION = (
-    "Answers questions using the indexed document corpus, falling back "
+    "Answers questions using the indexed chunk corpus, falling back "
     "to a live web search when nothing relevant is found locally."
 )
 
@@ -26,7 +26,7 @@ DEFAULT_RAG_SUBAGENT_DESCRIPTION = (
 _OUTCOMES = {
     "corpus": ("ok", ""),
     "web": ("partial", "The local corpus had nothing relevant; answered from the web."),
-    "unverified": ("failed", "The corpus answer wasn't supported by its documents."),
+    "unverified": ("failed", "The corpus answer wasn't supported by its chunks."),
     "none": ("failed", "Nothing relevant in the corpus or on the web."),
 }
 
@@ -53,13 +53,13 @@ def run_rag(graph: Runnable, question: str) -> SpecialistResult[str]:
     status, reason = _OUTCOMES[source]
     kind = "web" if source == "web" else "corpus"
     sources = dict.fromkeys(
-        document.metadata.get("source", "") for document in state.get("documents", [])
+        chunk.metadata.get("source", "") for chunk in state.get("chunks", [])
     )
     return SpecialistResult[str](
         specialist=RAG_SPECIALIST,
         status=status,
         reason=reason,
-        output=state.get("generation") if status != "failed" else None,
+        output=state.get("answer") if status != "failed" else None,
         provenance=[Provenance(kind=kind, ref=ref) for ref in sources if ref]
         if status != "failed"
         else [],

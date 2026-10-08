@@ -6,8 +6,8 @@ from typing import Any
 import pytest
 from langgraph.checkpoint.memory import InMemorySaver
 
-from agentlab.agents import web_researcher_agent
-from agentlab.agents.web_researcher_agent import make_web_researcher_agent
+from agentlab.agents import researcher_agent
+from agentlab.agents.researcher_agent import make_researcher_agent
 from tests.fakes import ScriptedToolModel, done
 
 
@@ -16,9 +16,9 @@ def scripted_model(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("TAVILY_API_KEY", "test-key")  # tools are built, never called
     model = ScriptedToolModel(messages=iter([done()]))
     monkeypatch.setattr(
-        web_researcher_agent, "llm_model", SimpleNamespace(get=lambda *_: model)
+        researcher_agent, "llm_model", SimpleNamespace(get=lambda *_: model)
     )
-    monkeypatch.setattr(web_researcher_agent, "make_model_fallback", lambda *_: [])
+    monkeypatch.setattr(researcher_agent, "make_model_fallback", lambda *_: [])
 
 
 def tool_names(agent: Any) -> set[str]:
@@ -28,7 +28,7 @@ def tool_names(agent: Any) -> set[str]:
 def test_the_researcher_has_only_its_search_and_read_tools(
     scripted_model: None,
 ) -> None:
-    agent = make_web_researcher_agent(InMemorySaver())
+    agent = make_researcher_agent(InMemorySaver())
 
     # No `task`: a subagent's reads would bypass the search budget, the approval gate, and
     # the claim check. No filesystem tools: the researcher has nothing to store.
@@ -43,6 +43,6 @@ def test_a_composing_caller_can_still_add_tools(scripted_model: None) -> None:
         """An extra tool."""
         return ""
 
-    agent = make_web_researcher_agent(InMemorySaver(), extra_tools=[extra])
+    agent = make_researcher_agent(InMemorySaver(), extra_tools=[extra])
 
     assert tool_names(agent) == {"web_search", "read_page", "extra"}

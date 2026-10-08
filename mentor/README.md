@@ -103,5 +103,5 @@ concept per stage; a question from a later stage gets two to four lines and a
 | [DECISIONS.md](DECISIONS.md) | The decision register (`DEC-###`) |
 | [RISKS.md](RISKS.md) | Program risks |
 | [research/](research/CATALOG.md) | The research record |
-| [artifacts/](artifacts/) | Kept outputs, each linked from a record |
+| [attachments/](attachments/) | Kept outputs, each linked from a record |
 | [sandbox/](sandbox/README.md) | Scratch and "what if" variations (ignored by git) |

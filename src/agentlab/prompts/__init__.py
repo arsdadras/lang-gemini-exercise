@@ -5,7 +5,7 @@ from agentlab.prompts.agents_prompt import (
     build_interpreter_agent_prompt,
     build_personal_assistant_prompt,
     build_repo_insight_prompt,
-    build_web_researcher_prompt,
+    build_researcher_prompt,
 )
 from agentlab.prompts.middlewares_prompt import (
     MEMORY_WRITE_POLICY,
@@ -48,6 +48,6 @@ __all__ = [
     "build_interpreter_worker_prompt",
     "build_personal_assistant_prompt",
     "build_repo_insight_prompt",
+    "build_researcher_prompt",
     "build_system_prompt",
-    "build_web_researcher_prompt",
 ]

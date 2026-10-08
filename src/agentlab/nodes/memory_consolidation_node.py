@@ -121,7 +121,7 @@ def make_consolidate_node(
         )
         # Additions first: they rarely need approval, so they land even if the user
         # never gets to the changes that do.
-        edits = sorted(proposal.edits, key=lambda edit: edit.kind != "add")
+        edits = sorted(proposal.edits, key=lambda edit: edit.action != "add")
         return {"edits": [edit.model_dump() for edit in edits], "cursor": 0}
 
     return consolidate
@@ -172,9 +172,9 @@ def _apply(
 ) -> str:
     """Turn one edit into one gated write or edit, and say what happened."""
     result: WriteResult | EditResult
-    if edit.kind == "add" and current is None:
+    if edit.action == "add" and current is None:
         result = backend.write(key, edit.new.rstrip("\n") + "\n")
-    elif edit.kind == "add":
+    elif edit.action == "add":
         if _find_line(current, edit.new) is not None:
             return f"Skipped {edit.describe()} (already in memory)."
         section = _section(current, edit.section) if edit.section else None
@@ -194,10 +194,10 @@ def _apply(
             return f"Skipped {edit.describe()} (that line is not in memory)."
         old = (
             line
-            if edit.kind == "replace"
+            if edit.action == "replace"
             else (f"{line}\n" if f"{line}\n" in current else line)
         )
-        new = edit.new if edit.kind == "replace" else ""
+        new = edit.new if edit.action == "replace" else ""
         result = backend.edit(key, old, new, requested=edit.user_requested)
     if result.error:
         return f"Not applied {edit.describe()}: {result.error}"

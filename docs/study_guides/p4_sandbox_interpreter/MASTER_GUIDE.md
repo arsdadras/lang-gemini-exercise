@@ -22,9 +22,9 @@ and code review (P3) under a coordinator.
   - Models like to invent a `/workspace/` prefix, so the backend maps a leading `workspace`
     segment to the root. File tools and the shell then see the same files.
 - **Prompt** (`prompts/agents_prompt.build_interpreter_agent_prompt`): write a script, execute
-  it, verify the result, self-correct; save deliverables under `artifacts/`.
+  it, verify the result, self-correct; save deliverables under `deliverables/`.
 
-## Phase B: governance, artifacts, durability
+## Phase B: governance, deliverables, durability
 
 - **Approval before shell commands:**
   - `interrupt_on={"execute": True}` pauses before every `execute` call;
@@ -33,10 +33,10 @@ and code review (P3) under a coordinator.
     optional reason that the agent reads as feedback.
   - File-level permission rules can't constrain a shell (a command can `cat` or `rm` anything),
     so approval, not path rules, is the safeguard here.
-- **Artifacts:**
-  - deliverables live in `out/sandbox/artifacts/`;
-  - `list_sandbox_artifacts` returns `ArtifactMetadata` (path, type, size, mtime);
-  - `get_artifact_path` rejects traversal with `Path.is_relative_to`.
+- **Deliverables:**
+  - deliverables live in `out/sandbox/deliverables/`;
+  - `list_sandbox_deliverables` returns `Deliverable` (path, type, size, mtime);
+  - `get_deliverable_path` rejects traversal with `Path.is_relative_to`.
 - **Durability:**
   - the default checkpointer is SQLite (`out/state/checkpoints.db`);
   - on startup the app checks `agent.get_state(config).next` and resumes an approval a crashed
@@ -51,7 +51,7 @@ and code review (P3) under a coordinator.
 
 - **Subagent adapter** (`subagents/interpreter_subagent.py`): wraps an *injected* interpreter
   agent, built by the caller, so `subagents/` never imports `agents/`. It snapshots
-  `artifacts/` before a delegation, invokes the agent on a fresh thread, and appends a
+  `deliverables/` before a delegation, invokes the agent on a fresh thread, and appends a
   "Deliverables Update" listing `[NEW]` and `[MODIFIED]` files with exact paths. (Since R0 the
   same facts are the envelope's side effects, rendered as a `Changed:` line; see
   `schemas/output/specialist_output_schema.py`.)
@@ -89,7 +89,7 @@ uv run lab-coordinator new
 ## Tests
 
 - `tests/test_sandbox.py`: workspace alias, environment allowlist (including a real shell call
-  that can't read a planted secret), artifacts, traversal.
+  that can't read a planted secret), deliverables, traversal.
 - `tests/test_run_with_hitl.py`: approval and rejection decisions, and the resume loop.
 - `tests/test_session_util.py`: every session mode.
 - `tests/test_streaming_util.py`: streaming event handling.

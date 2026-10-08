@@ -5,11 +5,11 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 
-class GradeDocument(BaseModel):
-    """Binary relevance grade for one retrieved document."""
+class GradeChunk(BaseModel):
+    """Binary relevance grade for one retrieved chunk."""
 
     binary_score: Literal["yes", "no"] = Field(
-        description="'yes' if the document is relevant to the question, else 'no'.",
+        description="'yes' if the chunk is relevant to the question, else 'no'.",
     )
 
 

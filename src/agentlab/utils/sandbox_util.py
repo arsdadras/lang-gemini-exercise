@@ -1,4 +1,4 @@
-"""Sandbox helpers: the interpreter's shell backend, isolated pytest runs, artifact discovery."""
+"""Sandbox helpers: the interpreter's shell backend, isolated pytest runs, deliverable discovery."""
 
 import os
 import subprocess
@@ -17,15 +17,15 @@ from agentlab.configs.interpreter_config import (
     DEFAULT_VIRTUAL_MODE,
     SANDBOX_ENV_ALLOWLIST,
 )
-from agentlab.schemas.output.code_review_output_schema import TestExecutionResult
+from agentlab.schemas.output.code_review_output_schema import TestRun
 from agentlab.schemas.output.interpreter_output_schema import (
-    ArtifactMetadata,
-    ArtifactType,
+    Deliverable,
+    DeliverableType,
 )
 
-ARTIFACTS_DIRNAME = "artifacts"
+DELIVERABLES_DIRNAME = "deliverables"
 _WORKSPACE_ALIAS = "workspace"
-_ARTIFACT_TYPES: dict[str, ArtifactType] = {
+_ARTIFACT_TYPES: dict[str, DeliverableType] = {
     ".csv": "csv",
     ".json": "json",
     ".png": "chart",
@@ -80,7 +80,7 @@ class SandboxBackend(LocalShellBackend):
 
 def make_sandbox_backend(root_dir: Path = DEFAULT_SANDBOX_DIR) -> SandboxBackend:
     """Build the interpreter backend: confined file tools and an allow-listed shell environment."""
-    (root_dir / ARTIFACTS_DIRNAME).mkdir(parents=True, exist_ok=True)
+    (root_dir / DELIVERABLES_DIRNAME).mkdir(parents=True, exist_ok=True)
     return SandboxBackend(
         root_dir=root_dir,
         virtual_mode=DEFAULT_VIRTUAL_MODE,
@@ -94,14 +94,14 @@ def run_tests_in_sandbox(
     code: str,
     test_code: str,
     timeout_seconds: int = 15,
-) -> TestExecutionResult:
+) -> TestRun:
     """Run generated pytest code against ``code`` in a throwaway directory.
 
     Generated tests are untrusted code, so the subprocess only gets the
     allow-listed environment.
     """
     if not test_code.strip():
-        return TestExecutionResult(
+        return TestRun(
             status="error",
             passed=False,
             exit_code=-1,
@@ -124,14 +124,14 @@ def run_tests_in_sandbox(
                 check=False,
             )
         except subprocess.TimeoutExpired:
-            return TestExecutionResult(
+            return TestRun(
                 status="timed_out",
                 passed=False,
                 exit_code=-1,
                 output=f"Test execution timed out after {timeout_seconds} seconds.",
             )
         except OSError as exc:
-            return TestExecutionResult(
+            return TestRun(
                 status="error",
                 passed=False,
                 exit_code=-1,
@@ -140,7 +140,7 @@ def run_tests_in_sandbox(
 
     passed = completed.returncode == 0
     output = completed.stdout + (f"\n{completed.stderr}" if completed.stderr else "")
-    return TestExecutionResult(
+    return TestRun(
         status="passed" if passed else "failed",
         passed=passed,
         exit_code=completed.returncode,
@@ -148,74 +148,76 @@ def run_tests_in_sandbox(
     )
 
 
-def list_sandbox_artifacts(
+def list_sandbox_deliverables(
     sandbox_dir: Path = DEFAULT_SANDBOX_DIR,
-) -> list[ArtifactMetadata]:
-    """List every file under the sandbox's ``artifacts/`` directory."""
-    artifacts_dir = sandbox_dir / ARTIFACTS_DIRNAME
-    if not artifacts_dir.is_dir():
+) -> list[Deliverable]:
+    """List every file under the sandbox's ``deliverables/`` directory."""
+    deliverables_dir = sandbox_dir / DELIVERABLES_DIRNAME
+    if not deliverables_dir.is_dir():
         return []
 
-    artifacts: list[ArtifactMetadata] = []
-    for item in sorted(artifacts_dir.rglob("*")):
+    deliverables: list[Deliverable] = []
+    for item in sorted(deliverables_dir.rglob("*")):
         if not item.is_file():
             continue
         stat = item.stat()
-        artifacts.append(
-            ArtifactMetadata(
+        deliverables.append(
+            Deliverable(
                 name=item.name,
                 path=item.relative_to(sandbox_dir).as_posix(),
-                artifact_type=_ARTIFACT_TYPES.get(item.suffix.lower(), "other"),
-                description=f"{item.suffix.upper().lstrip('.')} artifact ({stat.st_size} bytes)",
+                deliverable_type=_ARTIFACT_TYPES.get(item.suffix.lower(), "other"),
+                description=f"{item.suffix.upper().lstrip('.')} deliverable ({stat.st_size} bytes)",
                 size_bytes=stat.st_size,
                 modified_at=stat.st_mtime,
             ),
         )
-    return artifacts
+    return deliverables
 
 
-ArtifactSnapshot = dict[str, tuple[int | None, float | None]]
-ArtifactChange = Literal["new", "modified"]
+DeliverableSnapshot = dict[str, tuple[int | None, float | None]]
+DeliverableChange = Literal["new", "modified"]
 
 
-def snapshot_sandbox_artifacts(
+def snapshot_sandbox_deliverables(
     sandbox_dir: Path = DEFAULT_SANDBOX_DIR,
-) -> ArtifactSnapshot:
-    """Capture each artifact's (size, mtime), to diff against after an agent turn."""
+) -> DeliverableSnapshot:
+    """Capture each deliverable's (size, mtime), to diff against after an agent turn."""
     return {
         a.path: (a.size_bytes, a.modified_at)
-        for a in list_sandbox_artifacts(sandbox_dir)
+        for a in list_sandbox_deliverables(sandbox_dir)
     }
 
 
-def diff_sandbox_artifacts(
-    before: ArtifactSnapshot,
+def diff_sandbox_deliverables(
+    before: DeliverableSnapshot,
     sandbox_dir: Path = DEFAULT_SANDBOX_DIR,
-) -> list[tuple[ArtifactChange, ArtifactMetadata]]:
-    """Compare a prior snapshot to the current artifacts: what's new, what changed.
+) -> list[tuple[DeliverableChange, Deliverable]]:
+    """Compare a prior snapshot to the current deliverables: what's new, what changed.
 
-    An artifact absent from ``before`` is new; one present with a different
+    An deliverable absent from ``before`` is new; one present with a different
     (size, mtime) pair was modified in place. Deletions aren't reported — nothing
-    that generates artifacts currently removes them mid-run.
+    that generates deliverables currently removes them mid-run.
     """
-    changes: list[tuple[ArtifactChange, ArtifactMetadata]] = []
-    for artifact in list_sandbox_artifacts(sandbox_dir):
-        previous = before.get(artifact.path)
+    changes: list[tuple[DeliverableChange, Deliverable]] = []
+    for deliverable in list_sandbox_deliverables(sandbox_dir):
+        previous = before.get(deliverable.path)
         if previous is None:
-            changes.append(("new", artifact))
-        elif previous != (artifact.size_bytes, artifact.modified_at):
-            changes.append(("modified", artifact))
+            changes.append(("new", deliverable))
+        elif previous != (deliverable.size_bytes, deliverable.modified_at):
+            changes.append(("modified", deliverable))
     return changes
 
 
-def get_artifact_path(
+def get_deliverable_path(
     relative_path: str,
     sandbox_dir: Path = DEFAULT_SANDBOX_DIR,
 ) -> Path:
-    """Resolve an artifact path, rejecting anything outside ``artifacts/``."""
-    artifacts_dir = (sandbox_dir / ARTIFACTS_DIRNAME).resolve()
+    """Resolve an deliverable path, rejecting anything outside ``deliverables/``."""
+    deliverables_dir = (sandbox_dir / DELIVERABLES_DIRNAME).resolve()
     target = (sandbox_dir / relative_path).resolve()
-    if not target.is_relative_to(artifacts_dir):
-        msg = f"Path traversal attempt: {relative_path} is outside artifacts directory"
+    if not target.is_relative_to(deliverables_dir):
+        msg = (
+            f"Path traversal attempt: {relative_path} is outside deliverables directory"
+        )
         raise ValueError(msg)
     return target

@@ -15,9 +15,9 @@ class RAGState(TypedDict):
 
     question: str
     search_query: NotRequired[str]
-    documents: NotRequired[list[Document]]
-    generation: NotRequired[str]
+    chunks: NotRequired[list[Document]]
+    answer: NotRequired[str]
     retries: NotRequired[int]
     answer_source: NotRequired[Literal["corpus", "web", "unverified", "none"]]
-    """Where ``generation`` came from: the corpus (checked against its documents), the web
+    """Where ``answer`` came from: the corpus (checked against its chunks), the web
     fallback, a disclaimer after the check failed, or nowhere."""

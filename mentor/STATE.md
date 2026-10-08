@@ -141,7 +141,7 @@ Recorded in [research/](research/CATALOG.md) when done.
 - Reconcile the consolidator records (ADR-0014's erratum vs ADR-0012,
   `EV-2026-09-19-consolidator-model-comparison`).
 - The teaching-method questions in
-  [synthesis, section 5](artifacts/teaching-research/synthesis.md#5-open-questions-worth-a-verified-study).
+  [synthesis, section 5](attachments/teaching-research/synthesis.md#5-open-questions-worth-a-verified-study).
 
 ## Reserved for the learner
 

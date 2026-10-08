@@ -28,7 +28,7 @@ class CodeIssue(BaseModel):
     )
 
 
-class ReviewResult(BaseModel):
+class CodeReview(BaseModel):
     """Overall structured review findings for a given code file or snippet."""
 
     summary: str = Field(
@@ -79,7 +79,7 @@ class TestSuite(BaseModel):
     )
 
 
-class TestExecutionResult(BaseModel):
+class TestRun(BaseModel):
     """Execution results from running the test suite in the sandbox."""
 
     status: Literal["passed", "failed", "error", "timed_out"] = Field(
@@ -96,10 +96,10 @@ class TestExecutionResult(BaseModel):
     )
 
 
-class CodeReviewOutcome(BaseModel):
+class CodeReviewReport(BaseModel):
     """Everything the P3 pipeline produced for one piece of code."""
 
-    review: ReviewResult
+    review: CodeReview
     tests: TestSuite | None = None
-    test_execution: TestExecutionResult | None = None
+    test_run: TestRun | None = None
     applied_code: str | None = None

@@ -87,7 +87,7 @@ pipeline or anything one sentence says.
 
 Box, for control flow. Caption: "Where does the rewrite loop stop?"
 ```text
-[retrieve] -> [grade_documents] --kept some--> [generate] -> [check_hallucination]
+[retrieve] -> [grade_chunks] --kept some--> [generate] -> [check_hallucination]
     ^               |
     |               +--none, retries used up--> [web_search]      <== this
     |               |

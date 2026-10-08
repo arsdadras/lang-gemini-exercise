@@ -9,11 +9,13 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from agentlab.schemas.output.research_output_schema import SourceKind
+
 
 class Provenance(BaseModel):
     """Where part of an answer came from."""
 
-    kind: Literal["web", "academic", "corpus", "memory", "sandbox"]
+    kind: SourceKind | Literal["memory", "sandbox"]
     ref: str = Field(description="A URL, or a path in the corpus, memory, or sandbox.")
     title: str = ""
 

@@ -50,7 +50,7 @@ def run_research(
 ) -> SpecialistResult[ResearchReport]:
     """Research ``topic`` through the research graph and return the specialist envelope.
 
-    Build the agent with the same ``options`` (``make_web_researcher_agent(options=...)``): the
+    Build the agent with the same ``options`` (``make_researcher_agent(options=...)``): the
     agent holds the per-run search and read budgets, and the graph holds the plan and the claim
     cap. Without ``options`` it is one run on the topic, no plan and no cap. With them, the
     planner splits the topic into sub-questions (R1 topic 2), the router picks each one's sources

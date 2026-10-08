@@ -3,8 +3,8 @@
 from typing import NotRequired, TypedDict
 
 from agentlab.schemas.output.code_review_output_schema import (
-    ReviewResult,
-    TestExecutionResult,
+    CodeReview,
+    TestRun,
     TestSuite,
 )
 
@@ -19,9 +19,9 @@ class CodeReviewState(TypedDict):
     code: str
     language: NotRequired[str]
     file_path: NotRequired[str | None]
-    review: NotRequired[ReviewResult | None]
+    review: NotRequired[CodeReview | None]
     tests: NotRequired[TestSuite | None]
-    test_execution: NotRequired[TestExecutionResult | None]
+    test_run: NotRequired[TestRun | None]
     test_retries: NotRequired[int]
     refactor_decision: NotRequired[str | None]
     applied_code: NotRequired[str | None]

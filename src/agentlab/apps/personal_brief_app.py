@@ -14,7 +14,7 @@ from langchain.agents.middleware import PIIMiddleware
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.memory import InMemorySaver
 
-from agentlab.agents.web_researcher_agent import make_web_researcher_agent
+from agentlab.agents.researcher_agent import make_researcher_agent
 from agentlab.configs.personal_assistant_config import ASSISTANT_STORE_DB_PATH
 from agentlab.data.sqlite_db_data import get_sqlite_store
 from agentlab.schemas.context.user_context_schema import UserContext
@@ -58,7 +58,7 @@ def main() -> None:
     configure_utf8_stdout()
     store = get_sqlite_store(ASSISTANT_STORE_DB_PATH)
     user_id = sys.argv[1] if len(sys.argv) > 1 else load_session(store)[0]
-    agent = make_web_researcher_agent(
+    agent = make_researcher_agent(
         checkpointer=InMemorySaver(),
         extra_tools=[make_user_context_tool()],
         extra_middleware=personal_data_redaction(),

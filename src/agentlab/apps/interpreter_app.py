@@ -14,8 +14,8 @@ from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.get_text_util import get_text
 from agentlab.utils.run_with_hitl_util import run_with_hitl
 from agentlab.utils.sandbox_util import (
-    diff_sandbox_artifacts,
-    snapshot_sandbox_artifacts,
+    diff_sandbox_deliverables,
+    snapshot_sandbox_deliverables,
 )
 from agentlab.utils.session_util import ResolvedSession, resolve_session
 
@@ -23,7 +23,7 @@ from agentlab.utils.session_util import ResolvedSession, resolve_session
 def _print_banner(session: ResolvedSession) -> None:
     print("=" * 60)
     print("[Interpreter] P4 Sandbox / Interpreter Agent")
-    print("Workspace: out/sandbox/   Deliverables: out/sandbox/artifacts/")
+    print("Workspace: out/sandbox/   Deliverables: out/sandbox/deliverables/")
     print(f"Approval required for: {', '.join(DEFAULT_INTERRUPT_TOOLS)}")
     print(
         "Persistence: "
@@ -66,7 +66,7 @@ def main() -> None:
         if prompt.lower() in {"quit", "q", "exit"}:
             break
 
-        before = snapshot_sandbox_artifacts()
+        before = snapshot_sandbox_deliverables()
         result = run_with_hitl(
             agent,
             {"messages": [HumanMessage(content=prompt)]},
@@ -74,13 +74,13 @@ def main() -> None:
         )
         print(f"\n{get_text(result['messages'][-1])}")
 
-        changes = diff_sandbox_artifacts(before)
+        changes = diff_sandbox_deliverables(before)
         if changes:
-            print("\n[Generated Artifacts]:")
-            for tag, artifact in changes:
-                size_kb = (artifact.size_bytes or 0) / 1024
+            print("\n[Generated Deliverables]:")
+            for tag, deliverable in changes:
+                size_kb = (deliverable.size_bytes or 0) / 1024
                 print(
-                    f"  * [{tag.upper()}] {artifact.path} ({size_kb:.1f} KB) [{artifact.artifact_type}]",
+                    f"  * [{tag.upper()}] {deliverable.path} ({size_kb:.1f} KB) [{deliverable.deliverable_type}]",
                 )
 
 

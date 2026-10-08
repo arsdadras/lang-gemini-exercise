@@ -9,7 +9,7 @@ import argparse
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 
-from agentlab.agents.web_researcher_agent import make_web_researcher_agent
+from agentlab.agents.researcher_agent import make_researcher_agent
 from agentlab.retrieval.corpus_retrieval import check_corpus_files
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.subagents.research_subagent import verify_research
@@ -48,7 +48,7 @@ def main() -> None:
     session = resolve_session(
         args.session,
         default_thread_id="research_session_001",
-        agent_factory=lambda checkpointer: make_web_researcher_agent(
+        agent_factory=lambda checkpointer: make_researcher_agent(
             checkpointer, options=options
         ),
         app_name="research",

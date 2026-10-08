@@ -31,7 +31,7 @@ def test_code_review_schemas() -> None:
         description="Index out of range",
         suggestion="Add bounds check",
     )
-    review = code_review_schemas.ReviewResult(
+    review = code_review_schemas.CodeReview(
         summary="Found 1 critical bug",
         score=4,
         issues=[issue],
@@ -52,19 +52,19 @@ def test_code_review_schemas() -> None:
 
 
 def test_graph_routing() -> None:
-    with_refactor = code_review_schemas.ReviewResult(
+    with_refactor = code_review_schemas.CodeReview(
         summary="ok",
         score=8,
         refactored_code="def foo(): pass",
     )
-    without_refactor = code_review_schemas.ReviewResult(summary="ok", score=10)
-    passed = code_review_schemas.TestExecutionResult(
+    without_refactor = code_review_schemas.CodeReview(summary="ok", score=10)
+    passed = code_review_schemas.TestRun(
         status="passed",
         passed=True,
         exit_code=0,
         output="OK",
     )
-    failed = code_review_schemas.TestExecutionResult(
+    failed = code_review_schemas.TestRun(
         status="failed",
         passed=False,
         exit_code=1,
@@ -83,22 +83,13 @@ def test_graph_routing() -> None:
         route_after_test_gen({"error": None, "review": without_refactor}) == "__end__"
     )
 
-    assert (
-        route_after_execution({"test_execution": passed, "test_retries": 0})
-        == "__end__"
-    )
-    assert (
-        route_after_execution({"test_execution": failed, "test_retries": 1})
-        == "fix_tests"
-    )
-    assert (
-        route_after_execution({"test_execution": failed, "test_retries": 2})
-        == "__end__"
-    )
+    assert route_after_execution({"test_run": passed, "test_retries": 0}) == "__end__"
+    assert route_after_execution({"test_run": failed, "test_retries": 1}) == "fix_tests"
+    assert route_after_execution({"test_run": failed, "test_retries": 2}) == "__end__"
     override = {"configurable": {"max_test_retries": 5}}
     assert (
         route_after_execution(
-            {"test_execution": failed, "test_retries": 2},
+            {"test_run": failed, "test_retries": 2},
             config=override,
         )
         == "fix_tests"

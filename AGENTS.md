@@ -72,6 +72,12 @@ that suffix too: `prompts/nodes/*_prompt.py`, `schemas/output/*_output_schema.py
 One word, one meaning: a term names the same thing in every file of a project, and two things
 never share a name, even across a type, a field, a tool, and a CLI flag. Each project's terms
 are listed in its design card (P1: [Terms](docs/design_cards/P1_research_agent.md#terms)).
+Shared across projects: a **chunk** is a LangChain `Document` a retriever or search returned; a
+**document** is P1's `SourceDocument`; a **deliverable** is a file the P4 interpreter writes to
+`deliverables/`; **artifact** means only LangChain's `ToolMessage.artifact`; an **answer** is a
+specialist's final text; a **report** is a checked final output (`ResearchReport`,
+`CodeReviewReport`); an edit's operation is its **action** (`MemoryEdit.action`,
+`SideEffect.action`).
 
 ## Conventions
 

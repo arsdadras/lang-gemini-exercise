@@ -22,7 +22,7 @@ def test_relevant_documents_go_straight_to_generate() -> None:
     assert record["web_searches"] == 0
     assert len(record["retriever"].queries) == 1
     assert state["answer_source"] == "corpus"
-    assert state["generation"] == "scripted text"
+    assert state["answer"] == "scripted text"
 
 
 def test_nothing_relevant_rewrites_exactly_max_retries_times_then_searches_the_web() -> (
@@ -47,7 +47,7 @@ def test_the_web_having_nothing_ends_with_the_no_answer_reply() -> None:
 
     assert record["web_searches"] == 1
     assert state["answer_source"] == "none"
-    assert state["generation"] == rag_node.NO_ANSWER
+    assert state["answer"] == rag_node.NO_ANSWER
 
 
 def test_rewritten_queries_replace_the_search_query_for_the_next_retrieval() -> None:

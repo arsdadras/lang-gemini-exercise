@@ -14,8 +14,8 @@ from agentlab.schemas.output.specialist_output_schema import (
 from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.get_text_util import get_text
 from agentlab.utils.sandbox_util import (
-    diff_sandbox_artifacts,
-    snapshot_sandbox_artifacts,
+    diff_sandbox_deliverables,
+    snapshot_sandbox_deliverables,
 )
 from agentlab.utils.subagent_util import (
     new_delegation_config,
@@ -28,7 +28,7 @@ DEFAULT_SUBAGENT_NAME = "code_interpreter"
 DEFAULT_SUBAGENT_DESCRIPTION = (
     "Executes Python scripts, computational tasks, data processing, and shell commands "
     "in an isolated sandbox workspace. Generates deliverable files (CSVs, charts, "
-    "markdown reports) in artifacts/ and self-corrects on errors."
+    "markdown reports) in deliverables/ and self-corrects on errors."
 )
 
 
@@ -40,10 +40,10 @@ def run_interpreter(
 ) -> SpecialistResult[str]:
     """Run ``task`` with an injected P4 agent on a fresh thread; files it wrote become side effects.
 
-    The artifact diff compares ``artifacts/`` before and after the run, so the caller learns
+    The deliverable diff compares ``deliverables/`` before and after the run, so the caller learns
     exactly which deliverables were created or changed, even when the run failed midway.
     """
-    before = snapshot_sandbox_artifacts(sandbox_dir)
+    before = snapshot_sandbox_deliverables(sandbox_dir)
     failure: Exception | None = None
     try:
         state = agent.invoke(
@@ -57,10 +57,10 @@ def run_interpreter(
     side_effects = [
         SideEffect(
             action="created" if change == "new" else "modified",
-            target=artifact.path,
-            description=artifact.description or artifact.artifact_type,
+            target=deliverable.path,
+            description=deliverable.description or deliverable.deliverable_type,
         )
-        for change, artifact in diff_sandbox_artifacts(before, sandbox_dir)
+        for change, deliverable in diff_sandbox_deliverables(before, sandbox_dir)
     ]
     if failure is not None:
         return SpecialistResult[str](

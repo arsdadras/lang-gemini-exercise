@@ -24,7 +24,7 @@ so every entry is reviewable in a diff and readable by any session.
   - The living facts (vendors, numbers, measurements) stay in the research record
     (`mentor/research/`: landscape and evidence). An entry here carries the practical takeaway
     and the key numbers, with the record ID and its date.
-- **Text only.** No scripts, data, or binaries; those belong to `mentor/artifacts/` or to
+- **Text only.** No scripts, data, or binaries; those belong to `mentor/attachments/` or to
   `scripts/`.
 - **`alireza/` stays outside.** It is the learner's private area; nothing enters from it unless
   the learner sends it.

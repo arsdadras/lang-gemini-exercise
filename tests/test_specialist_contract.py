@@ -90,11 +90,11 @@ def test_the_envelope_puts_status_sources_and_changes_before_the_answer() -> Non
         reason="Answered from the web.",
         output="The answer.",
         provenance=[Provenance(kind="web", ref="https://a.example", title="A")],
-        side_effects=[SideEffect(action="created", target="artifacts/x.csv")],
+        side_effects=[SideEffect(action="created", target="deliverables/x.csv")],
     )
 
     assert result.to_text() == (
-        "[rag] status: partial (Answered from the web.)\nSources: web: A\nChanged: created artifacts/x.csv\n\nThe answer."
+        "[rag] status: partial (Answered from the web.)\nSources: web: A\nChanged: created deliverables/x.csv\n\nThe answer."
     )
 
 
@@ -140,9 +140,9 @@ CORPUS_DOC = Document(
 def test_rag_from_the_corpus_is_ok_with_file_sources() -> None:
     graph = Returns(
         {
-            "generation": "It retrieves.",
+            "answer": "It retrieves.",
             "answer_source": "corpus",
-            "documents": [CORPUS_DOC, CORPUS_DOC],
+            "chunks": [CORPUS_DOC, CORPUS_DOC],
         },
     )
 
@@ -160,9 +160,9 @@ def test_rag_from_the_web_is_partial_and_says_so() -> None:
     result = run_rag(
         Returns(
             {
-                "generation": "In neuroscience...",
+                "answer": "In neuroscience...",
                 "answer_source": "web",
-                "documents": [web],
+                "chunks": [web],
             },
         ),
         "q",
@@ -175,12 +175,12 @@ def test_rag_from_the_web_is_partial_and_says_so() -> None:
 def test_rag_without_a_supported_answer_fails_without_output() -> None:
     unverified = run_rag(
         Returns(
-            {"generation": rag_node.UNVERIFIED_ANSWER, "answer_source": "unverified"},
+            {"answer": rag_node.UNVERIFIED_ANSWER, "answer_source": "unverified"},
         ),
         "q",
     )
     nothing = run_rag(
-        Returns({"generation": rag_node.NO_ANSWER, "answer_source": "none"}),
+        Returns({"answer": rag_node.NO_ANSWER, "answer_source": "none"}),
         "q",
     )
 
@@ -200,10 +200,10 @@ def test_the_web_search_keeps_its_urls_and_the_answer_records_its_source() -> No
     ):
         answered = rag_node.generate_from_web_node({"question": "q", **searched})
 
-    assert [document.metadata["source"] for document in searched["documents"]] == [
+    assert [chunk.metadata["source"] for chunk in searched["chunks"]] == [
         "https://a.example",
     ]
-    assert answered == {"generation": "From A.", "answer_source": "web"}
+    assert answered == {"answer": "From A.", "answer_source": "web"}
 
 
 def test_a_web_search_outage_is_raised_not_reported_as_no_results() -> None:
@@ -224,7 +224,7 @@ def test_rag_fails_on_an_outage_but_raises_a_bug() -> None:
     assert (result.status, result.output) == ("failed", None)
     assert result.reason.startswith("An external service was unavailable")
     with pytest.raises(KeyError):
-        run_rag(Raises(KeyError("generation")), "q")
+        run_rag(Raises(KeyError("answer")), "q")
 
 
 # --- P1 -------------------------------------------------------------------------------------
@@ -255,14 +255,14 @@ def test_research_fails_when_every_provider_is_down() -> None:
 
 # --- P3 -------------------------------------------------------------------------------------
 
-REVIEW = review_schemas.ReviewResult(
+REVIEW = review_schemas.CodeReview(
     summary="Buggy.",
     score=3,
     issues=[],
     refactored_code="def f(): ...",
 )
 TESTS = review_schemas.TestSuite(test_code="def test_f(): ...")
-RAN = review_schemas.TestExecutionResult(
+RAN = review_schemas.TestRun(
     status="failed",
     passed=False,
     exit_code=1,
@@ -272,12 +272,12 @@ RAN = review_schemas.TestExecutionResult(
 
 def test_a_review_with_failing_tests_is_still_ok() -> None:
     result = run_code_review(
-        Returns({"review": REVIEW, "tests": TESTS, "test_execution": RAN}),
+        Returns({"review": REVIEW, "tests": TESTS, "test_run": RAN}),
         "code",
     )
 
     assert result.status == "ok"
-    assert result.output.test_execution == RAN
+    assert result.output.test_run == RAN
 
 
 def test_a_refactor_waiting_for_approval_is_no_longer_swallowed() -> None:
@@ -285,7 +285,7 @@ def test_a_refactor_waiting_for_approval_is_no_longer_swallowed() -> None:
     state = {
         "review": REVIEW,
         "tests": TESTS,
-        "test_execution": RAN,
+        "test_run": RAN,
         "__interrupt__": [interrupt],
     }
 
@@ -297,7 +297,7 @@ def test_a_refactor_waiting_for_approval_is_no_longer_swallowed() -> None:
 
 
 def test_tests_that_did_not_run_make_the_review_partial() -> None:
-    timed_out = review_schemas.TestExecutionResult(
+    timed_out = review_schemas.TestRun(
         status="timed_out",
         passed=False,
         exit_code=-1,
@@ -306,7 +306,7 @@ def test_tests_that_did_not_run_make_the_review_partial() -> None:
 
     assert (
         run_code_review(
-            Returns({"review": REVIEW, "tests": TESTS, "test_execution": timed_out}),
+            Returns({"review": REVIEW, "tests": TESTS, "test_run": timed_out}),
             "c",
         ).status
         == "partial"
@@ -349,11 +349,11 @@ def test_a_review_node_reports_an_external_failure_and_raises_a_bug() -> None:
 
 
 def test_files_the_interpreter_writes_become_side_effects(tmp_path: Path) -> None:
-    (tmp_path / "artifacts").mkdir()
-    (tmp_path / "artifacts" / "old.txt").write_text("kept", encoding="utf-8")
+    (tmp_path / "deliverables").mkdir()
+    (tmp_path / "deliverables" / "old.txt").write_text("kept", encoding="utf-8")
     agent = Returns(
         {"messages": [AIMessage(content="Mean is 6.")]},
-        effect=lambda: (tmp_path / "artifacts" / "mean.txt").write_text(
+        effect=lambda: (tmp_path / "deliverables" / "mean.txt").write_text(
             "6.0",
             encoding="utf-8",
         ),
@@ -363,13 +363,15 @@ def test_files_the_interpreter_writes_become_side_effects(tmp_path: Path) -> Non
 
     assert (result.status, result.output) == ("ok", "Mean is 6.")
     assert [(effect.action, effect.target) for effect in result.side_effects] == [
-        ("created", "artifacts/mean.txt"),
+        ("created", "deliverables/mean.txt"),
     ]
 
 
-def test_an_artifact_changed_in_place_is_a_modified_side_effect(tmp_path: Path) -> None:
-    (tmp_path / "artifacts").mkdir()
-    report = tmp_path / "artifacts" / "report.md"
+def test_an_deliverable_changed_in_place_is_a_modified_side_effect(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "deliverables").mkdir()
+    report = tmp_path / "deliverables" / "report.md"
     report.write_text("v1", encoding="utf-8")
     agent = Returns(
         {"messages": [AIMessage(content="Updated.")]},
@@ -379,7 +381,7 @@ def test_an_artifact_changed_in_place_is_a_modified_side_effect(tmp_path: Path) 
     result = run_interpreter(agent, "update the report", sandbox_dir=tmp_path)
 
     assert [(effect.action, effect.target) for effect in result.side_effects] == [
-        ("modified", "artifacts/report.md"),
+        ("modified", "deliverables/report.md"),
     ]
 
 
@@ -395,10 +397,10 @@ def test_an_interpreter_waiting_to_run_a_command_is_partial(tmp_path: Path) -> N
 
 
 def test_files_written_before_a_failure_are_still_reported(tmp_path: Path) -> None:
-    (tmp_path / "artifacts").mkdir()
+    (tmp_path / "deliverables").mkdir()
     agent = Raises(
         httpx.ReadTimeout("model timed out"),
-        effect=lambda: (tmp_path / "artifacts" / "half.csv").write_text(
+        effect=lambda: (tmp_path / "deliverables" / "half.csv").write_text(
             "a,b", encoding="utf-8"
         ),
     )
@@ -407,7 +409,7 @@ def test_files_written_before_a_failure_are_still_reported(tmp_path: Path) -> No
 
     assert result.status == "failed" and result.output is None
     assert [(effect.action, effect.target) for effect in result.side_effects] == [
-        ("created", "artifacts/half.csv"),
+        ("created", "deliverables/half.csv"),
     ]
 
 

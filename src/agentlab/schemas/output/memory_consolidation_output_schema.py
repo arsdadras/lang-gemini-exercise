@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 class MemoryEdit(BaseModel):
     """One change to one memory file. Code decides how it lands in the file."""
 
-    kind: Literal["add", "replace", "remove"]
+    action: Literal["add", "replace", "remove"]
     path: str = Field(
         description="Full path under /memories/, e.g. /memories/user_profile.md.",
     )
@@ -32,11 +32,11 @@ class MemoryEdit(BaseModel):
 
     def describe(self, *, full: bool = False) -> str:
         """One line for the user; ``full`` keeps a multi-line addition whole."""
-        if self.kind == "add" and "\n" in self.new.strip() and not full:
+        if self.action == "add" and "\n" in self.new.strip() and not full:
             return f"{self.path}: + new content ({len(self.new.strip().splitlines())} lines)"
-        if self.kind == "add":
+        if self.action == "add":
             return f"{self.path}: + {self.new}"
-        if self.kind == "replace":
+        if self.action == "replace":
             return f"{self.path}: {self.old} -> {self.new}"
         return f"{self.path}: - {self.old}"
 
