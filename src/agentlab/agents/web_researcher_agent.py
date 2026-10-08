@@ -4,9 +4,9 @@ The draft is checked against the documents the agent's source tools returned
 (``subagents.research_subagent.verify_research``) before it becomes a ``ResearchReport``.
 
 Its sources (R1 topic 3): the web (``web_search`` and ``read_page``), research papers
-(``academic_search``, when Exa's key is set), and documents (``search_documents``): this
+(``academic_search``, when Exa's key is set), and a corpus (``search_corpus``): this
 project's own docs and code through P2's index, or the ``.txt`` and ``.md`` files the caller
-gives in ``options.documents``. In the research graph a router picks each sub-question's sources, and
+gives in ``options.corpus_files``. In the research graph a router picks each sub-question's sources, and
 ``SourceRouteMiddleware`` limits the run to their tools.
 
 A plain ``create_agent``, not a deep agent: every tool the researcher has is one its budgets,
@@ -32,7 +32,7 @@ from agentlab.middlewares.hitl_middleware import hitl_for
 from agentlab.middlewares.source_route_middleware import SourceRouteMiddleware
 from agentlab.models import llm_model
 from agentlab.prompts.agents_prompt import build_web_researcher_prompt
-from agentlab.retrieval.documents_retrieval import build_document_retriever
+from agentlab.retrieval.corpus_retrieval import build_corpus_retriever
 from agentlab.retrieval.index_retrieval import get_retriever
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.schemas.output.research_output_schema import ResearchDraft
@@ -40,12 +40,12 @@ from agentlab.tools.academic_search_tool import (
     ACADEMIC_SEARCH_TOOL_NAME,
     make_academic_search_tool,
 )
-from agentlab.tools.documents_search_tool import (
-    DOCUMENTS_SEARCH_TOOL_NAME,
-    make_documents_search_tool,
+from agentlab.tools.corpus_search_tool import (
+    CORPUS_SEARCH_TOOL_NAME,
+    make_corpus_search_tool,
 )
 from agentlab.tools.read_page_tool import READ_PAGE_TOOL_NAME, make_read_page_tool
-from agentlab.tools.research_source_tool import documents_description, research_sources
+from agentlab.tools.research_source_tool import corpus_description, research_sources
 from agentlab.tools.web_search_tool import WEB_SEARCH_TOOL_NAME, make_web_search_tool
 
 
@@ -69,7 +69,7 @@ def make_web_researcher_agent(
     agent to write its report from what it has. ``options.sources`` and what this environment can
     serve (``research_sources``) decide which source tools the agent has. Each search tool gets the
     search budget of its own, and the outbound searches (web and academic) wait for approval;
-    the documents are this project's own or the caller's, so searching them asks no one. Broad
+    the corpus is this project's own or the caller's, so searching it asks no one. Broad
     topics are split by ``run_research``'s planner, one run per sub-question, instead of the
     ``researcher`` subagent: a subagent's documents never reach this run's messages, so the claim
     check could support none of its claims.
@@ -80,7 +80,7 @@ def make_web_researcher_agent(
     options = options or ResearchOptions()
     budget = DEPTH_BUDGETS[options.depth]
     sources, _ = research_sources(options)
-    documents = documents_description(options)
+    corpus = corpus_description(options)
     tools: list[BaseTool] = []
     if "web" in sources:
         tools += [
@@ -96,14 +96,14 @@ def make_web_researcher_agent(
         tools.append(
             make_academic_search_tool(options.include_domains, options.exclude_domains)
         )
-    if "documents" in sources:
-        paths = list(options.documents)
+    if "corpus" in sources:
+        paths = list(options.corpus_files)
         tools.append(
-            make_documents_search_tool(
-                (lambda: build_document_retriever(paths, CORPUS_RESULTS))
+            make_corpus_search_tool(
+                (lambda: build_corpus_retriever(paths, CORPUS_RESULTS))
                 if paths
                 else (lambda: get_retriever(CORPUS_RESULTS)),
-                documents,
+                corpus,
             )
         )
     names = {tool.name for tool in tools}
@@ -112,11 +112,11 @@ def make_web_researcher_agent(
         for name in (
             WEB_SEARCH_TOOL_NAME,
             ACADEMIC_SEARCH_TOOL_NAME,
-            DOCUMENTS_SEARCH_TOOL_NAME,
+            CORPUS_SEARCH_TOOL_NAME,
         )
         if name in names
     ]
-    approvals = [name for name in searches if name != DOCUMENTS_SEARCH_TOOL_NAME]
+    approvals = [name for name in searches if name != CORPUS_SEARCH_TOOL_NAME]
     limits = [
         ToolCallLimitMiddleware(
             tool_name=name, run_limit=budget.searches, exit_behavior="continue"
@@ -140,7 +140,7 @@ def make_web_researcher_agent(
             language=options.language,
             output=options.output,
             sources=sources,
-            documents=documents,
+            corpus=corpus,
         ),
         tools=[*tools, *extra_tools],
         checkpointer=checkpointer

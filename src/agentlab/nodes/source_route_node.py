@@ -19,11 +19,11 @@ from collections.abc import Callable
 
 from langchain_typesafe import Choice, ClassifierResponse, Question
 
-from agentlab.configs.research_config import PROJECT_DOCUMENTS
+from agentlab.configs.research_config import PROJECT_CORPUS
 from agentlab.models import decision_model
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.schemas.state.research_state import ResearchState
-from agentlab.tools.research_source_tool import documents_description, research_sources
+from agentlab.tools.research_source_tool import corpus_description, research_sources
 from agentlab.utils.failure_util import failure_kind
 
 QUESTION_SET = "research_sources@2"
@@ -41,19 +41,19 @@ _WORLD_CRITERIA: dict[str, dict[str, str]] = {
         "yes": "Published research would help: studies, benchmarks, experiments, methods, "
         "surveys, or findings reported in papers.",
         "no": "Papers would not help: the answer is a product fact, a price, an event, a "
-        "how-to, an opinion, or something only the documents source holds. Mentioning a "
+        "how-to, an opinion, or something only the corpus source holds. Mentioning a "
         "technical subject does not by itself make a question one for papers.",
     },
 }
 
 
-def _criteria(source: str, documents: str) -> dict[str, str]:
-    """The criteria for one source; the documents source's depend on what it holds."""
-    if source != "documents":
+def _criteria(source: str, corpus: str) -> dict[str, str]:
+    """The criteria for one source; the corpus source's depend on what it holds."""
+    if source != "corpus":
         return _WORLD_CRITERIA[source]
     return {
-        "yes": f"The question is about {documents}, so those documents would help.",
-        "no": "The question is about something those documents don't hold, even when its "
+        "yes": f"The question is about {corpus}, so those files would help.",
+        "no": "The question is about something those files don't hold, even when its "
         "subject (a framework, a method, a product) is one they also mention.",
     }
 
@@ -61,8 +61,8 @@ def _criteria(source: str, documents: str) -> dict[str, str]:
 _UNCLEAR = "The question gives too little to tell."
 
 
-def _question(index: int, sub_question: str, source: str, documents: str) -> Question:
-    criteria = {**_criteria(source, documents), "unclear": _UNCLEAR}
+def _question(index: int, sub_question: str, source: str, corpus: str) -> Question:
+    criteria = {**_criteria(source, corpus), "unclear": _UNCLEAR}
     return Choice(
         instructions=(
             f"Sub-question {index}: {sub_question}\n"
@@ -72,12 +72,12 @@ def _question(index: int, sub_question: str, source: str, documents: str) -> Que
     )
 
 
-def _state(questions: list[str], documents: str) -> str:
+def _state(questions: list[str], corpus: str) -> str:
     listed = "\n".join(f"{i}. {q}" for i, q in enumerate(questions, start=1))
     return (
         "A research run splits a topic into sub-questions and searches sources for each. The "
         "sources: web (pages on the open web), academic (published research papers), and "
-        f"documents ({documents}).\n\nSub-questions:\n" + listed
+        f"corpus ({corpus}).\n\nSub-questions:\n" + listed
     )
 
 
@@ -86,23 +86,21 @@ def route_sources(
     sources: list[str],
     *,
     decide: Decide,
-    documents: str = PROJECT_DOCUMENTS,
+    corpus: str = PROJECT_CORPUS,
 ) -> dict[str, list[str]]:
     """The sources each sub-question needs, among ``sources`` (in their order).
 
-    ``documents`` says what the documents source holds: this project, or the user's files.
+    ``corpus`` says what the corpus source holds: this project, or the user's files.
     """
     if len(sources) <= 1:
         return {question: list(sources) for question in questions}
     asked = {
-        f"q{i}_{source}": _question(i, question, source, documents)
+        f"q{i}_{source}": _question(i, question, source, corpus)
         for i, question in enumerate(questions, start=1)
         for source in sources
     }
     try:
-        response = decide(
-            _state(questions, documents), asked, question_set=QUESTION_SET
-        )
+        response = decide(_state(questions, corpus), asked, question_set=QUESTION_SET)
     except Exception as error:
         if failure_kind(error) is None:
             raise
@@ -136,7 +134,7 @@ def make_route_node(decide: Decide | None = None) -> Callable[[ResearchState], d
             state["questions"],
             sources,
             decide=decide or decision_model.decide,
-            documents=documents_description(options),
+            corpus=corpus_description(options),
         )
         update: dict = {"routes": routes}
         if missing:

@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 
 from agentlab.configs.decision_config import DECISION_USD_PER_MILLION_INPUT_TOKENS
 from agentlab.configs.paths_config import EVAL_DATASETS_DIR
-from agentlab.configs.research_config import PROJECT_DOCUMENTS
+from agentlab.configs.research_config import PROJECT_CORPUS
 from agentlab.models import decision_model
 from agentlab.nodes.source_route_node import (
     QUESTION_SET,
@@ -39,8 +39,8 @@ def make_decider(threshold: float):
     def decider(case: EvalCase) -> Decision:
         question = case.inputs["question"]
         response = decision_model.decide(
-            _state([question], PROJECT_DOCUMENTS),
-            {"q": _question(1, question, case.inputs["source"], PROJECT_DOCUMENTS)},
+            _state([question], PROJECT_CORPUS),
+            {"q": _question(1, question, case.inputs["source"], PROJECT_CORPUS)},
             question_set=QUESTION_SET,
         )
         answer = response.choices["q"]

@@ -18,7 +18,7 @@ Read first every session; rewrite it, don't append. The charter is [README.md](R
   ([design card](../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built));
   teaching restarted with its introduction (step 1/7 sent). Sources: web, academic (Exa
   research papers), documents (P2's index of this project, or the files given with
-  `lab-research --docs`). Router `research_sources@2`: 97.1% on 69 labeled cases, 0 unsafe. Live run
+  `lab-research --corpus`). Router `research_sources@2`: 97.1% on 69 labeled cases, 0 unsafe. Live run
   (strong profile through GapGPT): every kind read, 8 of 11 claims supported. The free tier
   rarely calls `academic_search` when web is also offered (it does when academic is the only
   source).

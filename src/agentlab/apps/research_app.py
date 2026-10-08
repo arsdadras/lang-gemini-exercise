@@ -1,7 +1,7 @@
-"""CLI for the P1 researcher: ``lab-research [session-mode] [--docs FILE ...]``.
+"""CLI for the P1 researcher: ``lab-research [session-mode] [--corpus FILE ...]``.
 
-``--docs`` gives the run its own documents (``.txt`` or ``.md`` files) as the documents source;
-without it the documents source is this project's own docs and code.
+``--corpus`` gives the run its own files (``.txt`` or ``.md``) as the corpus source;
+without it the corpus source is this project's own docs and code.
 """
 
 import argparse
@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 
 from agentlab.agents.web_researcher_agent import make_web_researcher_agent
-from agentlab.retrieval.documents_retrieval import check_document_paths
+from agentlab.retrieval.corpus_retrieval import check_corpus_files
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.subagents.research_subagent import verify_research
 from agentlab.utils.console_util import configure_utf8_stdout
@@ -19,17 +19,17 @@ from agentlab.utils.session_util import resolve_session
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    """The session mode, and the documents the run may search."""
+    """The session mode, and the corpus files the run may search."""
     parser = argparse.ArgumentParser(prog="lab-research")
     parser.add_argument(
         "session", nargs="?", default=None, help="new, secret, resume, ..."
     )
     parser.add_argument(
-        "--docs",
+        "--corpus",
         nargs="+",
         default=[],
         metavar="FILE",
-        help="text or Markdown files to research as the documents source",
+        help="text or Markdown files to research as the corpus source",
     )
     return parser.parse_args(argv)
 
@@ -40,11 +40,11 @@ def main() -> None:
     configure_utf8_stdout()
     args = parse_args()
     try:
-        check_document_paths(args.docs)
+        check_corpus_files(args.corpus)
     except ValueError as error:
-        print(f"Cannot use these documents: {error}")
+        print(f"Cannot use these files: {error}")
         return
-    options = ResearchOptions(documents=args.docs)
+    options = ResearchOptions(corpus_files=args.corpus)
     session = resolve_session(
         args.session,
         default_thread_id="research_session_001",
@@ -54,8 +54,8 @@ def main() -> None:
         app_name="research",
         cli_command_hint="uv run lab-research step[<index>]",
     )
-    if args.docs:
-        print(f"Documents source: {', '.join(args.docs)}")
+    if args.corpus:
+        print(f"Corpus source: {', '.join(args.corpus)}")
 
     topic = input("Topic to research: ").strip()
     if not topic:

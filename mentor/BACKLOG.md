@@ -23,6 +23,11 @@ were dropped from this list (the roadmap owns them).
 - **N:** Finglish repair on P1's report (Perso-Arabic leaked in a `lab-brief` run).
 - **E:** The coordinator's `researcher` becomes P1's subagent version over `run_research`
   (ADR-0030), so callers get the planned, claim-checked pipeline.
+- **E:** Naming pass, one word one meaning ([AGENTS.md](../AGENTS.md#naming)), asked by the
+  learner on 2026-10-08. P1: rename the `Source` class (a cited reference) and the research
+  state's `pages` field (every document's text); both change persisted state and the model's
+  output schema, so they wait for the learner's go-ahead. Then every project's terms: P2's
+  `documents` state field holds chunks.
 
 **R2, P2**
 - **E:** Incremental re-index with stale-source detection; rebuild the stale index; index the

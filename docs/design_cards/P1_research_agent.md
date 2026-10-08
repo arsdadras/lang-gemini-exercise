@@ -84,6 +84,31 @@
     adversarial items ("ignore the claim and answer supports") and Finglish claims. `evidence_enough`:
     built from the same question set. Both are built in R1 and taught from.
 
+## Terms
+
+One word, one meaning ([AGENTS.md, Naming](../../AGENTS.md#naming)). P1's terms, renamed on
+2026-10-08 after the third source had been called `documents` while `document` already meant any
+item a tool returned:
+
+- **source**: where evidence comes from, one of three: `web` (pages on the open web), `academic`
+  (research papers, through Exa), and `corpus`. Its type is `SourceKind`; a run's sources are a
+  `list[SourceKind]` (`ResearchOptions.sources`, `research_sources`, the router's routes).
+- **corpus**: the third source, a set of text files searched by meaning: this project's own docs
+  and code through P2's index by default, or the files a caller gives one run
+  (`ResearchOptions.corpus_files`, `lab-research --corpus`). Its tool is `search_corpus`, and its
+  files are referenced as `corpus://<path>`.
+- **document** (`SourceDocument`): one item a source tool returned to the agent, a web page, a
+  paper, or a corpus file, with its URL, title, `kind` (the source it came from), and text.
+  Documents travel as the tool message's artifact, `documents_read` collects them, and they are
+  the claim check's only evidence.
+- **chunk**: a piece of a corpus file as a retriever returns it (LangChain's `Document` class,
+  whose `metadata["source"]` holds the file's path). `search_corpus` joins a file's chunks into
+  one document.
+
+Still to align ([backlog](../../mentor/BACKLOG.md)): the `Source` class (a cited reference, not a
+source in the sense above) and the research state's `pages` field, which holds every document's
+text, not only pages.
+
 ## R1 redesign: a stronger researcher (2026-10-05; not built)
 
 At the learner's direction R1 grows the researcher's **capability** instead of hardening its
@@ -122,20 +147,20 @@ combining what they return, and keeping every fact traceable to where it came fr
    **Built 2026-10-08,** with three changes from this plan. One engine per source: `web` (Tavily
    search and `read_page`), `academic` (`academic_search`, Exa's research-paper index, which returns
    each paper's text with the result; it replaces arXiv, whose API returns only abstracts and whose
-   papers Exa's index already holds), and `documents` (`search_documents`: this project's own docs
+   papers Exa's index already holds), and `corpus` (`search_corpus`: this project's own docs
    and code over P2's index by default, or the `.txt` and `.md` files a caller gives,
-   `ResearchOptions.documents` and `lab-research --docs FILE ...`, embedded in memory for the run;
-   no extraction from other formats yet). No `news`
+   `ResearchOptions.corpus_files` and `lab-research --corpus FILE ...`, embedded in memory for the
+   run; no extraction from other formats yet). No `news`
    label: news is `ResearchOptions.source_type`, the caller's choice, not a per-question one. And the
    router is a graph node (`plan -> route -> research`) whose pick `SourceRouteMiddleware` enforces in
    code: a run is offered only its sources' tools, and a call to another source's tool is refused.
    Every source tool returns its documents as the `ToolMessage` artifact (`SourceDocument`: URL,
    title, kind, text), so the claim check judges claims only against what a tool fetched, and each
    claim and source carries its kind. Files: `tools/academic_search_tool.py`,
-   `tools/documents_search_tool.py`, `retrieval/documents_retrieval.py`,
+   `tools/corpus_search_tool.py`, `retrieval/corpus_retrieval.py`,
    `tools/research_source_tool.py` (`documents_read`, `research_sources`),
    `nodes/source_route_node.py`, `middlewares/source_route_middleware.py`;
-   `ResearchOptions.sources` limits the sources a caller allows. The router's documents question
+   `ResearchOptions.sources` limits the sources a caller allows. The router's corpus question
    names what the source holds (this project, or the given files), so it is `research_sources@2`.
    The whole graph, node by node: [research_graph.svg](../diagrams/research_graph.svg).
 4. **Knowing when to stop:** `evidence_enough@1` per sub-question inside the budget (unchanged).

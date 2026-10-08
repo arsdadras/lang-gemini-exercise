@@ -22,8 +22,8 @@ _SOURCE_GUIDES: dict[str, str] = {
         "`academic_search` finds research papers and returns the first part of each: cite a "
         "paper by its URL and a passage of the text it returned."
     ),
-    "documents": (
-        "`search_documents` searches {documents} and returns the matching files: cite a file "
+    "corpus": (
+        "`search_corpus` searches {corpus} and returns the matching files: cite a file "
         "by its corpus:// reference and a passage of the text it returned."
     ),
 }
@@ -37,17 +37,16 @@ def build_web_researcher_prompt(
     language: str = "English",
     output: str = "answer",
     sources: Sequence[str] = ("web",),
-    documents: str = "",
+    corpus: str = "",
 ) -> str:
     """Build the P1 researcher's system prompt for one run's budget, options, and sources."""
     guides = " ".join(
-        _SOURCE_GUIDES[name].format(reads=reads, documents=documents)
-        for name in sources
+        _SOURCE_GUIDES[name].format(reads=reads, corpus=corpus) for name in sources
     )
     return build_system_prompt(
         assistant_name="Research Agent",
         role="a focused research assistant",
-        domain="multi-source research (web, research papers, given documents) and "
+        domain="multi-source research (web, research papers, a corpus of files) and "
         "source-grounded reporting",
         mission=(
             "Given a topic, search your sources, read what matters, and report claims each "

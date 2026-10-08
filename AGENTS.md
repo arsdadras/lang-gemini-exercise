@@ -69,6 +69,10 @@ that suffix too: `prompts/nodes/*_prompt.py`, `schemas/output/*_output_schema.py
 `schemas/state/*_state.py`. `schemas/context/` names each file for its specific context type
 (`user_context_schema.py`), since "context" isn't a project name.
 
+One word, one meaning: a term names the same thing in every file of a project, and two things
+never share a name, even across a type, a field, a tool, and a CLI flag. Each project's terms
+are listed in its design card (P1: [Terms](docs/design_cards/P1_research_agent.md#terms)).
+
 ## Conventions
 
 1. **Nothing happens at import time.** Modules define factories and constants. Apps call
@@ -131,7 +135,7 @@ uv run ruff check src tests scripts             # lint
 uv run ruff format src tests scripts            # format
 uv run python scripts/check_docs.py             # docs lint: links, anchors, library front matter
 uv run python scripts/smoke_live.py             # live smoke of every integration (test mode)
-uv run lab-research [--docs FILE ...]           # P1 researcher (approve each outbound search)
+uv run lab-research [--corpus FILE ...]         # P1 researcher (approve each outbound search)
 uv run lab-rag                                  # P2 raw RAG graph (history / replay <i>)
 uv run lab-repo-insight                         # P2 repo-insight coordinator
 uv run lab-code-review examples/buggy_bank_account.py   # P3 review pipeline

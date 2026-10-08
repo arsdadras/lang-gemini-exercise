@@ -4,8 +4,9 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from agentlab.schemas.output.research_output_schema import SourceKind
+
 Depth = Literal["quick", "standard", "deep"]
-SourceName = Literal["web", "academic", "documents"]
 
 
 class ResearchOptions(BaseModel):
@@ -29,14 +30,14 @@ class ResearchOptions(BaseModel):
         default="general",
         description="The kind of web source: general pages, or news",
     )
-    sources: list[SourceName] | None = Field(
+    sources: list[SourceKind] | None = Field(
         default=None,
         description="The sources this research may use; the router picks among them per "
         "sub-question (R1 topic 3). None: every source that is available",
     )
-    documents: list[str] = Field(
+    corpus_files: list[str] = Field(
         default_factory=list,
-        description="Paths of .txt or .md files to research as the documents source; empty "
+        description="Paths of .txt or .md files to research as the corpus source; empty "
         "means this project's own docs and code",
     )
     language: str = Field(
