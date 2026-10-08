@@ -3,7 +3,7 @@
 import pytest
 from langchain_core.runnables import RunnableLambda
 
-from agentlab.configs.models_config import ModelSpec
+from agentlab.configs.models_config import MODEL_TIERS, ModelSpec
 from agentlab.models.registry_model import LLMRegistry
 
 TIERS = {
@@ -142,3 +142,73 @@ def test_each_provider_is_followed_by_its_backup_gateway() -> None:
         "high-a",
         "high-a@router",
     ]
+
+
+def ladder(tier: str) -> list[tuple[str, str]]:
+    """The models a test-mode tier tries, in order, as (model, gateway key variable)."""
+    registry = LLMRegistry(
+        MODEL_TIERS,
+        test_tier="free",
+        test_mode=lambda: False,
+        model_builder=lambda spec: spec,  # type: ignore[arg-type,return-value]
+    )
+    primary = registry.get(tier)
+    chain = [primary, *registry.fallback_models(tier)]
+    return [(spec.model, spec.api_key_env or "") for spec in chain]  # type: ignore[attr-defined]
+
+
+def test_test_mode_ladder_free_is_flash_lite_on_gapgpt_openrouter_then_google() -> None:
+    assert ladder("free") == [
+        ("gemini-3.5-flash-lite", "GAPGPT_API_KEY"),
+        ("google/gemini-3.5-flash-lite", "OPENROUTER_API_KEY"),
+        ("gemini-3.5-flash-lite", "GOOGLE_API_KEY"),
+    ]
+
+
+def test_test_mode_ladder_strong_is_haiku_then_luna_each_on_gapgpt_then_openrouter() -> (
+    None
+):
+    assert ladder("strong") == [
+        ("claude-haiku-5-5", "GAPGPT_API_KEY"),
+        ("anthropic/claude-haiku-5.5", "OPENROUTER_API_KEY"),
+        ("gpt-6-luna", "GAPGPT_API_KEY"),
+        ("openai/gpt-6-luna", "OPENROUTER_API_KEY"),
+    ]
+
+
+def test_test_mode_ladder_strongest_is_flash_sonnet_sol_gateways_only() -> None:
+    assert ladder("strongest") == [
+        ("gemini-3.8-flash", "GAPGPT_API_KEY"),
+        ("google/gemini-3.8-flash", "OPENROUTER_API_KEY"),
+        ("claude-sonnet-5-5", "GAPGPT_API_KEY"),
+        ("anthropic/claude-sonnet-5.5", "OPENROUTER_API_KEY"),
+        ("gpt-6.1-sol", "GAPGPT_API_KEY"),
+        ("openai/gpt-6.1-sol", "OPENROUTER_API_KEY"),
+    ]
+
+
+def test_only_flash_lite_is_ever_called_on_googles_api() -> None:
+    from agentlab.configs.models_config import MODEL_TIERS as tiers
+
+    google = {
+        spec.model
+        for providers in tiers.values()
+        for spec in providers.values()
+        if spec.model_provider == "google_genai"
+    }
+
+    assert google == {"gemini-3.5-flash-lite"}
+
+
+def test_the_test_profiles_map_the_ladder_and_opt_in_tiers_stay_out_of_the_cascade() -> (
+    None
+):
+    from agentlab.configs.models_config import TEST_MODE_PROFILES, TIER_CASCADE_ORDER
+
+    assert TEST_MODE_PROFILES == {
+        "default": "free",
+        "strong": "strong",
+        "strongest": "strongest",
+        "local": "local",
+    }
+    assert {"free", "strong", "strongest", "last_resort"}.isdisjoint(TIER_CASCADE_ORDER)

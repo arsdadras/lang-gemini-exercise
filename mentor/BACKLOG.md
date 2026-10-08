@@ -70,6 +70,9 @@ were dropped from this list (the roadmap owns them).
 
 | Item | Priority | Trigger |
 | :--- | :--- | :--- |
+| Move a call site to `model_router` (first candidates: the RAG answer, the research report) | E | `evals/model_route_eval.py` is run on the real decider, the thresholds are fitted, and a shadow run (router vs the fixed tier) has been read |
+| Route by specialty (code, writing, research) as well as difficulty | N | R2's catalog calibration measures which provider of a tier is better at which work |
+| Add `opensource` to the router's tiers | N | The `opensource` measurement above is done (RSK-08) |
 | Measure the `opensource` tier on this repo's structured-output schemas and tool calling | E | Requested from research (LD-005); required before any more call sites move to that tier |
 | Embedding-provider failover (Gemini 3072-dim vs OpenAI 1536-dim collections) | N | A composed workflow must survive an embeddings outage (review at P6-B2) |
 | Grow the P5 security guard into a policy-parameterized security agent | N | A second consumer needs tools in its judgment: documents in P7, action permissions in P8 or P11 |

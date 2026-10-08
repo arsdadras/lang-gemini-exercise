@@ -61,12 +61,14 @@ Read first every session; rewrite it, don't append. The charter is [README.md](R
   choice, in `alireza/`.
 - **Git:** everything on `main`, pushed at the end of each session
   ([git policy](../library/engineering/git-policy.md)).
-- **A weak result because of the model (2026-10-07):** rerun it with `LLM_TEST_PROFILE=strong`
-  (Gemini 3.8 Flash on Google, `gpt-6-luna` on OpenRouter as its fallback); if that doesn't
-  answer, keep the free tier.
+- **A weak result because of the model (2026-10-08, ADR-0031):** test mode is a ladder, one
+  rung at a time and only when the rung below was not enough: `LLM_TEST_PROFILE=strong`
+  (Claude Haiku 5.5, then GPT-6 Luna), then `strongest` (Gemini 3.8 Flash, Claude Sonnet 5.5,
+  GPT-6.1 Sol). Each model is called on GapGPT, then OpenRouter, never on Google; if the
+  rung fails, keep the result of the rung below.
 - **Live runs:** test mode per command (`LLM_TEST_MODE=true`); `.env` is never edited. Test mode
-  calls Gemini through GapGPT first (the learner's direction, 2026-10-08), then Google's API, then
-  Haiku on OpenRouter (out of credit). Jev's key is `TYPESAFE_API_KEY`; Exa's is `EXA_API_KEY`.
+  calls Gemini 3.5 Flash-Lite through GapGPT, then OpenRouter, then Google's API (the learner's
+  direction, 2026-10-08). Jev's key is `TYPESAFE_API_KEY`; Exa's is `EXA_API_KEY`.
 - **Scratch area:** `alireza/` is the learner's; never read, reference, or sync it.
 
 ## Live code issues
@@ -101,7 +103,7 @@ Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
   marks those claims unsupported (a full graph run: 13 of 15). The prompt already forbids it.
   Next build: a gate that hands a draft citing unread pages back to the model (read it or drop
   the claim) before it can finish, the "send back, don't drop" rule the learner set.
-- **Gemini 3.8 Flash (`strong`), 2026-10-07:** one single run read 2 pages and cited only
+- **Gemini 3.8 Flash (then `strong`, now `strongest`), 2026-10-07:** one single run read 2 pages and cited only
   those (Flash-Lite read 0-1); a second single run and the full graph run (310 s) ended on the
   OpenRouter fallback with 402 (no credit). Why Google handed over is not in the output yet.
 - **Models (2026-10-08, ADR-0029):** GapGPT answers again (the 2026-10-07 failures were an
@@ -110,6 +112,11 @@ Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
   GapGPT yet, so OpenRouter). The OpenRouter key can't afford one 4096-token reservation, so
   every OpenRouter path (backups, Haiku) answers 402 until the learner tops it up. The learner
   removed the placeholder `OPENROUTER_API_KEY`; sessions started before that still carry it.
+- **Jev model router (2026-10-08, ADR-0031):** built and unit-tested, never run live (the
+  learner's instruction). Three GapGPT IDs are unverified (`claude-haiku-5-5`, `gpt-6-luna`,
+  `gpt-6.1-sol`): run `uv run python scripts/smoke_live.py` (all three ladder profiles) and
+  then `uv run python evals/model_route_eval.py` (54 tasks) before any call site adopts the
+  router; thresholds are provisional. Adoption is per call site, with a shadow run first.
 - **No retry layer on the agents' tools:** convention 11 asks for `ToolRetryMiddleware` on an
   agent's external tools; no agent has one (the research tools turn errors into text the model
   reads). Decide with the engineering track.

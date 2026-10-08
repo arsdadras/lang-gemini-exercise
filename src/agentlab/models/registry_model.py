@@ -193,6 +193,19 @@ class LLMRegistry:
                     ]
         return models
 
+    def backup_models(
+        self,
+        tier: str | None = None,
+        provider: str | None = None,
+    ) -> list[BaseChatModel]:
+        """Only the provider's backup: the same model through the other gateway.
+
+        What the Jev router tries after its chosen model and before its last resort
+        (``models.router_model``); ``fallback_models`` adds the tier's other providers too.
+        """
+        resolved = self.resolve_tier(tier)
+        return self._backups(resolved, self.resolve_provider(resolved, provider))
+
     def _backups(self, tier: str, name: str) -> list[BaseChatModel]:
         """The provider's backup (the same model through another gateway), if it has one."""
         backup = self._tiers[tier][name].backup

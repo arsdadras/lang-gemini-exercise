@@ -31,11 +31,11 @@ uv run pytest
 
 Create a `.env` in the repo root with the keys the apps use:
 
-- `GOOGLE_API_KEY` (also powers the `free` model tier directly, no GapGPT)
+- `GOOGLE_API_KEY` (Gemini 3.5 Flash-Lite on Google directly: the last leg of the `free` tier and of the router)
 - `GAPGPT_API_KEY` and `GAPGPT_BASE_URL` (the `low`/`medium`/`high`/`opensource` model tiers)
 - `TAVILY_API_KEY`
 - optionally `LANGSMITH_TRACING`, `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT`, `LLM_TEST_MODE`, and
-  `LLM_TEST_PROFILE` (`default`/`reliable`/`local`, see ADR-0015)
+  `LLM_TEST_PROFILE` (`default`/`strong`/`strongest`/`local`, see ADR-0015 and ADR-0031)
 - optionally `OLLAMA_HOST` (defaults to `http://127.0.0.1:11434`) for the `local` model tier —
   needs `ollama serve` running with the model already pulled
 
