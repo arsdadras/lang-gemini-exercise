@@ -5,7 +5,7 @@ exercises each provider SDK path (plain chat, structured output, tool binding) w
 production-tier spend. Embeddings, web search, and the decision model are called once each.
 
 Usage:
-    uv run python scripts/smoke_live.py [--profiles default,reliable] [--env-file PATH]
+    uv run python scripts/smoke_live.py [--profiles default,strong,strongest] [--env-file PATH]
 
 Exits non-zero when any check fails. Not collected by pytest (ADR-0004: live checks run by hand).
 """
@@ -107,7 +107,7 @@ def _decision() -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--profiles", default="default,reliable")
+    parser.add_argument("--profiles", default="default,strong,strongest")
     parser.add_argument("--env-file", type=Path, default=PROJECT_ROOT / ".env")
     args = parser.parse_args()
 

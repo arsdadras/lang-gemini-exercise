@@ -30,6 +30,8 @@
    right after it, before the tier's next provider. Test mode is Gemini on Google's API, then
    Claude Haiku 5.5 (OpenRouter-only until GapGPT serves it). *Update 2026-10-08:* at the user's
    direction test mode calls Gemini through GapGPT first, then Google's API, then Haiku.
+   *Update 2026-10-08 (later):* Haiku left the free tier; test mode is a ladder of tiers
+   ([ADR-0031](0031-jev-model-router-and-test-mode-ladder.md)).
 4. **Specialist subagents share one adapter,** `utils/subagent_util.specialist_subagent`: the
    code review, interpreter, and RAG factories each pass their `run_*` and keep their defaults
    (rule of three).

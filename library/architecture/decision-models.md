@@ -2,7 +2,7 @@
 title: Decision models
 maintainer: mentor
 status: current
-updated: 2026-10-06
+updated: 2026-10-08
 summary: The rule for every AI decision point (which of code, a decision model, or an LLM takes it), the one standard each is held to, and how decision models are called here.
 related: [../governance/principles.md, ../../docs/adr/0021-decision-models-as-a-second-model-family.md, ../../mentor/research/landscape/decision-models/README.md, ../../mentor/artifacts/jev-dossier.md]
 ---
@@ -88,6 +88,11 @@ Choosing which schema applies is a `choice` over contracts. Verifying a field an
 - **Three mechanisms:** a catalog whose scores are measured (a decider judges every tier's
   answers on labeled sets), per-request routing (atomic questions mapped to a tier in code), and
   verify-then-escalate.
+- **The router follows the same rules** ([ADR-0031](../../docs/adr/0031-jev-model-router-and-test-mode-ladder.md)):
+  Jev answers two atomic questions about the task (`model_route@1`: how demanding, whether a
+  mistake is costly), code maps them to a tier, and the model is chosen from the catalog, never
+  named to the decider. Going down a tier takes evidence and going up takes less, and an outage
+  fails open to the middle tier (it routes work, it guards nothing).
 - **"Cascade" means escalation on uncertainty,** upward. Falling back to another provider or a
   lower tier when a call fails is a fallback.
 

@@ -25,7 +25,8 @@ src/agentlab/
   middlewares/     agent middleware factories
   tools/           tool factories
   retrieval/       vector index build and retriever
-  models/          tier x provider model registry (llm_model)
+  models/          tier x provider model registry (llm_model), decision models, and the
+                   Jev model router (model_router)
   prompts/         prompt text by role (agents, subagents, nodes/, middlewares, template/)
   schemas/         typed contracts by role, not construction method: output/ (Pydantic
                    response contracts), input/ (what a caller asks of a specialist, e.g.
@@ -79,8 +80,13 @@ that suffix too: `prompts/nodes/*_prompt.py`, `schemas/output/*_output_schema.py
    - Agents: `llm_model.get(tier, provider)` plus `make_model_fallback(tier, primary=provider)`
      ([ADR-0007](docs/adr/0007-built-in-model-fallback.md)).
    - Graph nodes and middleware: `llm_model.chain(tier, structured=Schema)`.
+   - The model chosen by the task, not by hand: `model_router.chain(task, structured=Schema)`
+     (a node) or `model_router.plan(task)` (an agent); Jev judges the task, code picks the tier
+     ([ADR-0031](docs/adr/0031-jev-model-router-and-test-mode-ladder.md)). It sits beside
+     `llm_model`; a call site that names its tier is unchanged.
    - `LLM_TEST_MODE=true` routes every tier to `TEST_TIER` (`LLM_TEST_PROFILE=<name>` picks a
-     different one of the named `TEST_MODE_PROFILES`; see ADR-0015).
+     different one of the named `TEST_MODE_PROFILES`: a ladder `default`, `strong`, `strongest`,
+     used one rung at a time; see ADR-0015 and ADR-0031).
    - Decision points (route, gate, grade, verify, recall, stop): the rule and the one standard
      in [decision-models.md](library/architecture/decision-models.md); the `decision_model`
      seam (`models/decision_model.py`) backs them ([ADR-0021](docs/adr/0021-decision-models-as-a-second-model-family.md)).
