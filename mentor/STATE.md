@@ -28,6 +28,9 @@ Read first every session; rewrite it, don't append. The charter is [README.md](R
 
 ## Build queue
 
+- **Bug (2026-10-08):** `LLM_TEST_PROFILE=strong` fails on plain chat and tool binding: GapGPT
+  answers 404 `model_not_found` for `claude-haiku-5-5`, and the OpenRouter backup is not tried
+  (the fallback does not treat a 404 as a reason to switch). Found by `smoke_live.py`.
 1. R1 topic 3 teaching, then topic 4.
 2. A live end-to-end run of the research agent after topic 4; the depth budgets are provisional
    until real broad runs measure them (`DEPTH_BUDGETS`).
