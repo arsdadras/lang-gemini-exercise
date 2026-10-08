@@ -104,6 +104,11 @@ it, what it touches. One line on the production path.
   rewritten. Each block opens with its exact address: the clickable file link, new or changed,
   and the function or class it belongs to. Show only what changed in an old file, with the old
   lines it replaces when that explains the change.
+- One small part per message, then stop and wait for the learner (the learner's rule,
+  2026-10-08): a step with several files is split into parts, one file (or one block of a
+  large file) per message, with a part counter on the position line (e.g. part 2/9). The
+  first part of a step is its map of parts and the concept it rests on. Never send a whole
+  step in one message.
 - One file at a time, in dependency order: a name is explained where it first appears, and
   nothing (a function, a constant, a parameter) is used in an explanation before it was
   introduced. When code calls something from a later step, say what it is in one line and
