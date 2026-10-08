@@ -87,6 +87,21 @@ scenario.
 
 Each stage also carries its scheduled items from [BACKLOG.md](BACKLOG.md).
 
+**Teaching focus (the learner's rule, 2026-10-09).** Lessons spend their time on agentic system
+engineering, advanced LangGraph and LangChain features, and advanced Python. Hardening (failure
+handling, retries, timeouts, provider fallbacks, input validation, naming passes, docs lint, test
+plumbing, debugging) is built to the same standard but taught in a few lines: what it is, why it
+exists, labeled **hardening**, and the lesson moves on. Per stage:
+
+| Stage | Core, taught in depth | Hardening, summarized |
+|---|---|---|
+| R1 | Source router as a decision point; `SourceRouteMiddleware` (per-run tool filtering in `wrap_model_call`); `Send` fan-out per sub-question with reducers; the stop condition inside the agent loop | Source tools' HTTP and error handling, domain filters, corpus file checks, the failure contract, live smoke |
+| R2 | Hybrid search, reranking, query rewriting, grading and reranking in one request | Re-index plumbing, stale-source detection, timeouts and retries on embeddings |
+| R3 | Deterministic tools first, model second: `ruff`/AST findings feed the review; a decider labels | Subprocess sandboxing, output parsing |
+| R4 | The upgrade chosen together | Risk label on approval, declared side effects |
+| P5 pass | Guard as three checks fail-closed, recall ranking, schema compiler | Staleness pre-pass, redaction |
+| R5 | Coordinator pre-router on a labeled set | Practice scenario setup |
+
 **Decision points in the return pass** (ADR-0021; the [dossier](attachments/jev-dossier.md),
 section 3). Each lives inside its stage's own hard concept, so none adds a second one:
 

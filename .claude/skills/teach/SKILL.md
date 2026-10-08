@@ -124,6 +124,10 @@ it, what it touches. One line on the production path.
   reconciliation.
 - Plumbing outside the step's code: a two-line summary and a clickable link to each changed
   file; no walkthrough.
+- Hardening (failure handling, retries, timeouts, fallbacks, validation, HTTP plumbing,
+  naming, test plumbing; the learner's rule, 2026-10-09): a few lines per component, labeled
+  hardening, never a line-by-line walkthrough. Depth goes to agentic system design, advanced
+  LangGraph/LangChain features, and advanced Python ([ROADMAP](../../../mentor/ROADMAP.md)).
 
 **Answering the learner.**
 - Right: confirm in one line, add the one thing the answer missed, move on. Praise names the
