@@ -71,7 +71,9 @@ message is a summary: what was built, the ideas learned, and what carries forwar
 message's first line names the stage (with its name), the topic (with its name), and the step.
 A build report is never part of a lesson message; it goes before the lesson, on its own.
 Every code explanation gives a short summary of the code and the file's full path, as a link,
-in the same place.
+in the same place. The code is built before the lesson, but each file is introduced when the
+lesson reaches the idea it implements, never in a list up front; for an important file, the
+step that reaches it summarizes what changed in it.
 
 **Hook (topic start, after the introduction).** One retrieval question first, on an earlier idea this topic reuses.
 Then show the failure: a real run, its output, or its trace; real beats described. Before the
