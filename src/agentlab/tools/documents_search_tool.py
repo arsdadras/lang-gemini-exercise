@@ -1,11 +1,13 @@
-"""``search_corpus``: this project's own docs and code, through P2's index (R1 topic 3).
+"""``search_documents``: the documents source, searched like P2's corpus (R1 topic 3).
 
-The private source: internal knowledge a web search can't reach. Chunks that come from the same
-file are joined into one document, referenced as ``corpus://<path>``, of kind ``corpus``, so the
-claim check judges a claim against everything the agent read of that file.
+By default it searches this project's own docs and code through P2's index; a run whose caller
+gave it files searches those instead (``retrieval/documents_retrieval.py``). Chunks that come
+from the same file are joined into one document, referenced as ``corpus://<path>``, of kind
+``corpus``, so the claim check judges a claim against everything the agent read of that file.
 
 The retriever is built on the first call, not with the tool, so building an agent opens no
-index; a missing index or an embedding failure goes back to the model as text.
+index and embeds nothing; a missing index or an embedding failure goes back to the model as
+text.
 """
 
 from collections.abc import Callable
@@ -18,20 +20,20 @@ from agentlab.schemas.output.research_output_schema import SourceDocument
 from agentlab.tools.research_source_tool import as_artifact, format_documents
 from agentlab.utils.failure_util import failure_kind
 
-CORPUS_SEARCH_TOOL_NAME = "search_corpus"
+DOCUMENTS_SEARCH_TOOL_NAME = "search_documents"
 CORPUS_SCHEME = "corpus://"
 
 
-def make_corpus_search_tool(
-    retriever_factory: Callable[[], BaseRetriever],
+def make_documents_search_tool(
+    retriever_factory: Callable[[], BaseRetriever], description: str
 ) -> StructuredTool:
-    """Build the corpus search tool over the retriever ``retriever_factory`` opens."""
+    """Build the documents search tool over the retriever ``retriever_factory`` opens.
+
+    ``description`` says what the documents hold (``documents_description``).
+    """
     retriever: BaseRetriever | None = None
 
-    def search_corpus(query: str) -> tuple[str, list[dict[str, Any]]]:
-        """Search this project's own documentation and source code (agentlab: its design
-        decisions, architecture, conventions, and code). Use it for questions about this
-        project; cite a file by the corpus:// reference it returns."""
+    def search_documents(query: str) -> tuple[str, list[dict[str, Any]]]:
         nonlocal retriever
         try:
             retriever = retriever or retriever_factory()
@@ -41,7 +43,7 @@ def make_corpus_search_tool(
         except Exception as error:
             if failure_kind(error) is None:
                 raise
-            msg = f"The corpus search failed: {error}"
+            msg = f"The document search failed: {error}"
             raise ToolException(msg) from error
         texts: dict[str, list[str]] = {}
         for chunk in chunks:
@@ -57,12 +59,16 @@ def make_corpus_search_tool(
             for path, parts in texts.items()
         ]
         if not documents:
-            return "Nothing in the corpus matches. Try a different query.", []
+            return "Nothing in the documents matches. Try a different query.", []
         return format_documents(documents), as_artifact(documents)
 
     return StructuredTool.from_function(
-        search_corpus,
-        name=CORPUS_SEARCH_TOOL_NAME,
+        search_documents,
+        name=DOCUMENTS_SEARCH_TOOL_NAME,
+        description=(
+            f"Search {description}. Use it for questions about them; cite a file by the "
+            "corpus:// reference it returns."
+        ),
         handle_tool_error=True,
         response_format="content_and_artifact",
     )

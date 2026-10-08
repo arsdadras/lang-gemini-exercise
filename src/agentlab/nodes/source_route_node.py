@@ -1,6 +1,6 @@
 """The research graph's source router: which sources each sub-question needs (R1 topic 3).
 
-A decision point, ``research_sources@1``, on the ``decision_model`` seam. One judgment per
+A decision point, ``research_sources@2``, on the ``decision_model`` seam. One judgment per
 (sub-question, source): "would this source help answer this sub-question?", answered ``yes``,
 ``no``, or ``unclear``, all asked in one request with every question naming its sub-question.
 Code combines the answers:
@@ -19,18 +19,19 @@ from collections.abc import Callable
 
 from langchain_typesafe import Choice, ClassifierResponse, Question
 
+from agentlab.configs.research_config import PROJECT_DOCUMENTS
 from agentlab.models import decision_model
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.schemas.state.research_state import ResearchState
-from agentlab.tools.research_source_tool import research_sources
+from agentlab.tools.research_source_tool import documents_description, research_sources
 from agentlab.utils.failure_util import failure_kind
 
-QUESTION_SET = "research_sources@1"
+QUESTION_SET = "research_sources@2"
 SKIP_THRESHOLD = 0.6
 
 Decide = Callable[..., ClassifierResponse]
 
-_CRITERIA: dict[str, dict[str, str]] = {
+_WORLD_CRITERIA: dict[str, dict[str, str]] = {
     "web": {
         "yes": "Web pages would help: documentation, product or vendor pages, news, blogs, "
         "tutorials, official statistics, or practice in industry.",
@@ -40,22 +41,28 @@ _CRITERIA: dict[str, dict[str, str]] = {
         "yes": "Published research would help: studies, benchmarks, experiments, methods, "
         "surveys, or findings reported in papers.",
         "no": "Papers would not help: the answer is a product fact, a price, an event, a "
-        "how-to, an opinion, or something about this project's own files. Mentioning a "
+        "how-to, an opinion, or something only the documents source holds. Mentioning a "
         "technical subject does not by itself make a question one for papers.",
     },
-    "private": {
-        "yes": "The question is about agentlab itself, this teaching project on agentic AI "
-        "(its design decisions, architecture, conventions, code, roadmap, or lessons), so "
-        "its own files would help.",
-        "no": "The question is about the world outside this project, even when its subject "
-        "(LangChain, LangGraph, agents, RAG) is one the project also uses.",
-    },
 }
+
+
+def _criteria(source: str, documents: str) -> dict[str, str]:
+    """The criteria for one source; the documents source's depend on what it holds."""
+    if source != "documents":
+        return _WORLD_CRITERIA[source]
+    return {
+        "yes": f"The question is about {documents}, so those documents would help.",
+        "no": "The question is about something those documents don't hold, even when its "
+        "subject (a framework, a method, a product) is one they also mention.",
+    }
+
+
 _UNCLEAR = "The question gives too little to tell."
 
 
-def _question(index: int, sub_question: str, source: str) -> Question:
-    criteria = {**_CRITERIA[source], "unclear": _UNCLEAR}
+def _question(index: int, sub_question: str, source: str, documents: str) -> Question:
+    criteria = {**_criteria(source, documents), "unclear": _UNCLEAR}
     return Choice(
         instructions=(
             f"Sub-question {index}: {sub_question}\n"
@@ -65,28 +72,37 @@ def _question(index: int, sub_question: str, source: str) -> Question:
     )
 
 
-def _state(questions: list[str]) -> str:
+def _state(questions: list[str], documents: str) -> str:
     listed = "\n".join(f"{i}. {q}" for i, q in enumerate(questions, start=1))
     return (
         "A research run splits a topic into sub-questions and searches sources for each. The "
         "sources: web (pages on the open web), academic (published research papers), and "
-        "private (agentlab's own documentation and code).\n\nSub-questions:\n" + listed
+        f"documents ({documents}).\n\nSub-questions:\n" + listed
     )
 
 
 def route_sources(
-    questions: list[str], sources: list[str], *, decide: Decide
+    questions: list[str],
+    sources: list[str],
+    *,
+    decide: Decide,
+    documents: str = PROJECT_DOCUMENTS,
 ) -> dict[str, list[str]]:
-    """The sources each sub-question needs, among ``sources`` (in their order)."""
+    """The sources each sub-question needs, among ``sources`` (in their order).
+
+    ``documents`` says what the documents source holds: this project, or the user's files.
+    """
     if len(sources) <= 1:
         return {question: list(sources) for question in questions}
     asked = {
-        f"q{i}_{source}": _question(i, question, source)
+        f"q{i}_{source}": _question(i, question, source, documents)
         for i, question in enumerate(questions, start=1)
         for source in sources
     }
     try:
-        response = decide(_state(questions), asked, question_set=QUESTION_SET)
+        response = decide(
+            _state(questions, documents), asked, question_set=QUESTION_SET
+        )
     except Exception as error:
         if failure_kind(error) is None:
             raise
@@ -115,9 +131,12 @@ def make_route_node(decide: Decide | None = None) -> Callable[[ResearchState], d
 
     def route(state: ResearchState) -> dict:
         options = state.get("options") or ResearchOptions()
-        sources, missing = research_sources(options.sources)
+        sources, missing = research_sources(options)
         routes = route_sources(
-            state["questions"], sources, decide=decide or decision_model.decide
+            state["questions"],
+            sources,
+            decide=decide or decision_model.decide,
+            documents=documents_description(options),
         )
         update: dict = {"routes": routes}
         if missing:

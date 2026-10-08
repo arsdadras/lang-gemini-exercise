@@ -33,7 +33,7 @@ DEPTH_BUDGETS: dict[str, ResearchBudget] = {
 SOURCE_TOOLS: dict[str, tuple[str, ...]] = {
     "web": ("web_search", "read_page"),
     "academic": ("academic_search",),
-    "private": ("search_corpus",),
+    "documents": ("search_documents",),
 }
 
 # Academic search: Exa's research-paper index (arXiv, journals, conference papers), which returns
@@ -45,5 +45,11 @@ ACADEMIC_RESULTS = 5
 # papers arrive in one result.
 ACADEMIC_TEXT_CHARS = 3_000
 
-# Private corpus: this project's own docs and code, through P2's index.
+# Documents: this project's own docs and code through P2's index by default, or the files a user
+# gives one run (plain text and Markdown only: no extraction or conversion from other formats).
 CORPUS_RESULTS = 6
+DOCUMENT_SUFFIXES: tuple[str, ...] = (".txt", ".md")
+PROJECT_DOCUMENTS = (
+    "agentlab, this teaching project on agentic AI: its design decisions, architecture, "
+    "conventions, code, roadmap, and lessons"
+)

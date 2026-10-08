@@ -75,7 +75,7 @@
     | Decision | Question set | Options | Unsafe error | Threshold and escalation |
     | :--- | :--- | :--- | :--- | :--- |
     | **Claim check** (R1, the seam's first consumer) | `claim_check@1`: for one claim and one source passage, one `choice` per (claim, passage), batched per report | `supports`, `contradicts`, `none` | `supports` for an unsupported claim (a false citation) | A claim counts as supported only when a passage's `supports` probability clears a threshold fitted on the labeled set; below it the pair goes to the LLM, which can only keep or lower the verdict. Gate rule: the check escalates or tightens, it never approves a claim code has marked unsupported |
-    | **Source router** (R1 topic 3) | `research_sources@1`: one `choice` per (sub-question, source), every sub-question of a plan in one request, each question naming its sub-question | `yes`, `no`, `unclear` | A skipped source the sub-question needed (lost evidence). A wrong keep costs at most that source's search budget | Skip only on a sure `no` (`SKIP_THRESHOLD` 0.6, provisional); `unclear` keeps; no source left gets the web; a decider outage keeps every source (fail open: it routes work, guards nothing). Measured 2026-10-08 on 69 cases (23 sub-questions x 3 sources, Finglish subset): 97.1% one at a time and batched, 0 unsafe errors, p50 364 ms, p95 605 ms, $0.0014 for the set; both errors are wrong keeps |
+    | **Source router** (R1 topic 3) | `research_sources@2`: one `choice` per (sub-question, source), every sub-question of a plan in one request, each question naming its sub-question | `yes`, `no`, `unclear` | A skipped source the sub-question needed (lost evidence). A wrong keep costs at most that source's search budget | Skip only on a sure `no` (`SKIP_THRESHOLD` 0.6, provisional); `unclear` keeps; no source left gets the web; a decider outage keeps every source (fail open: it routes work, guards nothing). Measured 2026-10-08 on 69 cases (23 sub-questions x 3 sources, Finglish subset): 97.1% one at a time and batched, 0 unsafe errors, p50 407 ms, p95 1300 ms (605 ms on @1), $0.0014 for the set; both errors are wrong keeps |
     | **Is the evidence enough?** (R1, the search loop's stop) | `evidence_enough@1`: one `noul` per question over the claims found so far | p(yes) | A false "enough" (a thin report). A false "not enough" only costs one more search, bounded by the budget | Stop when p(yes) clears the threshold or the search budget (5 searches) is spent; at the budget the report is `partial`, not silently final |
     | **Confidence** (R1) | Not a decision: arithmetic in code over the claim table (supported share, source agreement, contradictions) | n/a | n/a | n/a |
 
@@ -122,16 +122,21 @@ combining what they return, and keeping every fact traceable to where it came fr
    **Built 2026-10-08,** with three changes from this plan. One engine per source: `web` (Tavily
    search and `read_page`), `academic` (`academic_search`, Exa's research-paper index, which returns
    each paper's text with the result; it replaces arXiv, whose API returns only abstracts and whose
-   papers Exa's index already holds), and `private` (`search_corpus` over P2's index). No `news`
+   papers Exa's index already holds), and `documents` (`search_documents`: this project's own docs
+   and code over P2's index by default, or the `.txt` and `.md` files a caller gives,
+   `ResearchOptions.documents` and `lab-research --docs FILE ...`, embedded in memory for the run;
+   no extraction from other formats yet). No `news`
    label: news is `ResearchOptions.source_type`, the caller's choice, not a per-question one. And the
    router is a graph node (`plan -> route -> research`) whose pick `SourceRouteMiddleware` enforces in
    code: a run is offered only its sources' tools, and a call to another source's tool is refused.
    Every source tool returns its documents as the `ToolMessage` artifact (`SourceDocument`: URL,
    title, kind, text), so the claim check judges claims only against what a tool fetched, and each
    claim and source carries its kind. Files: `tools/academic_search_tool.py`,
-   `tools/corpus_search_tool.py`, `tools/research_source_tool.py` (`documents_read`,
-   `research_sources`), `nodes/source_route_node.py`, `middlewares/source_route_middleware.py`;
-   `ResearchOptions.sources` limits the sources a caller allows.
+   `tools/documents_search_tool.py`, `retrieval/documents_retrieval.py`,
+   `tools/research_source_tool.py` (`documents_read`, `research_sources`),
+   `nodes/source_route_node.py`, `middlewares/source_route_middleware.py`;
+   `ResearchOptions.sources` limits the sources a caller allows. The router's documents question
+   names what the source holds (this project, or the given files), so it is `research_sources@2`.
 4. **Knowing when to stop:** `evidence_enough@1` per sub-question inside the budget (unchanged).
 
 **The contract with the content generator:** `run_research(agent, topic, options)` returns

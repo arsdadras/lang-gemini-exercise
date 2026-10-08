@@ -16,8 +16,9 @@ Read first every session; rewrite it, don't append. The charter is [README.md](R
   never silent.
 - **Now: R1 topic 3, more sources and a source router.** Built and live-verified 2026-10-08
   ([design card](../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built));
-  teaching starts with its hook. Sources: web, academic (Exa research papers), private (P2's
-  index). Router `research_sources@1`: 97.1% on 69 labeled cases, 0 unsafe, p95 605 ms. Live run
+  teaching restarted with its introduction (step 1/7 sent). Sources: web, academic (Exa
+  research papers), documents (P2's index of this project, or the files given with
+  `lab-research --docs`). Router `research_sources@2`: 97.1% on 69 labeled cases, 0 unsafe. Live run
   (strong profile through GapGPT): every kind read, 8 of 11 claims supported. The free tier
   rarely calls `academic_search` when web is also offered (it does when academic is the only
   source).
@@ -76,7 +77,7 @@ Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
 - **Coordinator shell has no approval step:** approvals raised inside a subagent aren't surfaced
   to the CLI; the banner states it. Fix: P7-B3.
 - **RAG index:** rebuilt in this worktree 2026-10-08 (1536-dimensional); the main checkout's
-  `.chroma_index` is still the old one: rebuild it there before `lab-rag` or the private source.
+  `.chroma_index` is still the old one: rebuild it there before `lab-rag` or the documents source.
 - **Approvals inside the research graph:** an outbound search waits for approval, and the
   research node reports a waiting run as a problem instead of surfacing the interrupt, so
   `run_research` with the approval gate on stops at the first search; live runs replace the gate

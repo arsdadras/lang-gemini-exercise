@@ -125,7 +125,7 @@ uv run ruff check src tests scripts             # lint
 uv run ruff format src tests scripts            # format
 uv run python scripts/check_docs.py             # docs lint: links, anchors, library front matter
 uv run python scripts/smoke_live.py             # live smoke of every integration (test mode)
-uv run lab-research                             # P1 web researcher (approve each search)
+uv run lab-research [--docs FILE ...]           # P1 researcher (approve each outbound search)
 uv run lab-rag                                  # P2 raw RAG graph (history / replay <i>)
 uv run lab-repo-insight                         # P2 repo-insight coordinator
 uv run lab-code-review examples/buggy_bank_account.py   # P3 review pipeline

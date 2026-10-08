@@ -33,7 +33,7 @@ from agentlab.schemas.output.research_output_schema import (
 from agentlab.subagents.research_subagent import run_research
 from agentlab.tools import research_source_tool
 from agentlab.tools.academic_search_tool import make_academic_search_tool
-from agentlab.tools.corpus_search_tool import make_corpus_search_tool
+from agentlab.tools.documents_search_tool import make_documents_search_tool
 from agentlab.tools.research_source_tool import documents_read, research_sources
 from tests.fakes import ScriptedToolModel, done, tool_turn
 
@@ -108,30 +108,30 @@ def test_only_a_sure_no_skips_a_source_and_unclear_keeps_it() -> None:
         answers(
             q1_web=("yes", 0.9),
             q1_academic=("no", unsure),
-            q1_private=("unclear", 0.7),
+            q1_documents=("unclear", 0.7),
         )
     )
 
-    routes = route_sources(["Q"], ["web", "academic", "private"], decide=decide)
+    routes = route_sources(["Q"], ["web", "academic", "documents"], decide=decide)
 
-    assert routes == {"Q": ["web", "academic", "private"]}
+    assert routes == {"Q": ["web", "academic", "documents"]}
 
 
 def test_a_question_no_source_fits_gets_the_web() -> None:
     decide = Recorder(
-        answers(q1_web=("no", 0.9), q1_academic=("no", 0.95), q1_private=("no", 0.9))
+        answers(q1_web=("no", 0.9), q1_academic=("no", 0.95), q1_documents=("no", 0.9))
     )
 
-    assert route_sources(["Q"], ["web", "academic", "private"], decide=decide) == {
+    assert route_sources(["Q"], ["web", "academic", "documents"], decide=decide) == {
         "Q": ["web"]
     }
 
 
 def test_without_the_web_a_question_no_source_fits_keeps_every_source() -> None:
-    decide = Recorder(answers(q1_academic=("no", 0.95), q1_private=("no", 0.95)))
+    decide = Recorder(answers(q1_academic=("no", 0.95), q1_documents=("no", 0.95)))
 
-    assert route_sources(["Q"], ["academic", "private"], decide=decide) == {
-        "Q": ["academic", "private"]
+    assert route_sources(["Q"], ["academic", "documents"], decide=decide) == {
+        "Q": ["academic", "documents"]
     }
 
 
@@ -161,18 +161,18 @@ def test_a_decider_bug_is_not_swallowed() -> None:
 def test_requested_sources_this_environment_cannot_serve_are_reported(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    sources_available(monkeypatch, "web", "private")
+    sources_available(monkeypatch, "web", "documents")
     route = make_route_node(Recorder(RuntimeError("never called")))
 
     update = route(
         {
             "topic": "t",
-            "options": ResearchOptions(sources=["academic", "private"]),
+            "options": ResearchOptions(sources=["academic", "documents"]),
             "questions": ["Q"],
         }
     )
 
-    assert update["routes"] == {"Q": ["private"]}
+    assert update["routes"] == {"Q": ["documents"]}
     assert update["problems"] == ["Not available here, so not searched: academic."]
 
 
@@ -181,8 +181,11 @@ def test_research_sources_falls_back_to_the_web_when_nothing_requested_is_served
 ) -> None:
     sources_available(monkeypatch, "web")
 
-    assert research_sources(None) == (["web"], [])
-    assert research_sources(["academic"]) == (["web"], ["academic"])
+    assert research_sources(ResearchOptions()) == (["web"], [])
+    assert research_sources(ResearchOptions(sources=["academic"])) == (
+        ["web"],
+        ["academic"],
+    )
 
 
 def test_each_run_is_sent_with_its_own_sources() -> None:
@@ -331,7 +334,7 @@ def test_corpus_search_joins_chunks_by_file_and_opens_the_index_once() -> None:
         opened.append(1)
         return Retriever()
 
-    corpus = make_corpus_search_tool(open_index)  # type: ignore[arg-type]
+    corpus = make_documents_search_tool(open_index, "this project")  # type: ignore[arg-type]
     assert opened == []  # building the tool opens nothing
     call(corpus, query="a")
     documents = documents_read([call(corpus, query="b")])
@@ -345,7 +348,7 @@ def test_a_missing_index_goes_back_to_the_model_as_text() -> None:
     def missing() -> Any:
         raise FileNotFoundError("Index not found. Build it first.")
 
-    message = call(make_corpus_search_tool(missing), query="q")
+    message = call(make_documents_search_tool(missing, "this project"), query="q")
 
     assert message.status == "error" and "Build it first" in message.content
 
@@ -428,7 +431,7 @@ def tool_names(agent: Any) -> set[str]:
 def test_the_agent_gets_every_available_sources_tools(
     scripted_model: None, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    sources_available(monkeypatch, "web", "academic", "private")
+    sources_available(monkeypatch, "web", "academic", "documents")
 
     agent = make_web_researcher_agent(InMemorySaver())
 
@@ -436,14 +439,14 @@ def test_the_agent_gets_every_available_sources_tools(
         "web_search",
         "read_page",
         "academic_search",
-        "search_corpus",
+        "search_documents",
     }
 
 
-def test_outbound_searches_wait_for_approval_and_the_projects_own_corpus_does_not(
+def test_outbound_searches_wait_for_approval_and_document_search_does_not(
     scripted_model: None, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    sources_available(monkeypatch, "web", "academic", "private")
+    sources_available(monkeypatch, "web", "academic", "documents")
     gated: list[list[str]] = []
     real = web_researcher_agent.hitl_for
     monkeypatch.setattr(
@@ -460,13 +463,13 @@ def test_outbound_searches_wait_for_approval_and_the_projects_own_corpus_does_no
 def test_the_callers_sources_limit_the_agents_tools(
     scripted_model: None, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    sources_available(monkeypatch, "web", "academic", "private")
+    sources_available(monkeypatch, "web", "academic", "documents")
 
     agent = make_web_researcher_agent(
-        InMemorySaver(), options=ResearchOptions(sources=["private"])
+        InMemorySaver(), options=ResearchOptions(sources=["documents"])
     )
 
-    assert tool_names(agent) == {"search_corpus"}
+    assert tool_names(agent) == {"search_documents"}
 
 
 def test_two_reads_of_one_file_keep_both_parts_and_one_copy_of_the_same() -> None:
@@ -488,3 +491,73 @@ def test_two_reads_of_one_file_keep_both_parts_and_one_copy_of_the_same() -> Non
         corpus: "Part one.\n...\nPart three."
     }
     assert merge_pages({PAGE: "Same."}, {PAGE: "Same."}) == {PAGE: "Same."}
+
+
+# --- documents the user gives a run ---------------------------------------------------------
+
+
+def test_given_files_become_the_documents_source_and_the_router_is_told_what_they_are(
+    tmp_path: Any,
+) -> None:
+    notes = tmp_path / "notes.md"
+    notes.write_text("# Q3 plan", encoding="utf-8")
+    options = ResearchOptions(documents=[str(notes)])
+    decide = Recorder(answers(q1_web=("no", 0.9), q1_documents=("yes", 0.9)))
+
+    update = make_route_node(decide)(
+        {"topic": "t", "options": options, "questions": ["What is in the Q3 plan?"]}
+    )
+
+    assert research_sources(options) == (["web", "documents"], [])
+    assert update["routes"] == {"What is in the Q3 plan?": ["documents"]}
+    [(state, questions, _)] = decide.calls
+    assert (
+        str(notes) in state and str(notes) in questions["q1_documents"].criteria["yes"]
+    )
+
+
+def test_only_existing_text_and_markdown_files_are_accepted(tmp_path: Any) -> None:
+    from agentlab.retrieval.documents_retrieval import check_document_paths
+
+    good = tmp_path / "a.txt"
+    good.write_text("x", encoding="utf-8")
+
+    assert check_document_paths([str(good)]) == [good]
+    with pytest.raises(
+        ValueError, match=r"report\.pdf: only .*missing\.md: no such file"
+    ):
+        check_document_paths([str(good), "report.pdf", str(tmp_path / "missing.md")])
+
+
+def test_given_files_are_chunked_and_searched_in_memory(
+    tmp_path: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from langchain_core.embeddings import DeterministicFakeEmbedding
+
+    from agentlab.retrieval import documents_retrieval
+
+    monkeypatch.setattr(
+        documents_retrieval,
+        "make_embeddings",
+        lambda: DeterministicFakeEmbedding(size=8),
+    )
+    notes = tmp_path / "notes.md"
+    notes.write_text("The launch moved to May.", encoding="utf-8")
+
+    retriever = documents_retrieval.build_document_retriever([str(notes)], k=1)
+    message = call(
+        make_documents_search_tool(lambda: retriever, "notes.md"), query="launch"
+    )
+
+    [document] = documents_read([message]).values()
+    assert document.kind == "corpus" and "moved to May" in document.text
+    assert document.url == f"corpus://{notes.as_posix()}"
+
+
+def test_the_cli_takes_a_session_mode_and_documents() -> None:
+    from agentlab.apps.research_app import parse_args
+
+    args = parse_args(["new", "--docs", "a.md", "b.txt"])
+
+    assert (args.session, args.docs) == ("new", ["a.md", "b.txt"])
+    assert parse_args([]).docs == []

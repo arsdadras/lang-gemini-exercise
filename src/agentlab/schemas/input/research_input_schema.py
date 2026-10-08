@@ -5,7 +5,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 Depth = Literal["quick", "standard", "deep"]
-SourceName = Literal["web", "academic", "private"]
+SourceName = Literal["web", "academic", "documents"]
 
 
 class ResearchOptions(BaseModel):
@@ -33,6 +33,11 @@ class ResearchOptions(BaseModel):
         default=None,
         description="The sources this research may use; the router picks among them per "
         "sub-question (R1 topic 3). None: every source that is available",
+    )
+    documents: list[str] = Field(
+        default_factory=list,
+        description="Paths of .txt or .md files to research as the documents source; empty "
+        "means this project's own docs and code",
     )
     language: str = Field(
         default="English", description="Language of the claims and the summary"

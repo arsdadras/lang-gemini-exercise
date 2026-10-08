@@ -1,28 +1,61 @@
-"""CLI for the P1 web researcher: ``lab-research [session-mode]``."""
+"""CLI for the P1 researcher: ``lab-research [session-mode] [--docs FILE ...]``.
 
-import sys
+``--docs`` gives the run its own documents (``.txt`` or ``.md`` files) as the documents source;
+without it the documents source is this project's own docs and code.
+"""
+
+import argparse
 
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 
 from agentlab.agents.web_researcher_agent import make_web_researcher_agent
+from agentlab.retrieval.documents_retrieval import check_document_paths
+from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.subagents.research_subagent import verify_research
 from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.run_with_hitl_util import run_with_hitl
 from agentlab.utils.session_util import resolve_session
 
 
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """The session mode, and the documents the run may search."""
+    parser = argparse.ArgumentParser(prog="lab-research")
+    parser.add_argument(
+        "session", nargs="?", default=None, help="new, secret, resume, ..."
+    )
+    parser.add_argument(
+        "--docs",
+        nargs="+",
+        default=[],
+        metavar="FILE",
+        help="text or Markdown files to research as the documents source",
+    )
+    return parser.parse_args(argv)
+
+
 def main() -> None:
-    """Research one topic, approving each web search, and print the structured report."""
+    """Research one topic, approving each outbound search, and print the checked report."""
     load_dotenv()
     configure_utf8_stdout()
+    args = parse_args()
+    try:
+        check_document_paths(args.docs)
+    except ValueError as error:
+        print(f"Cannot use these documents: {error}")
+        return
+    options = ResearchOptions(documents=args.docs)
     session = resolve_session(
-        sys.argv[1] if len(sys.argv) > 1 else None,
+        args.session,
         default_thread_id="research_session_001",
-        agent_factory=make_web_researcher_agent,
+        agent_factory=lambda checkpointer: make_web_researcher_agent(
+            checkpointer, options=options
+        ),
         app_name="research",
         cli_command_hint="uv run lab-research step[<index>]",
     )
+    if args.docs:
+        print(f"Documents source: {', '.join(args.docs)}")
 
     topic = input("Topic to research: ").strip()
     if not topic:
@@ -33,7 +66,7 @@ def main() -> None:
         session.agent,
         {"messages": [HumanMessage(content=topic)]},
         session.config,
-        assistant_prompt="Approve this web_search call? [y/n]: ",
+        assistant_prompt="Approve this search? [y/n]: ",
     )
     report = verify_research(result)
     print(report.model_dump_json(indent=2) if report else "No report was produced.")
