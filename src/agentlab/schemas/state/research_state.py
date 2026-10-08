@@ -44,7 +44,7 @@ class ResearchState(TypedDict):
     cut: NotRequired[list[str]]
     """Sub-questions the plan's cap left out; reported, never dropped silently."""
     routes: NotRequired[dict[str, list[str]]]
-    """The sources the router picked for each sub-question (``research_sources@1``)."""
+    """The sources the router picked for each sub-question (``research_sources@2``)."""
     drafts: NotRequired[Annotated[list[ResearchDraft], operator.add]]
     pages: NotRequired[Annotated[dict[str, str], merge_pages]]
     """Every document the runs' source tools returned (URL to text): the claim check's evidence."""
