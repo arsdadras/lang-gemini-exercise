@@ -61,9 +61,9 @@ Read first every session; rewrite it, don't append. The charter is [README.md](R
   ([ADR-0023](../docs/adr/0023-active-review-instead-of-typing.md)) and writes code only by
   choice, in `alireza/`.
 - **The learner reads the main checkout (2026-10-08):** the IDE opens
-  `D:\Repos\lang_claude_exercise`. A session that works in an app worktree fast-forwards the main
-  checkout (`git pull --ff-only`) after every push, so the learner sees every change the lesson
-  shows.
+  `D:\Repos\lang_claude_exercise`. Work happens there, on `main`. When the app starts a session
+  in a worktree it can't move out of, the session asks for the main checkout as an extra folder
+  and edits, commits, and pushes in it, so the learner sees every change the lesson shows.
 - **Git:** everything on `main`, pushed at the end of each session
   ([git policy](../library/engineering/git-policy.md)).
 - **A weak result because of the model (2026-10-08, ADR-0031):** test mode is a ladder, one
