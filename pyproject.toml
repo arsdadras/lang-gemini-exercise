@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Production-track agentic AI curriculum built on LangChain, LangGraph, and DeepAgents"
 readme = "README.md"
 authors = [
-    { name = "ar-sdadras", email = "alireza.s.dadras@gmail.com" }
+    { name = "arsdadras", email = "arsdadras@gmail.com" }
 ]
 requires-python = ">=3.12"
 dependencies = [
