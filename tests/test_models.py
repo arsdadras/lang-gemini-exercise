@@ -157,7 +157,9 @@ def ladder(tier: str) -> list[tuple[str, str]]:
     return [(spec.model, spec.api_key_env or "") for spec in chain]  # type: ignore[attr-defined]
 
 
-def test_test_mode_ladder_free_is_flash_lite_on_google_then_gapgpt_then_openrouter() -> None:
+def test_test_mode_ladder_free_is_flash_lite_on_google_then_gapgpt_then_openrouter() -> (
+    None
+):
     assert ladder("free") == [
         ("gemini-3.5-flash-lite", "GOOGLE_API_KEY"),
         ("gemini-3.5-flash-lite", "GAPGPT_API_KEY"),

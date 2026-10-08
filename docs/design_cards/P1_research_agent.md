@@ -104,10 +104,11 @@ item a tool returned:
 - **chunk**: a piece of a corpus file as a retriever returns it (LangChain's `Document` class,
   whose `metadata["source"]` holds the file's path). `search_corpus` joins a file's chunks into
   one document.
-
-Still to align ([backlog](../../mentor/BACKLOG.md)): the `Source` class (a cited reference, not a
-source in the sense above) and the research state's `pages` field, which holds every document's
-text, not only pages.
+- **citation** (`Citation`): a document the report cites, by title and URL
+  (`ResearchDraft.citations`, `ResearchReport.citations`, whose `citation_kinds` give each one's
+  source kind). It was the `Source` class until 2026-10-08.
+- The research state keeps `documents` (URL to `SourceDocument`), which replaced the parallel
+  `pages` (URL to text) and `kinds` (URL to kind) fields.
 
 ## R1 redesign: a stronger researcher (2026-10-05; not built)
 

@@ -7,33 +7,33 @@ from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.schemas.output.research_output_schema import (
     ResearchDraft,
     ResearchReport,
-    SourceKind,
+    SourceDocument,
     join_text,
 )
 
 
-def merge_pages(left: dict[str, str], right: dict[str, str]) -> dict[str, str]:
-    """Reducer for ``pages``: the parallel runs' documents, one dict keyed by URL.
+def merge_documents(
+    left: dict[str, SourceDocument], right: dict[str, SourceDocument]
+) -> dict[str, SourceDocument]:
+    """Reducer for ``documents``: the parallel runs' documents, one dict keyed by URL.
 
-    Two runs that read different parts of one file both keep their part (``join_text``).
+    Two reads of one URL that returned different parts of it both keep their part
+    (``join_text``); the same text read twice is kept once.
     """
     merged = dict(left)
-    for url, text in right.items():
-        merged[url] = join_text(merged[url], text) if url in merged else text
+    for url, document in right.items():
+        if earlier := merged.get(url):
+            document = document.model_copy(
+                update={"text": join_text(earlier.text, document.text)}
+            )
+        merged[url] = document
     return merged
-
-
-def merge_kinds(
-    left: dict[str, SourceKind], right: dict[str, SourceKind]
-) -> dict[str, SourceKind]:
-    """Reducer for ``kinds``: a URL's kind is the same in every run."""
-    return {**left, **right}
 
 
 class ResearchState(TypedDict):
     """State for researching one topic.
 
-    ``drafts``, ``pages``, and ``problems`` have reducers because the sub-question runs write
+    ``drafts``, ``documents``, and ``problems`` have reducers because the sub-question runs write
     them in parallel; every other field has one writer.
     """
 
@@ -46,10 +46,8 @@ class ResearchState(TypedDict):
     routes: NotRequired[dict[str, list[str]]]
     """The sources the router picked for each sub-question (``research_sources@2``)."""
     drafts: NotRequired[Annotated[list[ResearchDraft], operator.add]]
-    pages: NotRequired[Annotated[dict[str, str], merge_pages]]
-    """Every document the runs' source tools returned (URL to text): the claim check's evidence."""
-    kinds: NotRequired[Annotated[dict[str, SourceKind], merge_kinds]]
-    """Each document's kind (web, academic, corpus), keyed like ``pages``."""
+    documents: NotRequired[Annotated[dict[str, SourceDocument], merge_documents]]
+    """Every document the runs' source tools returned, keyed by URL: the claim check's evidence."""
     problems: NotRequired[Annotated[list[str], operator.add]]
     """Everything lost on the way, in words: becomes the envelope's ``reason``."""
     report: NotRequired[ResearchReport]

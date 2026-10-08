@@ -141,10 +141,6 @@ def make_research_node(agent: Runnable) -> Callable[[SubQuestionState], dict]:
         if draft is None:
             return {"problems": [label + "No report was produced."]}
         documents = documents_read(outcome.get("messages", []))
-        return {
-            "drafts": [draft],
-            "pages": {url: document.text for url, document in documents.items()},
-            "kinds": {url: document.kind for url, document in documents.items()},
-        }
+        return {"drafts": [draft], "documents": documents}
 
     return research

@@ -103,7 +103,7 @@ def test_the_output_type_is_validated() -> None:
         topic="t",
         summary="s",
         claims=[],
-        sources=[],
+        citations=[],
         confidence=0.5,
     )
 

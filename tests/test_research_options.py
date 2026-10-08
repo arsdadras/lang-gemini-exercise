@@ -15,11 +15,11 @@ from agentlab.nodes.claim_check_node import make_check_node
 from agentlab.nodes.research_node import make_plan_node, plan_research
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.schemas.output.research_output_schema import (
+    Citation,
     DraftClaim,
     Evidence,
     ResearchDraft,
     ResearchPlan,
-    Source,
 )
 from agentlab.subagents.research_subagent import run_research
 from agentlab.tools.read_page_tool import (
@@ -165,7 +165,7 @@ def finished(url: str, *claims: str) -> dict[str, Any]:
             DraftClaim(text=text, evidence=[Evidence(url=url, passage="p")])
             for text in claims
         ],
-        sources=[Source(title=url, url=url)],
+        citations=[Citation(title=url, url=url)],
     )
     return {"messages": [read(url, "page text")], "structured_response": draft}
 

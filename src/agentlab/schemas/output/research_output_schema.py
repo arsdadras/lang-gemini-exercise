@@ -1,7 +1,7 @@
 """Structured output schemas for the research agent and its checked report.
 
 The agent writes a ``ResearchDraft``: claims, each with the page passages it rests on. Code
-checks every claim against the pages the agent actually read and builds the ``ResearchReport``,
+checks every claim against the documents the agent's tools actually returned and builds the ``ResearchReport``,
 so a claim's ``status`` and the report's ``confidence`` are never the model's own opinion
 (ADR-0026: code decides status).
 """
@@ -11,11 +11,11 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 
-class Source(BaseModel):
-    """A single cited source."""
+class Citation(BaseModel):
+    """A document the report cites."""
 
-    title: str = Field(description="Title of the source page")
-    url: str = Field(description="URL the claim came from")
+    title: str = Field(description="Title of the cited document")
+    url: str = Field(description="URL (or corpus:// reference) of the cited document")
 
 
 SourceKind = Literal["web", "academic", "corpus"]
@@ -76,14 +76,14 @@ class ResearchDraft(BaseModel):
     topic: str = Field(description="The topic that was researched")
     summary: str = Field(description="2-3 sentence executive summary")
     claims: list[DraftClaim] = Field(description="The findings, one claim each")
-    sources: list[Source] = Field(description="Sources cited across claims")
+    citations: list[Citation] = Field(description="Documents cited across claims")
 
 
 ClaimStatus = Literal["supported", "contradicted", "unsupported"]
 
 
 class Claim(BaseModel):
-    """A claim after the check: ``status`` is set by code from what the cited pages say."""
+    """A claim after the check: ``status`` is set by code from what the cited documents say."""
 
     text: str
     evidence: list[Evidence]
@@ -101,15 +101,15 @@ class ResearchReport(BaseModel):
     topic: str
     summary: str
     claims: list[Claim]
-    sources: list[Source]
-    source_kinds: dict[str, SourceKind] = Field(
-        default_factory=dict, description="Each source URL's kind, set by code"
+    citations: list[Citation]
+    citation_kinds: dict[str, SourceKind] = Field(
+        default_factory=dict, description="Each cited URL's source kind, set by code"
     )
     confidence: float = Field(
         ge=0,
         le=1,
-        description="From the claim table: how many claims their pages support, and how many "
-        "independent pages agree",
+        description="From the claim table: how many claims their documents support, and how "
+        "many independent documents agree",
     )
 
 
@@ -136,4 +136,4 @@ class ResearchFindings(BaseModel):
 
     sub_question: str = Field(description="The specific sub-question researched")
     answer: str = Field(description="Concise answer to the sub-question")
-    sources: list[Source] = Field(description="Sources backing the answer")
+    citations: list[Citation] = Field(description="Documents backing the answer")

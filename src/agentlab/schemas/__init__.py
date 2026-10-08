@@ -12,6 +12,7 @@ from agentlab.schemas.context import UserContext
 from agentlab.schemas.output import (
     ArtifactMetadata,
     ArtifactType,
+    Citation,
     Claim,
     ClaimVerdict,
     CodeIssue,
@@ -27,7 +28,6 @@ from agentlab.schemas.output import (
     ResearchFindings,
     ResearchReport,
     ReviewResult,
-    Source,
     TestCase,
     TestExecutionResult,
     TestSuite,
@@ -37,6 +37,7 @@ from agentlab.schemas.state import CodeReviewState, MemoryConsolidationState, RA
 __all__ = [
     "ArtifactMetadata",
     "ArtifactType",
+    "Citation",
     "Claim",
     "ClaimVerdict",
     "CodeIssue",
@@ -55,7 +56,6 @@ __all__ = [
     "ResearchFindings",
     "ResearchReport",
     "ReviewResult",
-    "Source",
     "TestCase",
     "TestExecutionResult",
     "TestSuite",

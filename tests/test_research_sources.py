@@ -25,10 +25,11 @@ from agentlab.nodes.source_route_node import (
 )
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.schemas.output.research_output_schema import (
+    Citation,
     DraftClaim,
     Evidence,
     ResearchDraft,
-    Source,
+    SourceDocument,
 )
 from agentlab.subagents.research_subagent import run_research
 from agentlab.tools import research_source_tool
@@ -374,18 +375,23 @@ def test_each_claim_and_source_carries_the_kind_of_its_documents() -> None:
                 text="It runs in CI.", evidence=[Evidence(url=PAGE, passage="p")]
             ),
         ],
-        sources=[Source(title="paper", url=PAPER), Source(title="docs", url=PAGE)],
+        citations=[
+            Citation(title="paper", url=PAPER),
+            Citation(title="docs", url=PAGE),
+        ],
     )
 
     report = check_claims(
         draft,
-        {PAPER: "paper text", PAGE: "page text"},
-        {PAPER: "academic", PAGE: "web"},
+        {
+            PAPER: SourceDocument(url=PAPER, kind="academic", text="paper text"),
+            PAGE: SourceDocument(url=PAGE, kind="web", text="page text"),
+        },
         decide=supports_everything,
     )
 
     assert [c.source_kinds for c in report.claims] == [["academic"], ["web"]]
-    assert report.source_kinds == {PAPER: "academic", PAGE: "web"}
+    assert report.citation_kinds == {PAPER: "academic", PAGE: "web"}
 
 
 def test_the_envelope_names_each_sources_kind() -> None:
@@ -395,7 +401,7 @@ def test_the_envelope_names_each_sources_kind() -> None:
         topic="t",
         summary="s",
         claims=[DraftClaim(text="c", evidence=[Evidence(url=PAPER, passage="p")])],
-        sources=[Source(title="paper", url=PAPER)],
+        citations=[Citation(title="paper", url=PAPER)],
     )
     agent = SimpleNamespace(
         invoke=lambda *_a, **_k: {
@@ -473,7 +479,7 @@ def test_the_callers_sources_limit_the_agents_tools(
 
 
 def test_two_reads_of_one_file_keep_both_parts_and_one_copy_of_the_same() -> None:
-    from agentlab.schemas.state.research_state import merge_pages
+    from agentlab.schemas.state.research_state import merge_documents
     from tests.test_research_options import read
 
     corpus = "corpus://AGENTS.md"
@@ -486,11 +492,14 @@ def test_two_reads_of_one_file_keep_both_parts_and_one_copy_of_the_same() -> Non
     )
 
     assert documents[corpus].text == "Part one.\n...\nPart two."
+
     # Parallel runs that read different parts of one file: both parts reach the claim check.
-    assert merge_pages({corpus: "Part one."}, {corpus: "Part three."}) == {
-        corpus: "Part one.\n...\nPart three."
-    }
-    assert merge_pages({PAGE: "Same."}, {PAGE: "Same."}) == {PAGE: "Same."}
+    def doc(url: str, text: str) -> dict[str, SourceDocument]:
+        return {url: SourceDocument(url=url, kind="corpus", text=text)}
+
+    merged = merge_documents(doc(corpus, "Part one."), doc(corpus, "Part three."))
+    assert merged[corpus].text == "Part one.\n...\nPart three."
+    assert merge_documents(doc(PAGE, "Same."), doc(PAGE, "Same."))[PAGE].text == "Same."
 
 
 # --- files the user gives a run as its corpus -----------------------------------------------

@@ -24,10 +24,9 @@ were dropped from this list (the roadmap owns them).
 - **E:** The coordinator's `researcher` becomes P1's subagent version over `run_research`
   (ADR-0030), so callers get the planned, claim-checked pipeline.
 - **E:** Naming pass, one word one meaning ([AGENTS.md](../AGENTS.md#naming)), asked by the
-  learner on 2026-10-08. P1: rename the `Source` class (a cited reference) and the research
-  state's `pages` field (every document's text); both change persisted state and the model's
-  output schema, so they wait for the learner's go-ahead. Then every project's terms: P2's
-  `documents` state field holds chunks.
+  learner on 2026-10-08: every project's terms, one meaning each. P1 is done (corpus,
+  `SourceKind`, `Citation`, the state's `documents`); next P2 (its `documents` state field
+  holds chunks), then P3 to P5.
 
 **R2, P2**
 - **E:** Incremental re-index with stale-source detection; rebuild the stale index; index the

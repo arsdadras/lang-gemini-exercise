@@ -1,4 +1,4 @@
-"""R1's claim check: every claim of a research draft against the pages the agent read.
+"""R1's claim check: every claim of a research draft against the documents the agent read.
 
 One decision per (claim, page). Claims that cite the same page are asked together, one request
 with a question per claim (``claim_check@1``). The decider answers first; the LLM only sees the
@@ -16,7 +16,7 @@ them, and caps the report by evidence, so a supported claim never gives way to a
 """
 
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from itertools import zip_longest
 from typing import Literal
 
@@ -33,7 +33,7 @@ from agentlab.schemas.output.research_output_schema import (
     DraftClaim,
     ResearchDraft,
     ResearchReport,
-    SourceKind,
+    SourceDocument,
 )
 from agentlab.schemas.state.research_state import ResearchState
 from agentlab.utils.failure_util import failure_kind
@@ -117,7 +117,7 @@ def check_pair_group(
 
 
 def derive_confidence(claims: list[Claim]) -> float:
-    """Confidence from the table: a claim scores 1 with two independent supporting pages, 0.7
+    """Confidence from the table: a claim scores 1 with two independent supporting documents, 0.7
     with one, 0 when unsupported or contradicted; the report's confidence is their mean."""
     if not claims:
         return 0.0
@@ -136,7 +136,9 @@ def _status(verdicts: list[Verdict]) -> ClaimStatus:
 
 
 def _checked(
-    claim: DraftClaim, verdicts: dict[str, Verdict], kinds: dict[str, SourceKind]
+    claim: DraftClaim,
+    verdicts: dict[str, Verdict],
+    documents: Mapping[str, SourceDocument],
 ) -> Claim:
     supporting = [url for url, verdict in verdicts.items() if verdict == "supports"]
     return Claim(
@@ -144,7 +146,7 @@ def _checked(
         evidence=claim.evidence,
         status=_status(list(verdicts.values())),
         supporting_urls=supporting,
-        source_kinds=sorted({kinds.get(url, "web") for url in supporting}),
+        source_kinds=sorted({documents[url].kind for url in supporting}),
     )
 
 
@@ -160,29 +162,26 @@ def _default_verdict_chain() -> Runnable:
 
 def check_claims(
     draft: ResearchDraft,
-    pages: dict[str, str],
-    kinds: dict[str, SourceKind] | None = None,
+    documents: Mapping[str, SourceDocument],
     *,
     decide: Decide | None = None,
     verdict_chain: Runnable | None = None,
 ) -> ResearchReport:
-    """Check every claim of ``draft`` against ``pages`` (URL to text) and build the report.
+    """Check every claim of ``draft`` against ``documents`` (keyed by URL) and build the report.
 
-    ``kinds`` gives each document's kind (web, academic, corpus); a document without one is
-    a web page. Each claim and source carries the kind of the documents behind it.
+    Each claim and citation carries the source kind of the documents behind it.
     """
-    kinds = kinds or {}
     decide = decide or decision_model.decide
     verdict_chain = verdict_chain or _default_verdict_chain()
     by_page: dict[str, dict[str, str]] = {}
     for index, claim in enumerate(draft.claims):
         for evidence in claim.evidence:
-            if evidence.url in pages:
+            if evidence.url in documents:
                 by_page.setdefault(evidence.url, {})[str(index)] = claim.text
     verdicts: dict[tuple[str, str], Verdict] = {}
     for url, claims in by_page.items():
         group = check_pair_group(
-            pages[url], claims, decide=decide, verdict_chain=verdict_chain
+            documents[url].text, claims, decide=decide, verdict_chain=verdict_chain
         )
         for key, verdict in group.items():
             verdicts[(key, url)] = verdict
@@ -194,15 +193,15 @@ def check_claims(
             for url in dict.fromkeys(e.url for e in claim.evidence)
             if (str(index), url) in verdicts
         }
-        checked.append(_checked(claim, own, kinds))
-    # Provenance is a fact about the run: only documents a tool returned can be sources.
-    sources = [source for source in draft.sources if source.url in pages]
+        checked.append(_checked(claim, own, documents))
+    # Provenance is a fact about the run: only documents a tool returned can be cited.
+    citations = [c for c in draft.citations if c.url in documents]
     return ResearchReport(
         topic=draft.topic,
         summary=draft.summary,
         claims=checked,
-        sources=sources,
-        source_kinds={source.url: kinds.get(source.url, "web") for source in sources},
+        citations=citations,
+        citation_kinds={c.url: documents[c.url].kind for c in citations},
         confidence=derive_confidence(checked),
     )
 
@@ -213,7 +212,7 @@ def unsupported_count(report: ResearchReport) -> int:
 
 
 def _merge(topic: str, drafts: list[ResearchDraft]) -> ResearchDraft:
-    """One draft from the sub-question drafts: claims interleaved, sources deduped.
+    """One draft from the sub-question drafts: claims interleaved, citations deduped.
 
     Claims are taken round-robin across sub-questions, so when the cap later drops claims of
     equal evidence, one sub-question that returned many can't crowd the others out.
@@ -224,12 +223,12 @@ def _merge(topic: str, drafts: list[ResearchDraft]) -> ResearchDraft:
         for claim in round_
         if claim is not None
     ]
-    sources = {source.url: source for draft in drafts for source in draft.sources}
+    citations = {c.url: c for draft in drafts for c in draft.citations}
     return ResearchDraft(
         topic=topic,
         summary=" ".join(draft.summary for draft in drafts),
         claims=claims,
-        sources=list(sources.values()),
+        citations=list(citations.values()),
     )
 
 
@@ -270,8 +269,7 @@ def make_check_node(
             return {}
         report = check_claims(
             _merge(state["topic"], drafts),
-            state.get("pages", {}),
-            state.get("kinds", {}),
+            state.get("documents", {}),
             decide=decide,
             verdict_chain=verdict_chain,
         )

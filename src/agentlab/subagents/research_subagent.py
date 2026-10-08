@@ -37,11 +37,7 @@ def verify_research(state: dict[str, Any]) -> ResearchReport | None:
     if draft is None:
         return None
     documents = documents_read(state.get("messages", []))
-    return check_claims(
-        draft,
-        {url: document.text for url, document in documents.items()},
-        {url: document.kind for url, document in documents.items()},
-    )
+    return check_claims(draft, documents)
 
 
 def run_research(
@@ -98,11 +94,11 @@ def run_research(
         output=report,
         provenance=[
             Provenance(
-                kind=report.source_kinds.get(source.url, "web"),
-                ref=source.url,
-                title=source.title,
+                kind=report.citation_kinds.get(citation.url, "web"),
+                ref=citation.url,
+                title=citation.title,
             )
-            for source in report.sources
+            for citation in report.citations
         ],
     )
 

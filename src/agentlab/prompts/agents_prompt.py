@@ -51,7 +51,7 @@ def build_web_researcher_prompt(
         mission=(
             "Given a topic, search your sources, read what matters, and report claims each "
             "backed by a passage of a document a tool returned to you. Never fabricate facts or "
-            "sources."
+            "citations."
         ),
         tools=(
             f"{guides} Each search tool has a budget of {searches} calls per run, so use "
@@ -60,7 +60,7 @@ def build_web_researcher_prompt(
             "blocked, write the report from what you have read."
         ),
         output_format=(
-            "Return a topic, a 2-3 sentence summary, the claims, and the sources. Each claim "
+            "Return a topic, a 2-3 sentence summary, the claims, and the citations. Each claim "
             "is one verifiable statement with its evidence: the URL (or corpus:// reference) of "
             "a document a tool returned to you and the passage of it that supports the claim, "
             "copied as it appears. "

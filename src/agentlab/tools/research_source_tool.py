@@ -23,7 +23,8 @@ from agentlab.configs.research_config import (
     SOURCE_TOOLS,
 )
 from agentlab.schemas.input.research_input_schema import ResearchOptions, SourceKind
-from agentlab.schemas.output.research_output_schema import SourceDocument, join_text
+from agentlab.schemas.output.research_output_schema import SourceDocument
+from agentlab.schemas.state.research_state import merge_documents
 
 
 def as_artifact(documents: Sequence[SourceDocument]) -> list[dict[str, Any]]:
@@ -50,11 +51,7 @@ def documents_read(messages: Sequence[AnyMessage]) -> dict[str, SourceDocument]:
         ):
             for item in message.artifact:
                 document = SourceDocument.model_validate(item)
-                if earlier := documents.get(document.url):
-                    document = document.model_copy(
-                        update={"text": join_text(earlier.text, document.text)}
-                    )
-                documents[document.url] = document
+                documents = merge_documents(documents, {document.url: document})
     return documents
 
 
