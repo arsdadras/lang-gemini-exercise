@@ -146,9 +146,13 @@ def test_the_search_tool_carries_the_callers_filters(
 # --- the research boundary ---------------------------------------------------------------
 
 
-def read(url: str, text: str) -> ToolMessage:
+def read(url: str, text: str, kind: str = "web") -> ToolMessage:
+    """A source tool's result: the text the model reads and the document as its artifact."""
     return ToolMessage(
-        content=f"{url}\n\n{text}", name=READ_PAGE_TOOL_NAME, tool_call_id=url
+        content=f"{url}\n\n{text}",
+        name=READ_PAGE_TOOL_NAME,
+        tool_call_id=url,
+        artifact=[{"url": url, "title": "", "kind": kind, "text": text}],
     )
 
 
@@ -302,12 +306,13 @@ def test_a_planner_outage_fails_the_envelope() -> None:
 # --- the research graph ------------------------------------------------------------------
 
 
-def test_the_graph_is_plan_then_research_then_check() -> None:
+def test_the_graph_is_plan_then_route_then_research_then_check() -> None:
     graph = build_research_graph(ByQuestion({}), plan_chain=planner("Q1"))
 
     assert set(graph.get_graph().nodes) == {
         "__start__",
         "plan",
+        "route",
         "research",
         "check",
         "__end__",

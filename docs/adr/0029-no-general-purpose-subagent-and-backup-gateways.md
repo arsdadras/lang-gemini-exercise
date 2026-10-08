@@ -28,7 +28,8 @@
    agent's file tools.
 3. **Every GapGPT model has a backup** (`ModelSpec.backup`): the same model on OpenRouter, tried
    right after it, before the tier's next provider. Test mode is Gemini on Google's API, then
-   Claude Haiku 5.5 (OpenRouter-only until GapGPT serves it).
+   Claude Haiku 5.5 (OpenRouter-only until GapGPT serves it). *Update 2026-10-08:* at the user's
+   direction test mode calls Gemini through GapGPT first, then Google's API, then Haiku.
 4. **Specialist subagents share one adapter,** `utils/subagent_util.specialist_subagent`: the
    code review, interpreter, and RAG factories each pass their `run_*` and keep their defaults
    (rule of three).

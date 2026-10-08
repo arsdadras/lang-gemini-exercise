@@ -5,6 +5,15 @@ from collections.abc import Iterator
 
 import pytest
 
+from agentlab.tools import research_source_tool
+
+
+@pytest.fixture(autouse=True)
+def web_only_research(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Research sees only the web unless a test says otherwise: whether Exa's key or P2's index
+    exists on this machine must never change a test."""
+    monkeypatch.setattr(research_source_tool, "available_sources", lambda: ["web"])
+
 
 @pytest.fixture
 def silent_server() -> Iterator[str]:

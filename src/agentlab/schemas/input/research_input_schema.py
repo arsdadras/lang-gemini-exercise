@@ -5,6 +5,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 Depth = Literal["quick", "standard", "deep"]
+SourceName = Literal["web", "academic", "private"]
 
 
 class ResearchOptions(BaseModel):
@@ -26,7 +27,12 @@ class ResearchOptions(BaseModel):
     )
     source_type: Literal["general", "news"] = Field(
         default="general",
-        description="The kind of web source; R1 topic 3 adds academic and private sources",
+        description="The kind of web source: general pages, or news",
+    )
+    sources: list[SourceName] | None = Field(
+        default=None,
+        description="The sources this research may use; the router picks among them per "
+        "sub-question (R1 topic 3). None: every source that is available",
     )
     language: str = Field(
         default="English", description="Language of the claims and the summary"

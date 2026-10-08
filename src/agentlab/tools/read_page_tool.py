@@ -2,10 +2,10 @@
 
 A search result is a snippet the provider chose; a claim is checked against the page it cites.
 The tool returns the page's URL on the first line and its text after it, cut to
-``MAX_PAGE_CHARS``, which is also how ``pages_read`` finds the pages an agent read in its
-message history. A failed read goes back to the model as text (``handle_tool_error``), so the
-agent can try another page; the failure still classifies like any external failure
-(``WebSearchError`` carries the HTTP status).
+``MAX_PAGE_CHARS``, and carries the page as a ``SourceDocument`` artifact, which is how
+``documents_read`` finds the pages an agent read (``research_source_tool.py``). A failed read
+goes back to the model as text (``handle_tool_error``), so the agent can try another page; the
+failure still classifies like any external failure (``WebSearchError`` carries the HTTP status).
 """
 
 import os
@@ -14,12 +14,13 @@ from typing import Any
 from urllib.parse import urlparse
 
 import requests
-from langchain_core.messages import AnyMessage, ToolMessage
 from langchain_core.tools import StructuredTool, ToolException
 from langchain_tavily._utilities import TAVILY_API_URL
 
 from agentlab.configs.research_config import MAX_PAGE_CHARS
 from agentlab.configs.timeouts_config import WEB_SEARCH_TIMEOUT_SECONDS
+from agentlab.schemas.output.research_output_schema import SourceDocument
+from agentlab.tools.research_source_tool import as_artifact
 from agentlab.tools.web_search_tool import WebSearchError
 
 READ_PAGE_TOOL_NAME = "read_page"
@@ -87,30 +88,18 @@ def make_read_page_tool(
     can't be read from a URL the model guessed.
     """
 
-    def read_allowed(url: str) -> str:
+    def read_allowed(url: str) -> tuple[str, list[dict[str, Any]]]:
         if not domain_allowed(url, include_domains, exclude_domains):
             msg = f"{url} is outside the domains this research may read. Pick another page."
             raise ToolException(msg)
-        return _read_or_report(url)
+        content = _read_or_report(url)
+        _, _, text = content.partition("\n\n")
+        return content, as_artifact([SourceDocument(url=url, kind="web", text=text)])
 
     return StructuredTool.from_function(
         read_allowed,
         name=READ_PAGE_TOOL_NAME,
         description=read_page.__doc__,
         handle_tool_error=True,
+        response_format="content_and_artifact",
     )
-
-
-def pages_read(messages: list[AnyMessage]) -> dict[str, str]:
-    """The pages an agent read: URL to text, from its ``read_page`` results in ``messages``."""
-    pages: dict[str, str] = {}
-    for message in messages:
-        if (
-            isinstance(message, ToolMessage)
-            and message.name == READ_PAGE_TOOL_NAME
-            and message.status != "error"
-            and isinstance(message.content, str)
-        ):
-            url, _, text = message.content.partition("\n\n")
-            pages[url.strip()] = text
-    return pages

@@ -1,9 +1,10 @@
 """Nodes of P1's research graph (``graphs/research_graph.py``): plan, then one run per sub-question.
 
 - ``make_plan_node`` splits a broad topic into sub-questions with ``plan_research``.
-- ``fan_out`` sends each sub-question to its own run of the research node, in parallel.
-- ``make_research_node`` runs the researcher agent on one sub-question and returns its draft and
-  the pages it read, or the problem it met.
+- ``fan_out`` sends each sub-question to its own run of the research node, in parallel, with the
+  sources the router picked for it (``source_route_node.py``).
+- ``make_research_node`` runs the researcher agent on one sub-question, limited to its sources,
+  and returns its draft and the documents its source tools returned, or the problem it met.
 
 The claim check that follows lives in ``claim_check_node.py``.
 
@@ -30,7 +31,7 @@ from agentlab.prompts.nodes.research_plan_prompt import (
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.schemas.output.research_output_schema import ResearchPlan
 from agentlab.schemas.state.research_state import ResearchState, SubQuestionState
-from agentlab.tools.read_page_tool import pages_read
+from agentlab.tools.research_source_tool import documents_read
 from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import new_delegation_config, pending_approvals
 
@@ -92,11 +93,13 @@ def make_plan_node(
 def fan_out(state: ResearchState) -> list[Send]:
     """One ``Send`` per sub-question: the research node runs once for each, in parallel."""
     questions = state["questions"]
+    routes = state.get("routes", {})
     return [
         Send(
             RESEARCH_NODE,
             {
                 "question": question,
+                "sources": routes.get(question, ["web"]),
                 "label": f"'{question}': " if len(questions) > 1 else "",
             },
         )
@@ -107,8 +110,9 @@ def fan_out(state: ResearchState) -> list[Send]:
 def make_research_node(agent: Runnable) -> Callable[[SubQuestionState], dict]:
     """Build the node that researches one sub-question with the injected P1 agent.
 
-    Each run gets a fresh thread, so its messages hold only the pages it read itself, and the
-    claim check later judges each claim against those pages. An external failure, a run left
+    Each run gets a fresh thread, so its messages hold only the documents its own tools
+    returned, and the claim check later judges each claim against those. The run's ``sources``
+    go in its input, where ``SourceRouteMiddleware`` limits the agent to their tools. An external failure, a run left
     waiting for approval, or a run with no draft becomes a problem; the other runs go on. A bug
     raises.
     """
@@ -117,7 +121,10 @@ def make_research_node(agent: Runnable) -> Callable[[SubQuestionState], dict]:
         label = task["label"]
         try:
             outcome = agent.invoke(
-                {"messages": [HumanMessage(content=task["question"])]},
+                {
+                    "messages": [HumanMessage(content=task["question"])],
+                    "sources": task["sources"],
+                },
                 config=new_delegation_config(),
             )
         except Exception as error:
@@ -133,6 +140,11 @@ def make_research_node(agent: Runnable) -> Callable[[SubQuestionState], dict]:
         draft = outcome.get("structured_response")
         if draft is None:
             return {"problems": [label + "No report was produced."]}
-        return {"drafts": [draft], "pages": pages_read(outcome.get("messages", []))}
+        documents = documents_read(outcome.get("messages", []))
+        return {
+            "drafts": [draft],
+            "pages": {url: document.text for url, document in documents.items()},
+            "kinds": {url: document.kind for url, document in documents.items()},
+        }
 
     return research

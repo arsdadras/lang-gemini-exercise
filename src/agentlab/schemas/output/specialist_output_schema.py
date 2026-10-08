@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field
 class Provenance(BaseModel):
     """Where part of an answer came from."""
 
-    kind: Literal["web", "corpus", "memory", "sandbox"]
+    kind: Literal["web", "academic", "corpus", "memory", "sandbox"]
     ref: str = Field(description="A URL, or a path in the corpus, memory, or sandbox.")
     title: str = ""
 

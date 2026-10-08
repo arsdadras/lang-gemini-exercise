@@ -14,19 +14,20 @@ Read first every session; rewrite it, don't append. The charter is [README.md](R
   with cut sub-questions named in the reason (`b5f6850`). The rule the learner and the mentor
   agreed: a deletion that loses nothing is fine; a lossy one needs an informed priority and is
   never silent.
-- **Next: R1 topic 3, more sources and a source router.** Not built yet. Prepare it before
-  teaching: the private corpus through P2's retrieval and arXiv need no key; the research-API
-  source (Perplexity or Exa) needs `PERPLEXITY_API_KEY` or `EXA_API_KEY` from the learner; the
-  router is the decision point `research_sources@1` on the `decision_model` seam, held to the
-  [one standard](../library/architecture/decision-models.md#one-standard-for-every-decision-point).
-  Build the keyless sources and the router first; add the API source when the key arrives.
+- **Now: R1 topic 3, more sources and a source router.** Built and live-verified 2026-10-08
+  ([design card](../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built));
+  teaching starts with its hook. Sources: web, academic (Exa research papers), private (P2's
+  index). Router `research_sources@1`: 97.1% on 69 labeled cases, 0 unsafe, p95 605 ms. Live run
+  (strong profile through GapGPT): every kind read, 8 of 11 claims supported. The free tier
+  rarely calls `academic_search` when web is also offered (it does when academic is the only
+  source).
 - **Then:** R1 topic 4, the stop condition (`evidence_enough@1` per sub-question inside the
   budget). After R1: R2 -> R3 -> P5 teaching pass (B4 to C4) -> R5 -> D1 -> P6 (content
   generator) -> P7 (Capstone I) ([ROADMAP](ROADMAP.md), v5).
 
 ## Build queue
 
-1. R1 topic 3 (above), then topic 4.
+1. R1 topic 3 teaching, then topic 4.
 2. A live end-to-end run of the research agent after topic 4; the depth budgets are provisional
    until real broad runs measure them (`DEPTH_BUDGETS`).
 3. Grow the claim-check labeled set from 34 to 50 cases (200 before fitting thresholds), fit
@@ -63,8 +64,9 @@ Read first every session; rewrite it, don't append. The charter is [README.md](R
 - **A weak result because of the model (2026-10-07):** rerun it with `LLM_TEST_PROFILE=strong`
   (Gemini 3.8 Flash on Google, `gpt-6-luna` on OpenRouter as its fallback); if that doesn't
   answer, keep the free tier.
-- **Live runs:** test mode per command (`LLM_TEST_MODE=true`); `.env` is never edited. Jev's key
-  is `TYPESAFE_API_KEY`; Google, Tavily, Jev, and OpenRouter embeddings work in test mode.
+- **Live runs:** test mode per command (`LLM_TEST_MODE=true`); `.env` is never edited. Test mode
+  calls Gemini through GapGPT first (the learner's direction, 2026-10-08), then Google's API, then
+  Haiku on OpenRouter (out of credit). Jev's key is `TYPESAFE_API_KEY`; Exa's is `EXA_API_KEY`.
 - **Scratch area:** `alireza/` is the learner's; never read, reference, or sync it.
 
 ## Live code issues
@@ -73,8 +75,15 @@ Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
 
 - **Coordinator shell has no approval step:** approvals raised inside a subagent aren't surfaced
   to the CLI; the banner states it. Fix: P7-B3.
-- **RAG index must be rebuilt:** `.chroma_index` predates the restructure and holds Gemini's
-  vectors; the embedding model is now 1536-dimensional. Rebuild in R2 (paced; minutes).
+- **RAG index:** rebuilt in this worktree 2026-10-08 (1536-dimensional); the main checkout's
+  `.chroma_index` is still the old one: rebuild it there before `lab-rag` or the private source.
+- **Approvals inside the research graph:** an outbound search waits for approval, and the
+  research node reports a waiting run as a problem instead of surfacing the interrupt, so
+  `run_research` with the approval gate on stops at the first search; live runs replace the gate
+  in the script. Fix: run the agent as a subgraph so its interrupts reach the caller (with P7-B3).
+- **A joined corpus document can pass `MAX_PAGE_CHARS`:** parts of one file read by several
+  runs are joined, and the claim check sees the first 12,000 characters. Trigger: a corpus claim
+  marked unsupported whose passage sits past the cut.
 - **Unused code:** `utils/time_travel_util.py` has no consumer outside a test; removed in R5
   unless one appears.
 - **Personal data in traces:** only P5 masks before upload. Engineering track.

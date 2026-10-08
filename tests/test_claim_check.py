@@ -26,7 +26,8 @@ from agentlab.schemas.output.research_output_schema import (
     Source,
 )
 from agentlab.subagents.research_subagent import run_research
-from agentlab.tools.read_page_tool import READ_PAGE_TOOL_NAME, pages_read
+from agentlab.tools.read_page_tool import READ_PAGE_TOOL_NAME
+from agentlab.tools.research_source_tool import documents_read
 from tests.fakes import scripted_decider
 from tests.test_specialist_contract import Returns, rejected
 
@@ -228,26 +229,37 @@ def test_confidence_comes_from_the_table_and_rewards_agreeing_pages() -> None:
     assert derive_confidence(table("supported", "unsupported")) == pytest.approx(0.35)
 
 
-def read(url: str, text: str) -> ToolMessage:
+def read(url: str, text: str, kind: str = "web") -> ToolMessage:
+    """A source tool's result: the text the model reads and the document as its artifact."""
     return ToolMessage(
-        content=f"{url}\n\n{text}", name=READ_PAGE_TOOL_NAME, tool_call_id=url
+        content=f"{url}\n\n{text}",
+        name=READ_PAGE_TOOL_NAME,
+        tool_call_id=url,
+        artifact=[{"url": url, "title": "", "kind": kind, "text": text}],
     )
 
 
-def test_pages_read_maps_read_page_results_to_their_urls_and_skips_failures() -> None:
+def test_documents_read_takes_every_source_tools_artifact_and_skips_failures() -> None:
     messages = [
         AIMessage(content=""),
         read(PAGE_A, "The text."),
+        read(PAGE_B, "A paper.", kind="academic"),
         ToolMessage(
             content="Could not read",
             name=READ_PAGE_TOOL_NAME,
             tool_call_id="2",
             status="error",
         ),
+        # Search snippets carry no artifact: the model saw them, but they are not evidence.
         ToolMessage(content="snippets", name="web_search", tool_call_id="3"),
     ]
 
-    assert pages_read(messages) == {PAGE_A: "The text."}
+    documents = documents_read(messages)
+
+    assert {url: (d.kind, d.text) for url, d in documents.items()} == {
+        PAGE_A: ("web", "The text."),
+        PAGE_B: ("academic", "A paper."),
+    }
 
 
 def run(claims_draft: ResearchDraft, pages: dict[str, str], response: Any) -> Any:

@@ -4,7 +4,7 @@
 ``opensource`` a cheap tier of open-weight models, all through the GapGPT gateway. Every GapGPT
 model has a ``backup``: the same model on OpenRouter, tried right after it, so a GapGPT outage
 costs one failed call per request, not the request. ``free`` and ``strong`` (opt-in, test mode)
-call Gemini directly on Google's API and fall back to Claude Haiku 5.5. ``local`` runs on Ollama.
+call Gemini through GapGPT, then on Google's API, then Claude Haiku 5.5. ``local`` runs on Ollama.
 OpenRouter also serves the embedding model (``EMBEDDING_SPEC``).
 
 Each tier's provider order (first = primary, rest = same-tier fallback, per
@@ -217,16 +217,18 @@ MODEL_TIERS: dict[str, dict[str, ModelSpec]] = {
         },
     ),
     # Opt-in only: never the default tier and never part of a paid tier's fallback or cascade
-    # (see TIER_CASCADE_ORDER). The order is the user's, not ``_ranked``'s: Google's no-cost
-    # quota first, then Claude Haiku 5.5 when Google refuses or is down (2026-10-08).
+    # (see TIER_CASCADE_ORDER). The order is the user's, not ``_ranked``'s: the model on
+    # GapGPT first (2026-10-08; OpenRouter backs it), then the same model on Google's API,
+    # then Claude Haiku 5.5.
     "free": {
+        "gapgpt": _gapgpt("gemini-3.5-flash-lite", "google/gemini-3.5-flash-lite"),
         "gemini": _gemini("gemini-3.5-flash-lite"),
         "anthropic": HAIKU,
     },
     # Opt-in only, same as "free": the test-mode step up when a free-tier result is weak
-    # because of the model (the user's rule, 2026-10-07). Gemini 3.8 Flash on Google's API,
-    # then Claude Haiku 5.5.
+    # because of the model (the user's rule, 2026-10-07). Gemini 3.8 Flash, in the same order.
     "strong": {
+        "gapgpt": _gapgpt("gemini-3.8-flash", "google/gemini-3.8-flash"),
         "gemini": _gemini("gemini-3.8-flash"),
         "anthropic": HAIKU,
     },
@@ -265,9 +267,9 @@ TIER_CASCADE_ORDER: tuple[str, ...] = ("high", "medium", "low")
 # on prompts or routing without spending higher-tier quota.
 TEST_MODE_ENV = "LLM_TEST_MODE"
 
-# Test mode routes every request to the ``free`` tier: Gemini 3.5 Flash-Lite called directly on
-# Google's own API with ``GOOGLE_API_KEY`` (the user's decision, 2026-10-05), with Claude Haiku
-# 5.5 as its fallback (2026-10-08). ``LLM_TEST_PROFILE=strong`` steps up to Gemini 3.8 Flash.
+# Test mode routes every request to the ``free`` tier: Gemini 3.5 Flash-Lite through GapGPT (the
+# user's decision, 2026-10-08), then the same model on Google's own API, then Claude Haiku 5.5.
+# ``LLM_TEST_PROFILE=strong`` steps up to Gemini 3.8 Flash.
 TEST_TIER = "free"
 
 # Test-mode profiles: with LLM_TEST_MODE=true, ``LLM_TEST_PROFILE=<name>`` picks which cheap
@@ -280,7 +282,7 @@ TEST_TIER = "free"
 TEST_MODE_PROFILE_ENV = "LLM_TEST_PROFILE"
 DEFAULT_TEST_PROFILE = "default"
 TEST_MODE_PROFILES: dict[str, str] = {
-    "default": TEST_TIER,  # Gemini 3.5 Flash-Lite directly on Google's API; see TEST_TIER
+    "default": TEST_TIER,  # Gemini 3.5 Flash-Lite through GapGPT; see TEST_TIER
     # A stronger model for when the free tier's result is weak because of the model.
     "strong": "strong",
     "local": "local",  # $0, no rate limit, needs `ollama serve` with the model already pulled

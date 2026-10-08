@@ -1,4 +1,4 @@
-"""P1 research constants shared by the page reader, the claim check, and the research budgets."""
+"""P1 research constants: the page reader, the claim check, the budgets, and the sources."""
 
 from dataclasses import dataclass
 
@@ -26,3 +26,24 @@ DEPTH_BUDGETS: dict[str, ResearchBudget] = {
     "standard": ResearchBudget(sub_questions=3, searches=5, reads=8, claims=15),
     "deep": ResearchBudget(sub_questions=5, searches=6, reads=10, claims=30),
 }
+
+
+# Sources (R1 topic 3). Each source is a kind of evidence and the tools that fetch it; the router
+# (``research_sources@1``) picks the sources a sub-question needs, and the agent sees only theirs.
+SOURCE_TOOLS: dict[str, tuple[str, ...]] = {
+    "web": ("web_search", "read_page"),
+    "academic": ("academic_search",),
+    "private": ("search_corpus",),
+}
+
+# Academic search: Exa's research-paper index (arXiv, journals, conference papers), which returns
+# each paper's text with the result, so no separate read step is needed.
+EXA_SEARCH_URL = "https://api.exa.ai/search"
+EXA_KEY_ENV = "EXA_API_KEY"
+ACADEMIC_RESULTS = 5
+# What the agent and the claim check see of one paper: smaller than a web page, because five
+# papers arrive in one result.
+ACADEMIC_TEXT_CHARS = 3_000
+
+# Private corpus: this project's own docs and code, through P2's index.
+CORPUS_RESULTS = 6

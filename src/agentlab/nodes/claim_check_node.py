@@ -33,6 +33,7 @@ from agentlab.schemas.output.research_output_schema import (
     DraftClaim,
     ResearchDraft,
     ResearchReport,
+    SourceKind,
 )
 from agentlab.schemas.state.research_state import ResearchState
 from agentlab.utils.failure_util import failure_kind
@@ -134,14 +135,16 @@ def _status(verdicts: list[Verdict]) -> ClaimStatus:
     return "supported" if "supports" in verdicts else "unsupported"
 
 
-def _checked(claim: DraftClaim, verdicts: dict[str, Verdict]) -> Claim:
+def _checked(
+    claim: DraftClaim, verdicts: dict[str, Verdict], kinds: dict[str, SourceKind]
+) -> Claim:
+    supporting = [url for url, verdict in verdicts.items() if verdict == "supports"]
     return Claim(
         text=claim.text,
         evidence=claim.evidence,
         status=_status(list(verdicts.values())),
-        supporting_urls=[
-            url for url, verdict in verdicts.items() if verdict == "supports"
-        ],
+        supporting_urls=supporting,
+        source_kinds=sorted({kinds.get(url, "web") for url in supporting}),
     )
 
 
@@ -158,11 +161,17 @@ def _default_verdict_chain() -> Runnable:
 def check_claims(
     draft: ResearchDraft,
     pages: dict[str, str],
+    kinds: dict[str, SourceKind] | None = None,
     *,
     decide: Decide | None = None,
     verdict_chain: Runnable | None = None,
 ) -> ResearchReport:
-    """Check every claim of ``draft`` against ``pages`` (URL to text) and build the report."""
+    """Check every claim of ``draft`` against ``pages`` (URL to text) and build the report.
+
+    ``kinds`` gives each document's kind (web, academic, corpus); a document without one is
+    a web page. Each claim and source carries the kind of the documents behind it.
+    """
+    kinds = kinds or {}
     decide = decide or decision_model.decide
     verdict_chain = verdict_chain or _default_verdict_chain()
     by_page: dict[str, dict[str, str]] = {}
@@ -185,13 +194,15 @@ def check_claims(
             for url in dict.fromkeys(e.url for e in claim.evidence)
             if (str(index), url) in verdicts
         }
-        checked.append(_checked(claim, own))
+        checked.append(_checked(claim, own, kinds))
+    # Provenance is a fact about the run: only documents a tool returned can be sources.
+    sources = [source for source in draft.sources if source.url in pages]
     return ResearchReport(
         topic=draft.topic,
         summary=draft.summary,
         claims=checked,
-        # Provenance is a fact about the run: only pages the agent actually read can be sources.
-        sources=[source for source in draft.sources if source.url in pages],
+        sources=sources,
+        source_kinds={source.url: kinds.get(source.url, "web") for source in sources},
         confidence=derive_confidence(checked),
     )
 
@@ -260,6 +271,7 @@ def make_check_node(
         report = check_claims(
             _merge(state["topic"], drafts),
             state.get("pages", {}),
+            state.get("kinds", {}),
             decide=decide,
             verdict_chain=verdict_chain,
         )

@@ -15,5 +15,8 @@ EMBEDDING_TIMEOUT_SECONDS: float = 30.0
 # One Tavily search request.
 WEB_SEARCH_TIMEOUT_SECONDS: float = 20.0
 
+# One Exa academic search request (it returns each paper's text with the result).
+ACADEMIC_SEARCH_TIMEOUT_SECONDS: float = 30.0
+
 # A decision (Jev) answers in about 0.5 s end to end; the ceiling is for a bad network day.
 DECISION_MODEL_TIMEOUT_SECONDS: float = 10.0

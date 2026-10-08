@@ -18,11 +18,47 @@ class Source(BaseModel):
     url: str = Field(description="URL the claim came from")
 
 
-class Evidence(BaseModel):
-    """A page passage a claim rests on."""
+SourceKind = Literal["web", "academic", "corpus"]
+"""Where a document came from: a web page, a research paper, or this project's own corpus."""
 
-    url: str = Field(description="URL of a page you read with read_page")
-    passage: str = Field(description="The passage of that page that supports the claim")
+
+class SourceDocument(BaseModel):
+    """One document a source tool returned to the agent: the claim check's evidence.
+
+    Tools return these as their message's ``artifact``, beside the text the model reads, so the
+    document a claim is checked against is the one the tool fetched, never text the model wrote.
+    """
+
+    url: str = Field(
+        description="A URL, or corpus://<path> for the project's own files"
+    )
+    title: str = ""
+    kind: SourceKind
+    text: str
+
+
+def join_text(first: str, second: str) -> str:
+    """Two texts read from one URL as one: the same text once, different parts both kept.
+
+    A web page reads the same each time, but two corpus searches can return different chunks
+    of one file; keeping only the last would drop the passage another claim cites.
+    """
+    if second in first:
+        return first
+    if first in second:
+        return second
+    return f"{first}\n...\n{second}"
+
+
+class Evidence(BaseModel):
+    """A passage of a document a claim rests on."""
+
+    url: str = Field(
+        description="URL (or corpus:// reference) of a document a source tool returned to you"
+    )
+    passage: str = Field(
+        description="The passage of that document that supports the claim"
+    )
 
 
 class DraftClaim(BaseModel):
@@ -53,6 +89,10 @@ class Claim(BaseModel):
     evidence: list[Evidence]
     status: ClaimStatus
     supporting_urls: list[str] = Field(default_factory=list)
+    source_kinds: list[SourceKind] = Field(
+        default_factory=list,
+        description="The kinds of the documents that support the claim, set by code",
+    )
 
 
 class ResearchReport(BaseModel):
@@ -62,6 +102,9 @@ class ResearchReport(BaseModel):
     summary: str
     claims: list[Claim]
     sources: list[Source]
+    source_kinds: dict[str, SourceKind] = Field(
+        default_factory=dict, description="Each source URL's kind, set by code"
+    )
     confidence: float = Field(
         ge=0,
         le=1,

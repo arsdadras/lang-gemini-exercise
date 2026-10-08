@@ -7,6 +7,7 @@ from langchain_core.runnables import Runnable
 
 from agentlab.graphs.research_graph import build_research_graph
 from agentlab.nodes.claim_check_node import check_claims, unsupported_count
+from agentlab.nodes.source_route_node import Decide
 from agentlab.prompts.subagents_prompt import RESEARCHER_SUBAGENT_PROMPT
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.schemas.output.research_output_schema import (
@@ -18,7 +19,7 @@ from agentlab.schemas.output.specialist_output_schema import (
     Provenance,
     SpecialistResult,
 )
-from agentlab.tools.read_page_tool import pages_read
+from agentlab.tools.research_source_tool import documents_read
 from agentlab.tools.web_search_tool import make_web_search_tool
 from agentlab.utils.failure_util import failure_kind, failure_reason
 
@@ -27,7 +28,7 @@ RESEARCHER_SUBAGENT_NAME = "researcher"
 
 
 def verify_research(state: dict[str, Any]) -> ResearchReport | None:
-    """Check the agent's draft against the pages it read: the checked report, or ``None``.
+    """Check the agent's draft against the documents its tools returned: the report, or None.
 
     Status and confidence come from this check, never from the model. Callers that run the
     agent themselves (the apps, with their approval loops) pass its final state here.
@@ -35,7 +36,12 @@ def verify_research(state: dict[str, Any]) -> ResearchReport | None:
     draft: ResearchDraft | None = state.get("structured_response")
     if draft is None:
         return None
-    return check_claims(draft, pages_read(state.get("messages", [])))
+    documents = documents_read(state.get("messages", []))
+    return check_claims(
+        draft,
+        {url: document.text for url, document in documents.items()},
+        {url: document.kind for url, document in documents.items()},
+    )
 
 
 def run_research(
@@ -44,17 +50,20 @@ def run_research(
     options: ResearchOptions | None = None,
     *,
     plan_chain: Runnable | None = None,
+    route_decide: Decide | None = None,
 ) -> SpecialistResult[ResearchReport]:
     """Research ``topic`` through the research graph and return the specialist envelope.
 
     Build the agent with the same ``options`` (``make_web_researcher_agent(options=...)``): the
     agent holds the per-run search and read budgets, and the graph holds the plan and the claim
     cap. Without ``options`` it is one run on the topic, no plan and no cap. With them, the
-    planner splits the topic into sub-questions (R1 topic 2), researched in parallel, each on its
-    own run, so every claim is checked against the pages its own run read
-    (``graphs/research_graph.py``).
+    planner splits the topic into sub-questions (R1 topic 2), the router picks each one's sources
+    (R1 topic 3), and each is researched on its own run, in parallel, so every claim is checked
+    against the documents its own run's tools returned (``graphs/research_graph.py``).
     """
-    graph = build_research_graph(agent, plan_chain=plan_chain)
+    graph = build_research_graph(
+        agent, plan_chain=plan_chain, route_decide=route_decide
+    )
     try:
         state = graph.invoke({"topic": topic, "options": options})
     except Exception as error:
@@ -88,7 +97,11 @@ def run_research(
         reason=" ".join(problems),
         output=report,
         provenance=[
-            Provenance(kind="web", ref=source.url, title=source.title)
+            Provenance(
+                kind=report.source_kinds.get(source.url, "web"),
+                ref=source.url,
+                title=source.title,
+            )
             for source in report.sources
         ],
     )

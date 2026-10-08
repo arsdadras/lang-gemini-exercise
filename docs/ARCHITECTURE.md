@@ -29,7 +29,7 @@ mechanics: [`AGENTS.md`](../AGENTS.md). Why each significant choice was made:
 
 | Part | Built as | Composed by |
 | :--- | :--- | :--- |
-| P1 research | Research graph: plan, one `create_agent` run per sub-question (search and read, approval before search), claim check | Coding coordinator (`researcher`), `lab-brief` |
+| P1 research | Research graph: plan, source router, one `create_agent` run per sub-question over its routed sources (web, research papers, the project's corpus; approval before outbound search), claim check | Coding coordinator (`researcher`), `lab-brief` |
 | P2 RAG | The RAG agent's engine, a raw `StateGraph`: retrieve, grade, rewrite, web fallback, hallucination check; Chroma index | Repo-insight coordinator (subagent version) |
 | P3 code review | Parent graph over three subgraphs; sandboxed pytest; `interrupt()` refactor gate | Coding coordinator |
 | P4 interpreter | DeepAgents agent over `LocalShellBackend` (virtual mode, allow-listed env); artifact diff | Coding coordinator (shell without per-command approval until P7-B3) |
