@@ -60,6 +60,10 @@ Read first every session; rewrite it, don't append. The charter is [README.md](R
 - **Code delivery:** the mentor builds and verifies; the learner reviews the code in lessons
   ([ADR-0023](../docs/adr/0023-active-review-instead-of-typing.md)) and writes code only by
   choice, in `alireza/`.
+- **The learner reads the main checkout (2026-10-08):** the IDE opens
+  `D:\Repos\lang_claude_exercise`. A session that works in an app worktree fast-forwards the main
+  checkout (`git pull --ff-only`) after every push, so the learner sees every change the lesson
+  shows.
 - **Git:** everything on `main`, pushed at the end of each session
   ([git policy](../library/engineering/git-policy.md)).
 - **A weak result because of the model (2026-10-08, ADR-0031):** test mode is a ladder, one
@@ -78,8 +82,7 @@ Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
 
 - **Coordinator shell has no approval step:** approvals raised inside a subagent aren't surfaced
   to the CLI; the banner states it. Fix: P7-B3.
-- **RAG index:** rebuilt in this worktree 2026-10-08 (1536-dimensional); the main checkout's
-  `.chroma_index` is still the old one: rebuild it there before `lab-rag` or the documents source.
+- **RAG index:** rebuilt 2026-10-08 (1536-dimensional) and copied to the main checkout.
 - **Approvals inside the research graph:** an outbound search waits for approval, and the
   research node reports a waiting run as a problem instead of surfacing the interrupt, so
   `run_research` with the approval gate on stops at the first search; live runs replace the gate
