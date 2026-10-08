@@ -66,7 +66,7 @@ class DraftClaim(BaseModel):
 
     text: str = Field(description="One factual claim, stated so a reader can verify it")
     evidence: list[Evidence] = Field(
-        description="Passages of pages you read that support this claim; at least one"
+        description="Passages of documents you read that support this claim; at least one"
     )
 
 
