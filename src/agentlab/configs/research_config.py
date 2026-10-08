@@ -29,7 +29,7 @@ DEPTH_BUDGETS: dict[str, ResearchBudget] = {
 
 
 # Sources (R1 topic 3). Each source is a kind of evidence and the tools that fetch it; the router
-# (``research_sources@1``) picks the sources a sub-question needs, and the agent sees only theirs.
+# (``research_sources@2``) picks the sources a sub-question needs, and the agent sees only theirs.
 SOURCE_TOOLS: dict[str, tuple[str, ...]] = {
     "web": ("web_search", "read_page"),
     "academic": ("academic_search",),

@@ -1,6 +1,6 @@
 """Source routing for the P1 researcher: a run sees only the tools of the sources routed to it.
 
-The research graph's router (``research_sources@1``) picks the sources one sub-question needs
+The research graph's router (``research_sources@2``) picks the sources one sub-question needs
 and passes them in the run's input as ``sources``. This middleware enforces the pick in code, at
 both ends: the model is offered only the routed sources' tools, and a call to any other source's
 tool (a name the model remembered or invented) is refused. Tools that belong to no source, such
