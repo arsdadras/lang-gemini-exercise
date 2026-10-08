@@ -178,7 +178,7 @@ def test_test_mode_skips_the_decider_and_uses_the_test_tier() -> None:
     assert called == []
     assert routed.decision.path == "test_mode"
     assert routed.primary.model == "gemini-3.5-flash-lite"  # type: ignore[attr-defined]
-    assert routed.primary.api_key_env == "GAPGPT_API_KEY"  # type: ignore[attr-defined]
+    assert routed.primary.api_key_env == "GOOGLE_API_KEY"  # type: ignore[attr-defined]
 
 
 def names(models: list[Any]) -> list[tuple[str, str | None]]:

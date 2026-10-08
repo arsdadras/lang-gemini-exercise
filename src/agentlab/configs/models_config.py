@@ -241,11 +241,15 @@ MODEL_TIERS: dict[str, dict[str, ModelSpec]] = {
     ),
     # Opt-in only: never the default tier and never part of a paid tier's fallback or cascade
     # (see TIER_CASCADE_ORDER). The ladder of test mode (ADR-0031), bottom rung: Gemini 3.5
-    # Flash-Lite on GapGPT (OpenRouter backs it), then on Google's API. Nothing above it falls
-    # back to it or the other way round: a better model is chosen, never fallen into.
+    # Flash-Lite on Google's free API first, then on GapGPT (OpenRouter backs it) when Google's
+    # per-minute or daily cap is hit. Measured 2026-10-08 on a tool call and a structured output:
+    # Google's free copy 2.9 s and 1.8 s, GapGPT's 4.1 s and 1.5 s, and OpenRouter's free
+    # Nemotron 3 Super 2.5 s and 10.8 s, so the free NVIDIA model is not used. Nothing above
+    # this tier falls back to it or the other way round: a better model is chosen, never fallen
+    # into.
     "free": {
-        "gapgpt": _gapgpt("gemini-3.5-flash-lite", "google/gemini-3.5-flash-lite"),
         "gemini": GEMINI_FLASH_LITE,
+        "gapgpt": _gapgpt("gemini-3.5-flash-lite", "google/gemini-3.5-flash-lite"),
     },
     # Opt-in only, same as "free": the first rung up, for a result that is weak because of the
     # model (the user's rule, 2026-10-08). Claude Haiku 5.5, then GPT-6 Luna, each on GapGPT and
@@ -304,8 +308,8 @@ TIER_CASCADE_ORDER: tuple[str, ...] = ("high", "medium", "low")
 # on prompts or routing without spending higher-tier quota.
 TEST_MODE_ENV = "LLM_TEST_MODE"
 
-# Test mode routes every request to the ``free`` tier: Gemini 3.5 Flash-Lite through GapGPT, then
-# OpenRouter, then Google's own API (the user's decision, 2026-10-08). ``LLM_TEST_PROFILE=strong``
+# Test mode routes every request to the ``free`` tier: Gemini 3.5 Flash-Lite on Google's free API,
+# then through GapGPT, then OpenRouter (2026-10-08: free and as fast as GapGPT's paid copy). ``LLM_TEST_PROFILE=strong``
 # and ``=strongest`` climb the ladder when that model is not enough (ADR-0031).
 TEST_TIER = "free"
 
@@ -319,7 +323,7 @@ TEST_TIER = "free"
 TEST_MODE_PROFILE_ENV = "LLM_TEST_PROFILE"
 DEFAULT_TEST_PROFILE = "default"
 TEST_MODE_PROFILES: dict[str, str] = {
-    "default": TEST_TIER,  # Gemini 3.5 Flash-Lite through GapGPT; see TEST_TIER
+    "default": TEST_TIER,  # Gemini 3.5 Flash-Lite, Google's free API first; see TEST_TIER
     # Two rungs up, for when the rung below gave a weak result because of the model.
     "strong": "strong",  # Claude Haiku 5.5, then GPT-6 Luna
     "strongest": "strongest",  # Gemini 3.8 Flash, then Claude Sonnet 5.5, then GPT-6.1 Sol
