@@ -21,8 +21,8 @@ were dropped from this list (the roadmap owns them).
   budget (R1 topic 4). The search budget and the claim check are built (topics 1-2); the unused
   groundedness middleware was removed on 2026-10-06, since the claim check replaced it.
 - **N:** Finglish repair on P1's report (Perso-Arabic leaked in a `lab-brief` run).
-- **N:** Decide whether the coordinator's `researcher` becomes a `CompiledSubAgent` over
-  `run_research`, once the budget exists.
+- **E:** The coordinator's `researcher` becomes P1's subagent version over `run_research`
+  (ADR-0030), so callers get the planned, claim-checked pipeline.
 
 **R2, P2**
 - **E:** Incremental re-index with stale-source detection; rebuild the stale index; index the
@@ -81,6 +81,7 @@ were dropped from this list (the roadmap owns them).
 | A weekly cloud routine running the upstream watch (DEC-020) | E | The watch procedure is written (research queue in STATE) |
 | Development-loop hooks, advisory: document health, a done gate, shell edits and ownership, meaning-level conventions (DEC-025) | N | The build queue after R1; the user's explicit yes before a hook sends session content or a replay reads transcripts |
 | Rename `TIER_CASCADE_ORDER` to a fallback order (DEC-025) | N | The quality escalation lands (D1) |
+| `repo_insight` grows from a relay into a codebase orchestrator: the RAG agent, code review, the interpreter, and repository history behind one goal (ADR-0030) | N | P8 A2's RAG role agent exists; until then its relay prompt is known debt |
 
 ## Deep-dive candidates
 

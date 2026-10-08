@@ -17,8 +17,9 @@ happens on `main` ([git policy](library/engineering/git-policy.md)).
 ```
 src/agentlab/
   apps/            CLI entry points and composition root (lab-* console scripts)
-  agents/          agent factories (make_*_agent), no run loops
-  subagents/       subagent specs and CompiledSubAgent adapters
+  agents/          role agents (make_*_agent): one job, own harness, no run loops;
+                   coordinators/ holds deep agents that orchestrate them (ADR-0030)
+  subagents/       the subagent version of each reusable role agent
   graphs/          StateGraph assembly (nodes wired to edges)
   nodes/           LangGraph node functions
   middlewares/     agent middleware factories
@@ -126,7 +127,7 @@ uv run python scripts/check_docs.py             # docs lint: links, anchors, lib
 uv run python scripts/smoke_live.py             # live smoke of every integration (test mode)
 uv run lab-research                             # P1 web researcher (approve each search)
 uv run lab-rag                                  # P2 raw RAG graph (history / replay <i>)
-uv run lab-repo-insight                         # P2 repo coordinator
+uv run lab-repo-insight                         # P2 repo-insight coordinator
 uv run lab-code-review examples/buggy_bank_account.py   # P3 review pipeline
 uv run lab-interpreter                          # P4 sandbox interpreter (approve execute)
 uv run lab-coordinator                          # P4 multi-agent coordinator

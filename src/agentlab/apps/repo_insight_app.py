@@ -5,7 +5,7 @@ import sys
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 
-from agentlab.agents.repo_insight_agent import make_repo_insight_agent
+from agentlab.agents.coordinators.repo_insight_agent import make_repo_insight_agent
 from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.get_text_util import get_text
 from agentlab.utils.session_util import resolve_session

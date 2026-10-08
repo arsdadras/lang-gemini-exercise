@@ -80,7 +80,7 @@ scenario.
 | :--- | :--- | :--- |
 | **R0, the specialist contract** | What a caller must know about a specialist: envelope, provenance, status, declared side effects, and the failure contract (what "partial" means, who retries) | C4, C5 |
 | **R1, P1 a stronger researcher** | Multi-source research with provenance: research options and planning, more sources (web, private corpus, academic, a research API) chosen by a source router, every fact traceable to its source ([design card](../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built)) | C3 |
-| **R2, P2 a stronger retriever** | RAG capability: hybrid search, reranking, query rewriting, the index rebuilt; judged by hit rate at k (the harness itself is on the engineering track) | C3, C8 |
+| **R2, P2 a stronger retriever** | The RAG agent's engine (P2's role is the RAG agent, ADR-0030): hybrid search, reranking, query rewriting, the index rebuilt; judged by hit rate at k (the harness itself is on the engineering track) | C3, C8 |
 | **R3, P3 hybrid analysis** | Deterministic tools first, model second: `ruff` and AST findings feed the review; the model explains instead of hunting | C1, C9 |
 | **R4, P4 capability upgrade** | Chosen with the mentor; declared side effects and the risk label moved to the engineering track (ADR-0027) | C4 |
 | **R5, close** | None new: practice across all five specialists on one scenario, and the first teach-back. P6 Session 0 starts from here | C10 |
@@ -169,7 +169,7 @@ optional analysis, verification, approval. Advances C4, C5, C8.
 
 | Stage | Hard concept |
 | :--- | :--- |
-| **A1** | A deterministic parent workflow over specialists: P1 and P2 called through the contract, its branches decided by typed decisions with escalation, synthesis, delivery gated on approval |
+| **A1** | A deterministic parent workflow over specialists: P1 and P2 called through the contract (P2's private knowledge a curated corpus of domain sources, so the brief can lean on established frameworks), its branches decided by typed decisions with escalation, synthesis, delivery gated on approval |
 | **B1** | Fan-out and fan-in: parallel research branches with `Send`, merged by a reducer; source conflicts surface in the synthesis |
 | **B2** | Failure by error class: retry transient errors, feed recoverable ones back to the model, pause for a human, cap runaway loops |
 | **B3** | Nested runs: approvals raised inside subagents surfaced to the app (closes the coordinator's unapproved shell), progress streamed across namespaces, long runs resumed |
@@ -183,6 +183,7 @@ Also covers visual perception (formerly P10), and compiled knowledge (DEC-013). 
 | Stage | Hard concept |
 | :--- | :--- |
 | **A1** | Extraction into typed schemas for one document family, with per-field confidence (the family chosen by a decision; each field verified against its source) |
+| **A2** | P2 grows into a RAG role agent (ADR-0030): a user's long documents ingested on demand into per-user collections, agentic retrieval (decomposition, multi-hop) as a graph with an agent node, served on its own and as a subagent and a tool |
 | **B1** | Vision: scanned pages and images, tables and layout |
 | **B2** | Validation loops, and human review of ambiguous fields only (confidence-based escalation to a person) |
 | **C1** | Multi-document reasoning with provenance (page and region) and audit-ready output; reusable extraction skills |

@@ -8,7 +8,8 @@ import pytest
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, MessagesState, StateGraph
 
-from agentlab.agents import coding_coordinator_agent, interpreter_agent
+from agentlab.agents import interpreter_agent
+from agentlab.agents.coordinators import coding_coordinator_agent
 from agentlab.configs import paths_config
 from agentlab.configs.paths_config import DELEGATIONS_APP, checkpoint_db_path
 from agentlab.data.sqlite_db_data import get_recent_threads, get_sqlite_checkpointer

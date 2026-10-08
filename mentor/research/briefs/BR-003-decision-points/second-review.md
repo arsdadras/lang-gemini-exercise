@@ -98,7 +98,7 @@ first.
 | 7 | `agents/interpreter_agent.py`, `execute` approval | Static HITL on every call | Should a person look at this command closely | **No loosening:** HITL stays on every call. The decider may add a risk label to the approval prompt, which is triage for the person | R4 |
 | 8 | `middlewares/security_guard_middleware.py` (memory writes, skill publishing) | `low` LLM through the injectable `classifier=` | allow, ask, or block; the category; the reason | Three `noul` checks combined fail-closed in code, beside the LLM, tightening only; the reason comes from a template per category | P5 teaching pass |
 | 9 | `nodes/memory_consolidation_node.py` | LLM writes `MemoryEdits` | Staleness; each edit's kind; which existing line and heading it touches; whether the user asked | Decisions over candidates code lists (A3); `new` and `reason` stay with the LLM; implied changes escalate | P5 teaching pass |
-| 10 | `agents/coding_coordinator_agent.py`, `agents/repo_insight_agent.py` | Tool calling by the LLM | Which specialist takes the request, or "clarify" | A pre-router with "clarify", the LLM on a thin margin; measured on R5's scenario, built in P6-A1 | R5, P6 |
+| 10 | `agents/coordinators/coding_coordinator_agent.py`, `agents/coordinators/repo_insight_agent.py` | Tool calling by the LLM | Which specialist takes the request, or "clarify" | A pre-router with "clarify", the LLM on a thin margin; measured on R5's scenario, built in P6-A1 | R5, P6 |
 | 11 | `graphs/rag_graph.py`, `route_after_grading`; the Finglish detector | Code | none | **Stays code.** Code already decides | none |
 | 12 | `query_rewrite_node`, `generate_node`, `finglish_output_middleware.py`, `skill_designer_node.py`, test generation | LLM | none: they write | **Stay LLM** | none |
 

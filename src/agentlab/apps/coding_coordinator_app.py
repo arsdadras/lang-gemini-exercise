@@ -5,7 +5,9 @@ import sys
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 
-from agentlab.agents.coding_coordinator_agent import make_coding_coordinator_agent
+from agentlab.agents.coordinators.coding_coordinator_agent import (
+    make_coding_coordinator_agent,
+)
 from agentlab.configs.coordinator_config import DEFAULT_COORDINATOR_THREAD_ID
 from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.get_text_util import get_text

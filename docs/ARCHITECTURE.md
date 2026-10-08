@@ -16,6 +16,7 @@ mechanics: [`AGENTS.md`](../AGENTS.md). Why each significant choice was made:
  app  = composition root: env, identity (UserContext), approval loop, redaction, tracing
         |
  workflow (P6, P12): deterministic control over specialists, merges, approvals
+ coordinators: deep agents orchestrating role agents through their subagent versions (ADR-0030)
         |   specialist contract: typed envelope in, typed envelope out
  specialists: P1 research | P2 RAG | P3 code review | P4 interpreter | P5 memory
               later P7 documents | P8 support | P9 analytics | P11 business actions
@@ -24,14 +25,15 @@ mechanics: [`AGENTS.md`](../AGENTS.md). Why each significant choice was made:
                        vector index | sandbox | search/HTTP clients | tracing
 ```
 
-## Current system (2026-10-05)
+## Current system (2026-10-08)
 
 | Part | Built as | Composed by |
 | :--- | :--- | :--- |
-| P1 research | DeepAgents agent, Tavily search, structured cited report, approval before search | Coding coordinator (`researcher`), `lab-brief` |
-| P2 RAG | Raw `StateGraph`: retrieve, grade, rewrite, web fallback, hallucination check; Chroma index | Repo-insight coordinator (`CompiledSubAgent`) |
+| P1 research | Research graph: plan, one `create_agent` run per sub-question (search and read, approval before search), claim check | Coding coordinator (`researcher`), `lab-brief` |
+| P2 RAG | The RAG agent's engine, a raw `StateGraph`: retrieve, grade, rewrite, web fallback, hallucination check; Chroma index | Repo-insight coordinator (subagent version) |
 | P3 code review | Parent graph over three subgraphs; sandboxed pytest; `interrupt()` refactor gate | Coding coordinator |
-| P4 interpreter | DeepAgents agent over `LocalShellBackend` (virtual mode, allow-listed env); artifact diff | Coding coordinator (shell without per-command approval until P6-B3) |
+| P4 interpreter | DeepAgents agent over `LocalShellBackend` (virtual mode, allow-listed env); artifact diff | Coding coordinator (shell without per-command approval until P7-B3) |
+| Coordinators | `agents/coordinators/`: the coding coordinator (P1, P3, P4) and the repo-insight coordinator (P2), both `create_deep_agent` | Their apps ([ADR-0030](adr/0030-role-agents-coordinators-and-subagent-versions.md)) |
 | P5 memory assistant | DeepAgents agent reading memory; gated store backend; background consolidator graph; skill designer graph; context-provider tool | `lab-brief` (P5 + P1) |
 | Specialist contract | `SpecialistResult[T]` envelope, a `run_*` boundary per specialist (P1-P4), the failure contract (`failure_util`), timeouts on every external client, the eval-lite harness | Every specialist and every caller ([ADR-0026](adr/0026-the-specialist-contract.md)) |
 | Decisions | `decision_model` seam (Jev direct, `jev-1.13.0`), one `DecisionRecord` per decision; no consumer yet (the claim check is R1's) | R1 onward ([ADR-0021](adr/0021-decision-models-as-a-second-model-family.md)) |
