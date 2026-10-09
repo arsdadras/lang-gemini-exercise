@@ -104,6 +104,18 @@ it, what it touches. One line on the production path.
   rewritten. Each block opens with its exact address: the clickable file link, new or changed,
   and the function or class it belongs to. Show only what changed in an old file, with the old
   lines it replaces when that explains the change.
+- The teaching repertoire that works (the learner's confirmation, 2026-10-09); pick per
+  topic, never one fixed recipe:
+  - diagrams and flowcharts, each with its explanation;
+  - background first: what came before and what is missing;
+  - the problem, then the strategies at the same level compared, and why the chosen one wins;
+  - the design pattern that implements the strategy, and where it sits in the architecture;
+  - backward from the goal for complex or opaque parts with a clear target: show the final code
+    first, then walk back through what it needs, one dependency at a time, until every
+    important dependency is in place, with boilerplate and hardening kept out of the way;
+  - a closing takeaway: the reusable pattern in one or two sentences.
+  The code gets harder as the course reaches production quality, so the explanation must get
+  clearer, not denser: plain steps, one idea at a time, Python syntax explained when it is new.
 - The learner's rules, 2026-10-09: (1) a simple diagram or flowchart with its explanation
   wherever a flow, a structure, or a before/after is involved; (2) before code that uses a
   lower-level API instead of the everyday one the learner knows (an `AgentMiddleware` class
