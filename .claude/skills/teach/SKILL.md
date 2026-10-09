@@ -104,6 +104,13 @@ it, what it touches. One line on the production path.
   rewritten. Each block opens with its exact address: the clickable file link, new or changed,
   and the function or class it belongs to. Show only what changed in an old file, with the old
   lines it replaces when that explains the change.
+- The learner's rules, 2026-10-09: (1) a simple diagram or flowchart with its explanation
+  wherever a flow, a structure, or a before/after is involved; (2) before code that uses a
+  lower-level API instead of the everyday one the learner knows (an `AgentMiddleware` class
+  instead of the `@wrap_model_call` decorators, `StructuredTool.from_function` instead of
+  `@tool`, a hand-built `StateGraph` instead of `create_agent`), a short note: the familiar way,
+  this way, and why this case needs it; (3) every new code step opens with the problem's
+  background: what came before it and what is missing.
 - One small part per message, then stop and wait for the learner (the learner's rule,
   2026-10-08): a step with several files is split into parts, one file (or one block of a
   large file) per message, with a part counter on the position line (e.g. part 2/9). The
