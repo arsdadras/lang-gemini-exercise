@@ -53,3 +53,8 @@ PROJECT_CORPUS = (
     "agentlab, this teaching project on agentic AI: its design decisions, architecture, "
     "conventions, code, roadmap, and lessons"
 )
+
+# The stop condition (R1 topic 4, ``evidence_enough@1``): what the decider reads of the documents
+# a run has read so far: the most recent ones, each cut to its first part.
+EVIDENCE_MAX_DOCUMENTS = 6
+EVIDENCE_DOCUMENT_CHARS = 1_500

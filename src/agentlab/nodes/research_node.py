@@ -145,6 +145,11 @@ def make_research_node(agent: Runnable) -> Callable[[SubQuestionState], dict]:
         if draft is None:
             return {"problems": [label + "No report was produced."]}
         documents = documents_read(outcome.get("messages", []))
-        return {"drafts": [draft], "documents": documents}
+        update: dict = {"drafts": [draft], "documents": documents}
+        if outcome.get("evidence_enough") is False:
+            update["problems"] = [
+                f"{label}The search budget ran out before the evidence was enough."
+            ]
+        return update
 
     return research

@@ -27,6 +27,7 @@ from langgraph.store.base import BaseStore
 from agentlab.configs.paths_config import checkpoint_db_path
 from agentlab.configs.research_config import CORPUS_RESULTS, DEPTH_BUDGETS
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
+from agentlab.middlewares.evidence_stop_middleware import EvidenceStopMiddleware
 from agentlab.middlewares.fallback_middleware import make_model_fallback
 from agentlab.middlewares.hitl_middleware import hitl_for
 from agentlab.middlewares.source_route_middleware import SourceRouteMiddleware
@@ -150,6 +151,7 @@ def make_researcher_agent(
         middleware=[
             *make_model_fallback(tier),
             SourceRouteMiddleware(),
+            EvidenceStopMiddleware(),
             *([hitl_for(approvals)] if approvals else []),
             *limits,
             *extra_middleware,
