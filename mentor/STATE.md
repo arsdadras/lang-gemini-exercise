@@ -14,17 +14,17 @@ Read first every session; rewrite it, don't append. The charter is [README.md](R
   with cut sub-questions named in the reason (`b5f6850`). The rule the learner and the mentor
   agreed: a deletion that loses nothing is fine; a lossy one needs an informed priority and is
   never silent.
-- **Now: R1 topic 3, more sources and a source router.** Built and live-verified 2026-10-08
+- **R1 topic 3, more sources and a source router:** taught (2026-10-10). Built and live-verified 2026-10-08
   ([design card](../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built));
-  teaching restarted with its introduction (step 1/7 sent). Sources: web, academic (Exa
-  research papers), documents (P2's index of this project, or the files given with
+  Sources: web, academic (Exa
+  research papers), corpus (P2's index of this project, or the files given with
   `lab-research --corpus`). Router `research_sources@2`: 97.1% on 69 labeled cases, 0 unsafe. Live run
   (strong profile through GapGPT): every kind read, 8 of 11 claims supported. The free tier
   rarely calls `academic_search` when web is also offered (it does when academic is the only
   source).
-- **Then:** R1 topic 4, the stop condition (`evidence_enough@1` per sub-question inside the
-  budget). After R1: R2 -> R3 -> P5 teaching pass (B4 to C4) -> R5 -> D1 -> P6 (content
-  generator) -> P7 (Capstone I) ([ROADMAP](ROADMAP.md), v5).
+- **Now: R1 topic 4, the stop condition:** built 2026-10-10 (`EvidenceStopMiddleware`, `evidence_enough@1`,
+  16/16 on its labeled set, 0 unsafe); teaching started (intro sent). Then R2 -> R3 -> P5 teaching
+  pass (B4 to C4) -> R5 -> D1 -> P6 (content generator) -> P7 (Capstone I) ([ROADMAP](ROADMAP.md), v5).
 
 ## Build queue
 

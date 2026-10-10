@@ -165,6 +165,14 @@ combining what they return, and keeping every fact traceable to where it came fr
    names what the source holds (this project, or the given files), so it is `research_sources@2`.
    The whole graph, node by node: [research_graph.svg](../diagrams/research_graph.svg).
 4. **Knowing when to stop:** `evidence_enough@1` per sub-question inside the budget (unchanged).
+   **Built 2026-10-10** as `EvidenceStopMiddleware` (`middlewares/evidence_stop_middleware.py`):
+   after each source result, `before_model` asks the decider about the sub-question and the
+   documents read so far; a sure yes (0.8) makes `wrap_model_call` offer no source tool, so the
+   model writes its report, and `wrap_tool_call` refuses a late source call. A run that ends
+   without enough evidence becomes a problem, so the envelope is `partial`. A decider outage
+   decides nothing (the budget still bounds the search). The model stopping too early is not
+   pushed back: with structured output the final turn is the report itself, so it is reported
+   instead. Labeled set `evals/datasets/evidence_enough.json`: 16/16, 0 unsafe (test mode).
 
 **The contract with the content generator:** `run_research(agent, topic, options)` returns
 `SpecialistResult[ResearchReport]`; the fact pool is the claim table (text, evidence, source kind),
