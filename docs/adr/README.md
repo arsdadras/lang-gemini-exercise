@@ -48,6 +48,7 @@ set the old one's status to `Superseded by ADR-XXXX`.
 | [0029](0029-no-general-purpose-subagent-and-backup-gateways.md) | No general-purpose subagent anywhere; every gateway model has an OpenRouter backup; one specialist-subagent adapter | Accepted |
 | [0030](0030-role-agents-coordinators-and-subagent-versions.md) | Role agents, coordinators in `agents/coordinators/`, a subagent version of every role agent; P2's role is the RAG agent | Accepted |
 | [0031](0031-jev-model-router-and-test-mode-ladder.md) | A Jev model router beside the tier catalog (Jev judges the task, code picks the model); test mode is a ladder of opt-in tiers | Accepted |
+| [0032](0032-typed-specialist-inputs.md) | A specialist takes the type its factory returns (`NewType` per role graph or agent); injected chains are typed by their output | Accepted |
 
 ## Template
 

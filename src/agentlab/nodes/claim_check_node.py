@@ -19,7 +19,7 @@ them, and caps the report by evidence, so a supported claim never gives way to a
 from collections import Counter
 from collections.abc import Callable, Mapping
 from itertools import zip_longest
-from typing import Literal
+from typing import Any, Literal
 
 from langchain_core.runnables import Runnable, RunnableLambda
 from langchain_typesafe import Choice, ClassifierResponse, Question
@@ -76,7 +76,9 @@ def _decider_verdict(
     return "none", True
 
 
-def _llm_verdict(verdict_chain: Runnable, claim: str, page: str) -> Verdict:
+def _llm_verdict(
+    verdict_chain: Runnable[Any, ClaimVerdict], claim: str, page: str
+) -> Verdict:
     result = verdict_chain.invoke({"claim": claim, "page": page[:MAX_PAGE_CHARS]})
     return result.verdict
 
@@ -97,7 +99,7 @@ def check_pair_group(
     claims: dict[str, str],
     *,
     decide: Decide,
-    verdict_chain: Runnable,
+    verdict_chain: Runnable[Any, ClaimVerdict],
 ) -> dict[str, Verdict]:
     """Verdicts for several claims that cite one page. Keys are the claim ids."""
     try:
@@ -157,7 +159,7 @@ def _checked(
     )
 
 
-def _default_verdict_chain() -> Runnable:
+def _default_verdict_chain() -> Runnable[Any, ClaimVerdict]:
     """The LLM escalation, built only when a pair needs it: a sure decider builds no LLM client."""
 
     def verdict(inputs: dict[str, str]) -> ClaimVerdict:
@@ -172,7 +174,7 @@ def check_claims(
     documents: Mapping[str, SourceDocument],
     *,
     decide: Decide | None = None,
-    verdict_chain: Runnable | None = None,
+    verdict_chain: Runnable[Any, ClaimVerdict] | None = None,
 ) -> ResearchReport:
     """Check every claim of ``draft`` against ``documents`` (keyed by URL) and build the report.
 
@@ -262,7 +264,7 @@ def _cap(report: ResearchReport, max_claims: int) -> tuple[ResearchReport, list[
 def make_check_node(
     *,
     decide: Decide | None = None,
-    verdict_chain: Runnable | None = None,
+    verdict_chain: Runnable[Any, ClaimVerdict] | None = None,
 ) -> Callable[[ResearchState], dict]:
     """Build the node that merges the drafts, checks every claim, and applies the claim cap.
 

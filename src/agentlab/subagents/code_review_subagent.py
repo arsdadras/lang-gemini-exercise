@@ -1,11 +1,13 @@
 """P3's boundary: ``run_code_review`` returns the specialist envelope; the adapter serves coordinators."""
 
 from deepagents import CompiledSubAgent
-from langchain_core.runnables import Runnable
 
 from agentlab.configs.paths_config import DELEGATIONS_APP, checkpoint_db_path
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
-from agentlab.graphs.code_review_parentgraph import build_code_review_graph
+from agentlab.graphs.code_review_parentgraph import (
+    CodeReviewGraph,
+    build_code_review_graph,
+)
 from agentlab.schemas.output.code_review_output_schema import CodeReviewReport
 from agentlab.schemas.output.specialist_output_schema import SpecialistResult
 from agentlab.utils.failure_util import failure_kind, failure_reason
@@ -25,7 +27,7 @@ DEFAULT_CODE_REVIEW_DESCRIPTION = (
 
 
 def run_code_review(
-    graph: Runnable,
+    graph: CodeReviewGraph,
     code: str,
     *,
     language: str = "python",
@@ -108,7 +110,7 @@ def render_outcome(outcome: CodeReviewReport) -> str:
 
 
 def make_code_review_subagent(
-    graph: Runnable | None = None,
+    graph: CodeReviewGraph | None = None,
     *,
     name: str = DEFAULT_CODE_REVIEW_NAME,
     description: str = DEFAULT_CODE_REVIEW_DESCRIPTION,

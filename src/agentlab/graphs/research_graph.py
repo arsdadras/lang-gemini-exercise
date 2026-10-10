@@ -10,6 +10,8 @@ and one in ``check`` takes the LLM path inside the claim check (a cascade, ``dec
 so neither node fails on its decider.
 """
 
+from typing import Any
+
 from langchain_core.runnables import Runnable
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
@@ -24,15 +26,16 @@ from agentlab.nodes.research_node import (
     make_research_node,
 )
 from agentlab.nodes.source_route_node import make_route_node
+from agentlab.schemas.output.research_output_schema import ClaimVerdict, ResearchPlan
 from agentlab.schemas.state.research_state import ResearchState
 
 
 def build_research_graph(
     agent: Researcher,
     *,
-    plan_chain: Runnable | None = None,
+    plan_chain: Runnable[Any, ResearchPlan] | None = None,
     decide: Decide | None = None,
-    verdict_chain: Runnable | None = None,
+    verdict_chain: Runnable[Any, ClaimVerdict] | None = None,
     route_decide: Decide | None = None,
     checkpointer: BaseCheckpointSaver | None = None,
 ) -> CompiledStateGraph:

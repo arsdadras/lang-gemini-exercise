@@ -1,9 +1,8 @@
 """P2's boundary: ``run_rag`` returns the specialist envelope; the adapter serves DeepAgents coordinators."""
 
 from deepagents import CompiledSubAgent
-from langchain_core.runnables import Runnable
 
-from agentlab.graphs.rag_graph import build_rag_graph
+from agentlab.graphs.rag_graph import RagGraph, build_rag_graph
 from agentlab.schemas.output.specialist_output_schema import (
     Provenance,
     SpecialistResult,
@@ -31,7 +30,7 @@ _OUTCOMES = {
 }
 
 
-def run_rag(graph: Runnable, question: str) -> SpecialistResult[str]:
+def run_rag(graph: RagGraph, question: str) -> SpecialistResult[str]:
     """Answer ``question`` with the RAG graph, on a fresh thread, as a specialist envelope.
 
     An external failure that outlasted the graph's retries becomes ``failed``; a bug raises.
@@ -67,7 +66,7 @@ def run_rag(graph: Runnable, question: str) -> SpecialistResult[str]:
 
 
 def make_rag_subagent(
-    graph: Runnable | None = None,
+    graph: RagGraph | None = None,
     *,
     name: str = DEFAULT_RAG_SUBAGENT_NAME,
     description: str = DEFAULT_RAG_SUBAGENT_DESCRIPTION,

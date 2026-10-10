@@ -1,5 +1,7 @@
 """Graph assembly for the P5 skill designer: draft -> check -> publish (after human approval)."""
 
+from typing import Any
+
 from langchain_core.runnables import Runnable
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
@@ -18,6 +20,7 @@ from agentlab.nodes.skill_designer_node import (
     route_after_check,
 )
 from agentlab.prompts.middlewares_prompt import SKILL_PUBLISH_POLICY
+from agentlab.schemas.output.skill_designer_output_schema import SkillDraft
 from agentlab.schemas.state.skill_designer_state import SkillDesignerState
 
 
@@ -25,7 +28,7 @@ def make_skill_designer_graph(
     store: BaseStore,
     *,
     checkpointer: BaseCheckpointSaver | None = None,
-    model: Runnable | None = None,
+    model: Runnable[Any, SkillDraft] | None = None,
     guard: SecurityGuard | None = None,
 ) -> CompiledStateGraph:
     """Compile the skill designer, the only writer to the shared skill library.

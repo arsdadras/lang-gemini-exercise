@@ -1,10 +1,11 @@
 """P4's boundary: ``run_interpreter`` returns the specialist envelope; the adapter serves coordinators."""
 
 from pathlib import Path
+from typing import NewType
 
 from deepagents import CompiledSubAgent
 from langchain_core.messages import HumanMessage
-from langchain_core.runnables import Runnable
+from langgraph.graph.state import CompiledStateGraph
 
 from agentlab.configs.interpreter_config import DEFAULT_SANDBOX_DIR
 from agentlab.schemas.output.specialist_output_schema import (
@@ -23,6 +24,11 @@ from agentlab.utils.subagent_util import (
     specialist_subagent,
 )
 
+Interpreter = NewType("Interpreter", CompiledStateGraph)
+"""An agent ``make_interpreter_agent`` built: it writes its deliverables under the sandbox
+``run_interpreter`` snapshots. A static guarantee only: a type checker rejects any other agent; at
+run time it is the compiled agent itself."""
+
 INTERPRETER_SPECIALIST = "interpreter"
 DEFAULT_SUBAGENT_NAME = "code_interpreter"
 DEFAULT_SUBAGENT_DESCRIPTION = (
@@ -33,7 +39,7 @@ DEFAULT_SUBAGENT_DESCRIPTION = (
 
 
 def run_interpreter(
-    agent: Runnable,
+    agent: Interpreter,
     task: str,
     *,
     sandbox_dir: Path = DEFAULT_SANDBOX_DIR,
@@ -83,7 +89,7 @@ def run_interpreter(
 
 
 def make_interpreter_subagent(
-    agent: Runnable,
+    agent: Interpreter,
     *,
     name: str = DEFAULT_SUBAGENT_NAME,
     description: str = DEFAULT_SUBAGENT_DESCRIPTION,

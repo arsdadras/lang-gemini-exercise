@@ -77,7 +77,10 @@ def read_research_run(state: Mapping[str, Any]) -> ResearchRun:
 
 
 def plan_research(
-    topic: str, options: ResearchOptions, *, plan_chain: Runnable | None = None
+    topic: str,
+    options: ResearchOptions,
+    *,
+    plan_chain: Runnable[Any, ResearchPlan] | None = None,
 ) -> tuple[list[str], list[str]]:
     """The sub-questions to research for ``topic`` (at least one, at most the depth's cap), and
     the ones the cap cut."""
@@ -105,7 +108,7 @@ def _distinct(plan: ResearchPlan) -> list[str]:
 
 
 def make_plan_node(
-    plan_chain: Runnable | None = None,
+    plan_chain: Runnable[Any, ResearchPlan] | None = None,
 ) -> Callable[[ResearchState], dict]:
     """Build the node that turns the topic into the sub-questions to research.
 

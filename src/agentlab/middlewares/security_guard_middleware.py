@@ -8,6 +8,7 @@ becomes an ``ask`` verdict, so a broken guard adds friction instead of letting c
 
 import logging
 from collections.abc import Callable
+from typing import Any
 
 from langchain_core.runnables import Runnable
 
@@ -28,7 +29,7 @@ SecurityGuard = Callable[[str, str], GuardVerdict]
 
 def make_security_guard(
     policy: str,
-    classifier: Runnable | None = None,
+    classifier: Runnable[Any, GuardVerdict] | None = None,
 ) -> SecurityGuard:
     """Build ``guard(action, content) -> GuardVerdict`` for one policy.
 

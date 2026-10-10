@@ -13,6 +13,7 @@ from agentlab.prompts.subagents_prompt import RESEARCHER_SUBAGENT_PROMPT
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.schemas.output.research_output_schema import (
     ResearchFindings,
+    ResearchPlan,
     ResearchReport,
 )
 from agentlab.schemas.output.specialist_output_schema import (
@@ -43,7 +44,7 @@ def run_research(
     topic: str,
     options: ResearchOptions | None = None,
     *,
-    plan_chain: Runnable | None = None,
+    plan_chain: Runnable[Any, ResearchPlan] | None = None,
     route_decide: Decide | None = None,
 ) -> SpecialistResult[ResearchReport]:
     """Research ``topic`` through the research graph and return the specialist envelope.

@@ -53,7 +53,9 @@ def _accept(lines: list[str], reply: Any) -> list[str]:
     ]
 
 
-def make_finglish_output_guard(rewriter: Runnable | None = None) -> AgentMiddleware:
+def make_finglish_output_guard(
+    rewriter: Runnable[Any, FinglishLines] | None = None,
+) -> AgentMiddleware:
     """Middleware that repairs the lines of a final answer that contain Perso-Arabic script.
 
     Args:

@@ -7,19 +7,18 @@ Commands besides questions: ``history`` (list checkpoints, 0 = most recent) and
 import sys
 
 from dotenv import load_dotenv
-from langgraph.graph.state import CompiledStateGraph
 
-from agentlab.graphs.rag_graph import build_rag_graph
+from agentlab.graphs.rag_graph import RagGraph, build_rag_graph
 from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.session_util import resolve_session
 
 
-def _print_history(graph: CompiledStateGraph, config: dict) -> None:
+def _print_history(graph: RagGraph, config: dict) -> None:
     for index, snapshot in enumerate(graph.get_state_history(config)):
         print(f"index {index}: next={snapshot.next}")
 
 
-def _replay(graph: CompiledStateGraph, config: dict, raw_index: str) -> None:
+def _replay(graph: RagGraph, config: dict, raw_index: str) -> None:
     try:
         snapshot = list(graph.get_state_history(config))[int(raw_index)]
     except (ValueError, IndexError):
@@ -29,7 +28,7 @@ def _replay(graph: CompiledStateGraph, config: dict, raw_index: str) -> None:
     print(f"\nFinal Answer:\n\n{result.get('answer')}")
 
 
-def _ask(graph: CompiledStateGraph, config: dict, question: str) -> None:
+def _ask(graph: RagGraph, config: dict, question: str) -> None:
     # search_query and retries have no reducer: reset them for every new question.
     inputs = {"question": question, "search_query": question, "retries": 0}
     answer = None

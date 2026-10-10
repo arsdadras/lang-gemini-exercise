@@ -7,6 +7,7 @@ human's approval; the security guard decides only whether a draft may be offered
 
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from langchain.agents.middleware.human_in_the_loop import (
     ActionRequest,
@@ -34,7 +35,7 @@ PUBLISH_ACTION = "publish_skill"
 
 
 def make_draft_node(
-    model: Runnable | None = None,
+    model: Runnable[Any, SkillDraft] | None = None,
 ) -> Callable[[SkillDesignerState], dict]:
     """Build the node that drafts a skill from the request."""
     # "medium": generative content feeding a HITL-approved published skill, low call

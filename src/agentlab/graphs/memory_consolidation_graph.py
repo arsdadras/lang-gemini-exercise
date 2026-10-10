@@ -6,7 +6,7 @@ through the same gate as every other memory change (ADR-0010). An edit that need
 pauses the graph until the user is back to review it.
 """
 
-from typing import Literal
+from typing import Any, Literal
 
 from langchain_core.runnables import Runnable
 from langgraph.checkpoint.base import BaseCheckpointSaver
@@ -29,6 +29,7 @@ from agentlab.nodes.memory_consolidation_node import (
 )
 from agentlab.prompts.middlewares_prompt import MEMORY_WRITE_POLICY
 from agentlab.schemas.context.user_context_schema import UserContext
+from agentlab.schemas.output.memory_consolidation_output_schema import MemoryEdits
 from agentlab.schemas.state.memory_consolidation_state import MemoryConsolidationState
 from agentlab.utils.memory_backend_util import user_memory_namespace
 
@@ -52,7 +53,7 @@ def make_memory_consolidation_graph(
     store: BaseStore,
     *,
     checkpointer: BaseCheckpointSaver | None = None,
-    model: Runnable | None = None,
+    model: Runnable[Any, MemoryEdits] | None = None,
     guard: SecurityGuard | None = None,
 ) -> CompiledStateGraph:
     """Compile the consolidator. Invoke it with ``context=UserContext(user_id=...)``.

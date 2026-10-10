@@ -87,7 +87,7 @@ def _remember_rejection(runtime: Runtime[UserContext], edit: MemoryEdit) -> None
 
 
 def make_consolidate_node(
-    model: Runnable | None = None,
+    model: Runnable[Any, MemoryEdits] | None = None,
 ) -> Callable[[MemoryConsolidationState, Runtime[UserContext]], dict]:
     """Build the node that compares the conversation with memory and proposes edits."""
     chain = MEMORY_CONSOLIDATION_PROMPT | (

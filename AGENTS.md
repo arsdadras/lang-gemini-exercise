@@ -112,7 +112,9 @@ specialist's final text; a **report** is a checked final output (`ResearchReport
    - Agents whose filesystem backend exposes the repo deny `.env` reads.
    - Consequential tools require HITL.
 8. **Typed boundaries.** Use Pydantic schemas for structured output and cross-agent contracts,
-   and reuse existing schemas instead of passing loose dicts.
+   and reuse existing schemas instead of passing loose dicts. A consumer that reads one
+   factory's state takes that factory's type (`Researcher`, `RagGraph`, ...), and an injected
+   chain is typed by what it returns ([ADR-0032](docs/adr/0032-typed-specialist-inputs.md)).
 9. **Abstractions.** Reach for LangChain and DeepAgents built-ins before custom code. For
    shared abstractions, follow the rule of three: one consumer, keep it local; two, extract
    carefully; three, formalize
