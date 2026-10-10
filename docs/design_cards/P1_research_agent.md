@@ -107,6 +107,9 @@ item a tool returned:
 - **citation** (`Citation`): a document the report cites, by title and URL
   (`ResearchDraft.citations`, `ResearchReport.citations`, whose `citation_kinds` give each one's
   source kind). It was the `Source` class until 2026-10-08.
+- **researcher** (`Researcher`): an agent `make_researcher_agent` built, the only kind
+  `make_research_node`, `build_research_graph`, and `run_research` accept; `read_research_run`
+  reads one run's outcome (DEC-038).
 - The research state keeps `documents` (URL to `SourceDocument`), which replaced the parallel
   `pages` (URL to text) and `kinds` (URL to kind) fields.
 

@@ -24,6 +24,10 @@ were dropped from this list (the roadmap owns them).
 - **E:** The coordinator's `researcher` becomes P1's subagent version over `run_research`
   (ADR-0030), so callers get the planned, claim-checked pipeline.
 
+- **E:** A type checker (mypy or pyright) in CI, scoped first to `src/agentlab`: typed
+  contracts such as `Researcher` (DEC-038) are static only, and today nothing checks them.
+  Trigger: now; it is engineering-track work, scheduled with R2.
+
 **R2, P2**
 - **E:** Incremental re-index with stale-source detection; rebuild the stale index; index the
   agents and apps as well.

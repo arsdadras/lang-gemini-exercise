@@ -15,13 +15,13 @@ approval gate, and claim check must cover. A deep agent would add filesystem too
 """
 
 from collections.abc import Sequence
+from functools import partial
 from typing import Any
 
 from langchain.agents import create_agent
 from langchain.agents.middleware import AgentMiddleware, ToolCallLimitMiddleware
 from langchain_core.tools import BaseTool
 from langgraph.checkpoint.base import BaseCheckpointSaver
-from langgraph.graph.state import CompiledStateGraph
 from langgraph.store.base import BaseStore
 
 from agentlab.configs.paths_config import checkpoint_db_path
@@ -32,6 +32,7 @@ from agentlab.middlewares.fallback_middleware import make_model_fallback
 from agentlab.middlewares.hitl_middleware import hitl_for
 from agentlab.middlewares.source_route_middleware import SourceRouteMiddleware
 from agentlab.models import llm_model
+from agentlab.nodes.research_node import Researcher
 from agentlab.prompts.agents_prompt import build_researcher_prompt
 from agentlab.retrieval.corpus_retrieval import build_corpus_retriever
 from agentlab.retrieval.index_retrieval import get_retriever
@@ -59,7 +60,7 @@ def make_researcher_agent(
     store: BaseStore | None = None,
     context_schema: type[Any] | None = None,
     options: ResearchOptions | None = None,
-) -> CompiledStateGraph:
+) -> Researcher:
     """Build the researcher.
 
     Every ``web_search`` call pauses for human approval, which is why the agent
@@ -101,9 +102,9 @@ def make_researcher_agent(
         paths = list(options.corpus_files)
         tools.append(
             make_corpus_search_tool(
-                (lambda: build_corpus_retriever(paths, CORPUS_RESULTS))
+                partial(build_corpus_retriever, paths, CORPUS_RESULTS)
                 if paths
-                else (lambda: get_retriever(CORPUS_RESULTS)),
+                else partial(get_retriever, CORPUS_RESULTS),
                 corpus,
             )
         )
@@ -132,7 +133,7 @@ def make_researcher_agent(
                 exit_behavior="continue",
             )
         )
-    return create_agent(
+    agent = create_agent(
         model=llm_model.get(tier),
         system_prompt=build_researcher_prompt(
             searches=budget.searches,
@@ -159,3 +160,4 @@ def make_researcher_agent(
         store=store,
         context_schema=context_schema,
     )
+    return Researcher(agent)

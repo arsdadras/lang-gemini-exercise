@@ -430,6 +430,28 @@ def scripted_model(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(researcher_agent, "make_model_fallback", lambda *_: [])
 
 
+def test_the_factory_builds_an_agent_whose_run_ends_with_a_draft(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The half of the ``Researcher`` contract a type can't hold: the run's structured output."""
+    from agentlab.nodes.research_node import read_research_run
+
+    reply = tool_turn("ResearchDraft", topic="t", summary="s", claims=[], citations=[])
+    model = ScriptedToolModel(messages=iter([reply]))
+    monkeypatch.setattr(
+        researcher_agent, "llm_model", SimpleNamespace(get=lambda *_: model)
+    )
+    monkeypatch.setattr(researcher_agent, "make_model_fallback", lambda *_: [])
+    sources_available(monkeypatch, "corpus")
+
+    agent = make_researcher_agent(InMemorySaver())
+    state = agent.invoke(
+        {"messages": [HumanMessage("Q")]}, {"configurable": {"thread_id": "1"}}
+    )
+
+    assert isinstance(read_research_run(state).draft, ResearchDraft)
+
+
 def tool_names(agent: Any) -> set[str]:
     return set(agent.nodes["tools"].bound.tools_by_name)
 

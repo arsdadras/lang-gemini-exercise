@@ -5,6 +5,8 @@
   sources the router picked for it (``source_route_node.py``).
 - ``make_research_node`` runs the researcher agent on one sub-question, limited to its sources,
   and returns its draft and the documents its source tools returned, or the problem it met.
+- ``Researcher`` is the type of an agent ``make_researcher_agent`` built, and
+  ``read_research_run`` reads one run's outcome: the two halves of the agent's contract.
 
 The claim check that follows lives in ``claim_check_node.py``.
 
@@ -16,10 +18,12 @@ did, because a re-plan can merge sub-questions where a cut can only drop them; i
 over, the cap cuts the least important, and the cut ones are reported, never dropped silently.
 """
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
+from typing import Any, NamedTuple, NewType
 
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import Runnable
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import Send
 
 from agentlab.configs.research_config import DEPTH_BUDGETS
@@ -29,13 +33,47 @@ from agentlab.prompts.nodes.research_plan_prompt import (
     RESEARCH_REPLAN_FEEDBACK,
 )
 from agentlab.schemas.input.research_input_schema import ResearchOptions
-from agentlab.schemas.output.research_output_schema import ResearchPlan
+from agentlab.schemas.output.research_output_schema import (
+    ResearchDraft,
+    ResearchPlan,
+    SourceDocument,
+)
 from agentlab.schemas.state.research_state import ResearchState, SubQuestionState
 from agentlab.tools.research_source_tool import documents_read
 from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import new_delegation_config, pending_approvals
 
 RESEARCH_NODE = "research"
+
+Researcher = NewType("Researcher", CompiledStateGraph)
+"""A researcher agent built by ``make_researcher_agent``, the only place that makes one.
+
+The factory builds it with ``response_format=ResearchDraft``, so a finished run's state holds
+a ``structured_response``; any other agent passed here would fail only at run time, with no
+report. ``NewType`` costs nothing at run time and adds no layer: the value is the compiled
+agent itself, so ``invoke``, ``stream``, and ``get_state`` work unchanged. The guarantee is
+static only (a type checker or the IDE); the factory's own test locks the output at run time.
+"""
+
+
+class ResearchRun(NamedTuple):
+    """What one finished researcher run produced."""
+
+    draft: ResearchDraft | None
+    """The structured report, or None when the run ended without one."""
+    documents: dict[str, SourceDocument]
+    """Every document the run's source tools returned (``documents_read``)."""
+    evidence_enough: bool | None
+    """The stop condition's last judgment (R1 topic 4); None when it never judged."""
+
+
+def read_research_run(state: Mapping[str, Any]) -> ResearchRun:
+    """Read a finished run's final state: the one place that knows its keys."""
+    return ResearchRun(
+        draft=state.get("structured_response"),
+        documents=documents_read(state.get("messages", [])),
+        evidence_enough=state.get("evidence_enough"),
+    )
 
 
 def plan_research(
@@ -111,7 +149,7 @@ def fan_out(state: ResearchState) -> list[Send]:
     ]
 
 
-def make_research_node(agent: Runnable) -> Callable[[SubQuestionState], dict]:
+def make_research_node(agent: Researcher) -> Callable[[SubQuestionState], dict]:
     """Build the node that researches one sub-question with the injected P1 agent.
 
     Each run gets a fresh thread, so its messages hold only the documents its own tools
@@ -141,12 +179,11 @@ def make_research_node(agent: Runnable) -> Callable[[SubQuestionState], dict]:
                     f"{label}Stopped before finishing: waiting for approval of {waiting}."
                 ]
             }
-        draft = outcome.get("structured_response")
-        if draft is None:
+        run = read_research_run(outcome)
+        if run.draft is None:
             return {"problems": [label + "No report was produced."]}
-        documents = documents_read(outcome.get("messages", []))
-        update: dict = {"drafts": [draft], "documents": documents}
-        if outcome.get("evidence_enough") is False:
+        update: dict = {"drafts": [run.draft], "documents": run.documents}
+        if run.evidence_enough is False:
             update["problems"] = [
                 f"{label}The search budget ran out before the evidence was enough."
             ]

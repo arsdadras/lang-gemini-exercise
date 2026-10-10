@@ -7,11 +7,11 @@ from langchain_core.runnables import Runnable
 
 from agentlab.graphs.research_graph import build_research_graph
 from agentlab.nodes.claim_check_node import check_claims, unsupported_count
+from agentlab.nodes.research_node import Researcher, read_research_run
 from agentlab.nodes.source_route_node import Decide
 from agentlab.prompts.subagents_prompt import RESEARCHER_SUBAGENT_PROMPT
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.schemas.output.research_output_schema import (
-    ResearchDraft,
     ResearchFindings,
     ResearchReport,
 )
@@ -19,7 +19,6 @@ from agentlab.schemas.output.specialist_output_schema import (
     Provenance,
     SpecialistResult,
 )
-from agentlab.tools.research_source_tool import documents_read
 from agentlab.tools.web_search_tool import make_web_search_tool
 from agentlab.utils.failure_util import failure_kind, failure_reason
 
@@ -33,15 +32,14 @@ def verify_research(state: dict[str, Any]) -> ResearchReport | None:
     Status and confidence come from this check, never from the model. Callers that run the
     agent themselves (the apps, with their approval loops) pass its final state here.
     """
-    draft: ResearchDraft | None = state.get("structured_response")
-    if draft is None:
+    run = read_research_run(state)
+    if run.draft is None:
         return None
-    documents = documents_read(state.get("messages", []))
-    return check_claims(draft, documents)
+    return check_claims(run.draft, run.documents)
 
 
 def run_research(
-    agent: Runnable,
+    agent: Researcher,
     topic: str,
     options: ResearchOptions | None = None,
     *,
