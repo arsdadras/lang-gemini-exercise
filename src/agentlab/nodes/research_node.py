@@ -91,17 +91,21 @@ def make_plan_node(
 
 
 def fan_out(state: ResearchState) -> list[Send]:
-    """One ``Send`` per sub-question: the research node runs once for each, in parallel."""
+    """One ``Send`` per sub-question: the research node runs once for each, in parallel.
+
+    Each payload is the run's ``SubQuestionState``, built by name so the type checker holds
+    it to the research node's input.
+    """
     questions = state["questions"]
     routes = state.get("routes", {})
     return [
         Send(
             RESEARCH_NODE,
-            {
-                "question": question,
-                "sources": routes.get(question, ["web"]),
-                "label": f"'{question}': " if len(questions) > 1 else "",
-            },
+            SubQuestionState(
+                question=question,
+                sources=routes.get(question, ["web"]),
+                label=f"'{question}': " if len(questions) > 1 else "",
+            ),
         )
         for question in questions
     ]
