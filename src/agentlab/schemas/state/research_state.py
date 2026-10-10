@@ -8,6 +8,7 @@ from agentlab.schemas.output.research_output_schema import (
     ResearchDraft,
     ResearchReport,
     SourceDocument,
+    SourceKind,
     join_text,
 )
 
@@ -43,7 +44,7 @@ class ResearchState(TypedDict):
     """The sub-questions researched: the topic itself when there is no plan."""
     cut: NotRequired[list[str]]
     """Sub-questions the plan's cap left out; reported, never dropped silently."""
-    routes: NotRequired[dict[str, list[str]]]
+    routes: NotRequired[dict[str, list[SourceKind]]]
     """The sources the router picked for each sub-question (``research_sources@2``)."""
     drafts: NotRequired[Annotated[list[ResearchDraft], operator.add]]
     documents: NotRequired[Annotated[dict[str, SourceDocument], merge_documents]]
@@ -57,7 +58,7 @@ class SubQuestionState(TypedDict):
     """What ``Send`` hands one run of the research node."""
 
     question: str
-    sources: list[str]
+    sources: list[SourceKind]
     """The sources routed to this sub-question; the run sees only their tools."""
     label: str
     """Prefix for this run's problems: the quoted question, or empty for a single run."""

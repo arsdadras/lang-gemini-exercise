@@ -68,6 +68,20 @@ class EvidenceState(AgentState):
     evidence_enough: NotRequired[bool]
 
 
+def _brought_documents(messages: Sequence[AnyMessage]) -> bool:
+    """Whether the last tool turn (the tool messages at the end) returned any document."""
+    for message in reversed(messages):
+        if not isinstance(message, ToolMessage):
+            return False
+        if (
+            message.status != "error"
+            and isinstance(message.artifact, list)
+            and message.artifact
+        ):
+            return True
+    return False
+
+
 def _sub_question(messages: Sequence[AnyMessage]) -> str:
     """The run's sub-question: its first human message."""
     return next((get_text(m) for m in messages if isinstance(m, HumanMessage)), "")
@@ -129,7 +143,7 @@ class EvidenceStopMiddleware(AgentMiddleware[EvidenceState]):
         self, state: EvidenceState, runtime: Runtime[Any]
     ) -> dict[str, Any] | None:
         messages = state["messages"]
-        if state.get("evidence_enough") or not isinstance(messages[-1], ToolMessage):
+        if state.get("evidence_enough") or not _brought_documents(messages):
             return None
         enough = judge_evidence(
             _sub_question(messages),

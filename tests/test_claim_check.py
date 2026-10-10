@@ -158,9 +158,7 @@ def test_a_claim_whose_page_was_never_read_is_unsupported_and_asks_nothing() -> 
     assert report.claims[0].status == "unsupported"
 
 
-def test_an_unsure_supports_goes_to_the_llm_which_can_lower_it_but_not_raise_it() -> (
-    None
-):
+def test_an_unsure_pair_goes_to_the_llm_which_never_makes_it_supported() -> None:
     unsure = SUPPORTS_THRESHOLD - 0.2
     lowered = check_claims(
         draft(("X", PAGE_A)),
@@ -174,6 +172,12 @@ def test_an_unsure_supports_goes_to_the_llm_which_can_lower_it_but_not_raise_it(
         decide=decider(answer(c0=("supports", unsure))),
         verdict_chain=llm("supports"),
     )
+    softened = check_claims(
+        draft(("X", PAGE_A)),
+        web({PAGE_A: "page"}),
+        decide=decider(answer(c0=("contradicts", CONTRADICTS_THRESHOLD - 0.2))),
+        verdict_chain=llm("none"),
+    )
     not_raised = check_claims(
         draft(("X", PAGE_A)),
         web({PAGE_A: "page"}),
@@ -183,7 +187,8 @@ def test_an_unsure_supports_goes_to_the_llm_which_can_lower_it_but_not_raise_it(
 
     assert lowered.claims[0].status == "unsupported"
     assert kept.claims[0].status == "supported"
-    assert not_raised.claims[0].status == "contradicted"
+    assert softened.claims[0].status == "unsupported"
+    assert not_raised.claims[0].status == "unsupported"
 
 
 def test_a_sure_decider_never_asks_the_llm() -> None:

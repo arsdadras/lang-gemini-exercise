@@ -22,8 +22,8 @@ from agentlab.configs.research_config import (
     PROJECT_CORPUS,
     SOURCE_TOOLS,
 )
-from agentlab.schemas.input.research_input_schema import ResearchOptions, SourceKind
-from agentlab.schemas.output.research_output_schema import SourceDocument
+from agentlab.schemas.input.research_input_schema import ResearchOptions
+from agentlab.schemas.output.research_output_schema import SourceDocument, SourceKind
 from agentlab.schemas.state.research_state import merge_documents
 
 

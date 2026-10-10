@@ -2,8 +2,9 @@
 
 One decision per (claim, page). Claims that cite the same page are asked together, one request
 with a question per claim (``claim_check@1``). The decider answers first; the LLM only sees the
-pairs the decider isn't sure about, or every pair when the decider is down, and it can keep a
-verdict or lower it, never raise it. A claim is ``supported`` only when a page says so,
+pairs the decider isn't sure about, or every pair when the decider is down, and it decides
+them, except that it can never make a claim supported the decider did not label ``supports``.
+A claim is ``supported`` only when a page says so,
 ``contradicted`` when any cited page says the opposite, and ``unsupported`` otherwise: no cited
 page read, the page doesn't address it, or the check wasn't sure.
 
@@ -80,9 +81,15 @@ def _llm_verdict(verdict_chain: Runnable, claim: str, page: str) -> Verdict:
     return result.verdict
 
 
-def _lowest(first: Verdict, second: Verdict) -> Verdict:
-    """The stricter of two verdicts: the LLM can keep or lower the decider's, never raise it."""
-    return min(first, second, key=_STRICTNESS.__getitem__)
+def _escalated(decider: Verdict, llm: Verdict) -> Verdict:
+    """The LLM's verdict on a pair the decider wasn't sure about, capped by the decider's label.
+
+    An unsure ``supports`` can stay or drop; an unsure ``contradicts`` can stay or drop to
+    ``none``. Neither becomes ``supports`` unless the decider said it: the check escalates or
+    tightens, it never approves a claim on the LLM's word alone.
+    """
+    ceiling: Verdict = "supports" if decider == "supports" else "none"
+    return min(llm, ceiling, key=_STRICTNESS.__getitem__)
 
 
 def check_pair_group(
@@ -111,7 +118,7 @@ def check_pair_group(
         answer = response.choices[key]
         verdict, sure = _decider_verdict(answer.choice, answer.probabilities)
         if not sure:
-            verdict = _lowest(verdict, _llm_verdict(verdict_chain, text, page))
+            verdict = _escalated(verdict, _llm_verdict(verdict_chain, text, page))
         verdicts[key] = verdict
     return verdicts
 

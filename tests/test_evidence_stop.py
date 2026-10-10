@@ -4,7 +4,7 @@ from typing import Any
 
 from langchain.agents import create_agent
 from langchain_core.messages import HumanMessage, ToolMessage
-from langchain_core.tools import StructuredTool
+from langchain_core.tools import StructuredTool, tool
 from langgraph.checkpoint.memory import InMemorySaver
 
 from agentlab.middlewares.evidence_stop_middleware import (
@@ -54,11 +54,17 @@ class Sees(ScriptedToolModel):
         return super()._generate(messages, *args, **kwargs)
 
 
+@tool
+def snippets(query: str) -> str:
+    """A search that returns snippets only, no document."""
+    return "snippets"
+
+
 def run(decide: Any, *replies: Any) -> dict[str, Any]:
     SEEN.clear()
     agent = create_agent(
         model=Sees(messages=iter(replies)),
-        tools=[web_search],
+        tools=[web_search, snippets],
         middleware=[EvidenceStopMiddleware(decide=decide)],
         checkpointer=InMemorySaver(),
     )
@@ -77,7 +83,7 @@ def test_enough_evidence_ends_the_search_in_code() -> None:
     [(judged, _, question_set)] = decide.calls
     assert question_set == QUESTION_SET and "Python 3.14 shipped" in judged
     offered_after, sent_after = SEEN[1]
-    assert offered_after == set()
+    assert offered_after == {"snippets"}  # not a source tool, so never closed
     assert sent_after[-1].content == STOP_NOTE
 
 
@@ -87,7 +93,7 @@ def test_not_enough_keeps_the_search_open_and_says_so() -> None:
     state = run(decide, tool_turn("web_search", query="py314"), done())
 
     assert state["evidence_enough"] is False
-    assert SEEN[1][0] == {"web_search"}
+    assert SEEN[1][0] == {"web_search", "snippets"}
 
 
 def test_an_unsure_yes_is_not_enough() -> None:
@@ -106,12 +112,25 @@ def test_nothing_is_judged_before_a_document_arrives() -> None:
     assert decide.calls == [] and "evidence_enough" not in state
 
 
+def test_a_tool_turn_without_documents_asks_nothing_new() -> None:
+    decide = Recorder(answers(q=("no", 0.9)))
+
+    run(
+        decide,
+        tool_turn("web_search", query="py314"),
+        tool_turn("snippets", query="more"),
+        done(),
+    )
+
+    assert len(decide.calls) == 1
+
+
 def test_a_decider_outage_decides_nothing() -> None:
     decide = Recorder(rejected(503))
 
     state = run(decide, tool_turn("web_search", query="py314"), done())
 
-    assert "evidence_enough" not in state and SEEN[1][0] == {"web_search"}
+    assert "evidence_enough" not in state and SEEN[1][0] == {"web_search", "snippets"}
 
 
 def test_a_source_call_after_enough_is_refused() -> None:

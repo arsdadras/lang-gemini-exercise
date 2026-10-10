@@ -28,6 +28,19 @@ were dropped from this list (the roadmap owns them).
   contracts such as `Researcher` (DEC-038) are static only, and today nothing checks them.
   Trigger: now; it is engineering-track work, scheduled with R2.
 
+- **N:** From an outside review (Gemini, 2026-10-11), triaged:
+  - A read document's text lives three times in a research run's checkpoints: the tool
+    message's content, its artifact, and `ResearchState.documents`. A content-addressed
+    document store (state keeps ids, the claim check resolves text) removes the copies.
+    Trigger: a durable production checkpointer (P7), or a checkpoint DB over 100 MB.
+  - Shadow mode for the Jev model router (ADR-0031): log its pick beside the tier actually
+    used, to calibrate before it routes. Scheduled with D1.
+  - Step counts in eval-lite (searches, rewrites, review rounds) to catch loop drift inside
+    the budgets. Scheduled with D1.
+  - Checkpoint retention and `VACUUM` for `out/state/*.db`. Engineering track, no stage yet.
+  - Not taken: an `interrupted` envelope status (already P7-B3); a 2-5 s decider timeout
+    (measured p95 reaches 8-10 s, so a tighter cut would fail open on healthy calls).
+
 **R2, P2**
 - **E:** Incremental re-index with stale-source detection; rebuild the stale index; index the
   agents and apps as well.
