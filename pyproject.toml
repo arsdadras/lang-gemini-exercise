@@ -58,7 +58,7 @@ dev = [
     "ipykernel>=7.4.0",
     "pytest>=9.1.1",
     # Exact pin: a ruff release can add lint rules, so each bump is its own reviewed change.
-    "ruff==0.16.9",
+    "ruff==0.16.10",
 ]
 
 [tool.pytest.ini_options]
