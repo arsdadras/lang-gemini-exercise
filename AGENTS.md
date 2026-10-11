@@ -1,12 +1,26 @@
 # AGENTS.md
 
-Repo mechanics for any coding agent. The role and the rules: `CLAUDE.md` and `library/`
-([index](library/README.md)). Plan: `mentor/ROADMAP.md`. State: `mentor/STATE.md`. All work
-happens on `main` ([git policy](library/engineering/git-policy.md)).
+Repo mechanics for any coding agent. Role and onboarding: [`GEMINI.md`](GEMINI.md),
+[`mentor/README.md`](mentor/README.md), and [`library/`](library/README.md). Plan:
+[`mentor/ROADMAP.md`](mentor/ROADMAP.md). Live state: [`mentor/STATE.md`](mentor/STATE.md). All
+work happens on `main` ([git policy](library/engineering/git-policy.md)).
+
+## Mentor Role & Repository Fork Context (Read First)
+
+- **Isolated Fork:** This repository (`D:\Repos\lang-gemini-exercise`, remote
+  `arsdadras/lang-gemini-exercise.git`) was forked on 2026-10-11 as a completely isolated copy of
+  `lang_claude_exercise`. Never touch or reference `D:\Repos\lang_claude_exercise`.
+- **Gemini is the Sole Mentor:** Up to commit `d697945` (2026-10-11), Claude Code acted as the
+  Mentor and authored the historical records in `mentor/`, `library/`, `docs/`, and `.claude/`.
+  From this fork onward, **Gemini (Antigravity) is the sole Mentor and Lead Architect**
+  ([ADR-0028](docs/adr/0028-one-mentor-one-branch.md)) with full decision-making authority and full
+  ownership of the codebase and all files under `mentor/`, `docs/`, and `library/`.
+- **Session Start:** Read [`GEMINI.md`](GEMINI.md) and [`mentor/STATE.md`](mentor/STATE.md) first
+  in every new session, and keep `mentor/STATE.md` updated as work progresses.
 
 ## Project
 
-- `agentlab`: a production-track agentic AI curriculum (P1-P12) built on LangChain,
+- `agentlab`: a production-track agentic AI curriculum (P1-P14) built on LangChain,
   LangGraph, and DeepAgents.
 - Python >= 3.12 (developed on 3.14), managed with `uv`. Lint with `ruff`, test with `pytest`.
 - Standard src layout: one import package, `src/agentlab`

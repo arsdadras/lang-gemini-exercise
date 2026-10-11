@@ -54,6 +54,3 @@ CLAUDE.local.md
 .claude/*.lock
 .claude/advisor-data/
 .enola/
-
-# Gemini local notes & feedbacks
-docs/gemini/

@@ -1,8 +1,14 @@
 # Mentor State
 
-Read first every session; rewrite it, don't append. The charter is [README.md](README.md); since
-[ADR-0028](../docs/adr/0028-one-mentor-one-branch.md) the mentor is the only role and works on
-`main`.
+Read first every session; rewrite it, don't append. The charter is [README.md](README.md) and
+onboarding is [GEMINI.md](../GEMINI.md); since [ADR-0028](../docs/adr/0028-one-mentor-one-branch.md)
+the mentor is the only role and works on `main`.
+
+- **Mentor Transition (2026-10-11):** Forked to `D:\Repos\lang-gemini-exercise`
+  (`arsdadras/lang-gemini-exercise.git`). Historical records up to `d697945` were authored by the
+  previous mentor (Claude); from this point forward **Gemini (Antigravity)** is the sole Mentor and
+  maintains all code, curriculum, and `mentor/` records directly. See also
+  [product ideas & refinements](../docs/gemini/feedbacks/product_ideas_and_refinements.md).
 
 ## Now
 
@@ -47,9 +53,8 @@ Read first every session; rewrite it, don't append. The charter is [README.md](R
 
 ## Working agreements
 
-- **Language:** everything to the learner is in Persian script (lessons since 2026-10-04,
-  every other message since 2026-10-07), written by the `teach` skill's
-  [persian.md](../.claude/skills/teach/persian.md) through `fa_isolate.py`; technical words stay
+- **Language:** communicate with the learner in Finglish (Persian in Latin characters, per global
+  user rules, unless the learner explicitly requests otherwise); technical words and code stay
   English; every concept starts from an example.
 - **Lesson shape (the learner's repeated instruction):** concepts and core code only. No
   trailing questions, and no tests, observe, eval, demo, or hands-on steps unless the learner
@@ -63,10 +68,8 @@ Read first every session; rewrite it, don't append. The charter is [README.md](R
 - **Code delivery:** the mentor builds and verifies; the learner reviews the code in lessons
   ([ADR-0023](../docs/adr/0023-active-review-instead-of-typing.md)) and writes code only by
   choice, in `alireza/`.
-- **The learner reads the main checkout (2026-10-08):** the IDE opens
-  `D:\Repos\lang_claude_exercise`. Work happens there, on `main`. When the app starts a session
-  in a worktree it can't move out of, the session asks for the main checkout as an extra folder
-  and edits, commits, and pushes in it, so the learner sees every change the lesson shows.
+- **The learner reads the main checkout (2026-10-11):** the IDE opens
+  `D:\Repos\lang-gemini-exercise`. Work happens there, on `main`.
 - **Git:** everything on `main`, pushed at the end of each session
   ([git policy](../library/engineering/git-policy.md)).
 - **A weak result because of the model (2026-10-08, ADR-0031):** test mode is a ladder, one
