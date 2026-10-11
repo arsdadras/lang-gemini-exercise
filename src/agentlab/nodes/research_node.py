@@ -109,7 +109,7 @@ def _distinct(plan: ResearchPlan) -> list[str]:
 
 def make_plan_node(
     plan_chain: Runnable[Any, ResearchPlan] | None = None,
-) -> Callable[[ResearchState], dict]:
+) -> Callable[..., dict]:
     """Build the node that turns the topic into the sub-questions to research.
 
     Without options the topic is researched as it is: one run, no plan, no model call.
@@ -152,7 +152,7 @@ def fan_out(state: ResearchState) -> list[Send]:
     ]
 
 
-def make_research_node(agent: Researcher) -> Callable[[SubQuestionState], dict]:
+def make_research_node(agent: Researcher) -> Callable[..., dict]:
     """Build the node that researches one sub-question with the injected P1 agent.
 
     Each run gets a fresh thread, so its messages hold only the documents its own tools

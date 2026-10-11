@@ -15,7 +15,8 @@ The threshold is provisional until the labeled set (``evals/datasets/research_so
 is measured per model version (``decision-models.md``).
 """
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
+from typing import Any
 
 from langchain_typesafe import Choice, ClassifierResponse, Question
 
@@ -62,7 +63,7 @@ _UNCLEAR = "The question gives too little to tell."
 
 
 def _question(index: int, sub_question: str, source: str, corpus: str) -> Question:
-    criteria = {**_criteria(source, corpus), "unclear": _UNCLEAR}
+    criteria: dict[str, Any] = {**_criteria(source, corpus), "unclear": _UNCLEAR}
     return Choice(
         instructions=(
             f"Sub-question {index}: {sub_question}\n"
@@ -83,7 +84,7 @@ def _state(questions: list[str], corpus: str) -> str:
 
 def route_sources(
     questions: list[str],
-    sources: list[str],
+    sources: Sequence[str],
     *,
     decide: Decide,
     corpus: str = PROJECT_CORPUS,
@@ -120,7 +121,7 @@ def route_sources(
     return routes
 
 
-def make_route_node(decide: Decide | None = None) -> Callable[[ResearchState], dict]:
+def make_route_node(decide: Decide | None = None) -> Callable[..., dict]:
     """Build the node that routes every sub-question to its sources.
 
     The sources come from the caller's options and what this environment can serve

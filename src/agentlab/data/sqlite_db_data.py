@@ -51,3 +51,50 @@ def get_recent_threads(db_path: Path, limit: int | None = None) -> list[str]:
         except sqlite3.OperationalError:  # database exists but has no checkpoints yet
             return []
     return [row[0] for row in rows]
+
+
+def prune_checkpoints(db_path: Path, *, keep_latest: int = 20) -> int:
+    """Delete checkpoints older than the ``keep_latest`` newest per thread; return deleted count."""
+    if keep_latest < 1:
+        msg = f"keep_latest must be >= 1, got {keep_latest}"
+        raise ValueError(msg)
+    if not db_path.exists():
+        return 0
+    with closing(sqlite3.connect(str(db_path))) as conn:
+        try:
+            threads = [
+                row[0]
+                for row in conn.execute(
+                    "SELECT DISTINCT thread_id FROM checkpoints"
+                ).fetchall()
+            ]
+        except sqlite3.OperationalError:
+            return 0
+        deleted = 0
+        for thread_id in threads:
+            old_ids = [
+                row[0]
+                for row in conn.execute(
+                    "SELECT DISTINCT checkpoint_id FROM checkpoints "
+                    "WHERE thread_id = ? ORDER BY checkpoint_id DESC LIMIT -1 OFFSET ?",
+                    (thread_id, keep_latest),
+                ).fetchall()
+            ]
+            if not old_ids:
+                continue
+            placeholders = ",".join("?" for _ in old_ids)
+            params = (thread_id, *old_ids)
+            with conn:
+                cur = conn.execute(
+                    f"DELETE FROM checkpoints WHERE thread_id = ? AND checkpoint_id IN ({placeholders})",
+                    params,
+                )
+                deleted += max(cur.rowcount, 0)
+                try:
+                    conn.execute(
+                        f"DELETE FROM writes WHERE thread_id = ? AND checkpoint_id IN ({placeholders})",
+                        params,
+                    )
+                except sqlite3.OperationalError:
+                    pass
+    return deleted

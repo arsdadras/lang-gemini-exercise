@@ -39,7 +39,7 @@ def pending_approvals(state: dict[str, Any]) -> str:
     A graph that pauses returns normally with an ``__interrupt__`` entry. A boundary that
     ignores it silently drops the pending work, so every specialist boundary checks here.
     """
-    names = []
+    names: list[str] = []
     for pending in state.get("__interrupt__", []):
         value = pending.value if isinstance(pending.value, dict) else {}
         requests = value.get("action_requests") or [

@@ -40,7 +40,7 @@ Testing Standards:
 1. Coverage: Happy paths, edge cases, boundary values, invalid inputs, and error/exception handling.
 2. Structure: Follow {framework} conventions with clear test names (`test_<scenario>_<expected_behavior>`).
 3. Isolation & Independence: Tests must be deterministic and runnable without external side effects (mock network/disk if needed).
-4. Completeness: The `test_code` field must contain a complete, syntactically valid, ready-to-run test file including all necessary imports.
+4. Completeness: The `test_code` field must contain a complete, syntactically valid, ready-to-run test file that imports the code under test from `tested_module`.
 
 If code review findings are provided, write specific regression tests covering the identified issues.
 """
@@ -89,31 +89,3 @@ TEST_FIX_PROMPT = ChatPromptTemplate.from_messages(
         ),
     ],
 )
-
-
-# _EVALUATE_TESTS_SYSTEM_PROMPT = """You are a Senior QA Automation Engineer evaluating the quality of generated test code.
-# Your task is to assess whether the test code is comprehensive, robust, and follows best practices.
-
-# Evaluation Criteria:
-# 1. Coverage: Does the test suite cover happy paths, edge cases, boundary values, invalid inputs, and error/exception handling?
-# 2. Structure: Does the test suite follow {framework} conventions with clear test names (`test_<scenario>_<expected_behavior>`)?
-# 3. Isolation & Independence: Are the tests deterministic and runnable without external side effects (mock network/disk if needed)?
-# 4. Completeness: Is the `test_code` field contain a complete, syntactically valid, ready-to-run test file including all necessary imports.
-# 5. Regression Testing: If code review findings are provided, does the test suite cover the identified issues?
-
-# If test evaluation fails, provide a detailed explanation of the issues and suggestions for improvement.
-# """
-
-
-# EVALUATE_TESTS_PROMPT = ChatPromptTemplate.from_messages(
-#     [
-#         ("system", _EVALUATE_TESTS_SYSTEM_PROMPT),
-#         (
-#             "human",
-#             "Please evaluate the following {framework} test suite for the {language} code.\n\n"
-#             "Source Code:\n```\n{code}\n```\n\n"
-#             "Test Code:\n```\n{test_code}\n```\n\n"
-#             "Review Summary & Findings:\n{review_summary}",
-#         ),
-#     ]
-# )

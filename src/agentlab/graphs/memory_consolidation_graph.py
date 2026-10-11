@@ -11,7 +11,7 @@ from typing import Any, Literal
 from langchain_core.runnables import Runnable
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
-from langgraph.graph import END, START, StateGraph
+from langgraph.graph import START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.store.base import BaseStore
 
@@ -45,7 +45,7 @@ def route_next_edit(
     return (
         "apply_next_edit"
         if state.get("cursor", 0) < len(state.get("edits", []))
-        else END
+        else "__end__"
     )
 
 
@@ -55,7 +55,7 @@ def make_memory_consolidation_graph(
     checkpointer: BaseCheckpointSaver | None = None,
     model: Runnable[Any, MemoryEdits] | None = None,
     guard: SecurityGuard | None = None,
-) -> CompiledStateGraph:
+) -> CompiledStateGraph[Any, Any, Any, Any]:
     """Compile the consolidator. Invoke it with ``context=UserContext(user_id=...)``.
 
     Args:

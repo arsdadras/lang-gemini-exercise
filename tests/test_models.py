@@ -113,6 +113,7 @@ def test_a_spec_caps_output_tokens_and_its_env_var_overrides_the_host(
     model = build_chat_model(spec)
 
     assert model.max_tokens == 4096
+    assert model.max_retries == 1
     assert model.openai_api_base == "http://127.0.0.1:9/v1"
 
 

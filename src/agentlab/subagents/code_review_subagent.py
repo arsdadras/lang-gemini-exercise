@@ -9,7 +9,10 @@ from agentlab.graphs.code_review_parentgraph import (
     build_code_review_graph,
 )
 from agentlab.schemas.output.code_review_output_schema import CodeReviewReport
-from agentlab.schemas.output.specialist_output_schema import SpecialistResult
+from agentlab.schemas.output.specialist_output_schema import (
+    SpecialistResult,
+    SpecialistStatus,
+)
 from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import (
     new_delegation_config,
@@ -64,6 +67,7 @@ def run_code_review(
         applied_code=state.get("applied_code"),
     )
     execution = outcome.test_run
+    status: SpecialistStatus
     if waiting := pending_approvals(state):
         status, reason = (
             "partial",

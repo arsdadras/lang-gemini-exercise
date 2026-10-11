@@ -585,8 +585,26 @@ def test_given_files_are_chunked_and_searched_in_memory(
 
 def test_the_cli_takes_a_session_mode_and_corpus_files() -> None:
     from agentlab.apps.research_app import parse_args
+    from agentlab.subagents.research_subagent import verify_research
+    from tests.test_research_options import finished, supports_everything
 
-    args = parse_args(["new", "--corpus", "a.md", "b.txt"])
+    args = parse_args(["new", "--depth", "quick", "--corpus", "a.md", "b.txt"])
 
-    assert (args.session, args.corpus) == ("new", ["a.md", "b.txt"])
-    assert parse_args([]).corpus == []
+    assert (args.session, args.depth, args.corpus) == (
+        "new",
+        "quick",
+        ["a.md", "b.txt"],
+    )
+    defaults = parse_args([])
+    assert (defaults.depth, defaults.corpus) == ("standard", [])
+
+    many = [f"c{i}" for i in range(10)]
+    state = finished(PAGE, *many)
+    with patch.object(
+        claim_check_node,
+        "decision_model",
+        SimpleNamespace(decide=supports_everything),
+    ):
+        report = verify_research(state, options=ResearchOptions(depth="quick"))
+
+    assert report is not None and len(report.claims) == 6

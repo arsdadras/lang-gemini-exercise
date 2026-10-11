@@ -239,3 +239,28 @@ def test_each_decision_is_recorded_without_the_task() -> None:
     assert record.question_set == QUESTION_SET
     assert set(record.answers) == set(build_questions())
     assert "Private task text." not in record.model_dump_json()
+
+
+def test_runnable_composes_in_lcel_and_applies_size_floor_to_rendered_prompt() -> None:
+    from langchain_core.prompts import ChatPromptTemplate
+
+    chosen: list[str] = []
+    stubbed = LLMRegistry(
+        MODEL_TIERS,
+        test_mode=lambda: False,
+        model_builder=lambda spec: RunnableLambda(
+            lambda _in, m=spec.model: chosen.append(m) or m
+        ),
+    )
+    decisions = DecisionRegistry(
+        backend_builder=lambda: scripted_decider(response(EASY), response(EASY)),
+        sink=lambda _: None,
+    )
+    prompt = ChatPromptTemplate.from_template("Review this:\n{body}")
+    chain = prompt | ModelRouter(stubbed, decide=decisions.decide).runnable()
+
+    short_model = chain.invoke({"body": "x = 1"})
+    long_model = chain.invoke({"body": "x" * (LARGE_TASK_CHARS + 10)})
+
+    assert short_model == MODEL_TIERS["low"]["gemini"].model
+    assert long_model == MODEL_TIERS["medium"]["gemini"].model

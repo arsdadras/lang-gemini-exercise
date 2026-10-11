@@ -28,6 +28,9 @@ class SideEffect(BaseModel):
     description: str = ""
 
 
+SpecialistStatus = Literal["ok", "partial", "failed"]
+
+
 class SpecialistResult[T](BaseModel):
     """What a specialist returns: how its work ended, the answer, its sources, and its changes.
 
@@ -41,7 +44,7 @@ class SpecialistResult[T](BaseModel):
     """
 
     specialist: str
-    status: Literal["ok", "partial", "failed"]
+    status: SpecialistStatus
     reason: str = ""
     output: T | None = None
     provenance: list[Provenance] = Field(default_factory=list)

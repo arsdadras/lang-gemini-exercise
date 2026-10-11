@@ -8,6 +8,8 @@ The built-in middleware also re-raises ``GraphBubbleUp`` (interrupts) untouched
 instead of treating them as model failures.
 """
 
+from typing import Any
+
 from langchain.agents.middleware import AgentMiddleware, ModelFallbackMiddleware
 
 from agentlab.models import llm_model
@@ -18,7 +20,7 @@ def make_model_fallback(
     *,
     primary: str | None = None,
     cascade: bool = False,
-) -> list[AgentMiddleware]:
+) -> list[AgentMiddleware[Any, Any, Any]]:
     """Fallback middleware for an agent whose model is ``llm_model.get(tier, primary)``.
 
     A list, spread into the agent's middleware: empty in test mode when the test tier has a single

@@ -20,8 +20,8 @@ What gets built and taught, in which order, and the gates between. Mentor-owned.
 
 ## Now, next, later
 
-- **Now:** R1, a stronger researcher ([design card](../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built)): topic 1 (claims instead of findings) is taught; options and planning, more sources with a source router, and the stop condition come next. R0 is closed ([ADR-0026](../docs/adr/0026-the-specialist-contract.md)).
-- **Next:** R2 -> R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> D1 -> P6 (content generator) -> P7 (Capstone I).
+- **Now:** R2, a stronger retriever: hybrid search, reranking, query rewriting, grading and reranking in one decider request, per-claim verification with reroutes, and the index rebuilt. R0 ([ADR-0026](../docs/adr/0026-the-specialist-contract.md)) and R1 ([design card](../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built)) are closed.
+- **Next:** R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> D1 -> P6 (content generator) -> P7 (Capstone I).
 - **Later:** P8 -> P9 -> P10 -> P11 (Capstone, midterm II) -> P12 -> P13 -> P14 (Capstone II) -> Term E.
 
 ## Program shape

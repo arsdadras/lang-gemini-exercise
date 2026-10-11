@@ -72,6 +72,7 @@ def build_chat_model(spec: ModelSpec) -> BaseChatModel:
         kwargs["client_kwargs"] = {"timeout": spec.timeout_seconds}
     else:
         kwargs["timeout"] = spec.timeout_seconds
+        kwargs["max_retries"] = spec.max_retries
     return init_chat_model(**kwargs)
 
 

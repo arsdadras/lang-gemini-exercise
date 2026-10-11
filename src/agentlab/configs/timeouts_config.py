@@ -8,6 +8,9 @@ retries it once over, and a specialist boundary reports what remains as a ``fail
 # provider SDKs apply it per connect, read, and write, so a response that streams slowly is
 # not cut off, but a connection that goes silent is.
 CHAT_MODEL_TIMEOUT_SECONDS: float = 120.0
+# Per-provider SDK retry cap before falling over to the backup gateway (with_fallbacks /
+# ModelFallbackMiddleware). Default SDK max_retries=2 meant 3 x 120 s = 360 s on one silent host.
+CHAT_MODEL_MAX_RETRIES: int = 1
 # The local tier takes 90-360 s per structured call (EV-2026-09-23-local-ollama-qwen).
 LOCAL_MODEL_TIMEOUT_SECONDS: float = 600.0
 # One embedding request (a paced batch of EMBED_BATCH_SIZE chunks).

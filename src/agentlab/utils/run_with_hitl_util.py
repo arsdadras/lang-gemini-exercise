@@ -10,13 +10,14 @@ import json
 from collections.abc import Callable
 from typing import Any
 
+from langchain_core.runnables import RunnableConfig
 from langgraph.types import Command
 
 from agentlab.utils.secret_redaction_util import redact_secrets
 from agentlab.utils.streaming_util import stream_agent_with_observability
 
 
-def _get_messages_count(agent: Any, config: dict | None) -> int:
+def _get_messages_count(agent: Any, config: RunnableConfig | None) -> int:
     if config is None:
         return 0
     try:
@@ -26,7 +27,9 @@ def _get_messages_count(agent: Any, config: dict | None) -> int:
         return 0
 
 
-def _print_new_tool_outputs(agent: Any, config: dict | None, prev_count: int) -> int:
+def _print_new_tool_outputs(
+    agent: Any, config: RunnableConfig | None, prev_count: int
+) -> int:
     if config is None:
         return prev_count
     try:
@@ -97,7 +100,7 @@ def _handle_interrupt_decisions(
 def run_with_hitl(
     agent: Any,
     initial_input: Any,
-    config: dict | None = None,
+    config: RunnableConfig | None = None,
     *,
     assistant_prompt: str | Callable[[dict[str, Any]], str] | None = None,
 ) -> dict[str, Any]:
@@ -137,7 +140,7 @@ def run_with_hitl(
 def stream_with_hitl(
     agent: Any,
     input_data: dict[str, Any],
-    config: dict[str, Any],
+    config: RunnableConfig,
     *,
     context: Any | None = None,
     assistant_prompt: str | Callable[[dict[str, Any]], str] | None = None,
@@ -167,7 +170,7 @@ def stream_with_hitl(
 
 def resume_pending_with_hitl(
     graph: Any,
-    config: dict[str, Any],
+    config: RunnableConfig,
     *,
     context: Any | None = None,
     assistant_prompt: str | Callable[[dict[str, Any]], str] | None = None,

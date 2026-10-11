@@ -66,6 +66,9 @@ def make_user_context_tool() -> BaseTool:
     def get_user_context(runtime: ToolRuntime[UserContext]) -> str:
         """Get the user's stored profile and goals: preferences, constraints, and plans to tailor your work to."""
         user_id = user_memory_namespace(runtime)[0]
+        if runtime.store is None:
+            msg = "User context tool requires a store on the running agent"
+            raise ValueError(msg)
         return read_user_context(runtime.store, user_id).to_text(render=render_files)
 
     return get_user_context

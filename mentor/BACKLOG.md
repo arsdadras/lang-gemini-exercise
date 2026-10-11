@@ -16,17 +16,8 @@ were dropped from this list (the roadmap owns them).
   (DEC-006); P1's is written (DEC-035).
 - **N:** Add point 16 (production path) to the P5 design card.
 
-**R1, P1**
-- **E:** "Is the evidence enough?" as the search loop's stop condition, inside the search
-  budget (R1 topic 4). The search budget and the claim check are built (topics 1-2); the unused
-  groundedness middleware was removed on 2026-10-06, since the claim check replaced it.
+**R1, P1 (remaining nice-to-have)**
 - **N:** Finglish repair on P1's report (Perso-Arabic leaked in a `lab-brief` run).
-- **E:** The coordinator's `researcher` becomes P1's subagent version over `run_research`
-  (ADR-0030), so callers get the planned, claim-checked pipeline.
-
-- **E:** A type checker (mypy or pyright) in CI, scoped first to `src/agentlab`: typed
-  contracts such as `Researcher` (DEC-038) are static only, and today nothing checks them.
-  Trigger: now; it is engineering-track work, scheduled with R2.
 
 - **N:** From an outside review (Gemini, 2026-10-11), triaged:
   - A read document's text lives three times in a research run's checkpoints: the tool
@@ -37,7 +28,14 @@ were dropped from this list (the roadmap owns them).
     used, to calibrate before it routes. Scheduled with D1.
   - Step counts in eval-lite (searches, rewrites, review rounds) to catch loop drift inside
     the budgets. Scheduled with D1.
-  - Checkpoint retention and `VACUUM` for `out/state/*.db`. Engineering track, no stage yet.
+  - Pre-write claim-to-section mapping in P6's outline node (`OutlineSection.claim_indices`),
+    so parallel `Send` section writers receive only their assigned `supported` claims and don't
+    repeat facts across sections. Scheduled with P6-B2.
+  - Built in R1->R2 hardening (2026-10-11): `mypy src/agentlab` in CI; P3 sandbox verification
+    against `refactored_code`; R1 `page_window` around cited passages past 12k chars and claim
+    deduplication in `_merge`; `ModelRouter.runnable()` for LCEL chains; `lab-research --depth`
+    and `verify_research` claim cap; `CHAT_MODEL_MAX_RETRIES = 1`; `prune_checkpoints` in
+    `sqlite_db_data.py`.
   - Not taken: an `interrupted` envelope status (already P7-B3); a 2-5 s decider timeout
     (measured p95 reaches 8-10 s, so a tighter cut would fail open on healthy calls).
 
@@ -122,3 +120,5 @@ None yet ([pedagogy](../library/teaching/pedagogy.md#digressions-and-deep-dives)
 - **Library placement of research's design guide:** done 2026-09-28; the rules moved to
   `library/architecture/decision-models.md`, the facts stay in the research record's landscape (DEC-025).
 - **Surface approvals raised inside subagents:** the hard concept of P6-B3.
+- **R1 stop condition (`EvidenceStopMiddleware`) and coordinator `researcher` subagent over `run_research`:** built and taught in R1 (closed 2026-10-11).
+- **`mypy src/agentlab` in CI and `prune_checkpoints` for SQLite DBs:** built 2026-10-11 in R1->R2 hardening.

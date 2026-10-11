@@ -26,7 +26,7 @@ dependencies = [
     "langgraph-checkpoint-sqlite>=3.1.1",
     "langsmith>=0.14.1",
     "pydantic>=2.13.5",
-    "python-dotenv>=1.2.3",
+    "python-dotenv>=1.2.4",
     "pyyaml>=6.0.3",
     "requests>=2.34.2",
     "langchain-typesafe>=0.0.1a3",
@@ -56,10 +56,21 @@ agentlab = ["resources/**/*"]
 [dependency-groups]
 dev = [
     "ipykernel>=7.4.0",
+    "mypy>=1.19.0",
     "pytest>=9.1.1",
     # Exact pin: a ruff release can add lint rules, so each bump is its own reviewed change.
-    "ruff==0.16.9",
+    "ruff==0.16.10",
+    "types-PyYAML>=6.0.12",
+    "types-requests>=2.32.0",
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "scripts/tests"]
+
+[tool.mypy]
+python_version = "3.12"
+files = ["src/agentlab"]
+check_untyped_defs = true
+warn_unused_ignores = false
+ignore_missing_imports = true
+

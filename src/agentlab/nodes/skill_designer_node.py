@@ -36,7 +36,7 @@ PUBLISH_ACTION = "publish_skill"
 
 def make_draft_node(
     model: Runnable[Any, SkillDraft] | None = None,
-) -> Callable[[SkillDesignerState], dict]:
+) -> Callable[..., dict]:
     """Build the node that drafts a skill from the request."""
     # "medium": generative content feeding a HITL-approved published skill, low call
     # volume (user-triggered), so quality outweighs the cost saving (ADR-0014).
@@ -53,7 +53,7 @@ def make_draft_node(
 def make_check_node(
     guard: SecurityGuard,
     packaged_dir: Path = SKILLS_DIR,
-) -> Callable[[SkillDesignerState], dict]:
+) -> Callable[..., dict]:
     """Build the node that refuses what may never be published and asks the guard about the rest."""
 
     def check(state: SkillDesignerState) -> dict:

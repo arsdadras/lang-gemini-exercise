@@ -47,8 +47,8 @@ Last reviewed: 2026-09-28.
 
 | Technology | Ring | Why | Record |
 | :--- | :--- | :--- | :--- |
-| `uv`, `ruff`, `pytest` | Adopt | Toolchain | `AGENTS.md` |
-| GitHub Actions CI (ruff check and format, pytest, docs lint on every push) | Adopt | Development standard; live | DEC-005, DEC-016 |
+| `uv`, `ruff`, `mypy`, `pytest` | Adopt | Toolchain | `AGENTS.md` |
+| GitHub Actions CI (ruff check and format, mypy, pytest, docs lint on every push and PR) | Adopt | Development standard; live | DEC-005, DEC-016 |
 | Dependabot (`uv` daily, Actions weekly) | Adopt | Keeps the stack current; native `uv` support | DEC-016 |
 | SQLite checkpointer and store | Adopt | Teaching harness behind swappable interfaces | [ARCHITECTURE.md](../../library/architecture/standards.md#scale-seams) |
 | Chroma (local) | Adopt | Local vector index for P2 | [ARCHITECTURE.md](../../library/architecture/standards.md#scale-seams) |
@@ -76,17 +76,17 @@ Last reviewed: 2026-09-28.
 
 ## Current versions
 
-Checked 2026-09-26 with `uv lock --upgrade --dry-run`: no drift.
+Checked 2026-10-11 with `uv sync`: no drift.
 
 | Package | Locked |
 | :--- | :--- |
-| `langchain` | 1.4.2 |
-| `langchain-core` | 1.6.5 |
-| `langgraph` | 1.2.12 |
-| `deepagents` | 0.7.19 |
-| `langsmith` | 0.14.1 |
-| `langchain-openai` | 1.6.6 |
-| `langchain-google-genai` | 4.4.0 |
+| `langchain` | 1.4.3 |
+| `langchain-core` | 1.6.6 |
+| `langgraph` | 1.2.14 |
+| `deepagents` | 0.7.20 |
+| `langsmith` | 0.14.2 |
+| `langchain-openai` | 1.6.7 |
+| `langchain-google-genai` | 4.4.1 |
 | `pydantic` | 2.13.5 |
 
 Exact versions live in `uv.lock`; this table is refreshed at each session's drift check.

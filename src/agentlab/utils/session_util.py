@@ -18,6 +18,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
+from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
 
@@ -41,7 +42,7 @@ class ResolvedSession:
     is_secret: bool = False
 
     @property
-    def config(self) -> dict[str, Any]:
+    def config(self) -> RunnableConfig:
         """LangGraph invocation config for this session's thread."""
         return {"configurable": {"thread_id": self.thread_id}}
 

@@ -17,6 +17,7 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from typing import Any
 
 from langchain_core.messages import BaseMessage
+from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.store.base import BaseStore
@@ -49,7 +50,7 @@ def save_session(store: BaseStore, user_id: str, thread_id: str) -> None:
     store.put(_SESSION_NAMESPACE, "last", {"user_id": user_id, "thread_id": thread_id})
 
 
-def _config(thread_id: str) -> dict[str, Any]:
+def _config(thread_id: str) -> RunnableConfig:
     return {"configurable": {"thread_id": thread_id}}
 
 
@@ -64,8 +65,8 @@ class MemorySessions:
     def __init__(
         self,
         store: BaseStore,
-        assistant: CompiledStateGraph,
-        consolidator: CompiledStateGraph,
+        assistant: CompiledStateGraph[Any, Any, Any, Any],
+        consolidator: CompiledStateGraph[Any, Any, Any, Any],
         *,
         long_thread_chars: int,
     ) -> None:
@@ -154,10 +155,11 @@ class MemorySessions:
         payload: dict[str, Any] | None,
     ) -> None:
         self._running[run_id] = self._executor.submit(
-            self._consolidator.invoke,
-            payload,
-            _config(run_id),
-            context=UserContext(user_id=user_id),
+            lambda: self._consolidator.invoke(
+                payload,
+                _config(run_id),
+                context=UserContext(user_id=user_id),
+            )
         )
 
     def resume(self, user_id: str) -> None:
@@ -212,7 +214,7 @@ class MemorySessions:
                 [MemoryEdit.model_validate(edit) for edit in values["edits"]],
             )
             self._store.delete((user_id, REVIEWS_KIND), run_id)
-            if self._consolidator.checkpointer:
+            if isinstance(self._consolidator.checkpointer, BaseCheckpointSaver):
                 # The run's checkpoints hold a copy of the transcript; drop them once reviewed.
                 self._consolidator.checkpointer.delete_thread(run_id)
 

@@ -22,7 +22,8 @@ work happens on `main` ([git policy](library/engineering/git-policy.md)).
 
 - `agentlab`: a production-track agentic AI curriculum (P1-P14) built on LangChain,
   LangGraph, and DeepAgents.
-- Python >= 3.12 (developed on 3.14), managed with `uv`. Lint with `ruff`, test with `pytest`.
+- Python >= 3.12 (developed on 3.14), managed with `uv`. Lint with `ruff`, type-check with `mypy`,
+  test with `pytest`.
 - Standard src layout: one import package, `src/agentlab`
   ([ADR-0002](docs/adr/0002-single-package-and-composition-root.md)).
 
@@ -104,8 +105,9 @@ specialist's final text; a **report** is a checked final output (`ResearchReport
    - Agents: `llm_model.get(tier, provider)` plus `make_model_fallback(tier, primary=provider)`
      ([ADR-0007](docs/adr/0007-built-in-model-fallback.md)).
    - Graph nodes and middleware: `llm_model.chain(tier, structured=Schema)`.
-   - The model chosen by the task, not by hand: `model_router.chain(task, structured=Schema)`
-     (a node) or `model_router.plan(task)` (an agent); Jev judges the task, code picks the tier
+   - The model chosen by the task, not by hand: `model_router.chain(task, structured=Schema)` or
+     `PROMPT | model_router.runnable(structured=Schema)` (a node) or `model_router.plan(task)`
+     (an agent); Jev judges the task, code picks the tier
      ([ADR-0031](docs/adr/0031-jev-model-router-and-test-mode-ladder.md)). It sits beside
      `llm_model`; a call site that names its tier is unchanged.
    - `LLM_TEST_MODE=true` routes every tier to `TEST_TIER` (`LLM_TEST_PROFILE=<name>` picks a
@@ -155,9 +157,10 @@ uv sync                                         # install (editable) with dev to
 uv run pytest                                   # tests
 uv run ruff check src tests scripts             # lint
 uv run ruff format src tests scripts            # format
+uv run mypy src/agentlab                        # static type check
 uv run python scripts/check_docs.py             # docs lint: links, anchors, library front matter
 uv run python scripts/smoke_live.py             # live smoke of every integration (test mode)
-uv run lab-research [--corpus FILE ...]         # P1 researcher (approve each outbound search)
+uv run lab-research [--depth DEPTH] [--corpus FILE ...]   # P1 researcher (approve each outbound search)
 uv run lab-rag                                  # P2 raw RAG graph (history / replay <i>)
 uv run lab-repo-insight                         # P2 repo-insight coordinator
 uv run lab-code-review examples/buggy_bank_account.py   # P3 review pipeline
@@ -179,8 +182,8 @@ Policy: [ADR-0004](docs/adr/0004-testing-and-evaluation-policy.md).
 - Deterministic code gets unit tests in the same change.
 - Framework boundaries are tested with real framework objects and a scripted fake model
   (see `tests/test_personal_assistant.py`).
-- Done means `uv run pytest` and `uv run ruff check src tests scripts` are green, with real
-  output shown. CI runs the same checks on every push.
+- Done means `uv run pytest`, `uv run ruff check src tests scripts`, and `uv run mypy src/agentlab`
+  are green, with real output shown. CI runs the same checks on every push and pull request.
 - Never weaken or skip an existing test to get a change through.
 - Verify library APIs before relying on them: the `docs-langchain` MCP server for
   LangChain/LangGraph/DeepAgents/LangSmith, Context7 or web search for other libraries, and the

@@ -17,7 +17,7 @@ them, and caps the report by evidence, so a supported claim never gives way to a
 """
 
 from collections import Counter
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from itertools import zip_longest
 from typing import Any, Literal
 
@@ -44,8 +44,63 @@ Verdict = Literal["supports", "contradicts", "none"]
 SUPPORTS_THRESHOLD = 0.8
 CONTRADICTS_THRESHOLD = 0.6
 _STRICTNESS: dict[Verdict, int] = {"supports": 2, "none": 1, "contradicts": 0}
+_WINDOW_MARGIN = 1200
+_ANCHOR_CHARS = 40
 
 Decide = Callable[..., ClassifierResponse]
+
+
+def page_window(
+    text: str,
+    passages: Sequence[str] = (),
+    *,
+    limit: int = MAX_PAGE_CHARS,
+) -> str:
+    """Slice ``text`` to at most ``limit`` chars, keeping windows around cited ``passages``.
+
+    When ``text`` fits in ``limit`` (or no passage matches past ``limit``), returns ``text[:limit]``.
+    When a joined corpus document or long page exceeds ``limit`` and a cited passage appears later
+    in the document, extracts context windows around the matched passages so the claim check reads
+    the part of the document the agent actually cited.
+    """
+    if len(text) <= limit or not passages:
+        return text[:limit]
+    lowered = text.lower()
+    spans: list[tuple[int, int]] = []
+    for raw in passages:
+        needle = raw.strip()
+        if not needle:
+            continue
+        pos = text.find(needle)
+        if pos < 0:
+            pos = lowered.find(needle.lower())
+        if pos < 0 and len(needle) >= _ANCHOR_CHARS:
+            pos = lowered.find(needle[:_ANCHOR_CHARS].lower())
+        if pos >= 0:
+            spans.append(
+                (
+                    max(0, pos - _WINDOW_MARGIN),
+                    min(len(text), pos + len(needle) + _WINDOW_MARGIN),
+                )
+            )
+    if not spans or all(end <= limit for _, end in spans):
+        return text[:limit]
+    spans.sort()
+    merged: list[tuple[int, int]] = [spans[0]]
+    for start, end in spans[1:]:
+        prev_start, prev_end = merged[-1]
+        if start <= prev_end:
+            merged[-1] = (prev_start, max(prev_end, end))
+        else:
+            merged.append((start, end))
+    sep = "\n...\n"
+    body = sep.join(text[start:end] for start, end in merged)
+    if len(body) >= limit or merged[0][0] == 0:
+        return body[:limit]
+    head_budget = min(merged[0][0], limit - len(body) - len(sep))
+    if head_budget <= 0:
+        return body[:limit]
+    return f"{text[:head_budget]}{sep}{body}"[:limit]
 
 
 def _question(claim: str) -> Question:
@@ -183,14 +238,20 @@ def check_claims(
     decide = decide or decision_model.decide
     verdict_chain = verdict_chain or _default_verdict_chain()
     by_page: dict[str, dict[str, str]] = {}
+    passages_by_page: dict[str, list[str]] = {}
     for index, claim in enumerate(draft.claims):
         for evidence in claim.evidence:
             if evidence.url in documents:
                 by_page.setdefault(evidence.url, {})[str(index)] = claim.text
+                if evidence.passage:
+                    passages_by_page.setdefault(evidence.url, []).append(
+                        evidence.passage
+                    )
     verdicts: dict[tuple[str, str], Verdict] = {}
     for url, claims in by_page.items():
+        window = page_window(documents[url].text, passages_by_page.get(url, ()))
         group = check_pair_group(
-            documents[url].text, claims, decide=decide, verdict_chain=verdict_chain
+            window, claims, decide=decide, verdict_chain=verdict_chain
         )
         for key, verdict in group.items():
             verdicts[(key, url)] = verdict
@@ -221,22 +282,37 @@ def unsupported_count(report: ResearchReport) -> int:
 
 
 def _merge(topic: str, drafts: list[ResearchDraft]) -> ResearchDraft:
-    """One draft from the sub-question drafts: claims interleaved, citations deduped.
+    """One draft from the sub-question drafts: claims interleaved and deduped, citations deduped.
 
     Claims are taken round-robin across sub-questions, so when the cap later drops claims of
-    equal evidence, one sub-question that returned many can't crowd the others out.
+    equal evidence, one sub-question that returned many can't crowd the others out. Identical
+    claims across sub-questions are merged so their combined ``evidence`` lists corroborate one
+    another instead of occupying two slots under the cap.
     """
-    claims = [
-        claim
-        for round_ in zip_longest(*(draft.claims for draft in drafts))
-        for claim in round_
-        if claim is not None
-    ]
+    by_text: dict[str, DraftClaim] = {}
+    for round_ in zip_longest(*(draft.claims for draft in drafts)):
+        for claim in round_:
+            if claim is None:
+                continue
+            key = " ".join(claim.text.split()).casefold()
+            if key not in by_text:
+                by_text[key] = claim
+            else:
+                existing = by_text[key]
+                seen_ev = {(e.url, e.passage) for e in existing.evidence}
+                extra = [e for e in claim.evidence if (e.url, e.passage) not in seen_ev]
+                if extra:
+                    by_text[key] = existing.model_copy(
+                        update={"evidence": [*existing.evidence, *extra]}
+                    )
     citations = {c.url: c for draft in drafts for c in draft.citations}
+    summaries = list(
+        dict.fromkeys(d.summary.strip() for d in drafts if d.summary.strip())
+    )
     return ResearchDraft(
         topic=topic,
-        summary=" ".join(draft.summary for draft in drafts),
-        claims=claims,
+        summary=" ".join(summaries),
+        claims=list(by_text.values()),
         citations=list(citations.values()),
     )
 
@@ -245,7 +321,9 @@ def _merge(topic: str, drafts: list[ResearchDraft]) -> ResearchDraft:
 _CAP_ORDER = {"supported": 0, "unsupported": 1, "contradicted": 2}
 
 
-def _cap(report: ResearchReport, max_claims: int) -> tuple[ResearchReport, list[Claim]]:
+def cap_claims(
+    report: ResearchReport, max_claims: int
+) -> tuple[ResearchReport, list[Claim]]:
     """The report cut to ``max_claims`` claims, supported ones kept first, and the dropped ones.
 
     The cap runs after the claim check so it drops by evidence, not by position. Confidence is
@@ -261,11 +339,14 @@ def _cap(report: ResearchReport, max_claims: int) -> tuple[ResearchReport, list[
     return capped, ranked[max_claims:]
 
 
+_cap = cap_claims
+
+
 def make_check_node(
     *,
     decide: Decide | None = None,
     verdict_chain: Runnable[Any, ClaimVerdict] | None = None,
-) -> Callable[[ResearchState], dict]:
+) -> Callable[..., dict]:
     """Build the node that merges the drafts, checks every claim, and applies the claim cap.
 
     With no draft (every run failed or waits for approval) it writes nothing: there is no report.
@@ -286,7 +367,7 @@ def make_check_node(
         options = state.get("options")
         max_claims = None if options is None else DEPTH_BUDGETS[options.depth].claims
         if max_claims is not None and len(report.claims) > max_claims:
-            report, dropped = _cap(report, max_claims)
+            report, dropped = cap_claims(report, max_claims)
             counts = Counter(claim.status for claim in dropped)
             problems.append(
                 f"{len(dropped)} claims over the cap of {max_claims} were dropped ("

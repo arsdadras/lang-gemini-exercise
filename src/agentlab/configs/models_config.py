@@ -38,6 +38,7 @@ Verify any new ID with a ``/v1/models`` listing and a live call before relying o
 from dataclasses import dataclass
 
 from agentlab.configs.timeouts_config import (
+    CHAT_MODEL_MAX_RETRIES,
     CHAT_MODEL_TIMEOUT_SECONDS,
     EMBEDDING_TIMEOUT_SECONDS,
     LOCAL_MODEL_TIMEOUT_SECONDS,
@@ -64,6 +65,7 @@ class ModelSpec:
     temperature: float = 0.0
     top_p: float | None = None
     timeout_seconds: float = CHAT_MODEL_TIMEOUT_SECONDS
+    max_retries: int = CHAT_MODEL_MAX_RETRIES
     max_tokens: int | None = None
     """Output cap. OpenRouter reserves credit for the model's whole output window unless one
     is set, so a key with a small balance refuses every request without it."""

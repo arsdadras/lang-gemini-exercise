@@ -39,7 +39,7 @@ def route_after_grading(
 
 def route_after_web_search(state: RAGState) -> Literal["generate_from_web", "__end__"]:
     """Results -> answer from them; none -> end with the no-answer reply."""
-    return "generate_from_web" if state.get("chunks") else END
+    return "generate_from_web" if state.get("chunks") else "__end__"
 
 
 def build_rag_graph(

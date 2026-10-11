@@ -22,6 +22,7 @@ import langsmith
 import yaml
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
+from langchain_core.runnables import RunnableConfig
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.store.base import BaseStore
 
@@ -182,7 +183,9 @@ def print_available_skills(
 def design_skill(designer: CompiledStateGraph, request: str) -> None:
     """Draft a skill, show it, and publish it only if the user approves."""
     print("[Skills] Drafting...")
-    config = {"configurable": {"thread_id": f"skill_{uuid.uuid4().hex[:6]}"}}
+    config: RunnableConfig = {
+        "configurable": {"thread_id": f"skill_{uuid.uuid4().hex[:6]}"}
+    }
     designer.invoke({"request": request}, config)
     values = resume_pending_with_hitl(
         designer,

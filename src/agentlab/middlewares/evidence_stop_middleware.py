@@ -123,6 +123,11 @@ def judge_evidence(
     )
 
 
+_ALL_SOURCE_TOOLS: tuple[str, ...] = tuple(
+    name for tools in SOURCE_TOOLS.values() for name in tools
+)
+
+
 class EvidenceStopMiddleware(AgentMiddleware[EvidenceState]):
     """Judge the evidence after each source result; when it is enough, end the search."""
 
@@ -131,9 +136,7 @@ class EvidenceStopMiddleware(AgentMiddleware[EvidenceState]):
     def __init__(
         self,
         decide: Decide | None = None,
-        source_tools: Sequence[str] = tuple(
-            name for tools in SOURCE_TOOLS.values() for name in tools
-        ),
+        source_tools: Sequence[str] = _ALL_SOURCE_TOOLS,
     ) -> None:
         super().__init__()
         self._decide = decide

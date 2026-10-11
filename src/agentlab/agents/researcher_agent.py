@@ -56,7 +56,7 @@ def make_researcher_agent(
     *,
     tier: str = "low",  # paid tier only: tool-calling loop, not opensource/free (ADR-0014)
     extra_tools: Sequence[BaseTool] = (),
-    extra_middleware: Sequence[AgentMiddleware] = (),
+    extra_middleware: Sequence[AgentMiddleware[Any, Any, Any]] = (),
     store: BaseStore | None = None,
     context_schema: type[Any] | None = None,
     options: ResearchOptions | None = None,
@@ -119,7 +119,7 @@ def make_researcher_agent(
         if name in names
     ]
     approvals = [name for name in searches if name != CORPUS_SEARCH_TOOL_NAME]
-    limits = [
+    limits: list[AgentMiddleware[Any, Any, Any]] = [
         ToolCallLimitMiddleware(
             tool_name=name, run_limit=budget.searches, exit_behavior="continue"
         )

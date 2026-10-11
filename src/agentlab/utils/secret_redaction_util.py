@@ -36,7 +36,7 @@ def redact_secrets(text: str) -> tuple[str, int]:
     return _replace_matches(text, cards, SECRET_PLACEHOLDER), found + len(cards)
 
 
-def mask_for_trace(text: str) -> str:
+def mask_for_trace(text: str, _path: list[str | int] | None = None) -> str:
     """Trace view of ``text``: secrets redacted and email addresses masked."""
     redacted, _ = redact_secrets(text)
     return _replace_matches(redacted, detect_email(redacted), EMAIL_PLACEHOLDER)

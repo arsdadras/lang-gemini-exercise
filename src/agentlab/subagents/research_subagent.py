@@ -5,8 +5,9 @@ from typing import Any
 from deepagents import SubAgent
 from langchain_core.runnables import Runnable
 
+from agentlab.configs.research_config import DEPTH_BUDGETS
 from agentlab.graphs.research_graph import build_research_graph
-from agentlab.nodes.claim_check_node import check_claims, unsupported_count
+from agentlab.nodes.claim_check_node import cap_claims, check_claims, unsupported_count
 from agentlab.nodes.research_node import Researcher, read_research_run
 from agentlab.nodes.source_route_node import Decide
 from agentlab.prompts.subagents_prompt import RESEARCHER_SUBAGENT_PROMPT
@@ -27,16 +28,25 @@ RESEARCH_SPECIALIST = "research"
 RESEARCHER_SUBAGENT_NAME = "researcher"
 
 
-def verify_research(state: dict[str, Any]) -> ResearchReport | None:
+def verify_research(
+    state: dict[str, Any],
+    options: ResearchOptions | None = None,
+) -> ResearchReport | None:
     """Check the agent's draft against the documents its tools returned: the report, or None.
 
     Status and confidence come from this check, never from the model. Callers that run the
-    agent themselves (the apps, with their approval loops) pass its final state here.
+    agent themselves (the apps, with their approval loops) pass its final state here; when
+    ``options`` are given, the depth's claim cap is enforced by evidence just as in the graph.
     """
     run = read_research_run(state)
     if run.draft is None:
         return None
-    return check_claims(run.draft, run.documents)
+    report = check_claims(run.draft, run.documents)
+    if options is not None:
+        max_claims = DEPTH_BUDGETS[options.depth].claims
+        if len(report.claims) > max_claims:
+            report, _ = cap_claims(report, max_claims)
+    return report
 
 
 def run_research(

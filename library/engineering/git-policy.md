@@ -26,7 +26,7 @@ one branch, `main` ([ADR-0028](../../docs/adr/0028-one-mentor-one-branch.md)).
 
 ## Commits
 
-- **Only verified states reach `main`:** `pytest`, `ruff check`, `ruff format --check`, and
+- **Only verified states reach `main`:** `pytest`, `ruff check`, `ruff format --check`, `mypy`, and
   `scripts/check_docs.py` pass before the push. Nothing is ever reset for the learner to type
   ([ADR-0023](../../docs/adr/0023-active-review-instead-of-typing.md)).
 - **Conventional commits:** `type(scope): summary` in English, imperative, at most 72
@@ -36,9 +36,9 @@ one branch, `main` ([ADR-0028](../../docs/adr/0028-one-mentor-one-branch.md)).
 
 ## CI
 
-CI (`.github/workflows/ci.yml`) runs `ruff check`, `ruff format --check`, `pytest`, and
-`scripts/check_docs.py` on every push. A red `main` is fixed before any other work. A check is
-never skipped or weakened to get a change through.
+CI (`.github/workflows/ci.yml`) runs `ruff check`, `ruff format --check`, `mypy src/agentlab`,
+`pytest`, and `scripts/check_docs.py` on every push and pull request. A red `main` is fixed before
+any other work. A check is never skipped or weakened to get a change through.
 
 ## Never
 

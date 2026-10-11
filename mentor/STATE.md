@@ -12,34 +12,34 @@ the mentor is the only role and works on `main`.
 
 ## Now
 
-- **Stage:** R1, a stronger researcher
-  ([design card](../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built)).
-  Topics 1 and 2 are taught. Topic 2 (options and query planning) closed on 2026-10-05 with two
-  fixes from the learner's critique: the claim cap runs after the claim check and keeps
-  supported claims first (`c36bc64`), and a plan over the cap gets one re-plan before any cut,
-  with cut sub-questions named in the reason (`b5f6850`). The rule the learner and the mentor
-  agreed: a deletion that loses nothing is fine; a lossy one needs an informed priority and is
-  never silent.
-- **R1 topic 3, more sources and a source router:** taught (2026-10-10). Built and live-verified 2026-10-08
-  ([design card](../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built));
-  Sources: web, academic (Exa
-  research papers), corpus (P2's index of this project, or the files given with
-  `lab-research --corpus`). Router `research_sources@2`: 97.1% on 69 labeled cases, 0 unsafe. Live run
-  (strong profile through GapGPT): every kind read, 8 of 11 claims supported. The free tier
-  rarely calls `academic_search` when web is also offered (it does when academic is the only
-  source).
-- **Now: R1 topic 4, the stop condition:** built 2026-10-10 (`EvidenceStopMiddleware`, `evidence_enough@1`,
-  16/16 on its labeled set, 0 unsafe); teaching started (intro sent). Then R2 -> R3 -> P5 teaching
-  pass (B4 to C4) -> R5 -> D1 -> P6 (content generator) -> P7 (Capstone I) ([ROADMAP](ROADMAP.md), v5).
+- **R1 closed (2026-10-11):** All 4 topics of R1 (a stronger researcher: claims with provenance,
+  options and `Send` query planning, multi-source routing over web/corpus/academic with
+  `SourceRouteMiddleware`, and `EvidenceStopMiddleware` with `evidence_enough@1`) are built and
+  taught ([design card](../docs/design_cards/P1_research_agent.md)).
+- **R1 -> R2 inter-stage CI & repo hardening (2026-10-11):**
+  - Added `mypy src/agentlab` to `.github/workflows/ci.yml` (0 errors across 125 source files),
+    added `pull_request` triggers, and merged Dependabot updates (`langchain 1.4.3`,
+    `langgraph 1.2.14`, `deepagents 0.7.20`, `ruff 0.16.10`, `python-dotenv 1.2.4`).
+  - Applied review refinements: P3 sandbox tests now verify `review.refactored_code` when present;
+    R1 `page_window` extracts windows around cited passages past 12,000 chars and `_merge`
+    deduplicates identical claims while combining their `evidence` lists; `ModelRouter.runnable()`
+    enables LCEL `PROMPT | model_router.runnable(...)` routing on full rendered prompt length;
+    `lab-research` exposes `--depth {quick,standard,deep}` and `verify_research` applies the
+    depth's claim cap; chat models set `max_retries=1` (`CHAT_MODEL_MAX_RETRIES`) so provider SDK
+    retries don't stack before fallback; `smoke_live.py` wraps `plain()` and `tools()` with
+    fallbacks; `sqlite_db_data.py` provides `prune_checkpoints` + `VACUUM`.
+- **Now: R2, a stronger retriever (P2):** Next stage to start ([ROADMAP](ROADMAP.md), v5):
+  hybrid search (BM25 + vector + reranker), query rewriting, grading and reranking in one decider
+  request, per-claim verification with reroutes, and incremental re-indexing. Then R3 -> R4 -> P5
+  teaching pass (B4 to C4) -> R5 -> D1 -> P6 (content generator) -> P7 (Capstone I).
 
 ## Build queue
 
-- **Bug (2026-10-08):** `LLM_TEST_PROFILE=strong` fails on plain chat and tool binding: GapGPT
-  answers 404 `model_not_found` for `claude-haiku-5-5`, and the OpenRouter backup is not tried
-  (the fallback does not treat a 404 as a reason to switch). Found by `smoke_live.py`.
-1. R1 topic 3 teaching, then topic 4.
-2. A live end-to-end run of the research agent after topic 4; the depth budgets are provisional
-   until real broad runs measure them (`DEPTH_BUDGETS`).
+1. Write the P2 design card (with point 16, production path, and point 17, decision points) and
+   build/teach **R2** (hybrid search, reranking, query rewriting, single-request grading/reranking,
+   per-claim verification with reroutes, incremental re-index).
+2. A live end-to-end run of the research agent; the depth budgets are provisional until real broad
+   runs measure them (`DEPTH_BUDGETS`).
 3. Grow the claim-check labeled set from 34 to 50 cases (200 before fitting thresholds), fit
    `SUPPORTS_THRESHOLD` and `CONTRADICTS_THRESHOLD`, and decide whether Jev (91.2%) or Gemini 3.5
    Flash-Lite (34/34, 20 s p95) is primary
@@ -93,9 +93,6 @@ Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
   research node reports a waiting run as a problem instead of surfacing the interrupt, so
   `run_research` with the approval gate on stops at the first search; live runs replace the gate
   in the script. Fix: run the agent as a subgraph so its interrupts reach the caller (with P7-B3).
-- **A joined corpus document can pass `MAX_PAGE_CHARS`:** parts of one file read by several
-  runs are joined, and the claim check sees the first 12,000 characters. Trigger: a corpus claim
-  marked unsupported whose passage sits past the cut.
 - **Unused code:** `utils/time_travel_util.py` has no consumer outside a test; removed in R5
   unless one appears.
 - **Personal data in traces:** only P5 masks before upload. Engineering track.
@@ -103,8 +100,6 @@ Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
   quarters (`EV-2026-09-17-finglish-line-repair`); its current model isn't re-measured.
 - **`local` tier is opt-in only:** 90-360 s per structured call
   (`EV-2026-09-23-local-ollama-qwen`, [ADR-0015](../docs/adr/0015-local-tier-and-test-mode-profiles.md)).
-- **Retries stack in hosted chat calls:** the OpenAI SDK retries twice by default, so a call can
-  take three timeouts (3 x 120 s) per provider before the fallback switches. Pick `max_retries`.
 - **`_TimeoutSearchWrapper`** (`tools/web_search_tool.py`) works around langchain-tavily setting
   no timeout; remove it once the library takes one (`tests/test_timeouts.py` shows what to check).
 - **The researcher cites pages it never read:** on 2026-10-07 Gemini 3.5 Flash-Lite called
@@ -122,11 +117,11 @@ Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
   GapGPT yet, so OpenRouter). The OpenRouter key can't afford one 4096-token reservation, so
   every OpenRouter path (backups, Haiku) answers 402 until the learner tops it up. The learner
   removed the placeholder `OPENROUTER_API_KEY`; sessions started before that still carry it.
-- **Jev model router (2026-10-08, ADR-0031):** built and unit-tested, never run live (the
-  learner's instruction). Three GapGPT IDs are unverified (`claude-haiku-5-5`, `gpt-6-luna`,
-  `gpt-6.1-sol`): run `uv run python scripts/smoke_live.py` (all three ladder profiles) and
-  then `uv run python evals/model_route_eval.py` (54 tasks) before any call site adopts the
-  router; thresholds are provisional. Adoption is per call site, with a shadow run first.
+- **Jev model router (2026-10-08, ADR-0031):** built and unit-tested (`chain`, `runnable`, `plan`),
+  never run live (the learner's instruction). Three GapGPT IDs are unverified (`claude-haiku-5-5`,
+  `gpt-6-luna`, `gpt-6.1-sol`): run `uv run python scripts/smoke_live.py` (all three ladder
+  profiles) and then `uv run python evals/model_route_eval.py` (54 tasks) before any call site
+  adopts the router; thresholds are provisional. Adoption is per call site, with a shadow run first.
 - **No retry layer on the agents' tools:** convention 11 asks for `ToolRetryMiddleware` on an
   agent's external tools; no agent has one (the research tools turn errors into text the model
   reads). Decide with the engineering track.

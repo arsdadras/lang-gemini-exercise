@@ -58,16 +58,24 @@ def _model_checks(profile: str) -> list[bool]:
     os.environ["LLM_TEST_PROFILE"] = profile
     tier = llm_model.resolve_tier("low")
     model = llm_model.get("low")
+    fallbacks = llm_model.fallback_models("low")
 
     def plain() -> str:
-        return get_text(model.invoke("Reply with the single word OK."))[:40]
+        chain = llm_model.chain("low")
+        return get_text(chain.invoke("Reply with the single word OK."))[:40]
 
     def structured() -> str:
         chain = llm_model.chain("low", structured=SmokeVerdict)
         return chain.invoke("Return the word OK in the `word` field.").word
 
     def tools() -> str:
-        reply = model.bind_tools([add]).invoke("Use the add tool to add 2 and 3.")
+        bound = model.bind_tools([add])
+        chain = (
+            bound.with_fallbacks([m.bind_tools([add]) for m in fallbacks])
+            if fallbacks
+            else bound
+        )
+        reply = chain.invoke("Use the add tool to add 2 and 3.")
         return str([call["name"] for call in reply.tool_calls])
 
     prefix = f"[{profile} -> {tier}]"

@@ -21,10 +21,10 @@ the decider altogether and uses the test profile's tier, so a test run never spe
 import logging
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 from langchain_core.language_models import BaseChatModel
-from langchain_core.runnables import Runnable
+from langchain_core.runnables import Runnable, RunnableLambda
 from langchain_typesafe import ClassifierResponse, Noul, Question, Score
 from pydantic import BaseModel
 
@@ -249,6 +249,42 @@ class ModelRouter:
                 m.with_structured_output(structured) for m in planned.fallbacks
             ]
         return primary.with_fallbacks(fallbacks) if fallbacks else primary
+
+    def runnable(
+        self,
+        *,
+        structured: type[BaseModel] | None = None,
+        floor: str | None = None,
+        task_key: str | None = None,
+    ) -> Runnable:
+        """Return a ``Runnable`` that routes each invocation's input (e.g. ``PROMPT | model_router.runnable(...)``).
+
+        Measures the rendered prompt or input against ``LARGE_TASK_CHARS`` before routing, then
+        invokes the chosen tier's fallback-wrapped chain on the original input.
+        """
+
+        def _invoke(input_value: Any) -> Any:
+            task = _input_to_task(input_value, task_key=task_key)
+            return self.chain(task, structured=structured, floor=floor).invoke(
+                input_value
+            )
+
+        return RunnableLambda(_invoke)
+
+
+def _input_to_task(value: Any, *, task_key: str | None = None) -> str:
+    """Turn a runnable's input (prompt value, string, mapping, or message list) into task text."""
+    if isinstance(value, str):
+        return value
+    if hasattr(value, "to_string") and callable(value.to_string):
+        return str(value.to_string())
+    if isinstance(value, Mapping):
+        if task_key is not None and task_key in value:
+            return str(value[task_key])
+        return "\n\n".join(f"{k}: {v}" for k, v in value.items())
+    if isinstance(value, (list, tuple)):
+        return "\n\n".join(str(getattr(item, "content", item)) for item in value)
+    return str(value)
 
 
 model_router = ModelRouter()

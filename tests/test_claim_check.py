@@ -330,3 +330,74 @@ def test_a_check_that_hits_an_outage_fails_the_envelope_instead_of_crashing() ->
         result = run_research(Returns(state), "topic")
 
     assert result.status == "failed" and "unavailable" in result.reason
+
+
+def test_a_claim_citing_a_passage_past_max_page_chars_is_checked_against_its_window() -> (
+    None
+):
+    from agentlab.configs.research_config import MAX_PAGE_CHARS
+
+    late_fact = "The latency ceiling is 42 ms."
+    long_doc = ("header\n" + "padding " * 2000) + f"\n{late_fact}\n" + ("tail " * 500)
+    assert len(long_doc) > MAX_PAGE_CHARS and long_doc.find(late_fact) > MAX_PAGE_CHARS
+    seen_pages: list[str] = []
+
+    def check_window(page: str, _questions: dict[str, Any], **_: Any) -> Any:
+        seen_pages.append(page)
+        return answer(c0=("supports", 0.95))
+
+    cited = ResearchDraft(
+        topic="t",
+        summary="s",
+        claims=[
+            DraftClaim(
+                text="Latency ceiling is 42 ms",
+                evidence=[Evidence(url=PAGE_A, passage=late_fact)],
+            )
+        ],
+        citations=[Citation(title="A", url=PAGE_A)],
+    )
+    report = check_claims(
+        cited,
+        web({PAGE_A: long_doc}),
+        decide=check_window,
+        verdict_chain=llm(),
+    )
+
+    assert len(seen_pages) == 1
+    assert len(seen_pages[0]) <= MAX_PAGE_CHARS
+    assert late_fact in seen_pages[0]
+    assert report.claims[0].status == "supported"
+
+
+def test_merge_deduplicates_identical_claims_and_combines_their_evidence() -> None:
+    from agentlab.nodes.claim_check_node import _merge
+
+    d1 = ResearchDraft(
+        topic="t",
+        summary="Same summary.",
+        claims=[
+            DraftClaim(
+                text="X is 5",
+                evidence=[Evidence(url=PAGE_A, passage="X equals 5")],
+            )
+        ],
+        citations=[Citation(title="A", url=PAGE_A)],
+    )
+    d2 = ResearchDraft(
+        topic="t",
+        summary="Same summary.",
+        claims=[
+            DraftClaim(
+                text="  x   is 5 ",
+                evidence=[Evidence(url=PAGE_B, passage="X is five")],
+            )
+        ],
+        citations=[Citation(title="B", url=PAGE_B)],
+    )
+
+    merged = _merge("topic", [d1, d2])
+
+    assert merged.summary == "Same summary."
+    assert len(merged.claims) == 1
+    assert [e.url for e in merged.claims[0].evidence] == [PAGE_A, PAGE_B]

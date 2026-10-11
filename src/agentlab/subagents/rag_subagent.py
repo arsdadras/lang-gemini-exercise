@@ -3,9 +3,11 @@
 from deepagents import CompiledSubAgent
 
 from agentlab.graphs.rag_graph import RagGraph, build_rag_graph
+from agentlab.schemas.output.research_output_schema import SourceKind
 from agentlab.schemas.output.specialist_output_schema import (
     Provenance,
     SpecialistResult,
+    SpecialistStatus,
 )
 from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import (
@@ -22,7 +24,7 @@ DEFAULT_RAG_SUBAGENT_DESCRIPTION = (
 
 # answer_source -> (status, reason): the graph records where its answer came from; the
 # boundary turns that fact into what a caller needs to decide.
-_OUTCOMES = {
+_OUTCOMES: dict[str, tuple[SpecialistStatus, str]] = {
     "corpus": ("ok", ""),
     "web": ("partial", "The local corpus had nothing relevant; answered from the web."),
     "unverified": ("failed", "The corpus answer wasn't supported by its chunks."),
@@ -50,7 +52,7 @@ def run_rag(graph: RagGraph, question: str) -> SpecialistResult[str]:
         )
     source = state.get("answer_source", "none")
     status, reason = _OUTCOMES[source]
-    kind = "web" if source == "web" else "corpus"
+    kind: SourceKind = "web" if source == "web" else "corpus"
     sources = dict.fromkeys(
         chunk.metadata.get("source", "") for chunk in state.get("chunks", [])
     )

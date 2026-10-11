@@ -12,6 +12,7 @@ import uuid
 from dotenv import load_dotenv
 from langchain.agents.middleware import PIIMiddleware
 from langchain_core.messages import HumanMessage
+from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.memory import InMemorySaver
 
 from agentlab.agents.researcher_agent import make_researcher_agent
@@ -70,7 +71,9 @@ def main() -> None:
     if not topic:
         print("No topic given.")
         return
-    config = {"configurable": {"thread_id": f"brief_{uuid.uuid4().hex[:6]}"}}
+    config: RunnableConfig = {
+        "configurable": {"thread_id": f"brief_{uuid.uuid4().hex[:6]}"}
+    }
     stream_with_hitl(
         agent,
         {"messages": [HumanMessage(content=brief_request(topic))]},

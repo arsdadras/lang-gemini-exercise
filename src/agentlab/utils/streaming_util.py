@@ -8,6 +8,7 @@ from collections.abc import Callable
 from typing import Any
 
 from langchain_core.messages import AIMessage, ToolMessage
+from langchain_core.runnables import RunnableConfig
 from langgraph.types import Command
 
 from agentlab.utils.get_text_util import get_text
@@ -26,7 +27,7 @@ def _print_todos(todos: list[dict[str, Any]]) -> None:
 def stream_agent_with_observability(
     agent: Any,
     input_data: dict[str, Any] | Command,
-    config: dict[str, Any] | None = None,
+    config: RunnableConfig | None = None,
     *,
     context: Any | None = None,
     show_subgraphs: bool = True,

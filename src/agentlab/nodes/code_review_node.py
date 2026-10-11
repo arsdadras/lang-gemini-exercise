@@ -96,14 +96,23 @@ def generate_tests_node(state: CodeReviewState) -> dict:
         return {"error": f"Test generation node failed: {failure_reason(e)}"}
 
 
+def _target_code(state: CodeReviewState) -> str:
+    """The code the test suite exercises: the refactored version when the review proposed one."""
+    review = state.get("review")
+    if review and review.refactored_code:
+        return review.refactored_code
+    return state["code"]
+
+
 def execute_tests_node(state: CodeReviewState) -> dict:
     """Execute generated test suite in an isolated sandbox environment."""
-    if not state.get("tests") or not state["tests"].test_code:
+    tests = state.get("tests")
+    if not tests or not tests.test_code:
         return {"test_run": None}
 
     result = run_tests_in_sandbox(
-        code=state["code"],
-        test_code=state["tests"].test_code,
+        code=_target_code(state),
+        test_code=tests.test_code,
     )
     return {"test_run": result}
 
@@ -113,12 +122,10 @@ def fix_tests_node(state: CodeReviewState) -> dict:
     try:
         language = state.get("language", "python")
         framework = "pytest" if language.lower() == "python" else "standard test runner"
-        failing_test_code = state.get("tests").test_code if state.get("tests") else ""
-        error_output = (
-            state.get("test_run").output
-            if state.get("test_run")
-            else "Unknown execution failure."
-        )
+        tests = state.get("tests")
+        test_run = state.get("test_run")
+        failing_test_code = tests.test_code if tests else ""
+        error_output = test_run.output if test_run else "Unknown execution failure."
 
         chain = TEST_FIX_PROMPT | llm_model.chain(
             "medium",
@@ -129,7 +136,7 @@ def fix_tests_node(state: CodeReviewState) -> dict:
             {
                 "framework": framework,
                 "language": language,
-                "code": state["code"],
+                "code": _target_code(state),
                 "failing_test_code": failing_test_code,
                 "error_output": error_output,
             },

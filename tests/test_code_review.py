@@ -143,3 +143,77 @@ def test_code_review_subagent_spec() -> None:
     assert spec["name"] == "code_review_subagent"
     assert spec["description"]
     assert callable(spec["runnable"].invoke)
+
+
+def test_execute_tests_node_runs_against_refactored_code_when_present() -> None:
+    from agentlab.nodes.code_review_node import execute_tests_node
+
+    buggy = "def add(a: int, b: int) -> int:\n    return a - b\n"
+    fixed = "def add(a: int, b: int) -> int:\n    return a + b\n"
+    suite = code_review_schemas.TestSuite(
+        test_code="from tested_module import add\ndef test_add():\n    assert add(2, 3) == 5\n",
+        test_cases=[],
+    )
+    with_refactor = execute_tests_node(
+        {
+            "code": buggy,
+            "review": code_review_schemas.CodeReview(
+                summary="fix", score=5, refactored_code=fixed
+            ),
+            "tests": suite,
+        }
+    )
+    without_refactor = execute_tests_node(
+        {
+            "code": buggy,
+            "review": code_review_schemas.CodeReview(summary="no fix", score=5),
+            "tests": suite,
+        }
+    )
+
+    assert with_refactor["test_run"].passed is True
+    assert without_refactor["test_run"].passed is False
+
+
+def test_prune_checkpoints_keeps_latest_per_thread(
+    tmp_path: pytest.TempPathFactory,
+) -> None:
+    from pathlib import Path
+
+    from agentlab.data.sqlite_db_data import get_sqlite_checkpointer, prune_checkpoints
+    from agentlab.graphs.reviewer_subgraph import build_reviewer_subgraph
+
+    db_path = Path(str(tmp_path)) / "checkpoints.db"
+    saver = get_sqlite_checkpointer(db_path)
+    try:
+        graph = build_reviewer_subgraph()
+        config = {"configurable": {"thread_id": "t1", "checkpoint_ns": ""}}
+        for step in range(4):
+            saver.put(
+                {
+                    "configurable": {
+                        "thread_id": "t1",
+                        "checkpoint_ns": "",
+                        "checkpoint_id": f"cp-{step:03d}",
+                    }
+                },
+                {
+                    "v": 1,
+                    "id": f"cp-{step:03d}",
+                    "ts": f"2026-10-11T00:00:0{step}Z",
+                    "channel_values": {},
+                    "channel_versions": {},
+                    "versions_seen": {},
+                    "pending_sends": [],
+                },
+                {"source": "input", "step": step, "writes": {}, "parents": {}},
+                {},
+            )
+        deleted = prune_checkpoints(db_path, keep_latest=2)
+        remaining = list(saver.list(config))
+    finally:
+        saver.conn.close()
+
+    assert graph is not None
+    assert deleted == 2
+    assert [item.checkpoint["id"] for item in remaining] == ["cp-003", "cp-002"]

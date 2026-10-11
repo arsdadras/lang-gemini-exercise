@@ -62,9 +62,16 @@ def _stored_text(value: dict[str, Any]) -> str:
     return "\n".join(content) if isinstance(content, list) else content
 
 
+def _store(runtime: Runtime[UserContext]) -> Any:
+    if runtime.store is None:
+        msg = "Memory consolidation requires a store on the graph."
+        raise ValueError(msg)
+    return runtime.store
+
+
 def _read_memory(runtime: Runtime[UserContext]) -> dict[str, str]:
     """Every memory file of the current user, keyed by full path."""
-    items = runtime.store.search(user_memory_namespace(runtime), limit=1000)
+    items = _store(runtime).search(user_memory_namespace(runtime), limit=1000)
     return {
         MEMORIES_ROUTE_PREFIX.rstrip("/") + item.key: _stored_text(item.value)
         for item in items
@@ -74,7 +81,7 @@ def _read_memory(runtime: Runtime[UserContext]) -> dict[str, str]:
 def _read_rejections(runtime: Runtime[UserContext]) -> list[str]:
     """Edits the user rejected before, newest first, so they aren't proposed again."""
     namespace = (user_memory_namespace(runtime)[0], REJECTIONS_KIND)
-    items = runtime.store.search(namespace, limit=1000)
+    items = _store(runtime).search(namespace, limit=1000)
     items.sort(key=lambda item: item.value.get("rejected_at", 0), reverse=True)
     return [item.value["edit"] for item in items[:MAX_REJECTIONS_SHOWN]]
 
@@ -83,12 +90,12 @@ def _remember_rejection(runtime: Runtime[UserContext], edit: MemoryEdit) -> None
     namespace = (user_memory_namespace(runtime)[0], REJECTIONS_KIND)
     text = edit.describe(full=True)
     key = hashlib.sha256(text.encode()).hexdigest()
-    runtime.store.put(namespace, key, {"edit": text, "rejected_at": time.time()})
+    _store(runtime).put(namespace, key, {"edit": text, "rejected_at": time.time()})
 
 
 def make_consolidate_node(
     model: Runnable[Any, MemoryEdits] | None = None,
-) -> Callable[[MemoryConsolidationState, Runtime[UserContext]], dict]:
+) -> Callable[..., dict]:
     """Build the node that compares the conversation with memory and proposes edits."""
     chain = MEMORY_CONSOLIDATION_PROMPT | (
         model
@@ -174,7 +181,7 @@ def _apply(
     result: WriteResult | EditResult
     if edit.action == "add" and current is None:
         result = backend.write(key, edit.new.rstrip("\n") + "\n")
-    elif edit.action == "add":
+    elif edit.action == "add" and current is not None:
         if _find_line(current, edit.new) is not None:
             return f"Skipped {edit.describe()} (already in memory)."
         section = _section(current, edit.section) if edit.section else None
@@ -189,13 +196,14 @@ def _apply(
                 f"{current}{separator}{heading}{edit.new}\n",
             )
     else:
-        line = _find_line(current or "", edit.old)
+        current_text = current or ""
+        line = _find_line(current_text, edit.old)
         if line is None:
             return f"Skipped {edit.describe()} (that line is not in memory)."
         old = (
             line
             if edit.action == "replace"
-            else (f"{line}\n" if f"{line}\n" in current else line)
+            else (f"{line}\n" if f"{line}\n" in current_text else line)
         )
         new = edit.new if edit.action == "replace" else ""
         result = backend.edit(key, old, new, requested=edit.user_requested)
@@ -206,7 +214,7 @@ def _apply(
 
 def make_apply_next_edit_node(
     backend: GatedMemoryBackend,
-) -> Callable[[MemoryConsolidationState, Runtime[UserContext]], dict]:
+) -> Callable[..., dict]:
     """Build the node that applies the edit at ``cursor``, then moves the cursor on.
 
     One edit per run, so a run holds at most one approval. A resumed run starts over from the
@@ -222,7 +230,7 @@ def make_apply_next_edit_node(
         if key is None:
             outcome = f"Skipped {edit.path}: not a memory file."
         else:
-            stored = runtime.store.get(user_memory_namespace(runtime), key)
+            stored = _store(runtime).get(user_memory_namespace(runtime), key)
             outcome = _apply(
                 edit,
                 key,

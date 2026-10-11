@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
+from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.types import Command
 
@@ -78,7 +79,7 @@ def _print_tests(tests: TestSuite, execution: TestRun | None) -> None:
 def _stream_pipeline(
     graph: CodeReviewGraph,
     inputs: dict[str, Any],
-    config: dict,
+    config: RunnableConfig,
 ) -> bool:
     """Stream node updates; return ``False`` if a stage reported a fatal error."""
     for update in graph.stream(inputs, config=config, stream_mode="updates"):
@@ -105,7 +106,7 @@ def _stream_pipeline(
     return True
 
 
-def _run_refactor_gate(graph: CodeReviewGraph, config: dict) -> bool:
+def _run_refactor_gate(graph: CodeReviewGraph, config: RunnableConfig) -> bool:
     """If the graph is paused at the refactor gate, ask the human and resume."""
     snapshot = graph.get_state(config)
     if not snapshot.next:
@@ -135,7 +136,7 @@ def _run_refactor_gate(graph: CodeReviewGraph, config: dict) -> bool:
 
 def run_code_review(
     graph: CodeReviewGraph,
-    config: dict,
+    config: RunnableConfig,
     *,
     code: str | None,
     file_path: str | None,

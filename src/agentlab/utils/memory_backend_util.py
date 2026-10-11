@@ -1,6 +1,7 @@
 """Long-term memory wiring for the P5 assistant: virtual filesystem routes over a LangGraph store."""
 
 from pathlib import Path
+from typing import Any
 
 from deepagents.backends import (
     BackendProtocol,
@@ -9,7 +10,6 @@ from deepagents.backends import (
     StateBackend,
     StoreBackend,
 )
-from langgraph.runtime import Runtime
 
 from agentlab.configs.personal_assistant_config import (
     MEMORIES_ROUTE_PREFIX,
@@ -23,7 +23,7 @@ from agentlab.schemas.context.user_context_schema import UserContext
 MEMORIES_NAMESPACE_KIND = "memories"
 
 
-def user_memory_namespace(runtime: Runtime[UserContext] | None) -> tuple[str, str]:
+def user_memory_namespace(runtime: Any) -> tuple[str, str]:
     """Store namespace for the current user's long-term memories: ``(user_id, "memories")``.
 
     ``StoreBackend`` calls this on every file operation with the LangGraph
