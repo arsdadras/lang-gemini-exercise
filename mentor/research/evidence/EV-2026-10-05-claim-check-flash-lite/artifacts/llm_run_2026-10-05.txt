@@ -1,0 +1,9 @@
+== llm
+claim_check: accuracy 100.0% on 34 cases (0 decider failures)
+  per class: supports 12/12, contradicts 9/9, none 13/13
+  unsafe errors: 0
+  latency: p50 937 ms, p95 20444 ms
+  cost: $0.0000
+  finglish accuracy: 100.0%
+  paths: llm:low x34
+  at threshold 0.8: coverage 0.0% (0 covered, 34 escalate), accuracy on covered n/a

@@ -1,0 +1,95 @@
+{
+ "invoke: string state, 3 primitives": {
+  "ok": true,
+  "ms": 592.0,
+  "value": {
+   "model": "laya-rl-agent",
+   "refund_noul": 0.789,
+   "dept": "billing",
+   "dept_conf": 0.802,
+   "urgency": 1.742,
+   "usage": {
+    "input_tokens": 129,
+    "output_tokens": 0
+   }
+  }
+ },
+ "invoke: LangChain messages as state": {
+  "ok": true,
+  "ms": 535.2,
+  "value": {
+   "model": "laya-rl-agent",
+   "refund_noul": 0.75,
+   "dept": "billing",
+   "dept_conf": 0.912,
+   "urgency": 1.662,
+   "usage": {
+    "input_tokens": 252,
+    "output_tokens": 0
+   }
+  }
+ },
+ "ainvoke (async path)": {
+  "ok": true,
+  "ms": 369.3,
+  "value": {
+   "model": "laya-rl-agent",
+   "refund_noul": 0.789,
+   "dept": "billing",
+   "dept_conf": 0.802,
+   "urgency": 1.742,
+   "usage": {
+    "input_tokens": 129,
+    "output_tokens": 0
+   }
+  }
+ },
+ "batch of 2": {
+  "ok": true,
+  "ms": 670.9,
+  "value": [
+   {
+    "model": "laya-rl-agent",
+    "refund_noul": 0.789,
+    "dept": "billing",
+    "dept_conf": 0.802,
+    "urgency": 1.742,
+    "usage": {
+     "input_tokens": 129,
+     "output_tokens": 0
+    }
+   },
+   {
+    "model": "laya-rl-agent",
+    "refund_noul": 0.121,
+    "dept": "technical",
+    "dept_conf": 0.407,
+    "urgency": 1.52,
+    "usage": {
+     "input_tokens": 114,
+     "output_tokens": 0
+    }
+   }
+  ]
+ },
+ "error mapping: wrong key": {
+  "ok": true,
+  "ms": 15.6,
+  "value": "raised TypeSafeAuthenticationError status=401 (expected 401)"
+ },
+ "error mapping: 300-option choice": {
+  "ok": true,
+  "ms": 13.2,
+  "value": "raised TypeSafeUnprocessableEntityError status=422"
+ },
+ "AutoMode: destructive, unauthorized": {
+  "ok": true,
+  "ms": 424.3,
+  "value": "BLOCKED: The tool call `delete_all_files` was blocked because it was classified as risky (probabili"
+ },
+ "AutoMode: read, authorized": {
+  "ok": true,
+  "ms": 390.9,
+  "value": "EXECUTED: EXECUTED"
+ }
+}

@@ -1,0 +1,4 @@
+default (opensource) routing    30/32  p50 2264 ms
+   MISS 13: expected clarify got memory
+   MISS 27: expected clarify got memory
+default (opensource) staleness  20/20  p50 2165 ms

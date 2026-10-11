@@ -1,0 +1,7 @@
+threshold 0.5: TP 8 FP 0 FN 0  (8 violations, 120 clean rule checks)
+threshold 0.7: TP 7 FP 0 FN 1  (8 violations, 120 clean rule checks)
+threshold 0.9: TP 6 FP 0 FN 2  (8 violations, 120 clean rule checks)
+violations p: [0.52, 0.76, 0.94, 0.95, 0.96, 0.97, 0.97, 0.97]
+clean checks, top 6 p: [0.11, 0.11, 0.14, 0.16, 0.39, 0.44]
+AUROC (run 1): 1.000
+label flips vs run 1: 3; max p spread 0.14; p50 479 ms per 8-rule request; $0.00147

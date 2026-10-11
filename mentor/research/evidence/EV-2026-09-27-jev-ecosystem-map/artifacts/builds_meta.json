@@ -1,0 +1,4961 @@
+[
+ {
+  "slug": "10k-trading",
+  "title": "$10,000 in Jev’s hands",
+  "category": "Trading & markets",
+  "type": "X posts",
+  "source": "x.com/abolbuild/status/2100523868913807410",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "16-bit-jev-game-with-launch-trailer",
+  "title": "16-bit JEV game with launch trailer",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/wquguru/status/2102341885037588939",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "1980s-expert-system-on-lisp-jev",
+  "title": "1980s expert system on Lisp + Jev",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/sheherenow_/status/2102242154399850662",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "1kpapers",
+  "title": "1kpapers",
+  "category": "Research & data",
+  "type": "Sites",
+  "source": "www.1kpapers.com/",
+  "reported_cost": "$0.08",
+  "reported_latency": "256 ms"
+ },
+ {
+  "slug": "200x-faster-400x-cheaper-zero-words-inside-jev",
+  "title": "200x Faster, 400x Cheaper, Zero Words: Inside Jev",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "medium.com/design-bootcamp/200x-faster-400x-cheaper-zero-words-inside-jev-c1a43478033e",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "48-citizen-ai-civilization",
+  "title": "48-citizen AI civilization",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/SinghDevHub/status/2102086884998664521",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "500-emails-3-cents",
+  "title": "500 emails for 3.5 cents",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/rileybrown/status/2100404532119269426",
+  "reported_cost": "3.5 cents",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "a-city-of-79-jevs",
+  "title": "A city of 79 Jevs",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/AgentNeo/status/2102364625794642111",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "abide",
+  "title": "Abide",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/coldteadotai/abide",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "ad-focus-group",
+  "title": "723 ads, 30 personas, 22 cents",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/TheMattBerman/status/2101439340588974096",
+  "reported_cost": "$0.22",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "ad-tag-domain-enforcement",
+  "title": "Ad-tag domain enforcement",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/pranavbarthwal_/status/2102368412081226167",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "advocaat",
+  "title": "advocaat",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/pithings/advocaat",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "agent-desktop",
+  "title": "agent-desktop",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/lahfir/agent-desktop",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "agent-dispatcher",
+  "title": "agent-dispatcher",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/nahid-sparktales/agent-dispatcher",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "agent-hold-em",
+  "title": "Agent Hold'em",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/Bondhzz/status/2102368399452258464",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "agent-safety-monitor",
+  "title": "Jev as an agent safety monitor",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/isNickMa/status/2100566407524344225",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "agentic-browsing-extension",
+  "title": "Agentic browsing in Chrome",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/razaanstha/status/2100645675591520612",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "agentmail-outbound-abuse-classifier",
+  "title": "AgentMail outbound-abuse classifier",
+  "category": "Triage & routing",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/aiagents/comments/1wmq9ob/giving_ai_agents_their_own_email_inboxes_why/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "agents-make-three-decisions-all-day-18-jev-use-cases-and-whe",
+  "title": "Agents Make Three Decisions All Day: 18 JEV Use Cases and When Not to Use It",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "dev.to/hao_kang_82922526dfe5d934/agents-make-three-decisions-all-day-18-jev-use-cases-and-when-not-to-use-it-4en",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "ai-brief-claude-s-riemann-leap-jev-vercel-s-deepsec",
+  "title": "AI Brief: Claude's Riemann Leap, Jev, Vercel's deepsec",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "dev.to/lanternproton/ai-brief-claudes-riemann-leap-jev-vercels-deepsec-2nlm",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "ai-scene-director",
+  "title": "AI Scene Director",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/Bk23544/status/2102021494112981347",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "ai-short-form-video-clipper",
+  "title": "AI short-form video clipper",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/vanshstwt/status/2102304346646225074",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "ai-slop-detector",
+  "title": "AI slop detector",
+  "category": "Content & growth",
+  "type": "Sites",
+  "source": "madewithjev.com/free-tools/ai-slop-detector",
+  "reported_cost": "$0.00015",
+  "reported_latency": "243 ms"
+ },
+ {
+  "slug": "ai-survey-research-with-jev",
+  "title": "AI survey research with Jev",
+  "category": "Research & data",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/Jev/comments/1wnc7o7/i_rebuilt_my_ai_survey_research_product_with_jev/",
+  "reported_cost": "85% lower than Gemini 3.5 Flash-Lite",
+  "reported_latency": "2x faster than Gemini 3.5 Flash-Lite"
+ },
+ {
+  "slug": "ai",
+  "title": "TanStack AI",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/TanStack/ai",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "alan-ai-application-review-console",
+  "title": "Alan AI application review console",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/idleshubh/status/2102429846660079971",
+  "reported_cost": "-",
+  "reported_latency": "4m 54s"
+ },
+ {
+  "slug": "ambient-assistant",
+  "title": "An always-on assistant with no wake word",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/_MaxBlade/status/2100967959879471519",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "app-store-keyword-finder",
+  "title": "App Store keywords from the real competition",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/everton_dev/status/2101058122634666079",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "askjev-mcp",
+  "title": "AskJev",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/ranjan2829/AskJev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "askjev",
+  "title": "askjev.ai",
+  "category": "Tools & apps",
+  "type": "Sites",
+  "source": "askjev.ai",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "augustus",
+  "title": "Augustus",
+  "category": "Tools & apps",
+  "type": "Skills",
+  "source": "github.com/24601/Augustus",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "auto-jev-codex-for-paseo",
+  "title": "Auto Jev-Codex for Paseo",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/obetomuniz/status/2102124616403623959",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "autonomous-desktop-plays-king-of-fighters",
+  "title": "Autonomous desktop plays King of Fighters",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/AbretuPotencial/status/2102290295475876245",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "ax",
+  "title": "Ax (ax-llm)",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/ax-llm/ax",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "baml",
+  "title": "BAML",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/BoundaryML/baml",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "battle-arena",
+  "title": "Battle arena",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/xshubhamg/status/2102350818657923334",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "beat-jev",
+  "title": "Beat Jev",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/ojusave/beat-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "bet-against-jev-on-btc-s-next-second",
+  "title": "Bet against Jev on BTC's next second",
+  "category": "Trading & markets",
+  "type": "X posts",
+  "source": "x.com/0xyoussea/status/2102294324079735228",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "blink",
+  "title": "blink",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/ellipsis-dev/blink",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "bookkeeping-firm-replacement",
+  "title": "Bookkeeping firm replacement",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/andywang/status/2102265179543400907",
+  "reported_cost": "-",
+  "reported_latency": "20 s for 34 months of books"
+ },
+ {
+  "slug": "bot-chief-of-staff",
+  "title": "A chief of staff for bots",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/milindlabs/status/2100515910754750741",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "bouncer",
+  "title": "Bouncer",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/clownware/bouncer",
+  "reported_cost": "~$0.04/day",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "bounded-semantic-code-search-judging",
+  "title": "Bounded semantic code-search judging",
+  "category": "Tools & apps",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/LLMDevs/comments/1wn3vc0/jev_coding_agents_what_i_learned_from_making/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "browser-ai-go",
+  "title": "browser-ai",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/phanngoc/browser-ai",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "browser-use-flights",
+  "title": "Flight search with Browser Use",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/gregpr07/status/2100411066966749359",
+  "reported_cost": "~$0.004",
+  "reported_latency": "~7 s"
+ },
+ {
+  "slug": "browserclaw",
+  "title": "BrowserClaw",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/GoldenLoaf24h/browserclaw",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "building-a-prompt-oscilloscope-ai-coding-agents-can-inspect",
+  "title": "Building a Prompt Oscilloscope. AI coding agents can inspect…",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "medium.com/@choudharyshubhangi13/building-a-prompt-oscilloscope-c9dbea607204",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "building-an-evidence-based-resume-analyzer-why-understanding",
+  "title": "Building an Evidence-Based Resume Analyzer: Why Understanding Beats Guessing",
+  "category": "Triage & routing",
+  "type": "Resources",
+  "source": "dev.to/ranjancse/building-an-evidence-based-resume-analyzer-why-understanding-beats-guessing-421f",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "building-with-jev",
+  "title": "Building with Jev",
+  "category": "Tools & apps",
+  "type": "Skills",
+  "source": "github.com/dbreunig/building-with-jev-skill",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "business-qa-over-claude-code",
+  "title": "Business QA over Claude Code",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/Skrilla_git/status/2102318693359272418",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "call-coach-ai",
+  "title": "call-coach-ai",
+  "category": "Content & growth",
+  "type": "GitHub",
+  "source": "github.com/ZeroGold/call-coach-ai",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "can-jev-be-a-better-agent-evaluator",
+  "title": "Can Jev Be a Better Agent Evaluator?",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "www.langchain.com/blog/jev-agent-evals-langsmith",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "canny",
+  "title": "Canny",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/qkal/Canny",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "capture",
+  "title": "capture",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/sgaabdu4/capture",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "chatjev",
+  "title": "ChatJev",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/erik-dunteman/ChatJev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "cheshi",
+  "title": "Cheshi",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/CheshiAI/Cheshi",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "chess-pattern-analyzer",
+  "title": "Chess pattern analyzer",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/ankitatr_/status/2102278336705937893",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "chinese-pronunciation-optimizer",
+  "title": "Chinese-pronunciation optimizer",
+  "category": "Research & data",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/LocalLLaMA/comments/1wmzihn/autooptimizing_jev_to_speak_chinese/",
+  "reported_cost": "1/7 of DeepSeek cost",
+  "reported_latency": "1/30 of DeepSeek latency"
+ },
+ {
+  "slug": "clarity-judge",
+  "title": "Clarity Judge",
+  "category": "Content & growth",
+  "type": "GitHub",
+  "source": "github.com/TypeSafeAI/clarity-judge",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "clash-royale-jev-vs-laya",
+  "title": "Clash Royale: Jev vs Laya",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/KashyapVisharad/status/2102350346031149183",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "clay-jev-people-ranker",
+  "title": "clay-jev-people-ranker",
+  "category": "Content & growth",
+  "type": "GitHub",
+  "source": "github.com/promptgtm-shared/clay-jev-people-ranker",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "cli-did-you-mean-wrapper",
+  "title": "CLI did-you-mean wrapper",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/__syumai/status/2102297752810229800",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "cline-jev-browser",
+  "title": "jev-browser in Cline",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/cline/status/2101056078872256935",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "clonk-agent-canvas",
+  "title": "Launching agents on a canvas",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/0xPaulius/status/2101312576252481785",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "code-enumerates-jev-judges-building-slopcheck-on-a-model-tha",
+  "title": "Code Enumerates, Jev Judges: Building slopcheck on a Model That Never Writes a Word |…",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "tjklug.com/posts/typesafe-jev-slopcheck/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "code-review-finding-triage",
+  "title": "Code-review finding triage",
+  "category": "Tools & apps",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/JevAI/comments/1wmmbk4/using_jev_for_model_routing_and_review_triage_a/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "code-search-jev",
+  "title": "code-search-jev",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/voxmenthe/status/2102289186560589852",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "commit-miner",
+  "title": "commit-miner",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/devanshbatham/commit-miner",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "compact-adviser",
+  "title": "compact-adviser",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/kunchenguid/compact-adviser",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "competitor-ad-shortlist",
+  "title": "A shortlist from a competitor swipe file",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/kenonews/status/2101228958398181450",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "competitor-ad-teardown",
+  "title": "724 competitor ads, broken down",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/TheMattBerman/status/2100654891756589230",
+  "reported_cost": "~$0.09",
+  "reported_latency": "~40 s"
+ },
+ {
+  "slug": "composio",
+  "title": "Composio",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/ComposioHQ/composio",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "confidence-trivia-vs-jev",
+  "title": "Confidence trivia vs Jev",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/RoshanK91454999/status/2102270919427432915",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "construction-plan-classifier",
+  "title": "A 26-sheet plan set in 2.9 seconds",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/hari_trinay/status/2101118529936519453",
+  "reported_cost": "$0.0052",
+  "reported_latency": "2.9 s"
+ },
+ {
+  "slug": "content-aware-pii-redaction",
+  "title": "Content-aware PII redaction",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/rishi_raj_jain_/status/2100606501501169726",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "context-aware-meme-picker",
+  "title": "Context-aware meme picker",
+  "category": "Content & growth",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/SideProject/comments/1wmn45u/mememaxxing_extention_built_with_jev/pb87ksf/",
+  "reported_cost": "$0.0003 per search",
+  "reported_latency": "~300 ms per search"
+ },
+ {
+  "slug": "crush-monitor",
+  "title": "crush-monitor",
+  "category": "Content & growth",
+  "type": "GitHub",
+  "source": "github.com/FerryCorleone/crush-monitor",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "cutting-mcp-round-trips-with-jev-part-3",
+  "title": "Cutting MCP Round-Trips with Jev (Part 3)",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "marketdx.hashnode.dev/mcp-optimization-round-trip-resolver-jev-3-en",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "daf-jev",
+  "title": "daf-jev",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/docxology/daf-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "dasheng",
+  "title": "大声读 (dasheng)",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/wquguru/dasheng",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "deal-review-router",
+  "title": "Deal-review router",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/TheosTT04/status/2102359639379812763",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "deepseek-harness-codex-router",
+  "title": "DeepSeek Harness Codex router",
+  "category": "Tools & apps",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/typesafe_ai/comments/1wmulpo/jev_picks_my_codex_model_and_effort_in_deepseek/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "designing-production-ai-systems-with-jev-archcrux",
+  "title": "Designing Production AI Systems with Jev | ArchCrux",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "www.archcrux.com/articles/designing-production-ai-systems-with-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "diffjury",
+  "title": "DiffJury",
+  "category": "Triage & routing",
+  "type": "Sites",
+  "source": "diffjury.up.railway.app",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "doc-router",
+  "title": "doc-router",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/misbahsy/doc-router",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "doomscroll-filter",
+  "title": "Doomscroll Filter",
+  "category": "Content & growth",
+  "type": "Sites",
+  "source": "superx.so/instead-of-doomscrolling?niche=jev",
+  "reported_cost": "$0.007",
+  "reported_latency": "~2 s"
+ },
+ {
+  "slug": "downloads-folder-sorter",
+  "title": "A Downloads folder that sorts itself",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/marcelpociot/status/2100906882365788167",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "dsh-jev-tools",
+  "title": "dsh-jev-tools",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/HorusJiang/dsh-jev-tools",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "dual-arm-robot",
+  "title": "A dual-arm robot with Jev in the middle layer",
+  "category": "Robotics & devices",
+  "type": "X posts",
+  "source": "x.com/Raptor_zip/status/2101091398447505567",
+  "reported_cost": "~¥0.5",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "duckdb-jev",
+  "title": "duckdb-jev",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/colliber/duckdb-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "duckdb-row-classifier",
+  "title": "Classify rows in DuckDB",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/hamiltonulmer/status/2100370557405667768",
+  "reported_cost": "-",
+  "reported_latency": "~10 s per 1k rows"
+ },
+ {
+  "slug": "e2e-testing-agents",
+  "title": "End-to-end tests run by agents",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/o_kwasniewski/status/2100966838905585687",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "early-experimentation-using-jev-to-rethink-harness-ux-elvex",
+  "title": "Early experimentation using Jev to rethink harness UX - elvex",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "www.elvex.com/blog/early-experimentation-using-jev-to-rethink-harness-ux",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "effect",
+  "title": "Effect",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/Effect-TS/effect",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "email-priority-and-signal-labeling",
+  "title": "Email priority and signal labeling",
+  "category": "Triage & routing",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/solofirm/comments/1w4vccg/help_for_years_i_cant_get_my_email_load_under/pben0v6/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "embodied-jev",
+  "title": "EmbodiedJev",
+  "category": "Robotics & devices",
+  "type": "GitHub",
+  "source": "github.com/FBddcz/embodied-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "eval-agent-responses-with-jev-blog-braintrust",
+  "title": "Eval agent responses with Jev - Blog - Braintrust",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "www.braintrust.dev/blog/evaluate-agent-responses-with-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "every-editorial-judgments",
+  "title": "Every’s editorial vibe check",
+  "category": "Content & growth",
+  "type": "Resources",
+  "source": "every.to/also-true-for-humans/mini-vibe-check-typesafe-s-jev-judged-everything-i-ve-written-in-0-7-seconds",
+  "reported_cost": "<$0.01",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "every-yc-company-interviews-his-resume",
+  "title": "Every YC company interviews his resume",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/DevaiahShrithan/status/2102374909540520055",
+  "reported_cost": "$0.37 total",
+  "reported_latency": "25 s for 6,245 companies"
+ },
+ {
+  "slug": "exam-question-predictor",
+  "title": "Which exam questions come back",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/hametgholizadeh/status/2101289895624917076",
+  "reported_cost": "$0.0256",
+  "reported_latency": "80 s"
+ },
+ {
+  "slug": "exploring-jev-for-ai-driven-qa-with-agent-device",
+  "title": "Exploring Jev for AI-Driven QA with agent-device",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "www.callstack.com/blog/exploring-jev-for-mobile-qa-with-agent-device",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "fast-jev-codex",
+  "title": "fast-jev-codex",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/chriscmathew/status/2102071785424335277",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "fast-jev-compaction",
+  "title": "fast-jev-compaction",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/tamaratran/fast-jev-compaction",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "fastbrowse",
+  "title": "fastbrowse",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/agent-labs-dev/fastbrowse",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "fedjev-bench",
+  "title": "fedjev-bench",
+  "category": "Trading & markets",
+  "type": "GitHub",
+  "source": "github.com/maybern-tripp-smith/fedjev-bench",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "feed-lens",
+  "title": "Feed Lens",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/Nu11Speaker/status/2102324758587289962",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "feelings",
+  "title": "feelings",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/BoundaryML/feelings",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "firehose-judge",
+  "title": "firehose-judge",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/ragelink/firehose-judge",
+  "reported_cost": "~$0.00003",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "five-things-developers-are-actually-building-with-jev-and-wh",
+  "title": "Five Things Developers Are Actually Building With JEV (And Why It Matters)",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "dev.to/mini2809/five-things-developers-are-actually-building-with-jev-and-why-it-matters-52je",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "foreman",
+  "title": "foreman",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/thruwire/foreman",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "fraud-detection-jev-kimi",
+  "title": "Fraud detection with Jev and Kimi K3",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/nutlope/status/2100614659690713543",
+  "reported_cost": "~$0.07",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "fusion-360-voice",
+  "title": "Voice control over Fusion 360",
+  "category": "Robotics & devices",
+  "type": "X posts",
+  "source": "x.com/xyz04274951/status/2101053181589606584",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "fylecontext",
+  "title": "FyleContext",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/saifcodes_exe/status/2102389697612001364",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "gesture-canvas",
+  "title": "A canvas you control by pointing and speaking",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/jackcheng/status/2100729670991802386",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "gmail-inbox-triage-with-jev",
+  "title": "Gmail inbox triage with Jev",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/yatharth170699/status/2102046811284488363",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "gmail-intent-search",
+  "title": "Intent-based search in Gmail",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/dabit3/status/2100960281769738433",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "grocery-auto-shopper",
+  "title": "Grocery auto-shopper",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/Technop54777070/status/2102107087438258477",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "grok-bot-chrome",
+  "title": "Jev driving real Chrome from Grok Bot",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/ChrisAdcockMD/status/2101126098603888862",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "grok-bot-jev",
+  "title": "Grok Bot Jev Router",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/Bodila51/grok-bot-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "gtm-bot-for-linkedin-outreach",
+  "title": "GTM bot for LinkedIn outreach",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/nikolak47/status/2102457147498140050",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "guesswork",
+  "title": "guesswork",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/FindMalek/guesswork",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "ha-jev",
+  "title": "HA-Jev",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/AboveColin/HA-Jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "hacker-news-comment-verdicts",
+  "title": "Hacker News comment verdicts",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/rishi_raj_jain_/status/2102015585416855823",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "headless-chromium-agent",
+  "title": "Headless Chromium agent",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/mormonnegro/status/2100408498446111031",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "health-video-answer-clips",
+  "title": "Health-video answer clips",
+  "category": "Research & data",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/SideProject/comments/1wn38c5/jev_is_great_for_clipping_ask_a_health_question/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "heist-one",
+  "title": "heist-one",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/AbdelStark/heist-one",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "hermes-jev-approvals",
+  "title": "hermes-jev-approvals",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/anpicasso/hermes-jev-approvals",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "hermes-jev-skills",
+  "title": "Hermes Jev Skills",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/kerpopule/hermes-jev-skills",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "heyjev-deploy-approval-demo",
+  "title": "HeyJev deploy approval demo",
+  "category": "Triage & routing",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/devops/comments/1wm4w4w/weekly_self_promotion_thread/pb85iyt/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "higgsfield-ad-creatives",
+  "title": "Ad creatives from filtered assets",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/higgsfield_ai/status/2101117855622463719",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "hn-for-me",
+  "title": "HN For Me",
+  "category": "Research & data",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/LLMDevs/comments/1wmrr6l/hn_for_me_hacker_news_stories_curated_by_jev/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "hono-jev-router",
+  "title": "hono-jev-router",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/yusukebe/hono-jev-router",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "how-to-classify-route-and-score-with-jev-and-ai-sdk",
+  "title": "How to classify, route, and score with Jev and AI SDK",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "vercel.com/kb/guide/typesafe-jev-and-ai-sdk",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "how-to-use-jev-by-typesafe-ai-a-practical-guide-to-building",
+  "title": "How to Use Jev by TypeSafe AI: A Practical Guide to Building AI Decisions",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "medium.com/@vishnusub/how-to-use-jev-by-typesafe-ai-a-practical-guide-to-building-ai-decisions-93bba7447315",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "hunch-browser-agent",
+  "title": "Hunch browser agent",
+  "category": "Agents & browsers",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/AI_Agents/comments/1wmtkds/i_built_a_browser_agent_where_every_step_is_a/",
+  "reported_cost": "-",
+  "reported_latency": "153 ms median per decision; 3.4 s four-step form fill"
+ },
+ {
+  "slug": "i-built-a-24-7-hft-trading-bot-with-jev",
+  "title": "i built a 24/7 HFT trading bot with Jev",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/RohOnChain/status/2101344481400508459",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "i-built-a-trading-agent-with-the-all-new-typesafeai-jev",
+  "title": "I built a trading agent with the all new @typesafeai Jev",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/zadescoxp/status/2100675952317792734",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "i-built-non-autoregressive-decision-models-a-year-ago-then-a",
+  "title": "I Built Non-Autoregressive Decision Models a Year Ago. Then a Frontier Lab Called It a…",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "dev.to/nandakishor_m_6cc0adfde9f/i-built-non-autoregressive-decision-models-a-year-ago-then-a-frontier-lab-called-it-a-18me",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "i-ran-300-real-jev-calls-on-a-simulated-robot-fleet-the-bill",
+  "title": "I Ran 300 Real Jev Calls on a Simulated Robot Fleet. The Bill Was $0.00737.",
+  "category": "Games & real time",
+  "type": "Resources",
+  "source": "dev.to/chorylee/i-ran-300-real-jev-calls-on-a-simulated-robot-fleet-the-bill-was-000737-45ai",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "i-tested-typesafe-s-jev-a-478-cheaper-decision-model-against",
+  "title": "I Tested TypeSafe’s Jev, a 478× Cheaper Decision Model, Against Claude, GPT-6, Kimi,…",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "medium.com/data-science-collective/i-tested-typesafes-jev-a-470-cheaper-decision-model-against-claude-gpt-6-kimi-minimax-and-d36ed152e861",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "i-used-ai-to-audit-ai-bias-the-results-exposed-a-systematic",
+  "title": "I Used AI to Audit AI Bias - The Results Exposed a Systematic Pro-American Agenda in LLM…",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "dev.to/alirezaai/i-used-ai-to-audit-ai-bias-the-results-exposed-a-systematic-pro-american-agenda-in-llm-4c3c",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "i-used-jev-to-control-a-swarm-of-15-simulated-drones-in-real",
+  "title": "I used Jev to control a swarm of 15 simulated drones in real time - Web Pulse",
+  "category": "Games & real time",
+  "type": "Resources",
+  "source": "wpnews.pro/news/i-used-jev-to-control-a-swarm-of-15-simulated-drones-in-real-time",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "i-wanted-to-understand-what-makes-jev-different-from-a-norma",
+  "title": "🧵 I wanted to understand what makes Jev different from a normal LLM",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/abolbuild/status/2100509548339408972",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "imessage-elo-game",
+  "title": "iMessage Elo game",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/_RobinRoy/status/2102287304043979216",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "inbox-triage-1500-emails",
+  "title": "Triage across 1,500 emails",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/ryanvogel/status/2100042788851101842",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "inbox-zero",
+  "title": "Inbox Zero",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/elie222/inbox-zero",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "interlock",
+  "title": "Interlock",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/somoore/interlock",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "invalidate",
+  "title": "invalidate",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/chopratejas/invalidate",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "invoice-accounting",
+  "title": "Company invoices, classified for the books",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/iagolast/status/2100694100160745746",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "invoice-finder",
+  "title": "One-click invoice finder",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/FarouqAldori/status/2100711180704641520",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "is-malicious",
+  "title": "is-malicious",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/luantak/is-malicious",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "is-the-task-done-checker",
+  "title": "Is-the-task-done checker",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/cha73066/status/2102331894272770405",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "is-this-startup-stupid",
+  "title": "Is This Startup Stupid?",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/gajananrx/status/2102398216050536844",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jcr-resolver",
+  "title": "jcr",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/NiazMorshed2007/jcr",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jcyber",
+  "title": "Jcyber",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/undeemed/Jcyber",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jeff-2",
+  "title": "jeff (Alurith)",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/Alurith/jeff",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-a-decision-model-experiment-th",
+  "title": "Jev: a decision-model experiment (TH)",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "marketdx.hashnode.dev/series/jev-a-decision-model-experiment-th",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-acento",
+  "title": "jev-acento",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/marcosmartinez/jev-acento",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-acp",
+  "title": "jev-acp",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/formulahendry/jev-acp",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-agent-skill-router",
+  "title": "jev-agent-skill-router",
+  "category": "Tools & apps",
+  "type": "Skills",
+  "source": "github.com/GodsBoy/jev-agent-skill-router",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-agent-skill",
+  "title": "jev-agent-skill",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/yuyang2230/jev-agent-skill",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-ai-decisions-as-a-typed-function-call-stacktoheap",
+  "title": "Jev: AI Decisions as a Typed Function Call | StackToHeap",
+  "category": "Agents & browsers",
+  "type": "Resources",
+  "source": "stacktoheap.com/blog/2026/09/18/jev-doesnt-write-review-comments/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-ai-is-200x-faster-than-chatgpt",
+  "title": "Jev AI Is 200x Faster Than ChatGPT.",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "medium.com/@inprogrammer/jev-ai-is-200x-faster-than-chatgpt-abd37b81b281",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-align",
+  "title": "jev-align",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/sutro-sh/jev-align",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-and-llms-who-does-what-by-bilgin-ibryam",
+  "title": "Jev and LLMs: who does what? - by Bilgin Ibryam",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "generativeprogrammer.com/p/jev-and-llms-who-does-what",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-antispam-bot",
+  "title": "Jev Anti-Spam Bot",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/backmeupplz/jev_antispam_bot",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-architect",
+  "title": "jev-architect",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/karanb192/jev-architect",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-assisted-llm-trading",
+  "title": "JEV assisted LLM Trading",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "dev.to/nodefiend/jev-assisted-llm-trading-ofa",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-auto-approve",
+  "title": "jev-auto-approve",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/metalbear-co/jev-auto-approve",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-beat-gpt-luna-by-1-point-gpt-6-and-claude-wrote-the-answ",
+  "title": "Jev Beat GPT Luna by 1 Point. GPT-6 and Claude Wrote the Answer ...",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "dev.to/gabrielanhaia/jev-beat-gpt-luna-by-1-point-gpt-6-and-claude-wrote-the-answer-key-314k",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-behavior-study",
+  "title": "jev-behavior-study",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/RINNECODER/jev-behavior-study",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-belay",
+  "title": "jev-belay",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/valentynkit/jev-belay",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-benchmarks",
+  "title": "jev-benchmarks",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/AbdelStark/jev-benchmarks",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-by-typesafe-ai-6-product-ideas-people-are-already-buildi",
+  "title": "Jev by TypeSafe AI: 6 Product Ideas People Are Already Building With It",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "medium.com/@srinivasan_kk/jev-is-barely-out-here-are-6-product-ideas-people-are-already-building-with-it-3fa3678f6808",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-calc",
+  "title": "Jev Calc",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/thekitze/status/2100873520951808403",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-canvas",
+  "title": "jev-canvas",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/gaborishka/jev-canvas",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-capability-atlas",
+  "title": "Jev Capability Atlas",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/Zaious/jev-capability-atlas",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-chat",
+  "title": "Jev Chat",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/w3cj/jev-chat",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-chess-lab",
+  "title": "Jev Chess Lab",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/denikuchero/jev-chess-lab",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-chess-rating-1023-elo",
+  "title": "Jev chess rating: 1023 Elo",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/dhruv_ko/status/2102258860925038625",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-commit",
+  "title": "jev-commit",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/valentynkit/jev-commit",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-controlled-traffic-light",
+  "title": "Jev-controlled traffic light",
+  "category": "Robotics & devices",
+  "type": "X posts",
+  "source": "x.com/notifykamalraj/status/2102249844756951427",
+  "reported_cost": "< $0.01 total",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-crawlers",
+  "title": "jev-crawlers",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/russfranky/jev-crawlers",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-cu",
+  "title": "Jev-cu",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/Sac-Y/Jev-cu",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-cua",
+  "title": "jev-cua",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/Eronmmer/jev-cua",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-curate",
+  "title": "jev-curate",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/AkashPriyadarshii/jev-curate",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-dating-chat-evaluator",
+  "title": "Jev dating chat evaluator",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/rishi_raj_jain_/status/2101210788489007561",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-decision-benchmarks",
+  "title": "jev-decision-benchmarks",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/baibizhe/jev-decision-benchmarks",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-design-console",
+  "title": "jev-design",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/bilune/jev-design",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-desktop-computer-use-agent",
+  "title": "Jev Desktop",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/Divine_machine/status/2102120832638050430",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-desktop",
+  "title": "jev-desktop",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/yikangy873-gif/jev-desktop",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-detector",
+  "title": "Jev Detector",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/jozef_gherman/status/2100627898436571555",
+  "reported_cost": "-",
+  "reported_latency": "~10,000 words / ~2s"
+ },
+ {
+  "slug": "jev-driven-3d-tokyo-navigator",
+  "title": "Jev-driven 3D Tokyo navigator",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/pengbingao/status/2102272460146229633",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-drone",
+  "title": "jev-drone",
+  "category": "Robotics & devices",
+  "type": "GitHub",
+  "source": "github.com/RomanSlack/jev-drone",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-dsh-decision",
+  "title": "jev-dsh-decision",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/Devin-AXIS/jev-dsh-decision",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-dsl",
+  "title": "jev-dsl",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/inanna-malick/jev-dsl",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-e2e",
+  "title": "jev-e2e",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/perixtar/jev-e2e",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-elixir-client",
+  "title": "jev_elixir client",
+  "category": "Tools & apps",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/elixir/comments/1wmnxzb/i_built_a_small_elixir_client_for_jev_with/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-engineering",
+  "title": "jev-engineering",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/eugeniughelbur/jev-engineering",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-eval-agent",
+  "title": "jev-eval-agent",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/vinilana/jev-eval-agent",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-eval",
+  "title": "jev-eval",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/4esv/jev-eval",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-evaluation",
+  "title": "jev-evaluation",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/willkelly/jev-evaluation",
+  "reported_cost": "$12.69",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-explained",
+  "title": "Jev Explained",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/davila7/jev-explained",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-fedspeech",
+  "title": "Hawk or dove?",
+  "category": "Trading & markets",
+  "type": "GitHub",
+  "source": "github.com/TurboGuo/jev-fedspeech",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-firewall",
+  "title": "jev-firewall",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/_koushikde_/status/2102055249443983604",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-flappy-bird",
+  "title": "Jev plays Flappy Bird",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/rishi_raj_jain_/status/2102365625834447312",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-flash-router",
+  "title": "jev-flash-router",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/Ravinder82/jev-flash-router",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-for-chrome",
+  "title": "Jev for Chrome",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/chy4pro/jev-for-chrome",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-gates",
+  "title": "jev-gates",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/rashedInt32/jev-gates",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-gateway",
+  "title": "jev-gateway",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/vinilana/jev-gateway",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-gc-context-garbage-collector",
+  "title": "jev-gc context garbage collector",
+  "category": "Agents & browsers",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/LLMDevs/comments/1wmzhn5/built_a_context_garbage_collector_for_llm_agents/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-grokbot-mac-agent",
+  "title": "Jev + GrokBot Mac agent",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/0xwhrrari/status/2102035137848381455",
+  "reported_cost": "~$0.0000021 per run",
+  "reported_latency": "0.18 s to rank 12 options"
+ },
+ {
+  "slug": "jev-guard",
+  "title": "jev-guard",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/leepokai/jev-guard",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-guided-sparse-attention",
+  "title": "Jev-guided sparse attention for MiniMax H3",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/sep_is_heim/status/2101603192664740330",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-harness-filter",
+  "title": "jev-harness",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/Astro-Han/jev-harness",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-highlighter",
+  "title": "A syntax highlighter on Jev",
+  "category": "Tools & apps",
+  "type": "Sites",
+  "source": "lab.saeed.sh/highlight",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-in-every-metaview-agent",
+  "title": "Jev in every Metaview agent",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/s16h_/status/2102434671326032148",
+  "reported_cost": "-",
+  "reported_latency": "minutes to seconds (~10x faster)"
+ },
+ {
+  "slug": "jev-in-superqode-a-harness-for-your-code-and-workflows-with",
+  "title": "Jev in SuperQode: a harness for your code and workflows with Jev agent",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "medium.com/superagentic-ai/jev-in-superqode-a-harness-for-your-code-and-workflows-with-jev-agent-aed62fa4c98d",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-is-the-internet-moment-for-the-ai-industry",
+  "title": "Jev is the \"Internet\" moment for the AI industry",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/0xCodila/status/2100984487802708306",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-judgment",
+  "title": "jev-judgment",
+  "category": "Tools & apps",
+  "type": "Skills",
+  "source": "github.com/HyunjunJeon/jev-judgment",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-korean-benchmark",
+  "title": "jev-korean-benchmark",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/mahlernim/jev-korean-benchmark",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-lab-by-lyzr",
+  "title": "Jev Lab by Lyzr",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/theAIsailor/status/2102302942015479941",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-libero",
+  "title": "jev-libero",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/Dimweaker/jev-libero",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-lint",
+  "title": "jev-lint (mizchi)",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/mizchi/jev-lint",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-logtriage",
+  "title": "jev-logtriage",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/jyatesdotdev/jev-logtriage",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-macos-loop",
+  "title": "Jev macOS Loop",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/jcpsimmons/jev-macos-loop",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-magento-2",
+  "title": "Jev decisions for Magento 2",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/henriquekieckbusch/henriquekieckbusch-module-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-mail-classifier",
+  "title": "jev-mail-classifier",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/parth-kp/jev-mail-classifier",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-mcp-coding-loop",
+  "title": "jev-mcp for coding loops",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/burnigtm/jev-mcp",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-mcp-dispatcher",
+  "title": "jev-mcp-dispatcher",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/abhishekashokvkumar/jev-mcp-dispatcher",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-mcp",
+  "title": "jev-mcp",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/jkudish/jev-mcp",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-minesweeper",
+  "title": "JevMinesweeper",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/EnesYilmazcode/JevMinesweeper",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-mobile",
+  "title": "jev-mobile",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/Friedjof/jev-mobile",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-model-router",
+  "title": "A model router on Jev",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/ephraimduncan/status/2100454070536351824",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-moderation-bot",
+  "title": "Jev Moderation Bot",
+  "category": "Content & growth",
+  "type": "GitHub",
+  "source": "github.com/brainstormity/Jev-Moderation-Bot",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-music-playground",
+  "title": "Can Jev steer music?",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/wustep/jev-playground",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-nvim",
+  "title": "jev.nvim",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/valentynkit/jev.nvim",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-oas-sentinel",
+  "title": "jev-oas-sentinel",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/ShuhanSun/jev-oas-sentinel",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-opens-up-so-many-possibilities-for-gaming",
+  "title": "Jev opens up so many possibilities for gaming 🤯",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/marcelpociot/status/2100715684732801095",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-orderby-bench",
+  "title": "jev-orderby-bench",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/yodablocks/jev-orderby-bench",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-oxlint",
+  "title": "jev-oxlint",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/cephalization/jev-oxlint",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-paint",
+  "title": "Jev Paint",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/achimala/jev-paint",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-palette",
+  "title": "jev-palette",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/amycardoso/jev-palette",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-pi-a-probability-gate-for-my-coding-agent-s-shell-comman",
+  "title": "Jev + Pi: a probability gate for my coding agent's shell commands",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "dev.to/jomatsu/jev-pi-a-probability-gate-for-my-coding-agents-shell-commands-95d",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-piano-realtime",
+  "title": "Both hands on a piano, in real time",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/chandamamz/status/2101066294816920063",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-piano",
+  "title": "jev-piano",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/LamplighterPaul/jev-piano",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-plays-doom",
+  "title": "Jev plays Doom",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/CompleteSkeptic/status/2099925687465570372",
+  "reported_cost": "~$7/hour",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-plays-ms-pac-man",
+  "title": "Jev plays Ms. Pac-Man",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/davidmadurzak/status/2102048463634526637",
+  "reported_cost": "-",
+  "reported_latency": "~650 ms average"
+ },
+ {
+  "slug": "jev-plays-pokemon-red",
+  "title": "jev-plays-pokemon-red",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/valentynkit/jev-plays-pokemon-red",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-plays-pokemon-showdown",
+  "title": "Jev plays Pokémon Showdown",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/Izzuddin_Shafi/status/2101116220061958528",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-plays-puyo-puyo",
+  "title": "Jev plays Puyo Puyo",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/hota911/status/2101130463037530229",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-plays-tetris",
+  "title": "Jev plays Tetris",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/AlanDaitch/status/2100438353946513815",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-pong",
+  "title": "Jev Pong",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/ably-labs/jev-pong",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-pr-labeler",
+  "title": "Jev PR Labeler",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/1jehuang/jev-pr-labeler",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-pref",
+  "title": "jev-pref",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/doeixd/jev-pref",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-qwen-sonnet-router",
+  "title": "Jev model router",
+  "category": "Triage & routing",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/JevAI/comments/1wmmbk4/using_jev_for_model_routing_and_review_triage_a/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-ra",
+  "title": "jev-ra",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/brnyxx/jev-ra",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-rag-benchmark",
+  "title": "jev-rag-benchmark",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/erendikmenn/jev-rag-benchmark",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-ranked-code-search-for-agents",
+  "title": "Jev-ranked code search for agents",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/bartlomein/status/2102060282369421714",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-reads-every-ai-paper-since-1993",
+  "title": "Jev reads every AI paper since 1993",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/DevaiahShrithan/status/2102097862805053950",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-reads-its-own-comment-section",
+  "title": "Jev reads its own comment section",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/JoshKuechly/status/2102362889356992682",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-recruiter",
+  "title": "Jev Recruiter",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/skeptrunedev/jev-recruiter",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-reflex-autonomy-lab",
+  "title": "Jev Reflex Autonomy Lab",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/khordoo/jev-reflex-autonomy-lab",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-reflex",
+  "title": "jev-reflex",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/MSalvalaggio/jev-reflex",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-rerank-bench",
+  "title": "jev-rerank-bench",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/anessbelbati/jev-rerank-bench",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-reranker-2",
+  "title": "jev-reranker",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/hotchpotch/jev-reranker",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-reranker",
+  "title": "Jev Reranker (Rust CLI)",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/shinpr/jev-reranker",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-review-2",
+  "title": "jev-review MCP plugin",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/NiazMorshed2007/jev-review",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-review-action",
+  "title": "jev-review-action",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/fatwang2/jev-review-action",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-review-dashboard",
+  "title": "Jev Review",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/devagrawal09/jev-review",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-reviewer",
+  "title": "jev-reviewer",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/choxos/jev-reviewer",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-router",
+  "title": "jev-router",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/gargpratyush/jev-router",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-rts-player",
+  "title": "Jev RTS player",
+  "category": "Games & real time",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/TheMachineLearning/comments/1wn2gn8/jev_demos_are_misleading_says_developer/pbcknnc/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-rules",
+  "title": "jev-rules",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/EliaAlberti/jev-rules",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-sanity-no-llm-query-demo",
+  "title": "Jev + Sanity no-LLM query demo",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/jreyesdev/status/2102218598668488983",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-scout",
+  "title": "jev-scout",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/kierandotai/jev-scout",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-search-mcp",
+  "title": "jev-search-mcp",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/mukiwu/jev-search-mcp",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-search-rerank-eval",
+  "title": "jev-search-rerank-eval",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/zhuyansen/jev-search-rerank-eval",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-search",
+  "title": "jev-search",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/jh1373/jev-search",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-semgrep",
+  "title": "jev-semgrep",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/uehaj/jev-semgrep",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-seo",
+  "title": "jev-seo",
+  "category": "Content & growth",
+  "type": "GitHub",
+  "source": "github.com/AkashPriyadarshii/jev-seo",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-shell-history",
+  "title": "jev-shell-history",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/mrnugget/jev-shell-history",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-skill-router-droidq",
+  "title": "jev-skill-router",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/droid-Q/jev-skill-router",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-skill",
+  "title": "Awesome Jev Skills",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/wuyoscar/jev-skill",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-skills-pack",
+  "title": "Jev Skills pack",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/Raincoat_t/status/2102367530916487321",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-skip",
+  "title": "jev-skip",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/valentynkit/jev-skip",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-slop-guard",
+  "title": "Jev Slop Guard",
+  "category": "Tools & apps",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/coolgithubprojects/comments/1wnbf6a/i_built_a_chrome_extension_that_blurs_ai_slop_on/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-social",
+  "title": "jev-social",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/socai-io/jev-social",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-spec",
+  "title": "jev-spec",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/nozomi-koborinai/jev-spec",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-spring-boot-starter",
+  "title": "jev-spring-boot-starter",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/danvega/jev-spring-boot-starter",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-stock",
+  "title": "jev_stock",
+  "category": "Trading & markets",
+  "type": "GitHub",
+  "source": "github.com/sosopop/jev_stock",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-studio",
+  "title": "Jev Studio",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/utk2103/jev-studio",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-superpowers",
+  "title": "jev-superpowers",
+  "category": "Tools & apps",
+  "type": "Skills",
+  "source": "github.com/AkashPriyadarshii/jev-superpowers",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-tool-router",
+  "title": "jev-tool-router",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/jackbarunz/jev-tool-router",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-tool-runner",
+  "title": "jev-tool-runner",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/micic-mihajlo/jev-tool-runner",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-trade",
+  "title": "jev-trade",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/aowang-ai/jev-trade",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-trader",
+  "title": "jev-trader",
+  "category": "Trading & markets",
+  "type": "GitHub",
+  "source": "github.com/jarrodwatts/jev-trader",
+  "reported_cost": "-",
+  "reported_latency": "300 ms blocks"
+ },
+ {
+  "slug": "jev-traffic-sim",
+  "title": "Jev runs a city’s traffic",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/skcache/jevtrafficsim",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-tree",
+  "title": "jev-tree",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/reachjalil/jev-tree",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-ts-repl",
+  "title": "jev-repl",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/aoprisan/jev-ts-repl",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-turn-analysis",
+  "title": "jev-turn-analysis",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/hobbs/jev-turn-analysis",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-typed-decisions-for-enterprise-ai-micha-chromiak-s-blog",
+  "title": "Jev: Typed decisions for enterprise AI - Michał Chromiak's blog",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "mchromiak.github.io/articles/2026/Sep/17/Jev-Typed-Decisions-for-Enterprise-AI/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-ultrafast",
+  "title": "jev-ultrafast",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/browser-use/jev-ultrafast",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-use-mac",
+  "title": "jev-use",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/savka777/jev-use",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-voice-browser",
+  "title": "jev-voice-browser",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/moritzkremb/jev-voice-browser",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-voice",
+  "title": "Jev Voice",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/kevinbadi/jev-voice",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-vs-claude-who-wins",
+  "title": "Jev vs Claude: Who Wins?",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "dev.to/bengreenberg/jev-vs-claude-who-wins-4mln",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-vs-jev-samurai-showdown",
+  "title": "Jev vs Jev Samurai Showdown",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/zohaibtanwir/status/2102299391227019326",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-vs-ml",
+  "title": "Jev vs. ML",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/QuicqDev/Jev-vs-ML",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-was-the-tipping-point-i-built-the-last-mysql-search-stat",
+  "title": "Jev was the tipping point - I built the last MySQL search statement - WPS",
+  "category": "Triage & routing",
+  "type": "Resources",
+  "source": "www.worldprogramming.org/posts/jev-was-the-tipping-point-i-built-the-last-mysql-search-statement-7utadh",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-web-analyzer",
+  "title": "Jev Web Analyzer",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/replynodes/jev-web-analyzer",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-word-race",
+  "title": "Jev Word Race: 1,048 Words, No Map",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/cyberyogi_/status/2102391783821070717",
+  "reported_cost": "$0.08 for 200 races",
+  "reported_latency": "~300 ms per hop"
+ },
+ {
+  "slug": "jev-workflow-builder",
+  "title": "Jev workflow builder",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/ctnicholasdev/status/2102070640589279318",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-wrapped",
+  "title": "Jev Wrapped",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/gaborishka/jev-wrapped",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-x-relevance-panel",
+  "title": "Jev X relevance panel",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/luongnv89/status/2102366418511581256",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev-x-sentiment-analysis",
+  "title": "Jev X Sentiment Analysis",
+  "category": "Trading & markets",
+  "type": "GitHub",
+  "source": "github.com/brainstormity/Jev-X-Sentiment-Analysis",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jev",
+  "title": "jev",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/dannote/jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jeval-confidence",
+  "title": "jeval",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/rlaope/jeval",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevals-agent-evaluations",
+  "title": "jevals agent evaluations",
+  "category": "Research & data",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/LLMDevs/comments/1wmyz19/jevals_fast_local_agent_evaluations_with_oneshot/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevbench",
+  "title": "JevBench",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/fstandhartinger/jevbench",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevbridge-2",
+  "title": "Jevbridge",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/gamesonrblx/Jevbridge",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevbridge",
+  "title": "Jevbridge",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/tacticocc/Jevbridge",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevcache",
+  "title": "jevcache",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/hyperspaceai/jevcache",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevcal",
+  "title": "jevcal",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/abhixhek/jevcal",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevchat",
+  "title": "jevchat",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/kyle-pena-nlp/jevchat",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevclient",
+  "title": "jevclient",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/AboveColin/jevclient",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevcumber",
+  "title": "jevcumber",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/RubyBrewsday/jevcumber",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevform",
+  "title": "JevForm",
+  "category": "Tools & apps",
+  "type": "Sites",
+  "source": "jevform.spiritt.app/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevguard",
+  "title": "JevGuard",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/seb4ez/jevguard",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jeview-decision-visualizer",
+  "title": "Jeview decision visualizer",
+  "category": "Tools & apps",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/LocalLLaMA/comments/1wgcpww/biweekly_megathread_project_showcase/pb8e5fk/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevify",
+  "title": "Jevify",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/altryne/jevify",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevinci",
+  "title": "Jevinci",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/achimala/jevinci",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevlang-v0-1-0",
+  "title": "jevlang v0.1.0",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "pypi.org/project/jevlang/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevlint",
+  "title": "JevLint",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/huntedman/JevLint",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevlogs",
+  "title": "jevlogs",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/reachjalil/jevlogs",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevmail",
+  "title": "JevMail",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/fazlerocks/jevmail",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevmeter",
+  "title": "jevmeter",
+  "category": "Content & growth",
+  "type": "GitHub",
+  "source": "github.com/ChetasLua/jevmeter",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevmind",
+  "title": "Jevmind",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/dealerdefi/status/2102167087309369731",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevmod",
+  "title": "jevmod",
+  "category": "Content & growth",
+  "type": "GitHub",
+  "source": "github.com/ohernandezdev/jevmod",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevmoji-emoji-ranking",
+  "title": "Jevmoji emoji ranking",
+  "category": "Research & data",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/typesafe_ai/comments/1wn35f5/jevmoji/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevocks",
+  "title": "jevocks",
+  "category": "Trading & markets",
+  "type": "GitHub",
+  "source": "github.com/unicodeveloper/jevocks",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevonian-coding-agent-router",
+  "title": "Jevonian coding-agent router",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/xinyao27/status/2102057252219969961",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevpilot",
+  "title": "JevPilot",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/standardagents/jevpilot",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevpr",
+  "title": "JevPR",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/HexyeDEV/JevPR",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevpulse",
+  "title": "JevPulse",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/Jay_Gajera17/status/2102287513725645167",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevql",
+  "title": "JevQL: semantic SQL for Postgres",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/kylemclaren/status/2100953409973108759",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevr",
+  "title": "jevr",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/simxnherrera/jevr",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevs-fly",
+  "title": "jevs-fly",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/webdevcody/jevs-fly",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevscape",
+  "title": "JevScape",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/Skyvern-AI/jevscape",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevscout",
+  "title": "JevScout",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/hqman/JevScout",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevsearch",
+  "title": "jevsearch: React site search ranked by Jev",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/kylemclaren/status/2102038326588878950",
+  "reported_cost": "$0.26 / 1,000 uncached searches",
+  "reported_latency": "278 ms median (uncached, network)"
+ },
+ {
+  "slug": "jevsql",
+  "title": "jevsql",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/EugeneBoondock/jevsql",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevthoven",
+  "title": "Jevthoven",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/cocktailpeanut/jevthoven",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevtown",
+  "title": "Jevtown",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/gaborishka/jevtown",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jevvy",
+  "title": "jevvy",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/PanAchy/jevvy",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jive-fast-and-slow-coding-agent",
+  "title": "Jive fast-and-slow coding agent",
+  "category": "Agents & browsers",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/SideProject/comments/1wmp3wn/jive_rethinking_the_agentic_loop_with_system_one/",
+  "reported_cost": "-",
+  "reported_latency": "1m41s-3m26s across six reported tasks"
+ },
+ {
+  "slug": "job-match-prediction",
+  "title": "400 companies matched to one candidate",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/sarvagya_kul/status/2100980770206879849",
+  "reported_cost": "$0.0005",
+  "reported_latency": "12 s"
+ },
+ {
+  "slug": "jot",
+  "title": "Jot",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/runta-dev/jot",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "jpp-language",
+  "title": "J++",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/Towow-ai/jpp",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "keep-md-search",
+  "title": "Search and tagging on keep.md",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/iannuttall/status/2100884132272181594",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "killmyidea",
+  "title": "killmyidea",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/monteduro/killmyidea",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "kiru-hai-coach",
+  "title": "Kiru Hai Coach",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/smilior/kiru-hai-coach",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "kr-name-age",
+  "title": "Guess the age from a Korean name",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/ximhear/jev-kr-name-age",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "kueon-conversation-relevance",
+  "title": "Kueon conversation relevance",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/anishghimire862/status/2102391741827727367",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "kunobi-jev",
+  "title": "kunobi-jev",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/kunobi-ninja/kunobi-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "langchain",
+  "title": "LangChain",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/langchain-ai/langchain",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "langchainjs",
+  "title": "LangChain.js",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/langchain-ai/langchainjs",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "laravel-typesafe-jev",
+  "title": "Laravel TypeSafe Jev",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/butochnikov/laravel-typesafe-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "lead-outreach-scoring",
+  "title": "700 leads scored in 40 seconds",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/romanbuildsaas/status/2100891604735099103",
+  "reported_cost": "$0.09",
+  "reported_latency": "40 s"
+ },
+ {
+  "slug": "linkedin-noslop",
+  "title": "LinkedIn NoSlop",
+  "category": "Content & growth",
+  "type": "GitHub",
+  "source": "github.com/sushrutb17/linkedin-noslop-extension",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "linkedin-post-copilot",
+  "title": "LinkedIn Post Copilot",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/DebarpanJha/status/2102430370599956487",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "linkedin-slop-filter",
+  "title": "LinkedIn slop filter",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/ArpitKhandelwa3/status/2102351817330118977",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "litellm",
+  "title": "LiteLLM",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/BerriAI/litellm",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "live-ai-director",
+  "title": "Live AI director",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/kevinlysocial/status/2102216292573028422",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "live-jev-2",
+  "title": "Jev Self-Driving Sim",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/vinilana/live-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "live-jev",
+  "title": "live-jev",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/okinaaudio/live-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "live-viral-post-analyzer",
+  "title": "Live viral post analyzer",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/rileybrown/status/2100425868053008758",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "llama-index-jev",
+  "title": "llama-index-jev",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/WiktorB2004/llama-index-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "llamacpp-jev",
+  "title": "llamacpp-jev",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/chirag/status/2102245444663537859",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "llm-chess-jev",
+  "title": "LLM Chess: jev-latest",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/maxim-saplin/llm_chess",
+  "reported_cost": "~$0.0015",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "llms-are-built-to-write-jev-is-built-to-decide",
+  "title": "LLMs Are Built to Write. Jev Is Built to Decide.",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "medium.com/ai-mindset/llms-are-built-to-write-jev-is-built-to-decide-ede88b176803",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "local-resume-screening-workbench",
+  "title": "Local resume screening workbench",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/DarrenTheLi/status/2102372866318803016",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "lorenzini",
+  "title": "lorenzini",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/Nanako0129/lorenzini",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "lurk",
+  "title": "Lurk",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/mxfp4/status/2101070906852298910",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "mac-app-support-answers",
+  "title": "Support answers in a Mac app",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/malekoo/status/2100439840575684910",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "macbrow",
+  "title": "macbrow",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/timpratim/macbrow",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "made-jev-talk-paper",
+  "title": "Made Jev talk (paper)",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/xucian_/status/2102331579712295263",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "magic-jev-ball",
+  "title": "Magic Jev Ball for code review",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/acharyaagamya/status/2101129105676861621",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "mario-never-dies",
+  "title": "Mario Never Dies",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/theappcypher/status/2101095181382721998",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "mastra-jev-moderation",
+  "title": "mastra-jev-moderation",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/codealive-ai/mastra-jev-moderation",
+  "reported_cost": "-",
+  "reported_latency": "~0.4 s"
+ },
+ {
+  "slug": "maxfusion-ad-library",
+  "title": "1,891 ads in 19 seconds",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/aresotik/status/2100949805573030378",
+  "reported_cost": "$0.12",
+  "reported_latency": "19 s"
+ },
+ {
+  "slug": "maza",
+  "title": "maza",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/prasanth263/maza",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "memecoin-scanner",
+  "title": "Memecoin scanner",
+  "category": "Trading & markets",
+  "type": "X posts",
+  "source": "x.com/Icaro_333/status/2102275418883518804",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "minecraft-agent-astra-jev",
+  "title": "minecraft-agent",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/rmalde/minecraft-agent",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "minuspod-jev",
+  "title": "MinusPodJev: podcast ad detection with Jev",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/ttlequals0/MinusPodJev",
+  "reported_cost": "-",
+  "reported_latency": "MinusPod to Proxy to Jev RTT 824 ms"
+ },
+ {
+  "slug": "miraviel-roleplay-app",
+  "title": "Miraviel roleplay app",
+  "category": "Tools & apps",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/ChatbotRefugees/comments/1wn85rw/guys_can_yall_suggest_me_some_roleplay_apps/pben8yb/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "mobile-jev",
+  "title": "Mobile Jev",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/droidrun/mobile-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "movie-search-laya-local-vs-jev-api",
+  "title": "Movie search: Laya local vs Jev API",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/b0dre/status/2102362736839512538",
+  "reported_cost": "-",
+  "reported_latency": "676 ms via API (392 ms local Laya)"
+ },
+ {
+  "slug": "music-intelligence-audit",
+  "title": "Music intelligence audit",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/CallmeSamridh/status/2102213990562885827",
+  "reported_cost": "~$0.0001 total",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "n8n-nodes-typesafe-jev",
+  "title": "n8n-nodes-typesafe-jev",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/n3ndor/n8n-nodes-typesafe-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "neo4jev",
+  "title": "neo4jev",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/jexp/neo4jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "no-llm-chat-bot",
+  "title": "A chat bot with no LLM",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/CodingGarden/status/2100665210419950031",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "notra",
+  "title": "Notra",
+  "category": "Content & growth",
+  "type": "GitHub",
+  "source": "github.com/usenotra/notra",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "ocr-image-classifier",
+  "title": "900 images in 40 seconds",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/fayazara/status/2100953838891192789",
+  "reported_cost": "-",
+  "reported_latency": "40 s"
+ },
+ {
+  "slug": "oko-code-search",
+  "title": "Oko: code search for coding agents",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/bartlomein/oko",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "onevonejev",
+  "title": "1v1 Jev",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/emrickgarrett/OneVOneJev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "opencode-jev-orchestrator",
+  "title": "opencode-jev-orchestrator",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/aaronshaf/opencode-jev-orchestrator",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "openrouter-ori-eval",
+  "title": "OpenRouter’s Ori Eval",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/OpenRouter/status/2101412965765529853",
+  "reported_cost": "-",
+  "reported_latency": ">5× the next fastest"
+ },
+ {
+  "slug": "outreach-intent-signals",
+  "title": "Which outreach signals book demos",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/pierreeliottlal/status/2100912453999587657",
+  "reported_cost": "<$0.20",
+  "reported_latency": "40 s"
+ },
+ {
+  "slug": "oxlint-plugin-jev",
+  "title": "oxlint-plugin-jev",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/wobsoriano/oxlint-plugin-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "patdown",
+  "title": "patdown",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/tyler-dot-earth/patdown",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "perch",
+  "title": "perch",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/lakeday-org/perch",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "perfectrecall",
+  "title": "perfectrecall",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/arslanr-com/perfectrecall",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "persona-ab-test",
+  "title": "An A/B test against 4,000 personas",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/SimAudience/status/2101117203060019431",
+  "reported_cost": "-",
+  "reported_latency": "~12 s"
+ },
+ {
+  "slug": "personal-feed-filter",
+  "title": "Personal feed filter",
+  "category": "Tools & apps",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/LLM/comments/1v5i60j/does_anyone_else_find_it_super_difficult_to_keep/pb9yfhy/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "personalized-hacker-news",
+  "title": "Personalized Hacker News",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/VisheshBaghell/status/2100536228827496721",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "pg-jev",
+  "title": "pg-jev",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/realZachi/pg-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "philippdubach-pi-jev-router",
+  "title": "pi-jev-router",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/philippdubach/pi-jev-router",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "pi-fast-jev-compaction",
+  "title": "pi-fast-jev-compaction",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/joelhooks/pi-fast-jev-compaction",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "pi-jev-skill-picker",
+  "title": "pi-jev-skill-picker",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/safzanpirani/pi-jev-skill-picker",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "pi-jev",
+  "title": "pi-jev",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/madeye/pi-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "pi-typesafe",
+  "title": "pi-typesafe",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "pi.dev/packages/pi-typesafe?name=gsd",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "pi-warden",
+  "title": "pi-warden",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/DevMortimer/pi-warden",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "playjev",
+  "title": "playjev",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/filedcom/playjev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "polymarket-trading-agent",
+  "title": "Polymarket trading agent",
+  "category": "Trading & markets",
+  "type": "X posts",
+  "source": "x.com/GabiDev98/status/2102073217670107364",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "port-cleanup",
+  "title": "Port Cleanup",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/epiphany-dynamics/port-cleanup",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "predictive-launcher",
+  "title": "Keystroke oracle",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/dabit3/status/2100756930054504776",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "predictive-spreadsheets",
+  "title": "Predictive spreadsheets",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/dabit3/status/2100780008193020049",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "prism-liquidity-agent",
+  "title": "Prism",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/irfndi/prism-liquidity-agent",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "product-feature-extractor",
+  "title": "Product feature extractor",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/mmmikhaeel/status/2102105486501822826",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "prompt-box-router",
+  "title": "A prompt box that fills itself in",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/sawyerhood/status/2100994779291259187",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "promptlib-smart-match",
+  "title": "PromptLib Smart Match",
+  "category": "Research & data",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/PromptEngineering/comments/1wna8u2/i_used_jev_in_my_chrome_extension_to_solve_the_i/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "pydantic-ai",
+  "title": "Pydantic AI",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/pydantic/pydantic-ai",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "readwithjev",
+  "title": "Readwithjev: live emotional highlighting",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/carlaiau/status/2102519449517785191",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "real-life-magic-8-ball",
+  "title": "Real-life magic 8 ball",
+  "category": "Games & real time",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/JevAI/comments/1wn9dis/i_built_a_real_life_magic_8_ball_with_jev/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "real-time-consensus-tool",
+  "title": "Real-time consensus tool",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/shimadaeisuke/status/2102333320101245133",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "realtime-clippy",
+  "title": "Real-time Clippy",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/sotak/status/2100701152824185319",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "realtime-game-levels",
+  "title": "Game levels generated in real time",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/HugoDuprez/status/2100953089003921543",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "red-flag-detector",
+  "title": "Red flag detector",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/SirdesaiEXE/status/2102354693276258437",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "reddit-demand-finder",
+  "title": "Reddit demand finder",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/MargiShah_18/status/2102235854810775730",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "refgarden",
+  "title": "RefGarden",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/AlbionaHoti/refgarden",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "regex-to-jev",
+  "title": "Hard-coded rules moved to Jev",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/illyism/status/2100489521557123265",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "reply-guy-filter",
+  "title": "A filter for reply-guy comments",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/iannuttall/status/2100888635943883244",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "reply-guy-stamper",
+  "title": "Reply-guy stamper",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/chaosengineerr/status/2102244378290864616",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "rig",
+  "title": "Rig",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/0xPlaygrounds/rig",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "robojev",
+  "title": "RoboJEV",
+  "category": "Robotics & devices",
+  "type": "GitHub",
+  "source": "github.com/lykycy123/RoboJEV",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "rubik-s-cube-with-a-jev-coach",
+  "title": "Rubik's cube with a Jev coach",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/maxlibin/status/2102289217569337667",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "ruby-decision-model",
+  "title": "ruby_decision_model",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/obie/ruby_decision_model",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "ryze-seo-geo-agents",
+  "title": "SEO and GEO fixes, 90% cheaper",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/irabukht/status/2101090579127951694",
+  "reported_cost": "90%",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "s1m",
+  "title": "s1m",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/NicerInPerson/status/2102420798866694519",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "safer-with-jev",
+  "title": "safer-with-jev",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/andrelandgraf/safer-with-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "scam-sms-detector",
+  "title": "Scam SMS detector",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/NamanMarkh11301/status/2102257881404055941",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "searching-for-better-game-recommendations-with-jev",
+  "title": "Searching for Better Game Recommendations with Jev",
+  "category": "Games & real time",
+  "type": "Resources",
+  "source": "dev.to/arasovic/searching-for-better-game-recommendations-with-jev-20d9",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "second-hand-shopping-agent",
+  "title": "A second-hand shopping agent",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/AlanDaitch/status/2100757989212754085",
+  "reported_cost": "$0.00085",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "seen",
+  "title": "Seen",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/luisf_mc/status/2102237061822767171",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "semantic-bookmark",
+  "title": "Semantic Bookmark",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/acorn181/semantic-bookmark",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "semantic-code-linting-with-system-one-models",
+  "title": "Semantic code linting with System One models",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "systemonemodels.org/use-cases/safety-and-quality/semantic-linting/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "semantic-code-search-without-a-vector-index",
+  "title": "Semantic code search without a vector index",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "dev.to/zaydmulani09/semantic-code-search-without-a-vector-index-3elj",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "semdecide",
+  "title": "semdecide",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/sharziki/semdecide",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "seo-geo-seven-workflows",
+  "title": "Seven more SEO and GEO workflows",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/irabukht/status/2101375295152652372",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "seo-tool-on-jev",
+  "title": "SEO tool on Jev",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/hw40/status/2102332459203653977",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "settings-finder",
+  "title": "Settings finder",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/rohan1chaudhari/status/2102307889277022255",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "sharp",
+  "title": "Sharp",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/tshmieldev/sharp",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "shell-command-safety-hook-for-claude-code",
+  "title": "Shell-command safety hook for Claude Code",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/sakevoid/status/2102026793418915914",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "skillbox",
+  "title": "skillbox",
+  "category": "Tools & apps",
+  "type": "Skills",
+  "source": "github.com/kitze/skillbox",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "skillranker",
+  "title": "skillranker",
+  "category": "Tools & apps",
+  "type": "Skills",
+  "source": "github.com/Dicklesworthstone/skillranker",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "slack-agent-skill-routing",
+  "title": "A Slack agent, twice as fast",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/johnyeo_/status/2100987661926252737",
+  "reported_cost": "-",
+  "reported_latency": "2×"
+ },
+ {
+  "slug": "slay-the-spire-2",
+  "title": "Jev plays Slay the Spire 2",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/coolish/status/2100570517954838897",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "slidepilot",
+  "title": "SlidePilot",
+  "category": "Content & growth",
+  "type": "GitHub",
+  "source": "github.com/harshil1712/slidepilot",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "slop-grader",
+  "title": "slop-grader",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/lukstei/slop-grader",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "slop-mop-linkedin-cleaner",
+  "title": "Slop Mop",
+  "category": "Tools & apps",
+  "type": "Sites",
+  "source": "slopmop.lol/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "smart-copy-paste",
+  "title": "Copy and paste, with a decision in between",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/marcus_lowe/status/2101476399488160013",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "smart-home-assistant-fast-path",
+  "title": "Smart-home assistant fast path",
+  "category": "Robotics & devices",
+  "type": "Reddit posts",
+  "source": "www.reddit.com/r/LLMDevs/comments/1wko2e5/i_reviewed_287_opensource_jev_projects_here_are/pbc5nvm/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "smash-bros",
+  "title": "Jev plays Smash Bros. against itself",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/maubaron/status/2100738237237002706",
+  "reported_cost": "a couple of cents",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "snifftest",
+  "title": "Sniff Test",
+  "category": "Content & growth",
+  "type": "GitHub",
+  "source": "github.com/DanRWilloughby/snifftest",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "solari-reflex",
+  "title": "solari-reflex",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/hitakshiA/solari-reflex",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "soupbase",
+  "title": "Soupbase",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/spoonnotfound/soupbase",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "spliit-cloud",
+  "title": "Spliit Cloud expense categorization with Jev",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/antonio-ivanovski/spliit-cloud",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "st-jeved",
+  "title": "ST-jeved",
+  "category": "Content & growth",
+  "type": "GitHub",
+  "source": "github.com/mossyfield/ST-jeved",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "stagehand-remote-browser",
+  "title": "Stagehand on a remote browser",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/kylejeong/status/2100622054945095934",
+  "reported_cost": "~$0.001",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "stanley-code",
+  "title": "Stanley Code",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/devagrawal09/stanley-code",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "subway-surfers",
+  "title": "Jev plays Subway Surfers",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/_MaxBlade/status/2100634359099232678",
+  "reported_cost": "<$0.01",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "super-jev",
+  "title": "super-jev",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/Kevthetech143/super-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "supercov",
+  "title": "supercov",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/supercorp-ai/supercov",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "superx-post-scoring",
+  "title": "Post scoring with SuperX",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/robj3d3/status/2100722975645598191",
+  "reported_cost": "$0.0004",
+  "reported_latency": "~1 s"
+ },
+ {
+  "slug": "switchboard",
+  "title": "Switchboard",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/RubanBhatia/status/2102058731206782982",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "systemoneharness",
+  "title": "System One Harness",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/HarnessRouter/SystemOneHarness",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "tabjev",
+  "title": "TabJev",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/rishavkatoch/status/2102095923136631110",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "talkr",
+  "title": "talkr",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/0xaniol/status/2101076982373191927",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "taste-lint",
+  "title": "taste-lint",
+  "category": "Content & growth",
+  "type": "GitHub",
+  "source": "github.com/mblode/taste-lint",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "tax-doc-classifier",
+  "title": "tax-doc-classifier",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/kyotofin/tax-doc-classifier",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "tbc-leveling-agent",
+  "title": "A leveling agent that gets cheaper as it runs",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/chalkychalk42/jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "tenbin",
+  "title": "tenbin",
+  "category": "Tools & apps",
+  "type": "Skills",
+  "source": "github.com/simota/tenbin",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "testing-jev-on-public-and-private-data-classifier-or-filter",
+  "title": "Testing Jev on public and private data: classifier or filter? | Blog | Aman Kumar",
+  "category": "Triage & routing",
+  "type": "Resources",
+  "source": "amankumar.ai/blogs/jev-measured",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "the-jev-enator",
+  "title": "The Jev-enator",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/jakenbear/the-jev-enator",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "tierjev",
+  "title": "tierjev: tier lists ranked by Jev",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/roprgm/tierjev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "tiptour-macos",
+  "title": "TipTour",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/milind-soni/tiptour-macos",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "tocsin",
+  "title": "Tocsin",
+  "category": "Research & data",
+  "type": "GitHub",
+  "source": "github.com/TPAteeq/tocsin",
+  "reported_cost": "$0.64",
+  "reported_latency": "6 min"
+ },
+ {
+  "slug": "triagedy",
+  "title": "triagedy",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/m0rphtail/triagedy",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "tripwire",
+  "title": "tripwire",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/noelzappy/tripwire",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "tsai-sc",
+  "title": "tsai-sc",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/phyous/tsai-sc",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typed-to-ui-textbox",
+  "title": "Typed-to-UI textbox",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/anishfn/status/2102327334485557422",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typesafe-adblock",
+  "title": "TypeSafe AdBlock",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/realZachi/typesafe-adblock",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typesafe-ai-playground",
+  "title": "TypeSafe AI playground",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/BunsDev/typesafe-ai-playground",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typesafe-computer-use",
+  "title": "typesafe-computer-use",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/awlevin/typesafe-computer-use",
+  "reported_cost": "~$0.0002",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typesafe-go",
+  "title": "typesafe-go",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/zhirschtritt/typesafe-go",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typesafe-jev-dojo",
+  "title": "typesafe-jev-dojo",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/lafollett-labs/typesafe-jev-dojo",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typesafe-jev-vs-claude-code-4-models-2-real-jobs",
+  "title": "TypeSafe Jev vs Claude Code: 4 Models, 2 Real Jobs",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "primeline.cc/blog/typesafe-jev-pre-registered-test",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typesafe-jev-workflow",
+  "title": "typesafe-jev-workflow",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/GiesN/typesafe-jev-workflow",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typesafe-mario",
+  "title": "typesafe-mario",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/fhshaik/typesafe-mario",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typesafe-s-jev-makes-ai-decisions-fast-enough-to-play-doom",
+  "title": "TypeSafe’s Jev Makes AI Decisions Fast Enough to Play Doom",
+  "category": "Games & real time",
+  "type": "Resources",
+  "source": "medium.com/@creativeaininja/typesafes-jev-makes-ai-decisions-fast-enough-to-play-doom-68fdcce1159a",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typesafe-skills",
+  "title": "TypeSafe agent skills",
+  "category": "Tools & apps",
+  "type": "Skills",
+  "source": "github.com/typesafe-ai/skills",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typesafe-snake",
+  "title": "typesafe-snake",
+  "category": "Games & real time",
+  "type": "GitHub",
+  "source": "github.com/sorrycc/typesafe-snake",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typesafe-typewriter",
+  "title": "TypeSafe Typewriter",
+  "category": "Content & growth",
+  "type": "Sites",
+  "source": "typesafe-demo.val.run/",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typesafe",
+  "title": "TypeSafe Swift SDK",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/krzyzanowskim/TypeSafe",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "typesafeai-dotnet-sdk",
+  "title": "typesafeai-dotnet-sdk",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/saibimajdi/typesafeai-dotnet-sdk",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "ultra-fast-medical-simulation",
+  "title": "Ultra-fast medical simulation",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/chris_not_busy/status/2102349211127955925",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "unbeatable-jev-tic-tac-toe",
+  "title": "Unbeatable Jev tic-tac-toe",
+  "category": "Games & real time",
+  "type": "X posts",
+  "source": "x.com/bfzli/status/2102350916699467901",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "unclutter",
+  "title": "unclutter",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/kitze/unclutter",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "using-typesafe-s-jev-for-evals",
+  "title": "Using TypeSafe's Jev for evals",
+  "category": "Research & data",
+  "type": "Resources",
+  "source": "langfuse.com/blog/2026-09-18-using-typesafes-jev-for-evals",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "uxray",
+  "title": "UXRay",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/zohaib-md/UXRay",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "valid-schema-wrong-content-using-jev-to-guard-a-google-adk-a",
+  "title": "Valid Schema, Wrong Content: Using Jev to Guard a Google ADK Agent",
+  "category": "Tools & apps",
+  "type": "Resources",
+  "source": "dev.to/gde/valid-schema-wrong-content-using-jev-to-guard-a-google-adk-agent-57o6",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "venice-hacker-news-classification",
+  "title": "24,000 Hacker News posts in two minutes",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/sabrinaesaquino/status/2101102660997017747",
+  "reported_cost": "-",
+  "reported_latency": "~2 min"
+ },
+ {
+  "slug": "vercel-eve",
+  "title": "eve",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/vercel/eve",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "vibecheck",
+  "title": "Vibe Check for X",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/RafalWilinski/vibecheck",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "viral-post-analyser",
+  "title": "100,000 viral posts in 20.4 seconds",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/0xMovez/status/2101325703635435523",
+  "reported_cost": "$0.67",
+  "reported_latency": "20.4 s"
+ },
+ {
+  "slug": "virlo-content-judge",
+  "title": "Jev for content marketing",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/dsqjaffa/status/2101334774325428615",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "voice-computer-assistant",
+  "title": "A computer assistant that listens",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/marckohlbrugge/status/2100930430690050336",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "voice-computer-use-mac",
+  "title": "Voice-controlled computer use on a Mac",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/instantricecook/status/2100814590300889426",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "voicebind",
+  "title": "Voicebind",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/tenfingers/status/2102166895109853256",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "wakegate",
+  "title": "wakegate",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/shitianfang/wakegate",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "webmcp-benchmark",
+  "title": "Jev on the WebMCP benchmark",
+  "category": "Agents & browsers",
+  "type": "X posts",
+  "source": "x.com/0xidanlevin/status/2100937437325205568",
+  "reported_cost": "~112× lower",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "website-to-app",
+  "title": "Website to App",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/chddaniel/status/2100919415554617537",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "what-jev-probably-is-and-why-you-already-have-one",
+  "title": "What Jev Probably Is, And Why You Already Have One",
+  "category": "Games & real time",
+  "type": "Resources",
+  "source": "medium.com/@mbonsign/what-jev-probably-is-and-why-you-already-have-one-8bff04081b80",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "whatsapp-group-monitor",
+  "title": "Watching 25 customer groups on WhatsApp",
+  "category": "Triage & routing",
+  "type": "X posts",
+  "source": "x.com/t0t0_build/status/2101082444577567162",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "wikiracing",
+  "title": "Wikiracing",
+  "category": "Games & real time",
+  "type": "Resources",
+  "source": "typesafe.ai/blog/introducing-system-one-models-and-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "wip-todo-filter",
+  "title": "Filtering WIP todos by meaning",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/marckohlbrugge/status/2101344345857069558",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "word-house-style",
+  "title": "Word house-style formatter with Jev",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/jan__kubica/status/2101224010021282302",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "worldmonitor",
+  "title": "World Monitor",
+  "category": "Triage & routing",
+  "type": "GitHub",
+  "source": "github.com/koala73/worldmonitor",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "x-algorithm-simulator",
+  "title": "The X algorithm, rebuilt with Jev",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/leojrr/status/2100470174130250127",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "x-archive-dashboard",
+  "title": "1,315 posts across eight dimensions",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/yuhasbeentaken/status/2101231502038339798",
+  "reported_cost": "~$0.086",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "x-post-analysis",
+  "title": "3,282 posts, eight questions each",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/iannuttall/status/2100668908227162567",
+  "reported_cost": "$0.1282",
+  "reported_latency": "8 m 34 s"
+ },
+ {
+  "slug": "x-post-firewall",
+  "title": "Hide posts on X in plain language",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/marcelpociot/status/2100520134481735729",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "x-post-hider-chrome-extension",
+  "title": "X post hider Chrome extension",
+  "category": "Tools & apps",
+  "type": "X posts",
+  "source": "x.com/djrio_vr/status/2102031720531034427",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "x-post-tagger-live",
+  "title": "Breaking, golden nugget, or slop",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/nateherk/status/2101330780702068969",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "x-research-relevance-extension",
+  "title": "X research relevance extension",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/yibaili530/status/2102411345148903834",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "x-scanner",
+  "title": "x-scanner",
+  "category": "Agents & browsers",
+  "type": "GitHub",
+  "source": "github.com/oso95/x-scanner",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "x-timeline-labeler",
+  "title": "X timeline labeler",
+  "category": "Content & growth",
+  "type": "X posts",
+  "source": "x.com/the_cyw/status/2101020586931875932",
+  "reported_cost": "$0.03 per 1k posts",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "youtube-sponsor-skipper",
+  "title": "YouTube sponsor skipper",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/trungdq88/youtube-sponsor-detection",
+  "reported_cost": "~$0.005",
+  "reported_latency": "-"
+ },
+ {
+  "slug": "zillow-listing-search",
+  "title": "Natural-language search over Zillow",
+  "category": "Research & data",
+  "type": "X posts",
+  "source": "x.com/venturetwins/status/2101341075684434245",
+  "reported_cost": "$0.18",
+  "reported_latency": "<20 s"
+ },
+ {
+  "slug": "zod-jev",
+  "title": "zod-jev",
+  "category": "Tools & apps",
+  "type": "GitHub",
+  "source": "github.com/jomatsu/zod-jev",
+  "reported_cost": "-",
+  "reported_latency": "-"
+ }
+]

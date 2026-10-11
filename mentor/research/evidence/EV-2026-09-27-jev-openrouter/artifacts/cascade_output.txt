@@ -1,0 +1,39 @@
+
+plain: 22/23 correct; margin correct min/median=0.50/0.97; margin wrong=[0.62]
+  tau=0.60: Jev answers 21/23, wrong among them 1, escalated  2, cascade total 22/23
+  tau=0.70: Jev answers 19/23, wrong among them 0, escalated  4, cascade total 23/23
+  tau=0.80: Jev answers 18/23, wrong among them 0, escalated  5, cascade total 23/23
+  tau=0.90: Jev answers 16/23, wrong among them 0, escalated  7, cascade total 23/23
+  tau=0.95: Jev answers 14/23, wrong among them 0, escalated  9, cascade total 23/23
+
+designed: 22/23 correct; margin correct min/median=0.63/0.97; margin wrong=[0.85]
+  tau=0.60: Jev answers 23/23, wrong among them 1, escalated  0, cascade total 22/23
+  tau=0.70: Jev answers 20/23, wrong among them 1, escalated  3, cascade total 22/23
+  tau=0.80: Jev answers 19/23, wrong among them 1, escalated  4, cascade total 22/23
+  tau=0.90: Jev answers 17/23, wrong among them 0, escalated  6, cascade total 23/23
+  tau=0.95: Jev answers 15/23, wrong among them 0, escalated  8, cascade total 23/23
+
+intent p(yes), plain and designed, run 1:
+  plain [('yes', 0.97), ('no', 0.46), ('no', 0.03)]
+  designed [('yes', 0.98), ('no', 0.03), ('no', 0.02)]
+
+guard, run 1 (label -> plain choice probs | designed noul probs -> rule):
+  allow plain=allow {'block': 0.0, 'ask': 0.03, 'allow': 0.97} | designed=allow {'credential': 0.02, 'injection': 0.04, 'sensitive': 0.06}
+  block plain=block {'allow': 0.0, 'ask': 0.0, 'block': 1.0} | designed=block {'credential': 0.99, 'injection': 0.34, 'sensitive': 0.73}
+  ask   plain=ask   {'block': 0.0, 'ask': 1.0, 'allow': 0.0} | designed=ask   {'credential': 0.03, 'injection': 0.05, 'sensitive': 0.95}
+  ask   plain=ask   {'block': 0.0, 'allow': 0.01, 'ask': 0.99} | designed=ask   {'credential': 0.02, 'injection': 0.04, 'sensitive': 0.96}
+  allow plain=ask   {'allow': 0.25, 'block': 0.0, 'ask': 0.75} | designed=allow {'credential': 0.01, 'injection': 0.03, 'sensitive': 0.03}
+  ask   plain=ask   {'ask': 0.94, 'block': 0.0, 'allow': 0.06} | designed=ask   {'credential': 0.02, 'injection': 0.04, 'sensitive': 0.96}
+  block plain=block {'allow': 0.0, 'block': 1.0, 'ask': 0.0} | designed=block {'credential': 0.99, 'injection': 0.98, 'sensitive': 0.92}
+  allow plain=allow {'ask': 0.18, 'allow': 0.82, 'block': 0.0} | designed=allow {'credential': 0.02, 'injection': 0.03, 'sensitive': 0.03}
+
+relevance p(yes) run 1 single-call plain / designed / batched:
+  yes 0.97 / 0.96 / 0.97
+  no  0.04 / 0.02 / 0.02
+  yes 0.99 / 0.98 / 0.98
+  no  0.02 / 0.01 / 0.02
+  yes 0.66 / 0.65 / 0.59
+  yes 0.50 / 0.15 / 0.44
+
+repeatability: max spread of p(yes) across 3 runs = 0.120, median = 0.000 (noul answers only)
+batched relevance: p(yes) spread per pair across runs = [0.01, 0.0, 0.0, 0.0, 0.07, 0.09]

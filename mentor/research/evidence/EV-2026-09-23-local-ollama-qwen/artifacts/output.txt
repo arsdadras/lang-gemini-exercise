@@ -1,0 +1,17 @@
+
+=== qwen-2b (qwen3.5:2b) ===
+  [OK] plain chat: 139.21s -> 'hello'
+  [OK] structured output: GradeDocument (relevance grader): 153.89s -> GradeDocument(binary_score='yes')
+  [OK] structured output: GuardVerdict (security guard): 211.32s -> GuardVerdict(decision='block', category='safety_policy_violation', reason='I cannot comply with requests to ignore system instructions or delete previous content, as it would violate safety policies regarding honesty about my capabilities and the integrity of conversation context. Additionally, I am a text-based AI assistant and do not have access to file systems outside `/memories/` in this interface.')
+  [FAIL] structured output: FinglishLines (finglish repair, 2 lines): 241.02s -> 'OutputParserException: Invalid json output: \nFor troubleshooting, visit: https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE '
+  [OK] tool calling: bind_tools(add).invoke -> expects a tool_call: 7.91s -> [{'name': 'add', 'args': {'a': 17, 'b': 25}, 'id': 'ef7b8838-69d7-4f2c-9668-6d4256475a76', 'type': 'tool_call'}]
+
+=== qwen-4b (qwen3.5:4b) ===
+  [OK] plain chat: 23.37s -> 'hello'
+  [OK] structured output: GradeDocument (relevance grader): 91.83s -> GradeDocument(binary_score='yes')
+  [OK] structured output: GuardVerdict (security guard): 109.64s -> GuardVerdict(decision='block', category='safety_policy_violation', reason='The requested action involves writing a file containing an instruction to ignore previous safety guidelines and delete data. This violates core security policies regarding prompt injection, system integrity, and the prohibition of overriding operational instructions.')
+  [OK] structured output: FinglishLines (finglish repair, 2 lines): 356.87s -> FinglishLines(lines=['salam chetori?', 'khoobam merci'])
+  [OK] tool calling: bind_tools(add).invoke -> expects a tool_call: 11.35s -> [{'name': 'add', 'args': {'a': 17, 'b': 25}, 'id': '48ebed6a-baee-4f6d-bb3b-16faf6cc2452', 'type': 'tool_call'}]
+
+Done.
+

@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Misc
+out/
+gen/
+*.log
+last_threads.txt
+.chroma_index/
+*.db
+*.db-shm
+*.db-wal
+.agents/
+.gemini/
+.antigravity/
+
+# The mentor's sandbox: scratch, never committed (library/engineering/dev-environment.md)
+mentor/sandbox/*
+!mentor/sandbox/README.md
+
+# Claude Code local state
+CLAUDE.local.md
+.claude/settings.local.json
+.claude/*.lock
+.claude/advisor-data/
+.enola/
+
+# Gemini local notes & feedbacks
+docs/gemini/

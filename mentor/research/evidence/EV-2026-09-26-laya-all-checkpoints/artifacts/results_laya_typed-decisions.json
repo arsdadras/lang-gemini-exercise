@@ -1,0 +1,320 @@
+{
+ "relevance_plain": [
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 236.9,
+   "conf": 0.545,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 310.7,
+   "conf": 0.87,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 221.5,
+   "conf": 0.597,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 201.0,
+   "conf": 0.825,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 207.9,
+   "conf": 0.569,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "no",
+   "label": "yes",
+   "ok": false,
+   "ms": 312.3,
+   "conf": 0.675,
+   "model": "typed-decisions"
+  }
+ ],
+ "grounded_plain": [
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 229.6,
+   "conf": 0.824,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 221.6,
+   "conf": 0.814,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 308.1,
+   "conf": 0.797,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 318.1,
+   "conf": 0.921,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 211.7,
+   "conf": 0.967,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 215.0,
+   "conf": 0.833,
+   "model": "typed-decisions"
+  }
+ ],
+ "intent_plain": [
+  {
+   "pred": "no",
+   "label": "yes",
+   "ok": false,
+   "ms": 190.8,
+   "conf": 0.876,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 177.8,
+   "conf": 0.884,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 167.5,
+   "conf": 0.873,
+   "model": "typed-decisions"
+  }
+ ],
+ "relevance_ab": [
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 208.8,
+   "conf": 0.668,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 206.9,
+   "conf": 0.783,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 195.5,
+   "conf": 0.779,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 183.8,
+   "conf": 0.723,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 190.0,
+   "conf": 0.672,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 212.8,
+   "conf": 0.531,
+   "model": "typed-decisions"
+  }
+ ],
+ "grounded_ab": [
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 201.6,
+   "conf": 0.879,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "yes",
+   "label": "no",
+   "ok": false,
+   "ms": 199.9,
+   "conf": 0.513,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 286.4,
+   "conf": 0.876,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "yes",
+   "label": "no",
+   "ok": false,
+   "ms": 234.7,
+   "conf": 0.509,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "yes",
+   "label": "no",
+   "ok": false,
+   "ms": 226.9,
+   "conf": 0.669,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "yes",
+   "label": "yes",
+   "ok": true,
+   "ms": 228.2,
+   "conf": 0.879,
+   "model": "typed-decisions"
+  }
+ ],
+ "intent_ab": [
+  {
+   "pred": "no",
+   "label": "yes",
+   "ok": false,
+   "ms": 175.1,
+   "conf": 0.694,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 165.6,
+   "conf": 0.716,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "no",
+   "label": "no",
+   "ok": true,
+   "ms": 133.4,
+   "conf": 0.765,
+   "model": "typed-decisions"
+  }
+ ],
+ "guard": [
+  {
+   "pred": "allow",
+   "label": "allow",
+   "ok": true,
+   "ms": 324.3,
+   "conf": 0.649,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "block",
+   "label": "block",
+   "ok": true,
+   "ms": 330.6,
+   "conf": 0.455,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "ask",
+   "label": "ask",
+   "ok": true,
+   "ms": 328.2,
+   "conf": 0.494,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "allow",
+   "label": "ask",
+   "ok": false,
+   "ms": 376.3,
+   "conf": 0.591,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "allow",
+   "label": "allow",
+   "ok": true,
+   "ms": 324.9,
+   "conf": 0.617,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "ask",
+   "label": "ask",
+   "ok": true,
+   "ms": 325.7,
+   "conf": 0.499,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "block",
+   "label": "block",
+   "ok": true,
+   "ms": 363.6,
+   "conf": 0.512,
+   "model": "typed-decisions"
+  },
+  {
+   "pred": "allow",
+   "label": "allow",
+   "ok": true,
+   "ms": 336.9,
+   "conf": 0.687,
+   "model": "typed-decisions"
+  }
+ ]
+}

@@ -1,0 +1,3 @@
+routing    correct per run [32, 32, 32]/32  label flips 0  p50 444 ms
+staleness  correct per run [20, 19, 20]/20  label flips 1  p50 439 ms
+tokens 79356, $0.00333

@@ -1,0 +1,33 @@
+# Lint, format, tests, and docs lint on every push (library/engineering/git-policy.md).
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          enable-cache: true
+      - name: Install
+        run: uv sync --locked
+      - name: Lint
+        run: uv run ruff check src tests scripts
+      - name: Format
+        run: uv run ruff format --check src tests scripts
+      - name: Tests
+        run: uv run pytest
+      - name: Docs lint
+        run: uv run python scripts/check_docs.py

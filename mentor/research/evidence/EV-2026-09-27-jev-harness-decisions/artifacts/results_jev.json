@@ -1,0 +1,1328 @@
+[
+ {
+  "routing": [
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 0.94,
+    "ms": 1370.3,
+    "tokens": 554
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 394.9,
+    "tokens": 550
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 0.96,
+    "ms": 428.7,
+    "tokens": 553
+   },
+   {
+    "label": "run_code",
+    "pred": "run_code",
+    "ok": true,
+    "conf": 0.98,
+    "ms": 482.8,
+    "tokens": 564
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 463.6,
+    "tokens": 547
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 437.0,
+    "tokens": 545
+   },
+   {
+    "label": "clarify",
+    "pred": "clarify",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 464.6,
+    "tokens": 543
+   },
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 397.8,
+    "tokens": 549
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 496.4,
+    "tokens": 547
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 430.3,
+    "tokens": 566
+   },
+   {
+    "label": "run_code",
+    "pred": "run_code",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 384.9,
+    "tokens": 548
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 0.98,
+    "ms": 461.9,
+    "tokens": 546
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 456.6,
+    "tokens": 546
+   },
+   {
+    "label": "clarify",
+    "pred": "clarify",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 449.9,
+    "tokens": 544
+   },
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 429.3,
+    "tokens": 546
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 489.3,
+    "tokens": 547
+   },
+   {
+    "label": "run_code",
+    "pred": "run_code",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 421.4,
+    "tokens": 556
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 415.0,
+    "tokens": 546
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 602.1,
+    "tokens": 551
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 416.0,
+    "tokens": 557
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 476.0,
+    "tokens": 561
+   },
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 490.2,
+    "tokens": 552
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 401.8,
+    "tokens": 552
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 456.4,
+    "tokens": 554
+   },
+   {
+    "label": "run_code",
+    "pred": "run_code",
+    "ok": true,
+    "conf": 0.95,
+    "ms": 420.0,
+    "tokens": 556
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 0.97,
+    "ms": 415.2,
+    "tokens": 549
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 455.3,
+    "tokens": 545
+   },
+   {
+    "label": "clarify",
+    "pred": "clarify",
+    "ok": true,
+    "conf": 0.9,
+    "ms": 440.3,
+    "tokens": 549
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 458.3,
+    "tokens": 557
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 496.1,
+    "tokens": 554
+   },
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 436.0,
+    "tokens": 550
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 417.6,
+    "tokens": 559
+   }
+  ],
+  "staleness": [
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.89,
+    "conf": 0.89,
+    "ms": 432.0,
+    "tokens": 447
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.57,
+    "conf": 0.57,
+    "ms": 411.6,
+    "tokens": 438
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.77,
+    "conf": 0.77,
+    "ms": 436.2,
+    "tokens": 440
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.08,
+    "conf": 0.92,
+    "ms": 452.7,
+    "tokens": 435
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.02,
+    "conf": 0.98,
+    "ms": 422.8,
+    "tokens": 439
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.86,
+    "conf": 0.86,
+    "ms": 437.2,
+    "tokens": 446
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.96,
+    "conf": 0.96,
+    "ms": 1102.4,
+    "tokens": 442
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.78,
+    "conf": 0.78,
+    "ms": 458.4,
+    "tokens": 442
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.09,
+    "conf": 0.91,
+    "ms": 429.1,
+    "tokens": 438
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.9,
+    "conf": 0.9,
+    "ms": 402.8,
+    "tokens": 438
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.78,
+    "conf": 0.78,
+    "ms": 403.8,
+    "tokens": 440
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.88,
+    "conf": 0.88,
+    "ms": 430.9,
+    "tokens": 441
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.04,
+    "conf": 0.96,
+    "ms": 459.2,
+    "tokens": 437
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.03,
+    "conf": 0.97,
+    "ms": 468.6,
+    "tokens": 434
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.04,
+    "conf": 0.96,
+    "ms": 459.9,
+    "tokens": 439
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.95,
+    "conf": 0.95,
+    "ms": 422.6,
+    "tokens": 448
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.03,
+    "conf": 0.97,
+    "ms": 389.2,
+    "tokens": 442
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.59,
+    "conf": 0.59,
+    "ms": 450.6,
+    "tokens": 440
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.04,
+    "conf": 0.96,
+    "ms": 456.7,
+    "tokens": 441
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.81,
+    "conf": 0.81,
+    "ms": 407.8,
+    "tokens": 442
+   }
+  ]
+ },
+ {
+  "routing": [
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 0.98,
+    "ms": 478.3,
+    "tokens": 554
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 410.6,
+    "tokens": 550
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 0.96,
+    "ms": 411.6,
+    "tokens": 553
+   },
+   {
+    "label": "run_code",
+    "pred": "run_code",
+    "ok": true,
+    "conf": 0.98,
+    "ms": 444.4,
+    "tokens": 564
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 457.9,
+    "tokens": 547
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 643.3,
+    "tokens": 545
+   },
+   {
+    "label": "clarify",
+    "pred": "clarify",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 483.4,
+    "tokens": 543
+   },
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 433.5,
+    "tokens": 549
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 409.4,
+    "tokens": 547
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 482.4,
+    "tokens": 566
+   },
+   {
+    "label": "run_code",
+    "pred": "run_code",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 413.2,
+    "tokens": 548
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 424.9,
+    "tokens": 546
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 486.3,
+    "tokens": 546
+   },
+   {
+    "label": "clarify",
+    "pred": "clarify",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 411.0,
+    "tokens": 544
+   },
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 393.9,
+    "tokens": 546
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 410.4,
+    "tokens": 547
+   },
+   {
+    "label": "run_code",
+    "pred": "run_code",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 414.7,
+    "tokens": 556
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 395.0,
+    "tokens": 546
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 444.8,
+    "tokens": 551
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 435.2,
+    "tokens": 557
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 440.1,
+    "tokens": 561
+   },
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 420.2,
+    "tokens": 552
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 428.4,
+    "tokens": 552
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 434.0,
+    "tokens": 554
+   },
+   {
+    "label": "run_code",
+    "pred": "run_code",
+    "ok": true,
+    "conf": 0.94,
+    "ms": 464.4,
+    "tokens": 556
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 0.98,
+    "ms": 584.2,
+    "tokens": 549
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 558.5,
+    "tokens": 545
+   },
+   {
+    "label": "clarify",
+    "pred": "clarify",
+    "ok": true,
+    "conf": 0.9,
+    "ms": 450.3,
+    "tokens": 549
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 0.98,
+    "ms": 418.9,
+    "tokens": 557
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 442.3,
+    "tokens": 554
+   },
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 441.5,
+    "tokens": 550
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 618.5,
+    "tokens": 559
+   }
+  ],
+  "staleness": [
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.9,
+    "conf": 0.9,
+    "ms": 668.2,
+    "tokens": 447
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.59,
+    "conf": 0.59,
+    "ms": 479.3,
+    "tokens": 438
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.77,
+    "conf": 0.77,
+    "ms": 444.8,
+    "tokens": 440
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.08,
+    "conf": 0.92,
+    "ms": 389.8,
+    "tokens": 435
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.02,
+    "conf": 0.98,
+    "ms": 458.0,
+    "tokens": 439
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.85,
+    "conf": 0.85,
+    "ms": 511.9,
+    "tokens": 446
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.96,
+    "conf": 0.96,
+    "ms": 397.6,
+    "tokens": 442
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.78,
+    "conf": 0.78,
+    "ms": 430.0,
+    "tokens": 442
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.1,
+    "conf": 0.9,
+    "ms": 468.1,
+    "tokens": 438
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.91,
+    "conf": 0.91,
+    "ms": 395.3,
+    "tokens": 438
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.75,
+    "conf": 0.75,
+    "ms": 395.7,
+    "tokens": 440
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.91,
+    "conf": 0.91,
+    "ms": 409.3,
+    "tokens": 441
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.05,
+    "conf": 0.95,
+    "ms": 430.8,
+    "tokens": 437
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.03,
+    "conf": 0.97,
+    "ms": 444.9,
+    "tokens": 434
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.03,
+    "conf": 0.97,
+    "ms": 496.2,
+    "tokens": 439
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.95,
+    "conf": 0.95,
+    "ms": 440.2,
+    "tokens": 448
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.03,
+    "conf": 0.97,
+    "ms": 400.3,
+    "tokens": 442
+   },
+   {
+    "label": "yes",
+    "pred": "no",
+    "ok": false,
+    "p_yes": 0.47,
+    "conf": 0.53,
+    "ms": 439.3,
+    "tokens": 440
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.04,
+    "conf": 0.96,
+    "ms": 397.6,
+    "tokens": 441
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.84,
+    "conf": 0.84,
+    "ms": 468.0,
+    "tokens": 442
+   }
+  ]
+ },
+ {
+  "routing": [
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 0.96,
+    "ms": 424.4,
+    "tokens": 554
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 424.0,
+    "tokens": 550
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 0.95,
+    "ms": 505.6,
+    "tokens": 553
+   },
+   {
+    "label": "run_code",
+    "pred": "run_code",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 837.4,
+    "tokens": 564
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 385.1,
+    "tokens": 547
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 403.0,
+    "tokens": 545
+   },
+   {
+    "label": "clarify",
+    "pred": "clarify",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 450.7,
+    "tokens": 543
+   },
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 405.3,
+    "tokens": 549
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 388.0,
+    "tokens": 547
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 453.3,
+    "tokens": 566
+   },
+   {
+    "label": "run_code",
+    "pred": "run_code",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 447.8,
+    "tokens": 548
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 441.9,
+    "tokens": 546
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 621.8,
+    "tokens": 546
+   },
+   {
+    "label": "clarify",
+    "pred": "clarify",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 454.3,
+    "tokens": 544
+   },
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 420.7,
+    "tokens": 546
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 1226.1,
+    "tokens": 547
+   },
+   {
+    "label": "run_code",
+    "pred": "run_code",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 470.9,
+    "tokens": 556
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 405.3,
+    "tokens": 546
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 568.5,
+    "tokens": 551
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 502.4,
+    "tokens": 557
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 753.7,
+    "tokens": 561
+   },
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 460.2,
+    "tokens": 552
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 447.6,
+    "tokens": 552
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 380.0,
+    "tokens": 554
+   },
+   {
+    "label": "run_code",
+    "pred": "run_code",
+    "ok": true,
+    "conf": 0.94,
+    "ms": 493.2,
+    "tokens": 556
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 0.97,
+    "ms": 439.4,
+    "tokens": 549
+   },
+   {
+    "label": "direct_answer",
+    "pred": "direct_answer",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 413.7,
+    "tokens": 545
+   },
+   {
+    "label": "clarify",
+    "pred": "clarify",
+    "ok": true,
+    "conf": 0.89,
+    "ms": 448.0,
+    "tokens": 549
+   },
+   {
+    "label": "code_review",
+    "pred": "code_review",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 436.5,
+    "tokens": 557
+   },
+   {
+    "label": "memory",
+    "pred": "memory",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 467.0,
+    "tokens": 554
+   },
+   {
+    "label": "web_research",
+    "pred": "web_research",
+    "ok": true,
+    "conf": 0.99,
+    "ms": 473.4,
+    "tokens": 550
+   },
+   {
+    "label": "repo_docs",
+    "pred": "repo_docs",
+    "ok": true,
+    "conf": 1.0,
+    "ms": 572.3,
+    "tokens": 559
+   }
+  ],
+  "staleness": [
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.88,
+    "conf": 0.88,
+    "ms": 420.1,
+    "tokens": 447
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.58,
+    "conf": 0.58,
+    "ms": 465.4,
+    "tokens": 438
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.72,
+    "conf": 0.72,
+    "ms": 605.7,
+    "tokens": 440
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.08,
+    "conf": 0.92,
+    "ms": 477.3,
+    "tokens": 435
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.02,
+    "conf": 0.98,
+    "ms": 502.1,
+    "tokens": 439
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.82,
+    "conf": 0.82,
+    "ms": 588.4,
+    "tokens": 446
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.95,
+    "conf": 0.95,
+    "ms": 425.9,
+    "tokens": 442
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.78,
+    "conf": 0.78,
+    "ms": 434.7,
+    "tokens": 442
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.11,
+    "conf": 0.89,
+    "ms": 461.9,
+    "tokens": 438
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.9,
+    "conf": 0.9,
+    "ms": 454.8,
+    "tokens": 438
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.74,
+    "conf": 0.74,
+    "ms": 399.0,
+    "tokens": 440
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.91,
+    "conf": 0.91,
+    "ms": 393.4,
+    "tokens": 441
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.05,
+    "conf": 0.95,
+    "ms": 431.3,
+    "tokens": 437
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.03,
+    "conf": 0.97,
+    "ms": 491.4,
+    "tokens": 434
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.04,
+    "conf": 0.96,
+    "ms": 386.6,
+    "tokens": 439
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.95,
+    "conf": 0.95,
+    "ms": 505.6,
+    "tokens": 448
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.03,
+    "conf": 0.97,
+    "ms": 385.0,
+    "tokens": 442
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.56,
+    "conf": 0.56,
+    "ms": 653.6,
+    "tokens": 440
+   },
+   {
+    "label": "no",
+    "pred": "no",
+    "ok": true,
+    "p_yes": 0.05,
+    "conf": 0.95,
+    "ms": 498.5,
+    "tokens": 441
+   },
+   {
+    "label": "yes",
+    "pred": "yes",
+    "ok": true,
+    "p_yes": 0.84,
+    "conf": 0.84,
+    "ms": 428.8,
+    "tokens": 442
+   }
+  ]
+ }
+]

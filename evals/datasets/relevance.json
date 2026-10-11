@@ -1,0 +1,71 @@
+{
+  "name": "relevance",
+  "question": "Is the document relevant to the question?",
+  "labels": [
+    "yes",
+    "no"
+  ],
+  "source": "EV-2026-09-26-laya-all-checkpoints (cases.json)",
+  "cases": [
+    {
+      "id": "relevance-01",
+      "inputs": {
+        "q": "How does the RAG graph decide to rewrite the search query?",
+        "doc": "query_rewrite_node rewrites the search query after grading found nothing relevant, and increments the retry counter. The graph routes to it when no graded document survives."
+      },
+      "expected": "yes",
+      "unsafe_predictions": [],
+      "finglish": false
+    },
+    {
+      "id": "relevance-02",
+      "inputs": {
+        "q": "How does the RAG graph decide to rewrite the search query?",
+        "doc": "SANDBOX_ENV_ALLOWLIST lists the only environment variables LLM-driven shell commands can see: PATH, PATHEXT, SYSTEMROOT, TEMP, HOME."
+      },
+      "expected": "no",
+      "unsafe_predictions": [],
+      "finglish": false
+    },
+    {
+      "id": "relevance-03",
+      "inputs": {
+        "q": "Which environment variable turns on test mode?",
+        "doc": "Set LLM_TEST_MODE=true to route every request to TEST_TIER while iterating on prompts or routing without spending higher-tier quota."
+      },
+      "expected": "yes",
+      "unsafe_predictions": [],
+      "finglish": false
+    },
+    {
+      "id": "relevance-04",
+      "inputs": {
+        "q": "Which environment variable turns on test mode?",
+        "doc": "ADR-0012: Memory has one writer, a background consolidator that proposes line-level edits. Additions run first."
+      },
+      "expected": "no",
+      "unsafe_predictions": [],
+      "finglish": false
+    },
+    {
+      "id": "relevance-05",
+      "inputs": {
+        "q": "What happens when the interpreter wants to run a shell command?",
+        "doc": "Tools that pause for human approval when the interpreter runs interactively: DEFAULT_INTERRUPT_TOOLS = ('execute',)."
+      },
+      "expected": "yes",
+      "unsafe_predictions": [],
+      "finglish": false
+    },
+    {
+      "id": "relevance-06",
+      "inputs": {
+        "q": "How are document embeddings sent to the embedding API?",
+        "doc": "Gemini's free embedding quota is 100 requests/minute, so embed in paced batches: EMBED_BATCH_SIZE = 20, EMBED_BATCH_DELAY_SECONDS = 15."
+      },
+      "expected": "yes",
+      "unsafe_predictions": [],
+      "finglish": false
+    }
+  ]
+}

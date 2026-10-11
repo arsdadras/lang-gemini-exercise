@@ -1,0 +1,65 @@
+[project]
+name = "agentlab"
+version = "0.1.0"
+description = "Production-track agentic AI curriculum built on LangChain, LangGraph, and DeepAgents"
+readme = "README.md"
+authors = [
+    { name = "arsdadras", email = "arsdadras@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    # Lower bounds only: uv.lock pins exact versions, and Dependabot keeps both current
+    # (dependency policy: library/engineering/dependency-policy.md).
+    "deepagents>=0.7.20",
+    # HTTP stacks utils/failure_util.py imports by name to classify network failures (MN-002).
+    "httpx>=0.28.1",
+    "httpx2>=2.13.1",
+    "langchain>=1.4.2",
+    "langchain-core>=1.6.5",
+    "langchain-chroma>=1.1.0",
+    "langchain-google-genai>=4.4.0",
+    "langchain-ollama>=1.1.0",
+    "langchain-openai>=1.6.6",
+    "langchain-tavily>=0.2.18",
+    "langchain-text-splitters>=1.1.2",
+    "langgraph>=1.2.12",
+    "langgraph-checkpoint-sqlite>=3.1.1",
+    "langsmith>=0.14.1",
+    "pydantic>=2.13.5",
+    "python-dotenv>=1.2.3",
+    "pyyaml>=6.0.3",
+    "requests>=2.34.2",
+    "langchain-typesafe>=0.0.1a3",
+]
+
+[project.scripts]
+lab-research = "agentlab.apps.research_app:main"
+lab-rag = "agentlab.apps.rag_app:main"
+lab-repo-insight = "agentlab.apps.repo_insight_app:main"
+lab-code-review = "agentlab.apps.code_review_app:main"
+lab-interpreter = "agentlab.apps.interpreter_app:main"
+lab-coordinator = "agentlab.apps.coding_coordinator_app:main"
+lab-assistant = "agentlab.apps.personal_assistant_app:main"
+lab-brief = "agentlab.apps.personal_brief_app:main"
+
+[build-system]
+requires = ["setuptools>=84.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["agentlab*"]
+
+[tool.setuptools.package-data]
+agentlab = ["resources/**/*"]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.4.0",
+    "pytest>=9.1.1",
+    # Exact pin: a ruff release can add lint rules, so each bump is its own reviewed change.
+    "ruff==0.16.9",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "scripts/tests"]

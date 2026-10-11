@@ -1,0 +1,776 @@
+[
+ [
+  {
+   "file": "src/agentlab/tools/weather_tool.py",
+   "violates": "import_time_work",
+   "ms": 1777.0,
+   "tokens": 740,
+   "p": {
+    "import_time_work": 0.76,
+    "model_id_outside_config": 0.08,
+    "path_from_cwd": 0.03,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.04,
+    "secrets_to_subprocess": 0.04,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/tools/weather_tool.py",
+   "violates": null,
+   "ms": 438.6,
+   "tokens": 729,
+   "p": {
+    "import_time_work": 0.04,
+    "model_id_outside_config": 0.03,
+    "path_from_cwd": 0.01,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.04,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/nodes/summary_node.py",
+   "violates": "model_id_outside_config",
+   "ms": 437.7,
+   "tokens": 742,
+   "p": {
+    "import_time_work": 0.05,
+    "model_id_outside_config": 0.95,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.04,
+    "non_ascii_console": 0.05,
+    "retry_around_model_call": 0.03,
+    "secrets_to_subprocess": 0.02,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/configs/models_config.py",
+   "violates": null,
+   "ms": 591.6,
+   "tokens": 741,
+   "p": {
+    "import_time_work": 0.44,
+    "model_id_outside_config": 0.03,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.05,
+    "secrets_to_subprocess": 0.02,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/data/sqlite_db_data.py",
+   "violates": "path_from_cwd",
+   "ms": 479.2,
+   "tokens": 737,
+   "p": {
+    "import_time_work": 0.04,
+    "model_id_outside_config": 0.02,
+    "path_from_cwd": 0.97,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.02,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/data/sqlite_db_data.py",
+   "violates": null,
+   "ms": 435.2,
+   "tokens": 733,
+   "p": {
+    "import_time_work": 0.07,
+    "model_id_outside_config": 0.02,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/nodes/rag_node.py",
+   "violates": "raw_message_content",
+   "ms": 536.5,
+   "tokens": 724,
+   "p": {
+    "import_time_work": 0.06,
+    "model_id_outside_config": 0.06,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.52,
+    "non_ascii_console": 0.05,
+    "retry_around_model_call": 0.04,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/nodes/rag_node.py",
+   "violates": null,
+   "ms": 478.7,
+   "tokens": 726,
+   "p": {
+    "import_time_work": 0.05,
+    "model_id_outside_config": 0.08,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.04,
+    "non_ascii_console": 0.05,
+    "retry_around_model_call": 0.04,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/apps/personal_assistant_app.py",
+   "violates": "non_ascii_console",
+   "ms": 743.9,
+   "tokens": 712,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.11,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.97,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/apps/personal_assistant_app.py",
+   "violates": null,
+   "ms": 473.0,
+   "tokens": 713,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.11,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.39,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/nodes/rag_node.py",
+   "violates": "retry_around_model_call",
+   "ms": 619.3,
+   "tokens": 758,
+   "p": {
+    "import_time_work": 0.05,
+    "model_id_outside_config": 0.08,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.05,
+    "non_ascii_console": 0.02,
+    "retry_around_model_call": 0.97,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/graphs/rag_graph.py",
+   "violates": null,
+   "ms": 463.2,
+   "tokens": 743,
+   "p": {
+    "import_time_work": 0.05,
+    "model_id_outside_config": 0.02,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.16,
+    "secrets_to_subprocess": 0.02,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/utils/sandbox_util.py",
+   "violates": "secrets_to_subprocess",
+   "ms": 757.3,
+   "tokens": 726,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.05,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.04,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.94,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/utils/sandbox_util.py",
+   "violates": null,
+   "ms": 459.5,
+   "tokens": 726,
+   "p": {
+    "import_time_work": 0.03,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.07,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.04,
+    "retry_around_model_call": 0.02,
+    "secrets_to_subprocess": 0.14,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/utils/memory_backend_util.py",
+   "violates": "identity_from_config",
+   "ms": 465.5,
+   "tokens": 724,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.01,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.96
+   }
+  },
+  {
+   "file": "src/agentlab/utils/memory_backend_util.py",
+   "violates": null,
+   "ms": 410.2,
+   "tokens": 713,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.01
+   }
+  }
+ ],
+ [
+  {
+   "file": "src/agentlab/tools/weather_tool.py",
+   "violates": "import_time_work",
+   "ms": 452.7,
+   "tokens": 740,
+   "p": {
+    "import_time_work": 0.76,
+    "model_id_outside_config": 0.08,
+    "path_from_cwd": 0.03,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.05,
+    "secrets_to_subprocess": 0.04,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/tools/weather_tool.py",
+   "violates": null,
+   "ms": 460.2,
+   "tokens": 729,
+   "p": {
+    "import_time_work": 0.05,
+    "model_id_outside_config": 0.03,
+    "path_from_cwd": 0.01,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.04,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/nodes/summary_node.py",
+   "violates": "model_id_outside_config",
+   "ms": 550.1,
+   "tokens": 742,
+   "p": {
+    "import_time_work": 0.05,
+    "model_id_outside_config": 0.96,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.05,
+    "retry_around_model_call": 0.03,
+    "secrets_to_subprocess": 0.02,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/configs/models_config.py",
+   "violates": null,
+   "ms": 543.1,
+   "tokens": 741,
+   "p": {
+    "import_time_work": 0.46,
+    "model_id_outside_config": 0.03,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.04,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.05,
+    "secrets_to_subprocess": 0.02,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/data/sqlite_db_data.py",
+   "violates": "path_from_cwd",
+   "ms": 542.6,
+   "tokens": 737,
+   "p": {
+    "import_time_work": 0.04,
+    "model_id_outside_config": 0.02,
+    "path_from_cwd": 0.97,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.02,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/data/sqlite_db_data.py",
+   "violates": null,
+   "ms": 443.8,
+   "tokens": 733,
+   "p": {
+    "import_time_work": 0.07,
+    "model_id_outside_config": 0.02,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/nodes/rag_node.py",
+   "violates": "raw_message_content",
+   "ms": 424.1,
+   "tokens": 724,
+   "p": {
+    "import_time_work": 0.05,
+    "model_id_outside_config": 0.07,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.43,
+    "non_ascii_console": 0.05,
+    "retry_around_model_call": 0.04,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/nodes/rag_node.py",
+   "violates": null,
+   "ms": 590.0,
+   "tokens": 726,
+   "p": {
+    "import_time_work": 0.06,
+    "model_id_outside_config": 0.08,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.05,
+    "retry_around_model_call": 0.04,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/apps/personal_assistant_app.py",
+   "violates": "non_ascii_console",
+   "ms": 398.0,
+   "tokens": 712,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.12,
+    "raw_message_content": 0.04,
+    "non_ascii_console": 0.97,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/apps/personal_assistant_app.py",
+   "violates": null,
+   "ms": 565.3,
+   "tokens": 713,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.12,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.5,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/nodes/rag_node.py",
+   "violates": "retry_around_model_call",
+   "ms": 484.3,
+   "tokens": 758,
+   "p": {
+    "import_time_work": 0.05,
+    "model_id_outside_config": 0.08,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.05,
+    "non_ascii_console": 0.02,
+    "retry_around_model_call": 0.97,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/graphs/rag_graph.py",
+   "violates": null,
+   "ms": 504.0,
+   "tokens": 743,
+   "p": {
+    "import_time_work": 0.05,
+    "model_id_outside_config": 0.02,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.15,
+    "secrets_to_subprocess": 0.02,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/utils/sandbox_util.py",
+   "violates": "secrets_to_subprocess",
+   "ms": 465.0,
+   "tokens": 726,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.06,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.04,
+    "retry_around_model_call": 0.02,
+    "secrets_to_subprocess": 0.94,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/utils/sandbox_util.py",
+   "violates": null,
+   "ms": 462.9,
+   "tokens": 726,
+   "p": {
+    "import_time_work": 0.03,
+    "model_id_outside_config": 0.02,
+    "path_from_cwd": 0.07,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.04,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.14,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/utils/memory_backend_util.py",
+   "violates": "identity_from_config",
+   "ms": 496.4,
+   "tokens": 724,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.01,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.96
+   }
+  },
+  {
+   "file": "src/agentlab/utils/memory_backend_util.py",
+   "violates": null,
+   "ms": 624.9,
+   "tokens": 713,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.02
+   }
+  }
+ ],
+ [
+  {
+   "file": "src/agentlab/tools/weather_tool.py",
+   "violates": "import_time_work",
+   "ms": 416.5,
+   "tokens": 740,
+   "p": {
+    "import_time_work": 0.76,
+    "model_id_outside_config": 0.09,
+    "path_from_cwd": 0.03,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.02,
+    "retry_around_model_call": 0.05,
+    "secrets_to_subprocess": 0.03,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/tools/weather_tool.py",
+   "violates": null,
+   "ms": 438.2,
+   "tokens": 729,
+   "p": {
+    "import_time_work": 0.05,
+    "model_id_outside_config": 0.03,
+    "path_from_cwd": 0.01,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.02,
+    "retry_around_model_call": 0.04,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/nodes/summary_node.py",
+   "violates": "model_id_outside_config",
+   "ms": 463.7,
+   "tokens": 742,
+   "p": {
+    "import_time_work": 0.05,
+    "model_id_outside_config": 0.95,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.05,
+    "retry_around_model_call": 0.03,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/configs/models_config.py",
+   "violates": null,
+   "ms": 479.7,
+   "tokens": 741,
+   "p": {
+    "import_time_work": 0.44,
+    "model_id_outside_config": 0.03,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.05,
+    "secrets_to_subprocess": 0.02,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/data/sqlite_db_data.py",
+   "violates": "path_from_cwd",
+   "ms": 496.0,
+   "tokens": 737,
+   "p": {
+    "import_time_work": 0.04,
+    "model_id_outside_config": 0.02,
+    "path_from_cwd": 0.97,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/data/sqlite_db_data.py",
+   "violates": null,
+   "ms": 431.7,
+   "tokens": 733,
+   "p": {
+    "import_time_work": 0.08,
+    "model_id_outside_config": 0.02,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/nodes/rag_node.py",
+   "violates": "raw_message_content",
+   "ms": 672.1,
+   "tokens": 724,
+   "p": {
+    "import_time_work": 0.06,
+    "model_id_outside_config": 0.08,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.42,
+    "non_ascii_console": 0.04,
+    "retry_around_model_call": 0.04,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/nodes/rag_node.py",
+   "violates": null,
+   "ms": 557.7,
+   "tokens": 726,
+   "p": {
+    "import_time_work": 0.06,
+    "model_id_outside_config": 0.07,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.04,
+    "non_ascii_console": 0.06,
+    "retry_around_model_call": 0.04,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/apps/personal_assistant_app.py",
+   "violates": "non_ascii_console",
+   "ms": 481.8,
+   "tokens": 712,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.1,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.97,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/apps/personal_assistant_app.py",
+   "violates": null,
+   "ms": 485.6,
+   "tokens": 713,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.11,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.36,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/nodes/rag_node.py",
+   "violates": "retry_around_model_call",
+   "ms": 406.1,
+   "tokens": 758,
+   "p": {
+    "import_time_work": 0.05,
+    "model_id_outside_config": 0.09,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.05,
+    "non_ascii_console": 0.02,
+    "retry_around_model_call": 0.97,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/graphs/rag_graph.py",
+   "violates": null,
+   "ms": 462.1,
+   "tokens": 743,
+   "p": {
+    "import_time_work": 0.05,
+    "model_id_outside_config": 0.02,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.03,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.14,
+    "secrets_to_subprocess": 0.02,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/utils/sandbox_util.py",
+   "violates": "secrets_to_subprocess",
+   "ms": 413.0,
+   "tokens": 726,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.06,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.04,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.94,
+    "identity_from_config": 0.01
+   }
+  },
+  {
+   "file": "src/agentlab/utils/sandbox_util.py",
+   "violates": null,
+   "ms": 459.8,
+   "tokens": 726,
+   "p": {
+    "import_time_work": 0.03,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.08,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.05,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.12,
+    "identity_from_config": 0.02
+   }
+  },
+  {
+   "file": "src/agentlab/utils/memory_backend_util.py",
+   "violates": "identity_from_config",
+   "ms": 578.4,
+   "tokens": 724,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.01,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.96
+   }
+  },
+  {
+   "file": "src/agentlab/utils/memory_backend_util.py",
+   "violates": null,
+   "ms": 425.2,
+   "tokens": 713,
+   "p": {
+    "import_time_work": 0.02,
+    "model_id_outside_config": 0.01,
+    "path_from_cwd": 0.02,
+    "raw_message_content": 0.02,
+    "non_ascii_console": 0.01,
+    "retry_around_model_call": 0.01,
+    "secrets_to_subprocess": 0.01,
+    "identity_from_config": 0.01
+   }
+  }
+ ]
+]

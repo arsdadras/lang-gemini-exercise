@@ -1,0 +1,4 @@
+reliable (low) routing    30/32  p50 1649 ms
+   MISS 13: expected clarify got memory
+   MISS 27: expected clarify got memory
+reliable (low) staleness  20/20  p50 1386 ms
