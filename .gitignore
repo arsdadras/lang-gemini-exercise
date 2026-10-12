@@ -55,3 +55,7 @@ CLAUDE.local.md
 .agents/settings.local.json
 .agents/*.lock
 .enola/
+
+# Learner's personal workspace
+alireza/
+
