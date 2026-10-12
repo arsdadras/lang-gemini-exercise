@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PreInvocation": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run python scripts/mentor_session_hook.py",
+            "timeout": 10000
+          }
+        ]
+      }
+    ]
+  }
+}

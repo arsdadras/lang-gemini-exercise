@@ -20,8 +20,26 @@ What gets built and taught, in which order, and the gates between. Mentor-owned.
 
 ## Now, next, later
 
-- **Now:** R2, a stronger retriever: hybrid search, reranking, query rewriting, grading and reranking in one decider request, per-claim verification with reroutes, and the index rebuilt. R0 ([ADR-0026](../docs/adr/0026-the-specialist-contract.md)) and R1 ([design card](../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built)) are closed.
-- **Next:** R3 -> R4 -> P5 teaching pass (B4 to C4) -> R5 -> D1 -> P6 (content generator) -> P7 (Capstone I).
+- **Now (Pre-R2 Architectural Adaptation — Phases 1-3 in a dedicated session, [ADR-0033](../docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md)):**
+  Before starting R2 lessons, one dedicated engineering session adapts the codebase to the
+  4-scale Wave-Particle Duality architecture:
+  1. **Phase 1 (Unified Contracts):** Define `RagReport`, `InterpreterReport`,
+     `PersonalContextReport`, and the lightweight `Specialist[TInput, TReport]` contract in
+     `schemas/output/`.
+  2. **Phase 2 (`workflows/` Layer & `subagents/` Cleanup):** Create `src/agentlab/workflows/`
+     (`research_workflow.py`, `rag_workflow.py`, `code_review_workflow.py`,
+     `interpreter_workflow.py`, `personal_context_workflow.py`, `personal_brief_workflow.py`),
+     turn `subagents/*_subagent.py` into thin adapters over `workflows/`, switch
+     `make_researcher_subagent` to wrap `run_research`, add `personal_context_subagent.py`, and
+     remove scattered `NewType` import workarounds.
+  3. **Phase 3 (Rung-0 Infrastructure & HITL Propagation):** Decouple Memory, Store, and
+     Security/Redaction as Rung-0 repo-wide infrastructure, and surface outbound-search HITL
+     interrupts cleanly through `research_workflow`.
+- **Next (Phase 4 — Return Pass in separate fresh `/mentor` sessions per stage/part):**
+  - **R2** (P2, a stronger retriever + `RagReport` verification) -> **R3** (P3, hybrid
+    deterministic + model analysis) -> **R4** (P4, capability upgrade + `InterpreterReport`) ->
+    **P5 pass** (practical `personal_context` specialist & B4-C4 review) -> **R5** (close &
+    coordinator pre-router) -> **D1** -> **P6** (content generator) -> **P7** (Capstone I).
 - **Later:** P8 -> P9 -> P10 -> P11 (Capstone, midterm II) -> P12 -> P13 -> P14 (Capstone II) -> Term E.
 
 ## Program shape
@@ -44,7 +62,8 @@ What gets built and taught, in which order, and the gates between. Mentor-owned.
   | P12 | P14 | Capstone II, Business Operations Control Tower |
 
 - **Return pass (R0-R5)** between P5 and P6: one contract for P1-P5 and one real upgrade each
-  ([ADR-0011](../docs/adr/0011-return-pass-before-p6.md)).
+  ([ADR-0011](../docs/adr/0011-return-pass-before-p6.md),
+  [ADR-0033](../docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md)).
 - **Term E** (productization and scale) starts only after P14, through the entry gate below.
 
 ## Done
@@ -56,51 +75,62 @@ What gets built and taught, in which order, and the gates between. Mentor-owned.
 | P3 Code review | Three compiled subgraphs, sandboxed tests, a self-correcting loop, an `interrupt()` gate | [Study guide](../docs/study_guides/p3_code_review/MASTER_GUIDE.md) |
 | P4 Sandbox interpreter | Shell workspace with approval, artifacts, durable sessions, the first mini-workflow (coding coordinator) | [Study guide](../docs/study_guides/p4_sandbox_interpreter/MASTER_GUIDE.md) |
 | Stage 0 stabilization | One package, composition root, identity as runtime context, secret isolation | ADR-0001 to ADR-0007 |
-| P5 Memory assistant | Governed per-user memory with one writer, guards, undo, durable SQLite, eval-lite, governed skills, a context provider. Built by the mentor; taught again from B4 after R4 | [ADR-0013](../docs/adr/0013-p5-completion.md), [design card](../docs/design_cards/P5_memory_assistant.md) |
+| P5 Memory assistant | Governed per-user memory with one writer, guards, undo, durable SQLite, eval-lite, governed skills, a context provider. Built by the mentor; adapted into a full `PersonalContextReport` specialist in Phases 1-3 and taught from B4 after R4 | [ADR-0013](../docs/adr/0013-p5-completion.md), [ADR-0033](../docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md), [design card](../docs/design_cards/P5_memory_assistant.md) |
 
 ## Return pass (R0-R5)
 
-**The specialist contract** is caller-agnostic, derived from the callers P1-P5 already have, and
-checked in every R stage:
+**The specialist & workflow contract ([ADR-0026](../docs/adr/0026-the-specialist-contract.md), [ADR-0033](../docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md))** is caller-agnostic, derived from the callers P1-P5 already have, and checked in every R stage:
 
-- a typed result envelope: output, provenance, status (`ok` / `partial` / `failed`), declared
-  side effects, and the failure reason;
-- `UserContext` wherever user data is touched;
+- a two-sided Rung-2 coin per project: a `Workflow` (`run_<project>` in
+  `workflows/<project>_workflow.py`) and a `Specialist[TInput, TReport]` descriptor;
+- a typed result envelope `SpecialistResult[TReport]` where `TReport` is always a rich Pydantic
+  `*Report` (`ResearchReport`, `RagReport`, `CodeReviewReport`, `InterpreterReport`,
+  `PersonalContextReport`)—never a raw `str` or `dict`—plus provenance, status
+  (`ok` / `partial` / `failed`), declared side effects, and `failure_reason`;
+- Rung-0 infrastructure (`UserContext`, Memory/Store, Security/Redaction, `decision_model`) shared
+  repo-wide;
 - one approval path: the standard HITL request, streamed by the app;
 - secret redaction at the app boundary and trace masking, in every app;
-- a design card, written before the specialist's R stage, naming its decision
-  points (point 17);
+- a design card, written before the specialist's R stage, naming its Wave/Particle density and
+  its decision points (point 17);
 - an eval-lite smoke set of 5-10 scenarios.
 
-Conformance work is done by the mentor directly; each stage's lesson is its upgrade. No rewrites
-unless a project can't meet the contract. Every stage ends with a before/after demo of the same
-scenario.
+**Top-Down Compressor Balancing rule ([pedagogy](../library/teaching/pedagogy.md#top-down-mountain-peak-perspective-and-the-compressor-balancing-rule-return-pass)):**
+Every R stage opens from the mountain peak (the end-to-end `Workflow` film script and `Specialist`
+contract). Because `P1` started simple, `R1` expanded it horizontally. Because `P2`, `P3`, and `P4`
+started structurally tall, `R2`-`R4` focus on **vertical depth and preventative hardening**
+without lateral bloat. Because `P5` went deep into storage infrastructure without a full
+specialist surface, Phases 1-3 and the `P5` pass complete its horizontal/practical
+`PersonalContextReport` specialist. Each R stage (or sub-part of an R stage) runs in its own
+dedicated `/mentor` session.
 
 | Stage | Hard concept | Advances |
 | :--- | :--- | :--- |
 | **R0, the specialist contract** | What a caller must know about a specialist: envelope, provenance, status, declared side effects, and the failure contract (what "partial" means, who retries) | C4, C5 |
 | **R1, P1 a stronger researcher** | Multi-source research with provenance: research options and planning, more sources (web, private corpus, academic, a research API) chosen by a source router, every fact traceable to its source ([design card](../docs/design_cards/P1_research_agent.md#r1-redesign-a-stronger-researcher-2026-10-05-not-built)) | C3 |
-| **R2, P2 a stronger retriever** | The RAG agent's engine (P2's role is the RAG agent, ADR-0030): hybrid search, reranking, query rewriting, the index rebuilt; judged by hit rate at k (the harness itself is on the engineering track) | C3, C8 |
-| **R3, P3 hybrid analysis** | Deterministic tools first, model second: `ruff` and AST findings feed the review; the model explains instead of hunting | C1, C9 |
-| **R4, P4 capability upgrade** | Chosen with the mentor; declared side effects and the risk label moved to the engineering track (ADR-0027) | C4 |
-| **R5, close** | None new: practice across all five specialists on one scenario, and the first teach-back. P6 Session 0 starts from here | C10 |
+| **Phases 1-3 (Pre-R2 Adaptation Session)** | 4-scale Wave-Particle Duality in code: `RagReport`/`InterpreterReport`/`PersonalContextReport`, `Specialist[TInput, TReport]`, `src/agentlab/workflows/`, thin `subagents/`, Rung-0 Memory/Store/Security decoupling ([ADR-0033](../docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md)) | C4, C10 |
+| **R2, P2 a stronger retriever** | The RAG workflow's engine (`rag_workflow.py` -> `RagReport`): hybrid search, reranking, query rewriting, grading and reranking in one decider request, per-claim verification with reroutes, the index rebuilt; judged by hit rate at k | C3, C8 |
+| **R3, P3 hybrid analysis** | Deterministic tools first, model second: `ruff` and AST findings feed the review; a decider labels severity/category; the model explains instead of hunting | C1, C9 |
+| **R4, P4 capability upgrade** | Vertical hardening over `interpreter_workflow.py` (`InterpreterReport`), risk label on `execute` approval, declared side effects | C4, C6 |
+| **R5, close** | Practice across all five specialists (`P1`-`P5`) through their unified `Specialist[TInput, TReport]` contracts on one scenario, coordinator pre-router on a labeled set, and the first teach-back. P6 Session 0 starts from here | C10 |
 
 Each stage also carries its scheduled items from [BACKLOG.md](BACKLOG.md).
 
-**Teaching focus (the learner's rule, 2026-10-09).** Lessons spend their time on agentic system
-engineering, advanced LangGraph and LangChain features, and advanced Python. Hardening (failure
-handling, retries, timeouts, provider fallbacks, input validation, naming passes, docs lint, test
-plumbing, debugging) is built to the same standard but taught in a few lines: what it is, why it
-exists, labeled **hardening**, and the lesson moves on. Per stage:
+**Teaching focus (the learner's rule, 2026-10-09 & 2026-10-12).** Lessons spend their time on
+top-down agentic system architecture, the Wave-Particle Duality trade-offs, preventative
+engineering design patterns (why subtle failure modes happen in tall systems and how the
+architecture prevents them), advanced LangGraph/LangChain mechanisms, and advanced Python.
+Routine plumbing (boilerplate wiring, naming passes, docs lint, test setup) is built to the same
+standard and summarized in two lines with file links. Per stage:
 
 | Stage | Core, taught in depth | Hardening, summarized |
 |---|---|---|
 | R1 | Source router as a decision point; `SourceRouteMiddleware` (per-run tool filtering in `wrap_model_call`); `Send` fan-out per sub-question with reducers; the stop condition inside the agent loop | Source tools' HTTP and error handling, domain filters, corpus file checks, the failure contract, live smoke |
-| R2 | Hybrid search, reranking, query rewriting, grading and reranking in one request | Re-index plumbing, stale-source detection, timeouts and retries on embeddings |
-| R3 | Deterministic tools first, model second: `ruff`/AST findings feed the review; a decider labels | Subprocess sandboxing, output parsing |
-| R4 | The upgrade chosen together | Risk label on approval, declared side effects |
-| P5 pass | Guard as three checks fail-closed, recall ranking, schema compiler | Staleness pre-pass, redaction |
-| R5 | Coordinator pre-router on a labeled set | Practice scenario setup |
+| R2 | Top-down `rag_workflow` film script (`RagReport`); hybrid search, reranking, query rewriting, grading and reranking in one request, per-claim verification | Re-index plumbing, stale-source detection, timeouts and retries on embeddings |
+| R3 | Top-down `code_review_workflow` film script; deterministic tools first, model second (`ruff`/AST findings -> decider labels -> LLM explanation) | Subprocess sandboxing, output parsing |
+| R4 | Top-down `interpreter_workflow` film script (`InterpreterReport`); vertical capability upgrade and preventative sandbox invariants | Risk label wiring, declared side-effect plumbing |
+| P5 pass | Top-down `personal_context_workflow` (`PersonalContextReport`) + Rung-0 memory governance: guard as three checks fail-closed, recall ranking, schema compiler | Staleness pre-pass, redaction plumbing |
+| R5 | Coordinator pre-router on a labeled set across P1-P5 `Specialist` contracts | Practice scenario setup |
 
 **Decision points in the return pass** (ADR-0021; the [dossier](attachments/jev-dossier.md),
 section 3). Each lives inside its stage's own hard concept, so none adds a second one:
@@ -118,20 +148,23 @@ section 3). Each lives inside its stage's own hard concept, so none adds a secon
   pre-pass; recall ranking; the schema compiler at its third consumer.
 - **R5:** the coordinator's pre-router, measured on a labeled routing set.
 
-## Engineering track (repo level, ADR-0027)
+## Engineering track (repo level, ADR-0027 & ADR-0033)
 
-Hardening and service health, applied to every project and no project's stage: security,
-redaction and masking, observability, failure handling and timeouts, contract conformance
-(`UserContext`, one approval path, declared side effects, an eval-lite set per specialist), the
-retrieval harness, and R4's side effects and risk label. Waiting items: MN-018 (an undeclared
-decider label counts as unsafe: built), MN-023 (a `read_page` budget, a cap on claims, the cost
-of a decider outage at scale, sequential page requests).
+Hardening, architectural adaptation (Phases 1-3), and service health applied across the repo:
+`src/agentlab/workflows/`, unified `*Report` schemas and `Specialist[TInput, TReport]`, Rung-0
+Memory/Store/Redaction decoupling, observability, failure handling and timeouts, contract
+conformance (`UserContext`, one approval path, declared side effects, an eval-lite set per
+specialist), the retrieval harness, and R4's side effects and risk label. Waiting items: MN-018
+(an undeclared decider label counts as unsafe: built), MN-023 (a `read_page` budget, a cap on
+claims, the cost of a decider outage at scale, sequential page requests).
 
 ## P5 teaching pass (after R4)
 
-B4 to C4 again, one topic at a time, starting with B4 topic 1's tests-and-demo step, adapted to
-whatever R0-R4 changed. C3's skill designer gets one line on its production analog, a
-versioned context registry such as LangSmith Context Hub (DEC-011).
+Taught from the mountain peak over the completed `personal_context_workflow.py`
+(`PersonalContextReport`) and Rung-0 memory seams: B4 to C4 one topic at a time, starting with
+B4 topic 1's tests-and-demo step, adapted to the 4-scale architecture. C3's skill designer gets
+one line on its production analog, a versioned context registry such as LangSmith Context Hub
+(DEC-011).
 
 ## D1: Decision engineering (between R5 and P6)
 

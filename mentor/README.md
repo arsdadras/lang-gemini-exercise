@@ -9,7 +9,13 @@ below to its end.
   [`AGENTS.md`](../AGENTS.md). **Git:** [git policy](../library/engineering/git-policy.md).
 - **What to teach, in which order:** [ROADMAP](ROADMAP.md) and the
   [pedagogy](../library/teaching/pedagogy.md). **How to teach each step:** the `teach` skill,
-  [.claude/skills/teach/SKILL.md](../.claude/skills/teach/SKILL.md).
+  [`.agents/skills/teach/SKILL.md`](../.agents/skills/teach/SKILL.md) (mirrored in
+  [`.claude/skills/teach/SKILL.md`](../.claude/skills/teach/SKILL.md)).
+- **Session hook & slash commands:** `.agents/hooks.json` (`scripts/mentor_session_hook.py`)
+  automatically injects the mentor orientation briefing on session start; `/mentor`
+  ([`.agents/skills/mentor/SKILL.md`](../.agents/skills/mentor/SKILL.md)) and `/handoff`
+  ([`.agents/skills/handoff/SKILL.md`](../.agents/skills/handoff/SKILL.md)) run the session
+  open and close rituals.
 - **Gated on the learner:** closing a stage and starting the next, and the actions in
   `AGENTS.md` "Ask before". Everything else the mentor decides and reports (principle 10).
 
@@ -17,11 +23,13 @@ below to its end.
 
 1. **Sync.** Bring the session's checkout to `origin/main` (git policy, "Every session").
    Run `uv sync` if the checkout has no `.venv`.
-2. **Read** [STATE.md](STATE.md): where teaching stands, the next step, the build queue, and the
-   working agreements. After a break of a day or more, the lesson opens with a three-line recap.
+2. **Read** [STATE.md](STATE.md): where teaching and the active phase stand, the next step, the
+   build queue, and the working agreements. After a break of a day or more, the lesson opens
+   with a three-line recap.
 3. **Prepare** the next lesson before teaching it:
-   - **Plan.** The topic's one idea, its components, and the hook scenario, from the roadmap
-     and the stage's design card.
+   - **Plan.** From the mountain peak down ([pedagogy](../library/teaching/pedagogy.md#top-down-mountain-peak-perspective-and-the-compressor-balancing-rule-return-pass)):
+     the project's Rung-2 coin (`Workflow` + `Specialist[TInput, TReport]`), its Rung-1
+     Wave/Particle density, the topic's one idea, its components, and the hook scenario.
    - **Build what it needs** ("How a change is built" below), or, for code already built, a
      teaching review: each component's core fits one diff, names say purpose, comments carry
      *why*, test names state behavior.
@@ -37,7 +45,7 @@ below to its end.
 
 Nothing changes in the code without the learner hearing about it (the learner's instruction,
 2026-10-06). Every lesson and every report lists each file added, changed, or deleted, as a
-clickable link with its path (`[research_subagent.py](src/agentlab/subagents/research_subagent.py)`),
+clickable link with its path (`[research_subagent.py](../src/agentlab/subagents/research_subagent.py)`),
 with what changed and why in a line. Every new function that matters gets a one- or two-line
 introduction, even when the walkthrough covers only the core. Summaries stay short, but they
 leave out nothing important.
@@ -45,15 +53,19 @@ leave out nothing important.
 ## Stage delivery
 
 Each topic is a vertical slice that ends with working code the learner has seen run. Every
-message opens with a one-line position marker (`R1 · Topic 2/4 · Code 1/3`) and ends with the
+message opens with a one-line position marker (`R2 · Topic 1/4 · Code 1/3`) and ends with the
 next step in one line.
 
-1. **Stage brief**, no code: the problem the stage solves, why now, the ordered topics.
+1. **Stage brief (from the mountain peak)**, no code: the end-to-end `Workflow` / `Specialist`
+   film script, the Wave/Particle density, the problem the stage solves, why now, and the
+   ordered topics.
 2. **Per topic:** hook (a real run that shows the problem), concept, strategy and
    architecture, then a code walkthrough one component per message: diff-only, the decision
-   points narrated, plumbing as a two-line summary with links.
-3. **Stage close:** `uv run pytest` and `uv run ruff check src tests scripts` green with real
-   output, [LOG.md](LOG.md) updated, the learner's go-ahead.
+   points and preventative engineering invariants narrated, routine plumbing as a two-line
+   summary with links.
+3. **Stage close:** `uv run pytest`, `uv run ruff check src tests scripts`, and
+   `uv run mypy src/agentlab` green with real output, [LOG.md](LOG.md) updated, the learner's
+   go-ahead.
 
 Topics fit one sitting (at most three components; split otherwise); at most one hard new
 concept per stage; a question from a later stage gets two to four lines and a
@@ -65,11 +77,12 @@ concept per stage; a question from a later stage gets two to four lines and a
    (principle 4): the `docs-langchain` MCP server, Context7, the installed source in `.venv/`.
 2. **Build in lesson-sized steps:** one component per commit, with its tests.
 3. **Verify with real output** (principle 5): `uv run pytest`, `uv run ruff check src tests
-   scripts`, `uv run ruff format --check src tests scripts`, `uv run python
-   scripts/check_docs.py`, and a live run in test mode (`LLM_TEST_MODE=true`) for behavior a
-   test can't pin.
+   scripts`, `uv run ruff format --check src tests scripts`, `uv run mypy src/agentlab`,
+   `uv run python scripts/check_docs.py`, and a live run in test mode (`LLM_TEST_MODE=true`)
+   for behavior a test can't pin.
 4. **Review the diff as a stranger would.** No second role reviews it; for a security-relevant
-   or cross-cutting change run `/code-review` before pushing.
+   or cross-cutting change run a thorough self-review against `AGENTS.md` and `ADR-0033` before
+   pushing.
 5. **Debug** the root cause first (principle 6), with a failing test before the fix.
 
 ## Decisions and research

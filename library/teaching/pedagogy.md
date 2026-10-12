@@ -2,9 +2,9 @@
 title: Pedagogy
 maintainer: mentor
 status: current
-updated: 2026-10-06
-summary: Learning outcomes, the learning method (active review), curriculum rules, readiness, delivery invariants, and assessment.
-related: [../../mentor/ROADMAP.md, ../../mentor/README.md]
+updated: 2026-10-12
+summary: Learning outcomes, the learning method (active review), top-down return-pass balancing, curriculum rules, readiness, delivery invariants, and assessment.
+related: [../../mentor/ROADMAP.md, ../../mentor/README.md, ../../docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md]
 ---
 
 # Pedagogy
@@ -34,15 +34,15 @@ What a production AI-systems engineer can do at the end of Term P (C1-C10) and T
 | :--- | :--- | :--- | :--- |
 | C1 | Agents and tools: agent loops, tool design, structured output, approvals | P1, P4, P5 | Running apps, design cards |
 | C2 | Explicit control flow: graph state and reducers, loops, subgraphs, checkpoints, streaming, time travel | P2, P3 | Real-graph tests |
-| C3 | Knowledge and grounding: retrieval, grading, corrective loops, provenance, retrieval metrics, hybrid retrieval, compiled knowledge (graphs and LLM-maintained wikis) | P2, R1, R2, P7 | Hit rate at k, claim-level provenance |
-| C4 | Composition: subagent adapters, specialist contracts, workflows, fan-out and fan-in, choosing deterministic vs model-directed control | R0, P6, P12 | Control comparison on one eval set |
-| C5 | Reliability: failure classes, timeouts, retries, fallbacks, resume, idempotency, compensation | R0, P6, P11, P12 | A failure replayed and analyzed |
-| C6 | Safety and security: sandboxing, secret isolation, approval gates, guards, injection defense, authorization, tenancy | P3-P5, P7, P8, P11 | Red-team scenario set |
+| C3 | Knowledge and grounding: retrieval, grading, corrective loops, provenance, retrieval metrics, hybrid retrieval, compiled knowledge (graphs and LLM-maintained wikis) | P2, R1, R2, P8 | Hit rate at k, claim-level provenance |
+| C4 | Composition: subagent adapters, specialist contracts, workflows, fan-out and fan-in, choosing deterministic vs model-directed control | R0, P7, P14 | Control comparison on one eval set |
+| C5 | Reliability: failure classes, timeouts, retries, fallbacks, resume, idempotency, compensation | R0, P7, P12, P14 | A failure replayed and analyzed |
+| C6 | Safety and security: sandboxing, secret isolation, approval gates, guards, injection defense, authorization, tenancy | P3-P5, P8, P9, P12 | Red-team scenario set |
 | C7 | Memory and state governance: durable per-user memory, single writer, approval, undo, privacy | P5 | P5 eval-lite |
-| C8 | Evaluation and observability: boundary tests, eval sets, trace reading, regression gates, feedback loops | Every project; P5-C, R2, D1, P6-C, P8-C | Eval sets under `evals/`, labeled sets per decision point, CI |
-| C9 | Model strategy: tiers, fallbacks, cascades, routing, decision models and decision engineering, measured cost and latency | P5, R1-R2, D1, P8, P9, E2 | Accuracy, coverage at an error budget, and cost per decision point, measured |
+| C8 | Evaluation and observability: boundary tests, eval sets, trace reading, regression gates, feedback loops | Every project; P5-C, R2, D1, P7-C, P9-C | Eval sets under `evals/`, labeled sets per decision point, CI |
+| C9 | Model strategy: tiers, fallbacks, cascades, routing, decision models and decision engineering, measured cost and latency | P5, R1-R2, D1, P9, P10, E2 | Accuracy, coverage at an error budget, and cost per decision point, measured |
 | C10 | Software architecture: layering, composition root, contracts, decision records, CI, designing for scale | Every project | The learner defends a design (teach-back) |
-| C11 | Production platform: serving, async runs, queues, distributed execution, multi-tenancy | P12, Term E | A deployed service |
+| C11 | Production platform: serving, async runs, queues, distributed execution, multi-tenancy | P14, Term E | A deployed service |
 
 ## Learning-science basis
 
@@ -78,10 +78,41 @@ practices it.
 | L1 | One agent with tools and structured output | P1 |
 | L2 | Explicit graphs: state, loops, checkpoints, streaming | P2 |
 | L3 | Composed subgraphs, sandboxes, approval gates, subagent adapters | P3, P4 |
-| L4 | Governance, memory, guards, background work, contracts | P5, return pass |
-| L5 | Multi-specialist workflows: parallelism, failure classes, cascades, eval-driven choices | P6-P9 |
-| L6 | Actions with side effects: authorization, catalogs, compensation, hierarchy | P11, P12 |
+| L4 | Governance, memory, guards, background work, contracts, Wave-Particle Duality | P5, return pass |
+| L5 | Multi-specialist workflows: parallelism, failure classes, cascades, eval-driven choices | P6-P11 |
+| L6 | Actions with side effects: authorization, catalogs, compensation, hierarchy | P12-P14 |
 | L7 | Production platform: runtime services, distribution, tenancy | Term E |
+
+### Top-down mountain-peak perspective and the Compressor Balancing rule (Return Pass)
+
+In the initial pass (`P1`-`P5`), lessons started from inside a single unit and grew outward so
+the learner could build foundational vocabulary without cognitive overload. In the **Return Pass
+(`R0`-`R5`)** and all subsequent stages, we reverse the camera angle and **stand at the mountain
+peak ([ADR-0033](../../docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md))**:
+
+1. **Top-down film script first:** Before touching any node or tool, every `R` stage starts by
+   inspecting the project's Rung-2 coin (`Workflow` + `Specialist[TInput, TReport]`), its Rung-1
+   Wave/Particle density (`Graph` stations vs. `Agent` hot loops), and its Rung-0 infrastructure
+   consumption. When the whole film script is visible from the top, component boundaries and
+   design patterns are chosen deliberately rather than patched bottom-up.
+2. **The Compressor Threshold across P1-P5:** The return pass acts as a leveler so all five
+   foundational projects exit `R5` at the same production threshold:
+   - **`P1` (Research)** started structurally short in Phase A-C, so `R1` expanded it
+     horizontally/longitudinally into a multi-source plan-fanout-verify graph.
+   - **`P2` (RAG), `P3` (Code Review), and `P4` (Interpreter)** already stand structurally tall,
+     so `R2`-`R4` focus on **vertical depth and preventative engineering**: tightening joints,
+     replacing raw `str` outputs with rich `*Report` schemas (`RagReport`, `InterpreterReport`),
+     decider-backed grading/routing, and eliminating subtle failure modes—without adding lateral
+     feature bloat.
+   - **`P5` (Personal Context & Memory)** went deep into storage/guard infrastructure while
+     leaving its specialist surface thin (`dict[str, str]`), so its return pass extends it
+     horizontally/practically into a full `PersonalContextReport` `Workflow` and `Specialist`
+     while promoting Memory/Store/Security to Rung-0 repo-wide infrastructure.
+3. **Teaching preventative engineering without line-by-line tedium:** As a project's height
+   increases, the risk of subtle interaction bugs rises. In `R` stages, the mentor teaches the
+   **preventative engineering mindset** (why a failure mode exists, what architectural invariant
+   prevents it, and how the design pattern enforces it) in depth, walks through core LangGraph/Agent
+   mechanisms verbatim, and summarizes routine defensive plumbing in two lines with file links.
 
 ### Stage admission rule
 
@@ -106,7 +137,7 @@ Every project has three phases ([ADR-0001](../../docs/adr/0001-three-phase-proje
 | :--- | :--- | :--- | :--- |
 | **A: domain core** | A useful vertical slice | One user job, minimal tools, typed output where something consumes it, production-grade seams for identity, persistence, and secrets (Principle 3), one runnable app, a clear success condition | Generic registries and platform layers, deployment |
 | **B: robust operation** | Resilient, meaningful behavior | Persistence and resume, recovery, streaming, validation and self-correction, approval on consequential actions, domain errors | Shared primitives before a second consumer exists |
-| **C: composable specialist** | Safe reuse by later workflows | Input/output contract, side-effect and risk declaration, failure contract, subagent or graph wrapper, eval-lite, one small composition exercise | Platform hardening (Term E) |
+| **C: composable specialist** | Safe reuse by later workflows | Input/output contract (`Specialist[TInput, TReport]`), `workflows/*_workflow.py` runner, side-effect and risk declaration, failure contract, subagent/tool adapter, eval-lite, one small composition exercise | Platform hardening (Term E) |
 
 Every project also moves each quality thread one step
 ([ARCHITECTURE.md](../../docs/ARCHITECTURE.md#quality-ladder)).
@@ -137,8 +168,9 @@ The mentor makes a stage ready before it opens it:
 
 ## Definition of Done
 
-The mentor closes a stage when `uv run pytest` and `uv run ruff check src tests` are green with
-real output, the stage's live scenario has run, the mentor's state is updated, every decision is recorded, and a commit has landed on `main`
+The mentor closes a stage when `uv run pytest`, `uv run ruff check src tests scripts`, and
+`uv run mypy src/agentlab` are green with real output, the stage's live scenario has run, the
+mentor's state is updated, every decision is recorded, and a commit has landed on `main`
 with the user's OK.
 
 ## Delivery invariants

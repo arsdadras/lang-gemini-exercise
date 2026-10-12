@@ -32,9 +32,11 @@ work happens on `main` ([git policy](library/engineering/git-policy.md)).
 ```
 src/agentlab/
   apps/            CLI entry points and composition root (lab-* console scripts)
+  workflows/       end-to-end domain workflows (`run_*` in `*_workflow.py`) and `Specialist`
+                   definitions; sits above `agents/` and `graphs/` (ADR-0033)
   agents/          role agents (make_*_agent): one job, own harness, no run loops;
-                   coordinators/ holds deep agents that orchestrate them (ADR-0030)
-  subagents/       the subagent version of each reusable role agent
+                   coordinators/ holds deep agents that orchestrate specialists (ADR-0030)
+  subagents/       thin adapters turning each `Workflow` / `Specialist` into a subagent or tool
   graphs/          StateGraph assembly (nodes wired to edges)
   nodes/           LangGraph node functions
   middlewares/     agent middleware factories
@@ -44,15 +46,15 @@ src/agentlab/
                    Jev model router (model_router)
   prompts/         prompt text by role (agents, subagents, nodes/, middlewares, template/)
   schemas/         typed contracts by role, not construction method: output/ (Pydantic
-                   response contracts), input/ (what a caller asks of a specialist, e.g.
-                   ResearchOptions), state/ (graph-state TypedDicts), context/ (runtime
-                   context, e.g. UserContext)
-  data/            persistence adapters (SQLite checkpoints)
+                   `*Report` contracts, `SpecialistResult`, `Specialist`), input/ (what a caller
+                   asks of a specialist, e.g. `ResearchOptions`), state/ (graph-state
+                   TypedDicts), context/ (runtime context, e.g. `UserContext`)
+  data/            persistence adapters (SQLite checkpoints and Rung-0 store)
   utils/           shared helpers (sessions, sandbox, streaming, HITL loop, memory backend)
   configs/         plain constants: paths, model catalog, one module per project
   resources/       packaged non-code files (agent skills)
 tests/             pytest suite
-scripts/           repo tooling: docs lint, live smoke, and their tests
+scripts/           repo tooling: docs lint, live smoke, session hook, and their tests
 mentor/            the mentor's office: charter, state, log, roadmap, backlog, decisions,
                    risks, the research record, artifacts, sandbox (ignored)
 library/           canonical knowledge: principles, architecture, engineering, teaching,
@@ -61,7 +63,9 @@ archive/           retired documents, frozen
 docs/              architecture, ADRs, design cards, and study guides (write-ups of finished
                    projects)
 .github/           CI and Dependabot
-.claude/           Claude Code skills: /mentor, /handoff, teach, decision-points
+.agents/           Antigravity workspace customizations: `hooks.json` and `skills/` (`/mentor`,
+                   `/handoff`, `teach`, `decision-points`, `architecture-duality`)
+.claude/           Synchronized skill mirrors for compatibility
 examples/          sample inputs (e.g. code to review)
 evals/             live eval-lite scenario sets (real models, run by hand, not by pytest)
 out/               runtime output, gitignored: sandbox/, state/<app>_checkpoints.db
@@ -70,19 +74,21 @@ alireza/           the mentee's private scratch area: never imported, edited, or
 
 ## Dependency direction
 
-`apps -> agents -> subagents, graphs -> nodes, middlewares, tools, retrieval -> models, prompts, schemas, data, utils -> configs`
+`apps -> workflows -> agents (including coordinators/), graphs, subagents -> nodes, middlewares, tools, retrieval -> models, prompts, schemas, data, utils -> configs`
 
-Imports point downward only. `subagents` never import `agents`: the caller builds the agent
-and injects it.
+Imports point downward only ([ADR-0033](docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md)).
+`workflows` sit above `agents` and `graphs` and own `run_<project>`. `subagents` wrap `workflows`
+as subagent/tool adapters and never import `agents` directly unless injected.
 
 ## Naming
 
 Each module carries its role as a suffix, matching its directory: `<project>_<role>.py`
-(`rag_graph.py`, `interpreter_agent.py`, `web_search_tool.py`, `models_config.py`,
-`sqlite_db_data.py`, ...). A subdirectory that exists purely to group multiple files keeps
-that suffix too: `prompts/nodes/*_prompt.py`, `schemas/output/*_output_schema.py`,
-`schemas/state/*_state.py`. `schemas/context/` names each file for its specific context type
-(`user_context_schema.py`), since "context" isn't a project name.
+(`research_workflow.py`, `rag_graph.py`, `interpreter_agent.py`, `web_search_tool.py`,
+`models_config.py`, `sqlite_db_data.py`, ...). A subdirectory that exists purely to group
+multiple files keeps that suffix too: `prompts/nodes/*_prompt.py`,
+`schemas/output/*_output_schema.py`, `schemas/state/*_state.py`. `schemas/context/` names each
+file for its specific context type (`user_context_schema.py`), since "context" isn't a project
+name.
 
 One word, one meaning: a term names the same thing in every file of a project, and two things
 never share a name, even across a type, a field, a tool, and a CLI flag. Each project's terms
@@ -90,9 +96,12 @@ are listed in its design card (P1: [Terms](docs/design_cards/P1_research_agent.m
 Shared across projects: a **chunk** is a LangChain `Document` a retriever or search returned; a
 **document** is P1's `SourceDocument`; a **deliverable** is a file the P4 interpreter writes to
 `deliverables/`; **artifact** means only LangChain's `ToolMessage.artifact`; an **answer** is a
-specialist's final text; a **report** is a checked final output (`ResearchReport`,
-`CodeReviewReport`); an edit's operation is its **action** (`MemoryEdit.action`,
-`SideEffect.action`).
+specialist's final text; a **report** is a checked, structured Pydantic final output
+(`ResearchReport`, `RagReport`, `CodeReviewReport`, `InterpreterReport`,
+`PersonalContextReport`); a **workflow** (`workflows/*_workflow.py`) is the Wave face of a
+domain project (`run_<project>`) and a **specialist** (`Specialist[TInput, TReport]`) is its
+Particle face ([ADR-0033](docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md));
+an edit's operation is its **action** (`MemoryEdit.action`, `SideEffect.action`).
 
 ## Conventions
 
@@ -127,10 +136,15 @@ specialist's final text; a **report** is a checked final output (`ResearchReport
    - Shells and subprocesses running generated code get `build_sandbox_env()` only.
    - Agents whose filesystem backend exposes the repo deny `.env` reads.
    - Consequential tools require HITL.
-8. **Typed boundaries.** Use Pydantic schemas for structured output and cross-agent contracts,
-   and reuse existing schemas instead of passing loose dicts. A consumer that reads one
-   factory's state takes that factory's type (`Researcher`, `RagGraph`, ...), and an injected
-   chain is typed by what it returns ([ADR-0032](docs/adr/0032-typed-specialist-inputs.md)).
+8. **Typed boundaries and the Wave-Particle Duality** ([ADR-0032](docs/adr/0032-typed-specialist-inputs.md),
+   [ADR-0033](docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md)).
+   - Use Pydantic schemas for structured output and cross-agent contracts, and reuse existing
+     schemas instead of passing loose dicts.
+   - Every domain project (`P1`-`P5`+) exposes a `Workflow` (`run_<project>` in
+     `workflows/<project>_workflow.py`) returning `SpecialistResult[TReport]` where `TReport` is
+     a structured Pydantic `*Report` (never a raw `str` or `dict`), paired with a lightweight
+     `Specialist[TInput, TReport]` descriptor.
+   - An injected chain is typed by what it returns (`Runnable[dict[str, Any], OutputT]`).
 9. **Abstractions.** Reach for LangChain and DeepAgents built-ins before custom code. For
    shared abstractions, follow the rule of three: one consumer, keep it local; two, extract
    carefully; three, formalize
@@ -148,7 +162,7 @@ specialist's final text; a **report** is a checked final output (`ResearchReport
     - A specialist boundary (`run_*`) turns an external failure into a `failed` envelope
       with `failure_reason`; anything `failure_kind` can't classify is a bug and raises.
 12. **Top-level packages.** Adding a new package under `src/agentlab/` needs a reason recorded
-    in an ADR.
+    in an ADR (`workflows/` recorded in [ADR-0033](docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md)).
 
 ## Commands
 

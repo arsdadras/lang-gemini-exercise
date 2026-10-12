@@ -40,7 +40,6 @@ last_threads.txt
 *.db
 *.db-shm
 *.db-wal
-.agents/
 .gemini/
 .antigravity/
 
@@ -48,9 +47,11 @@ last_threads.txt
 mentor/sandbox/*
 !mentor/sandbox/README.md
 
-# Claude Code local state
+# Claude Code & Antigravity local state (skills and hooks.json are tracked)
 CLAUDE.local.md
 .claude/settings.local.json
 .claude/*.lock
 .claude/advisor-data/
+.agents/settings.local.json
+.agents/*.lock
 .enola/

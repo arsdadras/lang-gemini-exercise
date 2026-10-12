@@ -42,13 +42,14 @@ set the old one's status to `Superseded by ADR-XXXX`.
 | [0023](0023-active-review-instead-of-typing.md) | The learner reviews verified code instead of typing it | Accepted |
 | [0024](0024-a-lead-curated-library-in-five-categories.md) | A library the lead alone writes and curates, in five categories | Accepted |
 | [0025](0025-two-roles-lead-and-mentor.md) | Two roles, the lead and the mentor: engineering and research fold into the lead | Superseded by ADR-0028 |
-| [0026](0026-the-specialist-contract.md) | The specialist contract: one result envelope, one `run_*` boundary, one failure contract, one eval harness | Accepted |
+| [0026](0026-the-specialist-contract.md) | The specialist contract: one result envelope, one `run_*` boundary, one failure contract, one eval harness | Accepted; raw-`str` output allowance superseded by ADR-0033 |
 | [0027](0027-the-mentor-directs-the-lead-assists.md) | The mentor directs, the lead assists; tests and evals are the mentor's; direct pushes to `main`; MN-024's decisions | Superseded by ADR-0028, except MN-024's decisions |
 | [0028](0028-one-mentor-one-branch.md) | One mentor, one branch: every role folds into the mentor; everything on `main`; `/mentor` runs the whole session | Accepted |
 | [0029](0029-no-general-purpose-subagent-and-backup-gateways.md) | No general-purpose subagent anywhere; every gateway model has an OpenRouter backup; one specialist-subagent adapter | Accepted |
 | [0030](0030-role-agents-coordinators-and-subagent-versions.md) | Role agents, coordinators in `agents/coordinators/`, a subagent version of every role agent; P2's role is the RAG agent | Accepted |
 | [0031](0031-jev-model-router-and-test-mode-ladder.md) | A Jev model router beside the tier catalog (Jev judges the task, code picks the model); test mode is a ladder of opt-in tiers | Accepted |
-| [0032](0032-typed-specialist-inputs.md) | A specialist takes the type its factory returns (`NewType` per role graph or agent); injected chains are typed by their output | Accepted |
+| [0032](0032-typed-specialist-inputs.md) | A specialist takes the type its factory returns (`NewType` per role graph or agent); injected chains are typed by their output | Accepted; scattered `NewType` placement superseded by ADR-0033 |
+| [0033](0033-wave-particle-duality-and-workflow-specialist-layer.md) | Wave-Particle Duality across 4 scales (`Agent/Graph`, `Specialist/Workflow`, `Coordinator/Operation`), a `workflows/` layer above `agents/` and `graphs/`, rich `*Report` outputs for every specialist (P1-P5), and Rung-0 cross-cutting infrastructure | Accepted |
 
 ## Template
 

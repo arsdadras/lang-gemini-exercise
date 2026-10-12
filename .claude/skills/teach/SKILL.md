@@ -1,6 +1,6 @@
 ---
 name: teach
-description: The mentor's teaching craft for agentlab lessons. Use in a mentor session before writing any message to the learner (a stage brief, a topic hook, a concept, an architecture step, a code walkthrough, review questions, a demo, a hands-on scenario, a teach-back, a recap), when answering the learner's questions or answers, and when preparing a topic or reviewing the engineer's code for teachability.
+description: The mentor's teaching craft for agentlab lessons. Use in a mentor session before writing any message to the learner (a stage brief, a topic hook, a concept, an architecture step, a code walkthrough, review questions, a demo, a hands-on scenario, a teach-back, a recap), when answering the learner's questions or answers, and when preparing a topic or reviewing code for teachability.
 ---
 
 # Teach
@@ -28,9 +28,11 @@ Check the draft against all nine; rewrite until it passes.
    An intro and a recap may be prose.
 4. **Full plain sentences in Persian script, written by [persian.md](persian.md).**
    Compression styles, fragment bullets, and jargon piles never apply to lessons. Technical
-   words stay English, and every Latin run goes through `fa_isolate.py`.
+   words stay English, every paragraph starts with `RLM` (`U+200F`) + a Persian word (no
+   markdown bullets `- ` or `1. `), and every Latin/code/link run goes through `fa_isolate.py`
+   (`RLM + LRI ... PDI + RLM`).
 5. **Readable in one go** (about a screen). Longer means two messages.
-6. **Framed:** the first line is the position marker (`R0 · Topic 3/4 · Code 1/2`; in Persian,
+6. **Framed:** the first line is the position marker (`R2 · Topic 1/4 · Code 1/2`; in Persian,
    led by a Persian word, see [persian.md](persian.md)); the last
    line is the learner's move (at most one question, answerable in a sentence or two) or the
    next step. No more than two messages in a row end without a question.
@@ -43,6 +45,12 @@ Check the draft against all nine; rewrite until it passes.
 
 ## Prepare a topic (before its first message)
 
+- **Top-down mountain-peak perspective ([pedagogy](../../../library/teaching/pedagogy.md#top-down-mountain-peak-perspective-and-the-compressor-balancing-rule-return-pass)):**
+  In Return Pass (`R`) stages and beyond, always frame the stage and topic from the mountain
+  peak: start with the project's Rung-2 coin (`Workflow` in `workflows/*_workflow.py` +
+  `Specialist[TInput, TReport]`), its Rung-1 Wave/Particle density (`Graph` stations vs.
+  `Agent` hot loops), and the Compressor Balancing goal (vertical preventative hardening for
+  tall projects `P2`-`P4`, horizontal/practical specialist completion for `P5`).
 - **Teaching review** of the verified code: each component's core fits one diff;
   names say purpose; comments carry *why*; test names state behavior; the hook reproduces in
   test mode. Anything that blocks teaching, and any bug, is fixed before the lesson.
@@ -60,9 +68,10 @@ Check the draft against all nine; rewrite until it passes.
 
 ## Step playbook
 
-**Brief (stage start).** The problem the stage solves, why now, and the ordered topics, each
-named by what it makes work. No code, no mechanism. Context is given here once and never
-repeated in topic messages.
+**Brief (stage start, from the mountain peak).** The end-to-end `Workflow` / `Specialist` film
+script, the Wave/Particle density, the problem the stage solves, why now, and the ordered
+topics, each named by what it makes work. No code, no mechanism. Context is given here once and
+never repeated in topic messages.
 
 **Topic bookends (the learner's rule, 2026-10-08).** A topic's first message is its
 introduction and nothing else: the problem it solves, the big picture of what it builds, its
@@ -143,10 +152,12 @@ it, what it touches. One line on the production path.
   reconciliation.
 - Plumbing outside the step's code: a two-line summary and a clickable link to each changed
   file; no walkthrough.
-- Hardening (failure handling, retries, timeouts, fallbacks, validation, HTTP plumbing,
-  naming, test plumbing; the learner's rule, 2026-10-09): a few lines per component, labeled
-  hardening, never a line-by-line walkthrough. Depth goes to agentic system design, advanced
-  LangGraph/LangChain features, and advanced Python ([ROADMAP](../../../mentor/ROADMAP.md)).
+- **Preventative engineering vs. routine plumbing (2026-10-09 & 2026-10-12):** Teach the
+  *engineering mindset* behind preventative hardening (why a subtle failure mode arises in a tall
+  system, what architectural invariant prevents it, and how the design pattern enforces it) in
+  depth, while keeping routine defensive plumbing (boilerplate retries, timeouts, HTTP wrappers,
+  naming, test setup) to a two-line summary with file links—never a line-by-line walkthrough of
+  routine plumbing ([ROADMAP](../../../mentor/ROADMAP.md)).
 
 **Answering the learner.**
 - Right: confirm in one line, add the one thing the answer missed, move on. Praise names the
