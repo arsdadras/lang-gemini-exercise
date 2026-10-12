@@ -9,55 +9,43 @@ the mentor is the only role and works on `main`.
   previous mentor (Claude); from this point forward **Gemini (Antigravity)** is the sole Mentor and
   maintains all code, curriculum, and `mentor/` records directly. See also
   [product ideas & refinements](../docs/gemini/feedbacks/product_ideas_and_refinements.md).
-- **Architectural Unification & Session Plan Locked (2026-10-12, [ADR-0033](../docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md), DEC-039):**
-  Codified the 4-scale Wave-Particle Duality paradigm (`Agent/Graph` at Rung 1,
-  `Specialist/Workflow` at Rung 2, `Coordinator/Operation` at Rung 3 over shared Rung-0
-  infrastructure), the Top-Down Compressor Balancing pedagogy for the Return Pass, Antigravity
-  skills in `.agents/skills/`, and the `PreInvocation` session hook in `.agents/hooks.json`
-  (`scripts/mentor_session_hook.py`).
+- **Architectural Unification & Phases 1-3 Completed (2026-10-12, [ADR-0033](../docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md), DEC-039):**
+  Implemented the 4-scale Wave-Particle Duality architecture in `src/agentlab/`:
+  - **Phase 1:** Added `RagReport`, `InterpreterReport`, `PersonalContextReport` in
+    `src/agentlab/schemas/output/`, typed `*Input` schemas in `src/agentlab/schemas/input/`, and
+    the frozen `Specialist[TInput, TReport]` descriptor (`as_subagent`, `as_tool`, `run`, `render`)
+    in `src/agentlab/schemas/output/specialist_output_schema.py`.
+  - **Phase 2:** Created `src/agentlab/workflows/` (`research_workflow.py`, `rag_workflow.py`,
+    `code_review_workflow.py`, `interpreter_workflow.py`, `personal_context_workflow.py`,
+    `personal_brief_workflow.py`), turned `src/agentlab/subagents/` into thin adapters over
+    `workflows/`, upgraded `make_researcher_subagent` to delegate through `run_research` (the full
+    R1 verification pipeline), added `subagents/personal_context_subagent.py`, and removed the 4
+    scattered `NewType` wrappers (`Researcher`, `RagGraph`, `CodeReviewGraph`, `Interpreter`).
+  - **Phase 3:** Promoted Rung-0 privacy/redaction helpers (`personal_data_redaction`,
+    `configure_trace_masking`, `PERSONAL_DATA_TYPES`) into `utils/secret_redaction_util.py` and
+    added HITL interrupt propagation + `Command(resume=...)` forwarding inside `nodes/research_node.py`
+    when `research_graph` is compiled with a checkpointer.
 
 ## Now & Execution Schedule (Multi-Session Master Plan)
 
 - **Done:** R1 closed (2026-10-11); R1->R2 CI & repo hardening closed (2026-10-11); ADR-0033
-  governance, pedagogy, `.agents/skills/` rehabilitation, and `.agents/hooks.json` session hook
-  completed (2026-10-12).
-- **NEXT SESSION — Dedicated Infrastructure & Architectural Adaptation Session (Phases 1-3 of [ADR-0033](../docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md)):**
-  Execute Phases 1 to 3 in a single dedicated engineering session **before** starting R2 lessons:
-  1. **Phase 1 — Unified `*Report` Schemas & `Specialist[TInput, TReport]` Contract:**
-     - Add `RagReport` (`answer`, `citations`, `retrieval_mode`, `grounding_verdict`),
-       `InterpreterReport` (`answer`, `executed_commands`, `deliverables`), and
-       `PersonalContextReport` (`profile_summary`, `relevant_facts`, `active_preferences`,
-       `active_skills`) under `src/agentlab/schemas/output/`.
-     - Define the flat, lightweight `Specialist[TInput, TReport]` descriptor in
-       `src/agentlab/schemas/output/specialist_output_schema.py` (`name`, `description`,
-       `input_schema`, `report_schema`, `run`, `as_subagent`, `as_tool`).
-  2. **Phase 2 — `src/agentlab/workflows/` Package & `subagents/` Cleanup:**
-     - Create `src/agentlab/workflows/` (`research_workflow.py`, `rag_workflow.py`,
-       `code_review_workflow.py`, `interpreter_workflow.py`, `personal_context_workflow.py`,
-       `personal_brief_workflow.py`) sitting above `agents/` and `graphs/`.
-     - Move `run_research`, `run_rag`, `run_code_review`, and `run_interpreter` from `subagents/`
-       into `workflows/*_workflow.py` (with re-exports in `subagents/` only if needed during
-       transition, updating all callers in `apps/`, `evals/`, and `tests/`).
-     - Turn `subagents/*_subagent.py` into thin adapters over `workflows/`; upgrade
-       `make_researcher_subagent` so it delegates through `run_research` (the full R1 verification
-       workflow) instead of the raw `Researcher` agent; add
-       `subagents/personal_context_subagent.py`.
-     - Remove the inverted `NewType` definitions (`Researcher`, `RagGraph`, `CodeReviewGraph`,
-       `Interpreter`) that were scattered across `nodes/`, `graphs/`, and `agents/` only to work
-       around the old `subagents/` import constraint.
-  3. **Phase 3 — Rung-0 Infrastructure Decoupling & Research HITL Propagation:**
-     - Decouple Rung-0 Memory/Store/Security/Redaction helpers so any workflow or node can consume
-       them as repo-wide infrastructure rather than P5-private helpers.
-     - Fix outbound-search HITL interrupt propagation inside `research_workflow.py` so approvals
-       reach the caller cleanly.
-- **SUBSEQUENT SESSIONS — Phase 4 (Separate Fresh `/mentor` Sessions per `R` Stage / Part):**
-  Each Return Pass stage (or sub-part of a stage) runs in its own fresh `/mentor` session, taught
-  top-down from the mountain peak using the Compressor Balancing rule
+  governance, pedagogy, `.agents/skills/` rehabilitation, `.agents/hooks.json` session hook, and
+  **Phases 1-3 code implementation** completed (2026-10-12, 358 tests green, 0 ruff/mypy/docs
+  errors across 138 source files).
+- **NEXT SESSION — Phase 4, Session R2 (P2 RAG — Top-Down Return Pass):**
+  Teach and execute **R2** in a fresh `/mentor` session from the top-down mountain-peak perspective
   ([pedagogy](../library/teaching/pedagogy.md#top-down-mountain-peak-perspective-and-the-compressor-balancing-rule-return-pass)):
-  - **Session R2 (P2 RAG):** Write P2 design card (points 16-17, Wave/Particle density) and
-    build/teach R2 over `rag_workflow.py` (`RagReport`): hybrid search (BM25 + vector + reranker),
-    query rewriting, single-request grading/reranking in `Jev`, per-claim verification with
-    reroutes, and incremental re-indexing.
+  1. Write the P2 design card (`docs/design_cards/P2_rag_agent.md` with point 16, production path,
+     point 17, decision points, and Wave/Particle density).
+  2. Start the lesson from the mountain peak: `workflows/rag_workflow.py` (`run_rag` ->
+     `SpecialistResult[RagReport]`, `RAG_SPECIALIST_SPEC`) and P2's high Wave density (`StateGraph`
+     stations over `RAGState`).
+  3. Build and teach R2's vertical preventative hardening:
+     - Hybrid search (BM25 + vector + reranker)
+     - Query rewriting and single-request chunk grading/reranking in `Jev`
+     - Per-claim verification with reroutes
+     - Incremental re-indexing (`content_hash`)
+- **SUBSEQUENT SESSIONS — Remaining Return Pass Stages:**
   - **Session R3 (P3 Code Review):** Vertical preventative hardening over
     `code_review_workflow.py` (`CodeReviewReport`): deterministic `ruff`/AST pass first, `Jev`
     decider severity/category labeling second, LLM explanation third.
@@ -72,20 +60,17 @@ the mentor is the only role and works on `main`.
 
 ## Build queue
 
-1. **Next Session (Phases 1-3):** Execute the 3-phase architectural adaptation in `src/agentlab/`
-   (`schemas/output/`, `workflows/`, `subagents/`, `apps/`, `tests/`) and verify 100% green on
-   `pytest`, `ruff`, `mypy`, and `check_docs.py`.
-2. **R2 Session:** Write the P2 design card (with point 16, production path, and point 17, decision
-   points) and build/teach **R2** over `rag_workflow.py`.
-3. A live end-to-end run of the research workflow; the depth budgets are provisional until real
+1. **R2 Session (Next):** Write the P2 design card (points 16-17, Wave/Particle density) and
+   build/teach **R2** over `rag_workflow.py` (`RagReport`).
+2. A live end-to-end run of the research workflow; the depth budgets are provisional until real
    broad runs measure them (`DEPTH_BUDGETS`).
-4. Grow the claim-check labeled set from 34 to 50 cases (200 before fitting thresholds), fit
+3. Grow the claim-check labeled set from 34 to 50 cases (200 before fitting thresholds), fit
    `SUPPORTS_THRESHOLD` and `CONTRADICTS_THRESHOLD`, and decide whether Jev (91.2%) or Gemini 3.5
    Flash-Lite (34/34, 20 s p95) is primary
    ([EV-2026-10-05-claim-check-jev](research/evidence/EV-2026-10-05-claim-check-jev/README.md),
    [EV-2026-10-05-claim-check-flash-lite](research/evidence/EV-2026-10-05-claim-check-flash-lite/README.md)).
-5. The roadmap v5 renumbering sweep in live files (P6 is the content generator).
-6. The P6 design card, from the learner's details, before P6.
+4. The roadmap v5 renumbering sweep in live files (P6 is the content generator).
+5. The P6 design card, from the learner's details, before P6.
 
 ## Working agreements
 
@@ -135,17 +120,12 @@ the mentor is the only role and works on `main`.
 
 Program-level debt is the [BACKLOG](BACKLOG.md); these are the code's.
 
-- **Architectural inconsistencies scheduled for next session (Phases 1-3, ADR-0033):**
-  - `run_*` workflows currently live inside `subagents/*_subagent.py` instead of `workflows/*_workflow.py`.
-  - `make_researcher_subagent` wraps the raw `Researcher` agent instead of `run_research`.
-  - P2 (`rag_subagent.py`) and P4 (`interpreter_subagent.py`) return `SpecialistResult[str]` instead of `RagReport` / `InterpreterReport`, and P5 (`user_context_tool.py`) returns raw `dict[str, str]` instead of `PersonalContextReport`.
-  - Outbound-search HITL interrupts inside `research_node.py` are caught as problems instead of propagating cleanly through `research_workflow.py` (fixed in Phase 3).
 - **Coordinator shell has no approval step:** approvals raised inside a subagent aren't surfaced
-  to the CLI; the banner states it. Fix: P7-B3 (research workflow HITL fixed in Phase 3).
+  to the CLI; the banner states it. Fix: P7-B3 (research workflow HITL fixed in Phase 3 of
+  ADR-0033).
 - **RAG index:** rebuilt 2026-10-08 (1536-dimensional) and copied to the main checkout.
 - **Unused code:** `utils/time_travel_util.py` has no consumer outside a test; removed in R5
   unless one appears.
-- **Personal data in traces:** only P5 masks before upload; promoted to Rung-0 in Phase 3 / R5.
 - **Perso-Arabic script in long P5 replies:** the repair cuts leaked lines by about three
   quarters (`EV-2026-09-17-finglish-line-repair`); its current model isn't re-measured.
 - **`local` tier is opt-in only:** 90-360 s per structured call

@@ -20,7 +20,6 @@ from langgraph.graph.state import CompiledStateGraph
 from agentlab.nodes.claim_check_node import Decide, make_check_node
 from agentlab.nodes.research_node import (
     RESEARCH_NODE,
-    Researcher,
     fan_out,
     make_plan_node,
     make_research_node,
@@ -31,7 +30,7 @@ from agentlab.schemas.state.research_state import ResearchState
 
 
 def build_research_graph(
-    agent: Researcher,
+    agent: Any,
     *,
     plan_chain: Runnable[Any, ResearchPlan] | None = None,
     decide: Decide | None = None,

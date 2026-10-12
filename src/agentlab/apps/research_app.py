@@ -13,10 +13,10 @@ from agentlab.agents.researcher_agent import make_researcher_agent
 from agentlab.configs.research_config import DEPTH_BUDGETS
 from agentlab.retrieval.corpus_retrieval import check_corpus_files
 from agentlab.schemas.input.research_input_schema import ResearchOptions
-from agentlab.subagents.research_subagent import verify_research
 from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.run_with_hitl_util import run_with_hitl
 from agentlab.utils.session_util import resolve_session
+from agentlab.workflows.research_workflow import verify_research
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:

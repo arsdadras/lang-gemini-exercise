@@ -8,9 +8,9 @@ from langchain_core.messages import BaseMessage, HumanMessage
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.store.memory import InMemoryStore
 
-from agentlab.apps.personal_brief_app import personal_data_redaction
 from agentlab.schemas.context.user_context_schema import UserContext
 from agentlab.tools.user_context_tool import make_user_context_tool
+from agentlab.utils.secret_redaction_util import personal_data_redaction
 from tests.fakes import done, tool_turn
 
 SEEN: list[list[BaseMessage]] = []

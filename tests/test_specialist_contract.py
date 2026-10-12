@@ -11,25 +11,48 @@ from unittest.mock import patch
 import httpx
 import pytest
 from langchain_core.documents import Document
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, HumanMessage
+from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.store.memory import InMemoryStore
-from langgraph.types import Interrupt
+from langgraph.types import Command, Interrupt
 
+from agentlab.graphs.research_graph import build_research_graph
 from agentlab.nodes import code_review_node, rag_node
 from agentlab.schemas.output import code_review_output_schema as review_schemas
-from agentlab.schemas.output.research_output_schema import ResearchReport
+from agentlab.schemas.output.interpreter_output_schema import InterpreterReport
+from agentlab.schemas.output.personal_context_output_schema import (
+    PersonalContextReport,
+)
+from agentlab.schemas.output.rag_output_schema import RagReport
+from agentlab.schemas.output.research_output_schema import (
+    Citation,
+    DraftClaim,
+    Evidence,
+    ResearchDraft,
+    ResearchReport,
+)
 from agentlab.schemas.output.specialist_output_schema import (
     Provenance,
     SideEffect,
+    Specialist,
     SpecialistResult,
 )
-from agentlab.subagents.code_review_subagent import run_code_review
-from agentlab.subagents.interpreter_subagent import run_interpreter
-from agentlab.subagents.rag_subagent import run_rag
-from agentlab.subagents.research_subagent import run_research
+from agentlab.subagents.research_subagent import make_researcher_subagent
 from agentlab.tools.user_context_tool import read_user_context
 from agentlab.tools.web_search_tool import WebSearchError
 from agentlab.utils.subagent_util import pending_approvals
+from agentlab.workflows import (
+    CODE_REVIEW_SPECIALIST_SPEC,
+    INTERPRETER_SPECIALIST_SPEC,
+    PERSONAL_CONTEXT_SPECIALIST_SPEC,
+    RAG_SPECIALIST_SPEC,
+    RESEARCH_SPECIALIST_SPEC,
+    run_code_review,
+    run_interpreter,
+    run_personal_context,
+    run_rag,
+    run_research,
+)
 
 
 class Returns:
@@ -80,7 +103,7 @@ def approval_interrupt(name: str) -> Interrupt:
     )
 
 
-# --- the envelope -------------------------------------------------------------------------
+# --- the envelope & Specialist[TInput, TReport] -------------------------------------------
 
 
 def test_the_envelope_puts_status_sources_and_changes_before_the_answer() -> None:
@@ -112,6 +135,50 @@ def test_the_output_type_is_validated() -> None:
     )
 
     assert isinstance(result.output, ResearchReport)
+
+
+def test_every_domain_specialist_exposes_a_frozen_typed_descriptor() -> None:
+    specs: list[Specialist[Any, Any]] = [
+        RESEARCH_SPECIALIST_SPEC,
+        RAG_SPECIALIST_SPEC,
+        CODE_REVIEW_SPECIALIST_SPEC,
+        INTERPRETER_SPECIALIST_SPEC,
+        PERSONAL_CONTEXT_SPECIALIST_SPEC,
+    ]
+    assert [spec.name for spec in specs] == [
+        "research",
+        "rag",
+        "code_review",
+        "interpreter",
+        "personal_context",
+    ]
+    assert [spec.report_schema for spec in specs] == [
+        ResearchReport,
+        RagReport,
+        review_schemas.CodeReviewReport,
+        InterpreterReport,
+        PersonalContextReport,
+    ]
+
+
+def test_specialist_as_tool_and_as_subagent_adapt_the_workflow() -> None:
+    store = InMemoryStore()
+    store.put(
+        ("sara", "memories"),
+        "/user_profile.md",
+        {"content": "- Name: Sara\n- Vegetarian", "encoding": "utf-8"},
+    )
+    tool = PERSONAL_CONTEXT_SPECIALIST_SPEC.as_tool(store=store)
+    subagent = PERSONAL_CONTEXT_SPECIALIST_SPEC.as_subagent(store=store)
+
+    tool_reply = tool.invoke({"user_id": "sara"})
+    subagent_reply = subagent["runnable"].invoke(
+        {"messages": [HumanMessage(content="sara")]}
+    )
+
+    assert tool_reply.startswith("[personal_context] status: ok")
+    assert "Vegetarian" in tool_reply
+    assert subagent_reply["messages"][-1].content == tool_reply
 
 
 def test_pending_approvals_names_what_a_paused_run_waits_for() -> None:
@@ -148,7 +215,13 @@ def test_rag_from_the_corpus_is_ok_with_file_sources() -> None:
 
     result = run_rag(graph, "What does the RAG graph do?")
 
-    assert (result.status, result.output) == ("ok", "It retrieves.")
+    assert result.status == "ok"
+    assert result.output == RagReport(
+        answer="It retrieves.",
+        citations=["src/agentlab/graphs/rag_graph.py"],
+        retrieval_mode="corpus",
+        grounding_verdict="grounded",
+    )
     assert result.provenance == [
         Provenance(kind="corpus", ref="src/agentlab/graphs/rag_graph.py"),
     ]
@@ -169,6 +242,12 @@ def test_rag_from_the_web_is_partial_and_says_so() -> None:
     )
 
     assert result.status == "partial" and "answered from the web" in result.reason
+    assert result.output == RagReport(
+        answer="In neuroscience...",
+        citations=["https://pmc.example/mg"],
+        retrieval_mode="web",
+        grounding_verdict="none",
+    )
     assert result.provenance == [Provenance(kind="web", ref="https://pmc.example/mg")]
 
 
@@ -243,6 +322,96 @@ def test_research_stopped_at_an_approval_is_partial_without_output() -> None:
     assert result.output is None
 
 
+def test_research_graph_propagates_hitl_interrupt_and_resumes_when_checkpointed() -> (
+    None
+):
+    from agentlab.nodes import claim_check_node
+    from tests.test_research_options import read, supports_everything
+
+    page_url = "https://a.example/doc"
+    draft = ResearchDraft(
+        topic="topic",
+        summary="Verified summary.",
+        claims=[
+            DraftClaim(text="X is 1", evidence=[Evidence(url=page_url, passage="X=1")])
+        ],
+        citations=[Citation(title="Doc", url=page_url)],
+    )
+
+    class ResumableStandIn:
+        def __init__(self) -> None:
+            self.calls: list[Any] = []
+
+        def invoke(self, payload: Any, config: Any = None) -> dict[str, Any]:
+            self.calls.append(payload)
+            if isinstance(payload, Command):
+                return {
+                    "messages": [read(page_url, "X=1")],
+                    "structured_response": draft,
+                }
+            return {
+                "messages": [],
+                "__interrupt__": [approval_interrupt("web_search")],
+            }
+
+    stand_in = ResumableStandIn()
+    graph = build_research_graph(stand_in, checkpointer=InMemorySaver())
+    config = {"configurable": {"thread_id": "hitl_thread_1"}}
+
+    with patch.object(
+        claim_check_node,
+        "decision_model",
+        type("Reg", (), {"decide": staticmethod(supports_everything)})(),
+    ):
+        paused = graph.invoke({"topic": "topic", "options": None}, config=config)
+        assert pending_approvals(paused) == "web_search"
+
+        resumed = graph.invoke(
+            Command(resume={"decisions": [{"type": "approve"}]}),
+            config=config,
+        )
+
+    assert resumed["report"].summary == "Verified summary."
+    assert [c.status for c in resumed["report"].claims] == ["supported"]
+
+
+def test_make_researcher_subagent_delegates_through_run_research() -> None:
+    from agentlab.nodes import claim_check_node
+    from tests.test_research_options import read, supports_everything
+
+    page_url = "https://a.example/doc"
+    draft = ResearchDraft(
+        topic="topic",
+        summary="Verified subagent summary.",
+        claims=[
+            DraftClaim(
+                text="Fact A", evidence=[Evidence(url=page_url, passage="Fact A")]
+            )
+        ],
+        citations=[Citation(title="Doc", url=page_url)],
+    )
+    agent = Returns(
+        {
+            "messages": [read(page_url, "Fact A")],
+            "structured_response": draft,
+        }
+    )
+    subagent = make_researcher_subagent(agent)
+    with patch.object(
+        claim_check_node,
+        "decision_model",
+        type("Reg", (), {"decide": staticmethod(supports_everything)})(),
+    ):
+        reply = subagent["runnable"].invoke(
+            {"messages": [HumanMessage(content="topic")]}
+        )
+
+    text = reply["messages"][-1].content
+    assert text.startswith("[research] status: ok")
+    assert "Verified subagent summary." in text
+    assert "[SUPPORTED] Fact A" in text
+
+
 def test_research_without_a_report_fails() -> None:
     assert run_research(Returns({"messages": []}), "topic").status == "failed"
 
@@ -277,7 +446,7 @@ def test_a_review_with_failing_tests_is_still_ok() -> None:
     )
 
     assert result.status == "ok"
-    assert result.output.test_run == RAN
+    assert result.output is not None and result.output.test_run == RAN
 
 
 def test_a_refactor_waiting_for_approval_is_no_longer_swallowed() -> None:
@@ -293,7 +462,7 @@ def test_a_refactor_waiting_for_approval_is_no_longer_swallowed() -> None:
 
     assert result.status == "partial"
     assert "refactor waits for approval (Refactor Approval)" in result.reason
-    assert result.output.applied_code is None
+    assert result.output is not None and result.output.applied_code is None
 
 
 def test_tests_that_did_not_run_make_the_review_partial() -> None:
@@ -352,7 +521,21 @@ def test_files_the_interpreter_writes_become_side_effects(tmp_path: Path) -> Non
     (tmp_path / "deliverables").mkdir()
     (tmp_path / "deliverables" / "old.txt").write_text("kept", encoding="utf-8")
     agent = Returns(
-        {"messages": [AIMessage(content="Mean is 6.")]},
+        {
+            "messages": [
+                AIMessage(
+                    content="",
+                    tool_calls=[
+                        {
+                            "name": "execute",
+                            "args": {"command": "python compute.py"},
+                            "id": "tc1",
+                        }
+                    ],
+                ),
+                AIMessage(content="Mean is 6."),
+            ]
+        },
         effect=lambda: (tmp_path / "deliverables" / "mean.txt").write_text(
             "6.0",
             encoding="utf-8",
@@ -361,7 +544,12 @@ def test_files_the_interpreter_writes_become_side_effects(tmp_path: Path) -> Non
 
     result = run_interpreter(agent, "compute", sandbox_dir=tmp_path)
 
-    assert (result.status, result.output) == ("ok", "Mean is 6.")
+    assert result.status == "ok"
+    assert result.output == InterpreterReport(
+        answer="Mean is 6.",
+        executed_commands=["python compute.py"],
+        deliverables=["deliverables/mean.txt"],
+    )
     assert [(effect.action, effect.target) for effect in result.side_effects] == [
         ("created", "deliverables/mean.txt"),
     ]
@@ -421,16 +609,22 @@ def test_user_context_is_ok_even_when_empty_and_cites_memory_files() -> None:
     store.put(
         ("sara", "memories"),
         "/user_profile.md",
-        {"content": "- Vegetarian", "encoding": "utf-8"},
+        {"content": "- Diet: Vegetarian", "encoding": "utf-8"},
     )
 
-    sara, nobody = read_user_context(store, "sara"), read_user_context(store, "nobody")
+    sara = run_personal_context(store, "sara")
+    nobody = read_user_context(store, "nobody")
 
-    assert (sara.status, sara.output) == (
-        "ok",
-        {"/memories/user_profile.md": "- Vegetarian"},
+    assert sara.status == "ok"
+    assert sara.output == PersonalContextReport(
+        profile_summary="- Diet: Vegetarian",
+        relevant_facts=["Diet: Vegetarian"],
+        active_preferences={"Diet": "Vegetarian"},
+        active_skills=[],
+        files={"/memories/user_profile.md": "- Diet: Vegetarian"},
     )
     assert sara.provenance == [
         Provenance(kind="memory", ref="/memories/user_profile.md"),
     ]
-    assert (nobody.status, nobody.output) == ("ok", {})
+    assert nobody.status == "ok"
+    assert nobody.output == PersonalContextReport()

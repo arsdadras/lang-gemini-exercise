@@ -22,6 +22,7 @@ from langchain.agents import create_agent
 from langchain.agents.middleware import AgentMiddleware, ToolCallLimitMiddleware
 from langchain_core.tools import BaseTool
 from langgraph.checkpoint.base import BaseCheckpointSaver
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.store.base import BaseStore
 
 from agentlab.configs.paths_config import checkpoint_db_path
@@ -32,7 +33,6 @@ from agentlab.middlewares.fallback_middleware import make_model_fallback
 from agentlab.middlewares.hitl_middleware import hitl_for
 from agentlab.middlewares.source_route_middleware import SourceRouteMiddleware
 from agentlab.models import llm_model
-from agentlab.nodes.research_node import Researcher
 from agentlab.prompts.agents_prompt import build_researcher_prompt
 from agentlab.retrieval.corpus_retrieval import build_corpus_retriever
 from agentlab.retrieval.index_retrieval import get_retriever
@@ -60,7 +60,7 @@ def make_researcher_agent(
     store: BaseStore | None = None,
     context_schema: type[Any] | None = None,
     options: ResearchOptions | None = None,
-) -> Researcher:
+) -> CompiledStateGraph:
     """Build the researcher.
 
     Every ``web_search`` call pauses for human approval, which is why the agent
@@ -160,4 +160,4 @@ def make_researcher_agent(
         store=store,
         context_schema=context_schema,
     )
-    return Researcher(agent)
+    return agent

@@ -31,11 +31,11 @@ from agentlab.schemas.output.research_output_schema import (
     ResearchDraft,
     SourceDocument,
 )
-from agentlab.subagents.research_subagent import run_research
 from agentlab.tools import research_source_tool
 from agentlab.tools.academic_search_tool import make_academic_search_tool
 from agentlab.tools.corpus_search_tool import make_corpus_search_tool
 from agentlab.tools.research_source_tool import documents_read, research_sources
+from agentlab.workflows.research_workflow import run_research
 from tests.fakes import ScriptedToolModel, done, tool_turn
 
 PAPER = "https://arxiv.org/abs/2309.15217"
@@ -585,7 +585,7 @@ def test_given_files_are_chunked_and_searched_in_memory(
 
 def test_the_cli_takes_a_session_mode_and_corpus_files() -> None:
     from agentlab.apps.research_app import parse_args
-    from agentlab.subagents.research_subagent import verify_research
+    from agentlab.workflows.research_workflow import verify_research
     from tests.test_research_options import finished, supports_everything
 
     args = parse_args(["new", "--depth", "quick", "--corpus", "a.md", "b.txt"])

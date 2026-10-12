@@ -26,9 +26,9 @@ from agentlab.schemas.output.research_output_schema import (
     ResearchDraft,
     SourceDocument,
 )
-from agentlab.subagents.research_subagent import run_research
 from agentlab.tools.read_page_tool import READ_PAGE_TOOL_NAME
 from agentlab.tools.research_source_tool import documents_read
+from agentlab.workflows.research_workflow import run_research
 from tests.fakes import scripted_decider
 from tests.test_specialist_contract import Returns, rejected
 

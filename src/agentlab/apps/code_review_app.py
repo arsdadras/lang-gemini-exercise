@@ -13,14 +13,12 @@ from typing import Any
 from dotenv import load_dotenv
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.base import BaseCheckpointSaver
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import Command
 
 from agentlab.configs.paths_config import checkpoint_db_path
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
-from agentlab.graphs.code_review_parentgraph import (
-    CodeReviewGraph,
-    build_code_review_graph,
-)
+from agentlab.graphs.code_review_parentgraph import build_code_review_graph
 from agentlab.schemas.output.code_review_output_schema import (
     CodeReview,
     TestRun,
@@ -40,7 +38,7 @@ def calculate_discount(price: float, discount_percent: float) -> float:
 """.strip()
 
 
-def _make_graph(checkpointer: BaseCheckpointSaver | None) -> CodeReviewGraph:
+def _make_graph(checkpointer: BaseCheckpointSaver | None) -> CompiledStateGraph:
     return build_code_review_graph(
         checkpointer=checkpointer
         if checkpointer is not None
@@ -77,7 +75,7 @@ def _print_tests(tests: TestSuite, execution: TestRun | None) -> None:
 
 
 def _stream_pipeline(
-    graph: CodeReviewGraph,
+    graph: CompiledStateGraph,
     inputs: dict[str, Any],
     config: RunnableConfig,
 ) -> bool:
@@ -106,7 +104,7 @@ def _stream_pipeline(
     return True
 
 
-def _run_refactor_gate(graph: CodeReviewGraph, config: RunnableConfig) -> bool:
+def _run_refactor_gate(graph: CompiledStateGraph, config: RunnableConfig) -> bool:
     """If the graph is paused at the refactor gate, ask the human and resume."""
     snapshot = graph.get_state(config)
     if not snapshot.next:
@@ -135,7 +133,7 @@ def _run_refactor_gate(graph: CodeReviewGraph, config: RunnableConfig) -> bool:
 
 
 def run_code_review(
-    graph: CodeReviewGraph,
+    graph: CompiledStateGraph,
     config: RunnableConfig,
     *,
     code: str | None,

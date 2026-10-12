@@ -1,6 +1,6 @@
 """Graph assembly for the P2 RAG agent: retrieve -> grade -> (rewrite loop | generate | web search)."""
 
-from typing import Literal, NewType
+from typing import Literal
 
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
@@ -19,11 +19,6 @@ from agentlab.nodes.rag_node import (
 )
 from agentlab.schemas.state.rag_state import RAGState
 from agentlab.utils.failure_util import TRANSIENT_RETRY
-
-RagGraph = NewType("RagGraph", CompiledStateGraph)
-"""A graph ``build_rag_graph`` compiled: its state carries ``answer``, ``answer_source``, and
-``chunks``, which ``run_rag`` reads. A static guarantee only: a type checker rejects any other
-graph; at run time it is the compiled graph itself."""
 
 
 def route_after_grading(
@@ -44,7 +39,7 @@ def route_after_web_search(state: RAGState) -> Literal["generate_from_web", "__e
 
 def build_rag_graph(
     checkpointer: BaseCheckpointSaver | None = None,
-) -> RagGraph:
+) -> CompiledStateGraph:
     """Compile the RAG graph (defaults to an in-memory checkpointer)."""
     graph = StateGraph(RAGState)
     # The two nodes whose external call has no retry of its own: embeddings and web search.
@@ -64,8 +59,6 @@ def build_rag_graph(
     graph.add_conditional_edges("web_search", route_after_web_search)
     graph.add_edge("generate_from_web", END)
     graph.add_edge("check_hallucination", END)
-    return RagGraph(
-        graph.compile(
-            checkpointer=checkpointer if checkpointer is not None else InMemorySaver(),
-        )
+    return graph.compile(
+        checkpointer=checkpointer if checkpointer is not None else InMemorySaver(),
     )

@@ -30,3 +30,17 @@ class Deliverable(BaseModel):
         default=None,
         description="Last modification time (epoch seconds), if known",
     )
+
+
+class InterpreterReport(BaseModel):
+    """Structured report returned by the P4 interpreter workflow (`run_interpreter`)."""
+
+    answer: str = Field(description="Final text response from the interpreter run.")
+    executed_commands: list[str] = Field(
+        default_factory=list,
+        description="Shell commands executed in the sandbox during the run.",
+    )
+    deliverables: list[str] = Field(
+        default_factory=list,
+        description="Relative sandbox paths of deliverables created or modified during the run.",
+    )

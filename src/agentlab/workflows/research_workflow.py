@@ -1,0 +1,210 @@
+"""P1 domain workflow & specialist: ``run_research``, ``verify_research``, and ``RESEARCH_SPECIALIST_SPEC``."""
+
+from typing import Any, overload
+
+from langchain_core.runnables import Runnable, RunnableConfig
+from langgraph.checkpoint.base import BaseCheckpointSaver
+
+from agentlab.agents.researcher_agent import make_researcher_agent
+from agentlab.configs.research_config import DEPTH_BUDGETS
+from agentlab.graphs.research_graph import build_research_graph
+from agentlab.nodes.claim_check_node import cap_claims, check_claims, unsupported_count
+from agentlab.nodes.research_node import read_research_run
+from agentlab.nodes.source_route_node import Decide
+from agentlab.schemas.input.research_input_schema import ResearchInput, ResearchOptions
+from agentlab.schemas.output.research_output_schema import (
+    ResearchPlan,
+    ResearchReport,
+)
+from agentlab.schemas.output.specialist_output_schema import (
+    Provenance,
+    Specialist,
+    SpecialistResult,
+)
+from agentlab.utils.failure_util import failure_kind, failure_reason
+from agentlab.utils.subagent_util import new_delegation_config, pending_approvals
+
+RESEARCH_SPECIALIST = "research"
+DEFAULT_RESEARCH_DESCRIPTION = (
+    "Plans, routes across web/academic/corpus sources, researches sub-questions in "
+    "parallel, and verifies every claim against the source documents read."
+)
+
+
+def verify_research(
+    state: dict[str, Any],
+    options: ResearchOptions | None = None,
+) -> ResearchReport | None:
+    """Check the agent's draft against the documents its tools returned: the report, or None.
+
+    Status and confidence come from this check, never from the model. Callers that run the
+    agent themselves (the apps, with their approval loops) pass its final state here; when
+    ``options`` are given, the depth's claim cap is enforced by evidence just as in the graph.
+    """
+    run = read_research_run(state)
+    if run.draft is None:
+        return None
+    report = check_claims(run.draft, run.documents)
+    if options is not None:
+        max_claims = DEPTH_BUDGETS[options.depth].claims
+        if len(report.claims) > max_claims:
+            report, _ = cap_claims(report, max_claims)
+    return report
+
+
+def render_research_report(report: ResearchReport) -> str:
+    """Format a verified ``ResearchReport`` as concise markdown for a coordinator or tool caller."""
+    lines = [
+        f"### Research Summary (Confidence: {report.confidence:.2f})",
+        report.summary,
+    ]
+    if report.claims:
+        lines.append("\n**Verified Claims:**")
+        for claim in report.claims:
+            lines.append(f"- [{claim.status.upper()}] {claim.text}")
+    return "\n".join(lines)
+
+
+@overload
+def run_research(
+    topic: str,
+    options: ResearchOptions | None = None,
+    *,
+    agent: Any = None,
+    plan_chain: Runnable[Any, ResearchPlan] | None = None,
+    route_decide: Decide | None = None,
+    checkpointer: BaseCheckpointSaver | None = None,
+    config: RunnableConfig | None = None,
+) -> SpecialistResult[ResearchReport]: ...
+
+
+@overload
+def run_research(
+    agent: Any,
+    topic: str,
+    options: ResearchOptions | None = None,
+    /,
+    *,
+    plan_chain: Runnable[Any, ResearchPlan] | None = None,
+    route_decide: Decide | None = None,
+    checkpointer: BaseCheckpointSaver | None = None,
+    config: RunnableConfig | None = None,
+) -> SpecialistResult[ResearchReport]: ...
+
+
+def run_research(*args: Any, **kwargs: Any) -> SpecialistResult[ResearchReport]:
+    """Research ``topic`` through the research graph and return the specialist envelope.
+
+    Supports both ``run_research(agent, topic, options)`` and ``run_research(topic, options, agent=...)``.
+    """
+    agent_or_topic = args[0] if len(args) >= 1 else None
+    topic_or_options = args[1] if len(args) >= 2 else None
+    pos_options = args[2] if len(args) >= 3 else kwargs.get("options")
+    kw_topic = kwargs.get("topic")
+    kw_agent = kwargs.get("agent")
+    plan_chain = kwargs.get("plan_chain")
+    route_decide = kwargs.get("route_decide")
+    checkpointer = kwargs.get("checkpointer")
+    config = kwargs.get("config")
+
+    if isinstance(agent_or_topic, str):
+        resolved_topic = agent_or_topic
+        resolved_options = (
+            topic_or_options
+            if isinstance(topic_or_options, ResearchOptions)
+            else pos_options
+        )
+        resolved_agent = (
+            kw_agent
+            if kw_agent is not None
+            else make_researcher_agent(options=resolved_options)
+        )
+    elif agent_or_topic is None and isinstance(kw_topic, str):
+        resolved_topic = kw_topic
+        resolved_options = pos_options
+        resolved_agent = (
+            kw_agent
+            if kw_agent is not None
+            else make_researcher_agent(options=resolved_options)
+        )
+    else:
+        if not isinstance(topic_or_options, str):
+            msg = "run_research requires a topic string"
+            raise TypeError(msg)
+        resolved_agent = agent_or_topic
+        resolved_topic = topic_or_options
+        resolved_options = pos_options
+
+    graph = build_research_graph(
+        resolved_agent,
+        plan_chain=plan_chain,
+        route_decide=route_decide,
+        checkpointer=checkpointer,
+    )
+    invoke_config = config or (
+        new_delegation_config() if checkpointer is not None else None
+    )
+    try:
+        state = (
+            graph.invoke(
+                {"topic": resolved_topic, "options": resolved_options},
+                config=invoke_config,
+            )
+            if invoke_config is not None
+            else graph.invoke({"topic": resolved_topic, "options": resolved_options})
+        )
+    except Exception as error:
+        if failure_kind(error) is None:
+            raise
+        return SpecialistResult[ResearchReport](
+            specialist=RESEARCH_SPECIALIST,
+            status="failed",
+            reason=failure_reason(error),
+        )
+    problems = list(state.get("problems", []))
+    if waiting_in_graph := pending_approvals(state):
+        approval_msg = (
+            f"Stopped before finishing: waiting for approval of {waiting_in_graph}."
+        )
+        if not any("waiting for approval" in problem for problem in problems):
+            problems.append(approval_msg)
+    report: ResearchReport | None = state.get("report")
+    if report is None:
+        waiting = any("waiting for approval" in problem for problem in problems)
+        return SpecialistResult[ResearchReport](
+            specialist=RESEARCH_SPECIALIST,
+            status="partial" if waiting else "failed",
+            reason=" ".join(problems),
+        )
+    unsupported = unsupported_count(report)
+    if not report.claims:
+        problems.append("The report has no claims.")
+    elif unsupported:
+        problems.append(
+            f"{unsupported} of {len(report.claims)} claims are not supported by the "
+            "pages the agent read."
+        )
+    return SpecialistResult[ResearchReport](
+        specialist=RESEARCH_SPECIALIST,
+        status="partial" if problems else "ok",
+        reason=" ".join(problems),
+        output=report,
+        provenance=[
+            Provenance(
+                kind=report.citation_kinds.get(citation.url, "web"),
+                ref=citation.url,
+                title=citation.title,
+            )
+            for citation in report.citations
+        ],
+    )
+
+
+RESEARCH_SPECIALIST_SPEC = Specialist[ResearchInput, ResearchReport](
+    name=RESEARCH_SPECIALIST,
+    description=DEFAULT_RESEARCH_DESCRIPTION,
+    input_schema=ResearchInput,
+    report_schema=ResearchReport,
+    run=run_research,
+    render=render_research_report,
+)

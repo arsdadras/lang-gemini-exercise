@@ -7,50 +7,21 @@ Defaults to the P5 app's last active user.
 """
 
 import sys
-import uuid
 
 from dotenv import load_dotenv
-from langchain.agents.middleware import PIIMiddleware
-from langchain_core.messages import HumanMessage
-from langchain_core.runnables import RunnableConfig
-from langgraph.checkpoint.memory import InMemorySaver
 
-from agentlab.agents.researcher_agent import make_researcher_agent
 from agentlab.configs.personal_assistant_config import ASSISTANT_STORE_DB_PATH
 from agentlab.data.sqlite_db_data import get_sqlite_store
-from agentlab.schemas.context.user_context_schema import UserContext
-from agentlab.subagents.research_subagent import verify_research
-from agentlab.tools.user_context_tool import (
-    USER_CONTEXT_TOOL_NAME,
-    make_user_context_tool,
-)
 from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.memory_session_util import load_session
-from agentlab.utils.run_with_hitl_util import stream_with_hitl
-
-# Personal data the user context may hold that must not reach the research model.
-PERSONAL_DATA_TYPES = ("email", "credit_card", "ip")
-
-
-def personal_data_redaction() -> list[PIIMiddleware]:
-    """Redact personal data from tool results (the user context) before the model reads them."""
-    return [
-        PIIMiddleware(
-            kind,
-            strategy="redact",
-            apply_to_input=False,
-            apply_to_tool_results=True,
-        )
-        for kind in PERSONAL_DATA_TYPES
-    ]
-
-
-def brief_request(topic: str) -> str:
-    return (
-        f"Research this for me: {topic}\n\n"
-        f"First call {USER_CONTEXT_TOOL_NAME} and tailor the report to my stored constraints, "
-        "preferences, and goals; say in the summary which of them shaped it."
-    )
+from agentlab.utils.secret_redaction_util import (
+    PERSONAL_DATA_TYPES,
+    personal_data_redaction,
+)
+from agentlab.workflows.personal_brief_workflow import (
+    brief_request,
+    run_personal_brief,
+)
 
 
 def main() -> None:
@@ -59,30 +30,21 @@ def main() -> None:
     configure_utf8_stdout()
     store = get_sqlite_store(ASSISTANT_STORE_DB_PATH)
     user_id = sys.argv[1] if len(sys.argv) > 1 else load_session(store)[0]
-    agent = make_researcher_agent(
-        checkpointer=InMemorySaver(),
-        extra_tools=[make_user_context_tool()],
-        extra_middleware=personal_data_redaction(),
-        store=store,
-        context_schema=UserContext,
-    )
 
     topic = input(f"[{user_id}] Topic to research: ").strip()
     if not topic:
         print("No topic given.")
         return
-    config: RunnableConfig = {
-        "configurable": {"thread_id": f"brief_{uuid.uuid4().hex[:6]}"}
-    }
-    stream_with_hitl(
-        agent,
-        {"messages": [HumanMessage(content=brief_request(topic))]},
-        config,
-        context=UserContext(user_id=user_id),
-        assistant_prompt="Approve this web_search call? [y/n]: ",
-    )
-    report = verify_research(agent.get_state(config).values)
+    report = run_personal_brief(store, user_id, topic)
     print(report.model_dump_json(indent=2) if report else "No report was produced.")
+
+
+__all__ = [
+    "PERSONAL_DATA_TYPES",
+    "brief_request",
+    "main",
+    "personal_data_redaction",
+]
 
 
 if __name__ == "__main__":

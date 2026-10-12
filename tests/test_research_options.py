@@ -21,13 +21,13 @@ from agentlab.schemas.output.research_output_schema import (
     ResearchDraft,
     ResearchPlan,
 )
-from agentlab.subagents.research_subagent import run_research
 from agentlab.tools.read_page_tool import (
     READ_PAGE_TOOL_NAME,
     domain_allowed,
     make_read_page_tool,
 )
 from agentlab.tools.web_search_tool import make_web_search_tool
+from agentlab.workflows.research_workflow import run_research
 
 STANDARD = ResearchOptions(depth="standard")
 

@@ -8,6 +8,8 @@ LangChain's Luhn-checked credit card detector.
 
 from typing import Any
 
+import langsmith
+from langchain.agents.middleware import PIIMiddleware
 from langchain.agents.middleware.pii import PIIMatch, detect_credit_card, detect_email
 from langsmith import Client
 from langsmith.anonymizer import (
@@ -18,6 +20,10 @@ from langsmith.anonymizer import (
 
 EMAIL_PLACEHOLDER = "[EMAIL]"
 _TRACE_MAX_DEPTH = 24
+
+# Personal data that user context or external tool results may hold and that must be
+# redacted before an outbound model sees them.
+PERSONAL_DATA_TYPES: tuple[str, ...] = ("email", "credit_card", "ip")
 
 
 def _replace_matches(text: str, matches: list[PIIMatch], placeholder: str) -> str:
@@ -36,6 +42,19 @@ def redact_secrets(text: str) -> tuple[str, int]:
     return _replace_matches(text, cards, SECRET_PLACEHOLDER), found + len(cards)
 
 
+def personal_data_redaction() -> list[PIIMiddleware]:
+    """Redact personal data (email, credit card, IP) from tool results before the model reads them."""
+    return [
+        PIIMiddleware(
+            kind,
+            strategy="redact",
+            apply_to_input=False,
+            apply_to_tool_results=True,
+        )
+        for kind in PERSONAL_DATA_TYPES
+    ]
+
+
 def mask_for_trace(text: str, _path: list[str | int] | None = None) -> str:
     """Trace view of ``text``: secrets redacted and email addresses masked."""
     redacted, _ = redact_secrets(text)
@@ -50,3 +69,8 @@ def make_trace_anonymizer() -> Any:
 def make_trace_masking_client() -> Client:
     """LangSmith client that masks run inputs, outputs, and metadata before upload."""
     return Client(anonymizer=make_trace_anonymizer())
+
+
+def configure_trace_masking() -> None:
+    """Configure LangSmith globally with the repo's secret- and email-masking client."""
+    langsmith.configure(client=make_trace_masking_client())

@@ -48,3 +48,13 @@ class ResearchOptions(BaseModel):
         description="answer: claims that answer the topic and a short answer as the summary. "
         "fact_pool: as many distinct facts as the budget allows, for a caller such as P6",
     )
+
+
+class ResearchInput(BaseModel):
+    """Typed input for the P1 research specialist."""
+
+    topic: str = Field(description="The research question or topic to investigate.")
+    options: ResearchOptions | None = Field(
+        default=None,
+        description="Optional budget, source, and formatting controls for the research run.",
+    )

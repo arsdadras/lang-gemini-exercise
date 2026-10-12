@@ -5,8 +5,7 @@
   sources the router picked for it (``source_route_node.py``).
 - ``make_research_node`` runs the researcher agent on one sub-question, limited to its sources,
   and returns its draft and the documents its source tools returned, or the problem it met.
-- ``Researcher`` is the type of an agent ``make_researcher_agent`` built, and
-  ``read_research_run`` reads one run's outcome: the two halves of the agent's contract.
+- ``read_research_run`` reads one run's outcome from the researcher agent's final state.
 
 The claim check that follows lives in ``claim_check_node.py``.
 
@@ -19,12 +18,12 @@ over, the cap cuts the least important, and the cut ones are reported, never dro
 """
 
 from collections.abc import Callable, Mapping
-from typing import Any, NamedTuple, NewType
+from typing import Any, NamedTuple
 
 from langchain_core.messages import HumanMessage
-from langchain_core.runnables import Runnable
-from langgraph.graph.state import CompiledStateGraph
-from langgraph.types import Send
+from langchain_core.runnables import Runnable, RunnableConfig
+from langgraph.config import get_config
+from langgraph.types import Command, Send, interrupt
 
 from agentlab.configs.research_config import DEPTH_BUDGETS
 from agentlab.models import llm_model
@@ -44,16 +43,6 @@ from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import new_delegation_config, pending_approvals
 
 RESEARCH_NODE = "research"
-
-Researcher = NewType("Researcher", CompiledStateGraph)
-"""A researcher agent built by ``make_researcher_agent``, the only place that makes one.
-
-The factory builds it with ``response_format=ResearchDraft``, so a finished run's state holds
-a ``structured_response``; any other agent passed here would fail only at run time, with no
-report. ``NewType`` costs nothing at run time and adds no layer: the value is the compiled
-agent itself, so ``invoke``, ``stream``, and ``get_state`` work unchanged. The guarantee is
-static only (a type checker or the IDE); the factory's own test locks the output at run time.
-"""
 
 
 class ResearchRun(NamedTuple):
@@ -152,30 +141,97 @@ def fan_out(state: ResearchState) -> list[Send]:
     ]
 
 
-def make_research_node(agent: Researcher) -> Callable[..., dict]:
+def _parent_has_checkpointer() -> bool:
+    """True when the enclosing ``research_graph`` was compiled with a checkpointer."""
+    try:
+        conf = get_config().get("configurable", {})
+    except RuntimeError:
+        return False
+    return conf.get("__pregel_checkpointer") is not None
+
+
+def _parent_thread_id() -> str:
+    """Thread id of the enclosing ``research_graph``, or ``""`` when unconfigured."""
+    try:
+        conf = get_config().get("configurable", {})
+    except RuntimeError:
+        return ""
+    return str(conf.get("thread_id", ""))
+
+
+def make_research_node(agent: Any) -> Callable[..., dict]:
     """Build the node that researches one sub-question with the injected P1 agent.
 
     Each run gets a fresh thread, so its messages hold only the documents its own tools
     returned, and the claim check later judges each claim against those. The run's ``sources``
-    go in its input, where ``SourceRouteMiddleware`` limits the agent to their tools. An external failure, a run left
-    waiting for approval, or a run with no draft becomes a problem; the other runs go on. A bug
-    raises.
+    go in its input, where ``SourceRouteMiddleware`` limits the agent to their tools.
+    When the parent ``research_graph`` has a checkpointer, outbound search approvals are
+    propagated via ``interrupt()`` and resumed onto the child thread; in an uncheckpointed
+    one-shot run, a paused search or external failure becomes a problem so other runs go on.
     """
+    active_runs: dict[
+        tuple[str, str], tuple[RunnableConfig, dict[str, Any], list[Any]]
+    ] = {}
 
     def research(task: SubQuestionState) -> dict:
         label = task["label"]
-        try:
-            outcome = agent.invoke(
-                {
-                    "messages": [HumanMessage(content=task["question"])],
-                    "sources": task["sources"],
-                },
-                config=new_delegation_config(),
-            )
-        except Exception as error:
-            if failure_kind(error) is None:
-                raise
-            return {"problems": [label + failure_reason(error)]}
+        run_key = (_parent_thread_id(), task["question"])
+        if run_key in active_runs:
+            child_config, outcome, history = active_runs[run_key]
+            for past_value in history:
+                interrupt(past_value)
+            while outcome.get("__interrupt__"):
+                pending_value = outcome["__interrupt__"][0].value
+                decision = interrupt(pending_value)
+                history.append(pending_value)
+                try:
+                    outcome = agent.invoke(
+                        Command(resume=decision), config=child_config
+                    )
+                except Exception as error:
+                    active_runs.pop(run_key, None)
+                    if failure_kind(error) is None:
+                        raise
+                    return {"problems": [label + failure_reason(error)]}
+                active_runs[run_key] = (child_config, outcome, history)
+            active_runs.pop(run_key, None)
+        else:
+            child_config = new_delegation_config()
+            try:
+                outcome = agent.invoke(
+                    {
+                        "messages": [HumanMessage(content=task["question"])],
+                        "sources": task["sources"],
+                    },
+                    config=child_config,
+                )
+            except Exception as error:
+                if failure_kind(error) is None:
+                    raise
+                return {"problems": [label + failure_reason(error)]}
+            if outcome.get("__interrupt__") and _parent_has_checkpointer():
+                active_runs[run_key] = (child_config, outcome, [])
+                pending_value = outcome["__interrupt__"][0].value
+                decision = interrupt(pending_value)
+                history = [pending_value]
+                while True:
+                    try:
+                        outcome = agent.invoke(
+                            Command(resume=decision), config=child_config
+                        )
+                    except Exception as error:
+                        active_runs.pop(run_key, None)
+                        if failure_kind(error) is None:
+                            raise
+                        return {"problems": [label + failure_reason(error)]}
+                    active_runs[run_key] = (child_config, outcome, history)
+                    if not outcome.get("__interrupt__"):
+                        break
+                    next_value = outcome["__interrupt__"][0].value
+                    decision = interrupt(next_value)
+                    history.append(next_value)
+                active_runs.pop(run_key, None)
+
         if waiting := pending_approvals(outcome):
             return {
                 "problems": [

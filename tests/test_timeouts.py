@@ -13,7 +13,6 @@ from agentlab.configs.models_config import EMBEDDING_SPEC, MODEL_TIERS, ModelSpe
 from agentlab.graphs.rag_graph import build_rag_graph
 from agentlab.models.registry_model import build_chat_model
 from agentlab.retrieval import index_retrieval
-from agentlab.subagents.rag_subagent import run_rag
 from agentlab.tools import web_search_tool
 from agentlab.tools.web_search_tool import (
     WebSearchError,
@@ -21,6 +20,7 @@ from agentlab.tools.web_search_tool import (
     search_results,
 )
 from agentlab.utils.failure_util import failure_kind
+from agentlab.workflows.rag_workflow import run_rag
 from tests.fakes import scripted_rag
 
 SHORT = 0.3

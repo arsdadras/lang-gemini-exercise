@@ -5,8 +5,13 @@ from, what changed) apart from the answer itself, whose type differs per special
 """
 
 from collections.abc import Callable
-from typing import Literal
+from dataclasses import dataclass
+from typing import Any, Literal
 
+from deepagents import CompiledSubAgent
+from langchain_core.messages import AIMessage
+from langchain_core.runnables import RunnableLambda
+from langchain_core.tools import BaseTool, StructuredTool
 from pydantic import BaseModel, Field
 
 from agentlab.schemas.output.research_output_schema import SourceKind
@@ -73,3 +78,53 @@ class SpecialistResult[T](BaseModel):
                 body = str(self.output)
             lines.extend(["", body])
         return "\n".join(lines)
+
+
+@dataclass(frozen=True)
+class Specialist[TInput: BaseModel, TReport: BaseModel]:
+    """The Particle face of a Rung-2 domain capability (ADR-0033).
+
+    Pairs a typed ``input_schema`` and ``report_schema`` with the domain workflow's ``run``
+    function and thin ``as_subagent`` / ``as_tool`` adapters, without wrapping Rung-1
+    ``CompiledStateGraph`` objects in a custom OOP base class.
+    """
+
+    name: str
+    description: str
+    input_schema: type[TInput]
+    report_schema: type[TReport]
+    run: Callable[..., SpecialistResult[TReport]]
+    render: Callable[[TReport], str] | None = None
+    subagent_factory: Callable[..., CompiledSubAgent] | None = None
+
+    def as_subagent(self, **kwargs: Any) -> CompiledSubAgent:
+        """Adapt this specialist as a ``CompiledSubAgent`` for a Rung-3 coordinator."""
+        if self.subagent_factory is not None:
+            return self.subagent_factory(**kwargs)
+
+        def delegate(state: dict[str, Any]) -> dict[str, Any]:
+            last = state["messages"][-1]
+            content = getattr(last, "content", last)
+            task = content if isinstance(content, str) else str(content)
+            result = self.run(task, **kwargs)
+            return {"messages": [AIMessage(content=result.to_text(render=self.render))]}
+
+        return {
+            "name": self.name,
+            "description": self.description,
+            "runnable": RunnableLambda(delegate),
+        }
+
+    def as_tool(self, **kwargs: Any) -> BaseTool:
+        """Adapt this specialist as a typed ``BaseTool`` for an agent or coordinator."""
+
+        def invoke_tool(**tool_args: Any) -> str:
+            result = self.run(**tool_args, **kwargs)
+            return result.to_text(render=self.render)
+
+        return StructuredTool.from_function(
+            func=invoke_tool,
+            name=self.name,
+            description=self.description,
+            args_schema=self.input_schema,
+        )
