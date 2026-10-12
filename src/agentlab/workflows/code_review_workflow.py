@@ -105,6 +105,9 @@ def run_code_review(*args: Any, **kwargs: Any) -> SpecialistResult[CodeReviewRep
         resolved_graph = graph_or_code
         resolved_code = pos_code
 
+    if resolved_graph is None:
+        resolved_graph = _default_code_review_graph()
+
     try:
         state = resolved_graph.invoke(
             {"code": resolved_code, "language": language, "file_path": None},

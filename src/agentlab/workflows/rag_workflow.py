@@ -96,6 +96,9 @@ def run_rag(*args: Any, **kwargs: Any) -> SpecialistResult[RagReport]:
         resolved_graph = graph_or_question
         resolved_question = pos_question
 
+    if resolved_graph is None:
+        resolved_graph = build_rag_graph()
+
     try:
         state = resolved_graph.invoke(
             {

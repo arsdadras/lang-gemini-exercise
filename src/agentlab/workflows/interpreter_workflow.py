@@ -107,6 +107,9 @@ def run_interpreter(*args: Any, **kwargs: Any) -> SpecialistResult[InterpreterRe
         resolved_agent = agent_or_task
         resolved_task = pos_task
 
+    if resolved_agent is None:
+        resolved_agent = _default_interpreter_agent()
+
     before = snapshot_sandbox_deliverables(sandbox_dir)
     failure: Exception | None = None
     try:
