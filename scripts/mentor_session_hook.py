@@ -79,7 +79,7 @@ def build_orientation_message(state_path: Path = STATE_PATH) -> str:
         "`AgentMiddleware`) vs. `Graph` (`graphs/` + `nodes/`, Wave heterogeneous stations over typed `State`).\n"
         "- **Rung 2 (Domain / Project Scale, P1-P5+):** Two faces of one coin: `Workflow` (`run_<project>` "
         "in `workflows/<project>_workflow.py`, sitting *above* `agents/` and `graphs/`) and "
-        "`Specialist[TInput, TReport]` (`schemas/output/specialist_output_schema.py`, adapted in "
+        "`Specialist[TInput, TReport]` (`workflows/specialist_workflow.py`, adapted in "
         "`subagents/*_subagent.py`). Every specialist returns a rich Pydantic `*Report` (`ResearchReport`, "
         "`RagReport`, `CodeReviewReport`, `InterpreterReport`, `PersonalContextReport`)—never `str` or `dict`.\n"
         "- **Rung 3 (Macro Scale):** `Coordinator` (`agents/coordinators/`) vs. `Operation` (macro-workflows).\n"

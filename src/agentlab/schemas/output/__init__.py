@@ -43,8 +43,9 @@ from agentlab.schemas.output.research_output_schema import (
 )
 from agentlab.schemas.output.specialist_output_schema import (
     Provenance,
+    ProvenanceKind,
     SideEffect,
-    Specialist,
+    SpecialistName,
     SpecialistResult,
     SpecialistStatus,
 )
@@ -69,6 +70,7 @@ __all__ = [
     "MemoryEdits",
     "PersonalContextReport",
     "Provenance",
+    "ProvenanceKind",
     "RagGroundingVerdict",
     "RagReport",
     "RagRetrievalMode",
@@ -76,7 +78,7 @@ __all__ = [
     "ResearchFindings",
     "ResearchReport",
     "SideEffect",
-    "Specialist",
+    "SpecialistName",
     "SpecialistResult",
     "SpecialistStatus",
     "TestCase",

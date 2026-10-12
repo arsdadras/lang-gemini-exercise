@@ -34,7 +34,6 @@ from agentlab.schemas.output.research_output_schema import (
 from agentlab.schemas.output.specialist_output_schema import (
     Provenance,
     SideEffect,
-    Specialist,
     SpecialistResult,
 )
 from agentlab.subagents.research_subagent import make_researcher_subagent
@@ -42,11 +41,12 @@ from agentlab.tools.user_context_tool import read_user_context
 from agentlab.tools.web_search_tool import WebSearchError
 from agentlab.utils.subagent_util import pending_approvals
 from agentlab.workflows import (
-    CODE_REVIEW_SPECIALIST_SPEC,
-    INTERPRETER_SPECIALIST_SPEC,
-    PERSONAL_CONTEXT_SPECIALIST_SPEC,
-    RAG_SPECIALIST_SPEC,
-    RESEARCH_SPECIALIST_SPEC,
+    CODE_REVIEW_SPECIALIST,
+    INTERPRETER_SPECIALIST,
+    PERSONAL_CONTEXT_SPECIALIST,
+    RAG_SPECIALIST,
+    RESEARCH_SPECIALIST,
+    Specialist,
     run_code_review,
     run_interpreter,
     run_personal_context,
@@ -139,11 +139,11 @@ def test_the_output_type_is_validated() -> None:
 
 def test_every_domain_specialist_exposes_a_frozen_typed_descriptor() -> None:
     specs: list[Specialist[Any, Any]] = [
-        RESEARCH_SPECIALIST_SPEC,
-        RAG_SPECIALIST_SPEC,
-        CODE_REVIEW_SPECIALIST_SPEC,
-        INTERPRETER_SPECIALIST_SPEC,
-        PERSONAL_CONTEXT_SPECIALIST_SPEC,
+        RESEARCH_SPECIALIST,
+        RAG_SPECIALIST,
+        CODE_REVIEW_SPECIALIST,
+        INTERPRETER_SPECIALIST,
+        PERSONAL_CONTEXT_SPECIALIST,
     ]
     assert [spec.name for spec in specs] == [
         "research",
@@ -168,8 +168,8 @@ def test_specialist_as_tool_and_as_subagent_adapt_the_workflow() -> None:
         "/user_profile.md",
         {"content": "- Name: Sara\n- Vegetarian", "encoding": "utf-8"},
     )
-    tool = PERSONAL_CONTEXT_SPECIALIST_SPEC.as_tool(store=store)
-    subagent = PERSONAL_CONTEXT_SPECIALIST_SPEC.as_subagent(store=store)
+    tool = PERSONAL_CONTEXT_SPECIALIST.as_tool(store=store)
+    subagent = PERSONAL_CONTEXT_SPECIALIST.as_subagent(store=store)
 
     tool_reply = tool.invoke({"user_id": "sara"})
     subagent_reply = subagent["runnable"].invoke(
@@ -545,11 +545,14 @@ def test_files_the_interpreter_writes_become_side_effects(tmp_path: Path) -> Non
     result = run_interpreter(agent, "compute", sandbox_dir=tmp_path)
 
     assert result.status == "ok"
-    assert result.output == InterpreterReport(
-        answer="Mean is 6.",
-        executed_commands=["python compute.py"],
-        deliverables=["deliverables/mean.txt"],
-    )
+    assert result.output is not None
+    assert result.output.answer == "Mean is 6."
+    assert result.output.executed_commands == ["python compute.py"]
+    assert [
+        (d.name, d.path, d.deliverable_type) for d in result.output.deliverables
+    ] == [
+        ("mean.txt", "deliverables/mean.txt", "text"),
+    ]
     assert [(effect.action, effect.target) for effect in result.side_effects] == [
         ("created", "deliverables/mean.txt"),
     ]

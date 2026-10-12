@@ -17,10 +17,7 @@ from agentlab.tools.user_context_tool import (
     make_user_context_tool,
 )
 from agentlab.utils.run_with_hitl_util import stream_with_hitl
-from agentlab.utils.secret_redaction_util import (
-    PERSONAL_DATA_TYPES,
-    personal_data_redaction,
-)
+from agentlab.utils.secret_redaction_util import personal_data_redaction
 from agentlab.workflows.research_workflow import verify_research
 
 
@@ -69,12 +66,3 @@ def run_personal_brief(
         assistant_prompt=assistant_prompt,
     )
     return verify_research(agent.get_state(config).values)
-
-
-__all__ = [
-    "PERSONAL_DATA_TYPES",
-    "brief_request",
-    "make_brief_researcher_agent",
-    "personal_data_redaction",
-    "run_personal_brief",
-]

@@ -11,11 +11,11 @@ the mentor is the only role and works on `main`.
   [product ideas & refinements](../docs/gemini/feedbacks/product_ideas_and_refinements.md).
 - **Architectural Unification & Phases 1-3 Completed (2026-10-12, [ADR-0033](../docs/adr/0033-wave-particle-duality-and-workflow-specialist-layer.md), DEC-039):**
   Implemented the 4-scale Wave-Particle Duality architecture in `src/agentlab/`:
-  - **Phase 1:** Added `RagReport`, `InterpreterReport`, `PersonalContextReport` in
-    `src/agentlab/schemas/output/`, typed `*Input` schemas in `src/agentlab/schemas/input/`, and
-    the frozen `Specialist[TInput, TReport]` descriptor (`as_subagent`, `as_tool`, `run`, `render`)
-    in `src/agentlab/schemas/output/specialist_output_schema.py`.
-  - **Phase 2:** Created `src/agentlab/workflows/` (`research_workflow.py`, `rag_workflow.py`,
+  - **Phase 1:** Added `RagReport`, `InterpreterReport` (with `deliverables: list[Deliverable]`),
+    `PersonalContextReport`, and `SpecialistName` in `src/agentlab/schemas/output/`, plus typed
+    `*Input` schemas in `src/agentlab/schemas/input/`.
+  - **Phase 2:** Created `src/agentlab/workflows/` (`specialist_workflow.py` with the frozen
+    `Specialist[TInput, TReport]` descriptor, `research_workflow.py`, `rag_workflow.py`,
     `code_review_workflow.py`, `interpreter_workflow.py`, `personal_context_workflow.py`,
     `personal_brief_workflow.py`), turned `src/agentlab/subagents/` into thin adapters over
     `workflows/`, upgraded `make_researcher_subagent` to delegate through `run_research` (the full
@@ -31,14 +31,14 @@ the mentor is the only role and works on `main`.
 - **Done:** R1 closed (2026-10-11); R1->R2 CI & repo hardening closed (2026-10-11); ADR-0033
   governance, pedagogy, `.agents/skills/` rehabilitation, `.agents/hooks.json` session hook, and
   **Phases 1-3 code implementation** completed (2026-10-12, 358 tests green, 0 ruff/mypy/docs
-  errors across 138 source files).
+  errors across 139 source files).
 - **NEXT SESSION — Phase 4, Session R2 (P2 RAG — Top-Down Return Pass):**
   Teach and execute **R2** in a fresh `/mentor` session from the top-down mountain-peak perspective
   ([pedagogy](../library/teaching/pedagogy.md#top-down-mountain-peak-perspective-and-the-compressor-balancing-rule-return-pass)):
   1. Write the P2 design card (`docs/design_cards/P2_rag_agent.md` with point 16, production path,
      point 17, decision points, and Wave/Particle density).
   2. Start the lesson from the mountain peak: `workflows/rag_workflow.py` (`run_rag` ->
-     `SpecialistResult[RagReport]`, `RAG_SPECIALIST_SPEC`) and P2's high Wave density (`StateGraph`
+     `SpecialistResult[RagReport]`, `RAG_SPECIALIST`) and P2's high Wave density (`StateGraph`
      stations over `RAGState`).
   3. Build and teach R2's vertical preventative hardening:
      - Hybrid search (BM25 + vector + reranker)

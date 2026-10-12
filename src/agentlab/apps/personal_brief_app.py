@@ -14,14 +14,7 @@ from agentlab.configs.personal_assistant_config import ASSISTANT_STORE_DB_PATH
 from agentlab.data.sqlite_db_data import get_sqlite_store
 from agentlab.utils.console_util import configure_utf8_stdout
 from agentlab.utils.memory_session_util import load_session
-from agentlab.utils.secret_redaction_util import (
-    PERSONAL_DATA_TYPES,
-    personal_data_redaction,
-)
-from agentlab.workflows.personal_brief_workflow import (
-    brief_request,
-    run_personal_brief,
-)
+from agentlab.workflows.personal_brief_workflow import run_personal_brief
 
 
 def main() -> None:
@@ -37,14 +30,6 @@ def main() -> None:
         return
     report = run_personal_brief(store, user_id, topic)
     print(report.model_dump_json(indent=2) if report else "No report was produced.")
-
-
-__all__ = [
-    "PERSONAL_DATA_TYPES",
-    "brief_request",
-    "main",
-    "personal_data_redaction",
-]
 
 
 if __name__ == "__main__":

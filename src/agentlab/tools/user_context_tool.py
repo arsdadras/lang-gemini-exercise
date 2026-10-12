@@ -23,7 +23,6 @@ from agentlab.utils.memory_backend_util import (
 )
 from agentlab.utils.secret_redaction_util import redact_secrets
 
-PERSONAL_CONTEXT_SPECIALIST = "personal_context"
 USER_CONTEXT_TOOL_NAME = "get_user_context"
 
 
@@ -56,8 +55,9 @@ def read_user_context(
 
     A user without memory is still ``ok``: an empty context is an answer, not a failure.
     """
+    clean_user_id = user_id.strip()
     items = sorted(
-        store.search((user_id, MEMORIES_NAMESPACE_KIND), limit=100),
+        store.search((clean_user_id, MEMORIES_NAMESPACE_KIND), limit=100),
         key=lambda item: item.key,
     )
     files = {
@@ -82,24 +82,21 @@ def read_user_context(
         files=files,
     )
     return SpecialistResult[PersonalContextReport](
-        specialist=PERSONAL_CONTEXT_SPECIALIST,
+        specialist="personal_context",
         status="ok",
         output=report,
         provenance=[Provenance(kind="memory", ref=path) for path in files],
     )
 
 
-def render_personal_context(report: PersonalContextReport | dict[str, str]) -> str:
-    """Format a ``PersonalContextReport`` (or raw files dict) as XML ``<file>`` blocks."""
-    files = report.files if isinstance(report, PersonalContextReport) else report
-    if not files:
+def render_personal_context(report: PersonalContextReport) -> str:
+    """Format a ``PersonalContextReport`` as XML ``<file>`` blocks."""
+    if not report.files:
         return "No stored context for this user."
     return "\n\n".join(
-        f'<file path="{path}">\n{content}\n</file>' for path, content in files.items()
+        f'<file path="{path}">\n{content}\n</file>'
+        for path, content in report.files.items()
     )
-
-
-render_files = render_personal_context
 
 
 def make_user_context_tool() -> BaseTool:

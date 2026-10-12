@@ -2,13 +2,11 @@
 
 from agentlab.workflows.code_review_workflow import (
     CODE_REVIEW_SPECIALIST,
-    CODE_REVIEW_SPECIALIST_SPEC,
     render_outcome,
     run_code_review,
 )
 from agentlab.workflows.interpreter_workflow import (
     INTERPRETER_SPECIALIST,
-    INTERPRETER_SPECIALIST_SPEC,
     render_interpreter_report,
     run_interpreter,
 )
@@ -18,33 +16,29 @@ from agentlab.workflows.personal_brief_workflow import (
     run_personal_brief,
 )
 from agentlab.workflows.personal_context_workflow import (
-    PERSONAL_CONTEXT_SPECIALIST_SPEC,
+    PERSONAL_CONTEXT_SPECIALIST,
     run_personal_context,
 )
 from agentlab.workflows.rag_workflow import (
     RAG_SPECIALIST,
-    RAG_SPECIALIST_SPEC,
     render_rag_report,
     run_rag,
 )
 from agentlab.workflows.research_workflow import (
     RESEARCH_SPECIALIST,
-    RESEARCH_SPECIALIST_SPEC,
     render_research_report,
     run_research,
     verify_research,
 )
+from agentlab.workflows.specialist_workflow import Specialist
 
 __all__ = [
     "CODE_REVIEW_SPECIALIST",
-    "CODE_REVIEW_SPECIALIST_SPEC",
     "INTERPRETER_SPECIALIST",
-    "INTERPRETER_SPECIALIST_SPEC",
-    "PERSONAL_CONTEXT_SPECIALIST_SPEC",
+    "PERSONAL_CONTEXT_SPECIALIST",
     "RAG_SPECIALIST",
-    "RAG_SPECIALIST_SPEC",
     "RESEARCH_SPECIALIST",
-    "RESEARCH_SPECIALIST_SPEC",
+    "Specialist",
     "brief_request",
     "make_brief_researcher_agent",
     "render_interpreter_report",

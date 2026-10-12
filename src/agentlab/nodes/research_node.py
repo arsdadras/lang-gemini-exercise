@@ -23,6 +23,7 @@ from typing import Any, NamedTuple
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import Runnable, RunnableConfig
 from langgraph.config import get_config
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import Command, Send, interrupt
 
 from agentlab.configs.research_config import DEPTH_BUDGETS
@@ -159,7 +160,7 @@ def _parent_thread_id() -> str:
     return str(conf.get("thread_id", ""))
 
 
-def make_research_node(agent: Any) -> Callable[..., dict]:
+def make_research_node(agent: CompiledStateGraph) -> Callable[..., dict]:
     """Build the node that researches one sub-question with the injected P1 agent.
 
     Each run gets a fresh thread, so its messages hold only the documents its own tools
@@ -180,6 +181,24 @@ def make_research_node(agent: Any) -> Callable[..., dict]:
             child_config, outcome, history = active_runs[run_key]
             for past_value in history:
                 interrupt(past_value)
+        else:
+            child_config = new_delegation_config()
+            history = []
+            try:
+                outcome = agent.invoke(
+                    {
+                        "messages": [HumanMessage(content=task["question"])],
+                        "sources": task["sources"],
+                    },
+                    config=child_config,
+                )
+            except Exception as error:
+                if failure_kind(error) is None:
+                    raise
+                return {"problems": [label + failure_reason(error)]}
+
+        if outcome.get("__interrupt__") and _parent_has_checkpointer():
+            active_runs[run_key] = (child_config, outcome, history)
             while outcome.get("__interrupt__"):
                 pending_value = outcome["__interrupt__"][0].value
                 decision = interrupt(pending_value)
@@ -195,42 +214,6 @@ def make_research_node(agent: Any) -> Callable[..., dict]:
                     return {"problems": [label + failure_reason(error)]}
                 active_runs[run_key] = (child_config, outcome, history)
             active_runs.pop(run_key, None)
-        else:
-            child_config = new_delegation_config()
-            try:
-                outcome = agent.invoke(
-                    {
-                        "messages": [HumanMessage(content=task["question"])],
-                        "sources": task["sources"],
-                    },
-                    config=child_config,
-                )
-            except Exception as error:
-                if failure_kind(error) is None:
-                    raise
-                return {"problems": [label + failure_reason(error)]}
-            if outcome.get("__interrupt__") and _parent_has_checkpointer():
-                active_runs[run_key] = (child_config, outcome, [])
-                pending_value = outcome["__interrupt__"][0].value
-                decision = interrupt(pending_value)
-                history = [pending_value]
-                while True:
-                    try:
-                        outcome = agent.invoke(
-                            Command(resume=decision), config=child_config
-                        )
-                    except Exception as error:
-                        active_runs.pop(run_key, None)
-                        if failure_kind(error) is None:
-                            raise
-                        return {"problems": [label + failure_reason(error)]}
-                    active_runs[run_key] = (child_config, outcome, history)
-                    if not outcome.get("__interrupt__"):
-                        break
-                    next_value = outcome["__interrupt__"][0].value
-                    decision = interrupt(next_value)
-                    history.append(next_value)
-                active_runs.pop(run_key, None)
 
         if waiting := pending_approvals(outcome):
             return {

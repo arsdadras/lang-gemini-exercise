@@ -1,9 +1,10 @@
-"""P1 domain workflow & specialist: ``run_research``, ``verify_research``, and ``RESEARCH_SPECIALIST_SPEC``."""
+"""P1 domain workflow & specialist: ``run_research``, ``verify_research``, and ``RESEARCH_SPECIALIST``."""
 
-from typing import Any, overload
+from typing import Any
 
 from langchain_core.runnables import Runnable, RunnableConfig
 from langgraph.checkpoint.base import BaseCheckpointSaver
+from langgraph.graph.state import CompiledStateGraph
 
 from agentlab.agents.researcher_agent import make_researcher_agent
 from agentlab.configs.research_config import DEPTH_BUDGETS
@@ -18,13 +19,12 @@ from agentlab.schemas.output.research_output_schema import (
 )
 from agentlab.schemas.output.specialist_output_schema import (
     Provenance,
-    Specialist,
     SpecialistResult,
 )
 from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import new_delegation_config, pending_approvals
+from agentlab.workflows.specialist_workflow import Specialist
 
-RESEARCH_SPECIALIST = "research"
 DEFAULT_RESEARCH_DESCRIPTION = (
     "Plans, routes across web/academic/corpus sources, researches sub-questions in "
     "parallel, and verifies every claim against the source documents read."
@@ -65,78 +65,27 @@ def render_research_report(report: ResearchReport) -> str:
     return "\n".join(lines)
 
 
-@overload
 def run_research(
+    agent: CompiledStateGraph,
     topic: str,
     options: ResearchOptions | None = None,
-    *,
-    agent: Any = None,
-    plan_chain: Runnable[Any, ResearchPlan] | None = None,
-    route_decide: Decide | None = None,
-    checkpointer: BaseCheckpointSaver | None = None,
-    config: RunnableConfig | None = None,
-) -> SpecialistResult[ResearchReport]: ...
-
-
-@overload
-def run_research(
-    agent: Any,
-    topic: str,
-    options: ResearchOptions | None = None,
-    /,
     *,
     plan_chain: Runnable[Any, ResearchPlan] | None = None,
     route_decide: Decide | None = None,
     checkpointer: BaseCheckpointSaver | None = None,
     config: RunnableConfig | None = None,
-) -> SpecialistResult[ResearchReport]: ...
-
-
-def run_research(*args: Any, **kwargs: Any) -> SpecialistResult[ResearchReport]:
+) -> SpecialistResult[ResearchReport]:
     """Research ``topic`` through the research graph and return the specialist envelope.
 
-    Supports both ``run_research(agent, topic, options)`` and ``run_research(topic, options, agent=...)``.
+    Build the agent with the same ``options`` (``make_researcher_agent(options=...)``): the
+    agent holds the per-run search and read budgets, and the graph holds the plan and the claim
+    cap. Without ``options`` it is one run on the topic, no plan and no cap. With them, the
+    planner splits the topic into sub-questions (R1 topic 2), the router picks each one's sources
+    (R1 topic 3), and each is researched on its own run, in parallel, so every claim is checked
+    against the documents its own run's tools returned (``graphs/research_graph.py``).
     """
-    agent_or_topic = args[0] if len(args) >= 1 else None
-    topic_or_options = args[1] if len(args) >= 2 else None
-    pos_options = args[2] if len(args) >= 3 else kwargs.get("options")
-    kw_topic = kwargs.get("topic")
-    kw_agent = kwargs.get("agent")
-    plan_chain = kwargs.get("plan_chain")
-    route_decide = kwargs.get("route_decide")
-    checkpointer = kwargs.get("checkpointer")
-    config = kwargs.get("config")
-
-    if isinstance(agent_or_topic, str):
-        resolved_topic = agent_or_topic
-        resolved_options = (
-            topic_or_options
-            if isinstance(topic_or_options, ResearchOptions)
-            else pos_options
-        )
-        resolved_agent = (
-            kw_agent
-            if kw_agent is not None
-            else make_researcher_agent(options=resolved_options)
-        )
-    elif agent_or_topic is None and isinstance(kw_topic, str):
-        resolved_topic = kw_topic
-        resolved_options = pos_options
-        resolved_agent = (
-            kw_agent
-            if kw_agent is not None
-            else make_researcher_agent(options=resolved_options)
-        )
-    else:
-        if not isinstance(topic_or_options, str):
-            msg = "run_research requires a topic string"
-            raise TypeError(msg)
-        resolved_agent = agent_or_topic
-        resolved_topic = topic_or_options
-        resolved_options = pos_options
-
     graph = build_research_graph(
-        resolved_agent,
+        agent,
         plan_chain=plan_chain,
         route_decide=route_decide,
         checkpointer=checkpointer,
@@ -147,17 +96,17 @@ def run_research(*args: Any, **kwargs: Any) -> SpecialistResult[ResearchReport]:
     try:
         state = (
             graph.invoke(
-                {"topic": resolved_topic, "options": resolved_options},
+                {"topic": topic, "options": options},
                 config=invoke_config,
             )
             if invoke_config is not None
-            else graph.invoke({"topic": resolved_topic, "options": resolved_options})
+            else graph.invoke({"topic": topic, "options": options})
         )
     except Exception as error:
         if failure_kind(error) is None:
             raise
         return SpecialistResult[ResearchReport](
-            specialist=RESEARCH_SPECIALIST,
+            specialist="research",
             status="failed",
             reason=failure_reason(error),
         )
@@ -172,7 +121,7 @@ def run_research(*args: Any, **kwargs: Any) -> SpecialistResult[ResearchReport]:
     if report is None:
         waiting = any("waiting for approval" in problem for problem in problems)
         return SpecialistResult[ResearchReport](
-            specialist=RESEARCH_SPECIALIST,
+            specialist="research",
             status="partial" if waiting else "failed",
             reason=" ".join(problems),
         )
@@ -185,7 +134,7 @@ def run_research(*args: Any, **kwargs: Any) -> SpecialistResult[ResearchReport]:
             "pages the agent read."
         )
     return SpecialistResult[ResearchReport](
-        specialist=RESEARCH_SPECIALIST,
+        specialist="research",
         status="partial" if problems else "ok",
         reason=" ".join(problems),
         output=report,
@@ -200,11 +149,12 @@ def run_research(*args: Any, **kwargs: Any) -> SpecialistResult[ResearchReport]:
     )
 
 
-RESEARCH_SPECIALIST_SPEC = Specialist[ResearchInput, ResearchReport](
-    name=RESEARCH_SPECIALIST,
+RESEARCH_SPECIALIST = Specialist[ResearchInput, ResearchReport](
+    name="research",
     description=DEFAULT_RESEARCH_DESCRIPTION,
     input_schema=ResearchInput,
     report_schema=ResearchReport,
     run=run_research,
     render=render_research_report,
+    default_target=make_researcher_agent,
 )

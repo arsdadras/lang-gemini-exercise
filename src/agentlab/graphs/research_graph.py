@@ -30,7 +30,7 @@ from agentlab.schemas.state.research_state import ResearchState
 
 
 def build_research_graph(
-    agent: Any,
+    agent: CompiledStateGraph,
     *,
     plan_chain: Runnable[Any, ResearchPlan] | None = None,
     decide: Decide | None = None,

@@ -40,7 +40,7 @@ class InterpreterReport(BaseModel):
         default_factory=list,
         description="Shell commands executed in the sandbox during the run.",
     )
-    deliverables: list[str] = Field(
+    deliverables: list[Deliverable] = Field(
         default_factory=list,
-        description="Relative sandbox paths of deliverables created or modified during the run.",
+        description="Deliverables created or modified in the sandbox during the run.",
     )

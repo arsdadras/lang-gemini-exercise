@@ -1,6 +1,6 @@
-"""P2 domain workflow & specialist: ``run_rag`` and ``RAG_SPECIALIST_SPEC``."""
+"""P2 domain workflow & specialist: ``run_rag`` and ``RAG_SPECIALIST``."""
 
-from typing import Any, overload
+from langgraph.graph.state import CompiledStateGraph
 
 from agentlab.graphs.rag_graph import build_rag_graph
 from agentlab.schemas.input.rag_input_schema import RagInput
@@ -12,14 +12,13 @@ from agentlab.schemas.output.rag_output_schema import (
 from agentlab.schemas.output.research_output_schema import SourceKind
 from agentlab.schemas.output.specialist_output_schema import (
     Provenance,
-    Specialist,
     SpecialistResult,
     SpecialistStatus,
 )
 from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import new_delegation_config
+from agentlab.workflows.specialist_workflow import Specialist
 
-RAG_SPECIALIST = "rag"
 DEFAULT_RAG_DESCRIPTION = (
     "Answers questions using the indexed chunk corpus, falling back "
     "to a live web search when nothing relevant is found locally."
@@ -57,53 +56,19 @@ def render_rag_report(report: RagReport) -> str:
     return report.answer
 
 
-@overload
 def run_rag(
+    graph: CompiledStateGraph,
     question: str,
-    *,
-    graph: Any = None,
-) -> SpecialistResult[RagReport]: ...
-
-
-@overload
-def run_rag(
-    graph: Any,
-    question: str,
-    /,
-) -> SpecialistResult[RagReport]: ...
-
-
-def run_rag(*args: Any, **kwargs: Any) -> SpecialistResult[RagReport]:
+) -> SpecialistResult[RagReport]:
     """Answer ``question`` with the RAG graph, on a fresh thread, as a specialist envelope.
 
-    Supports both ``run_rag(graph, question)`` and ``run_rag(question, graph=...)``.
     An external failure that outlasted the graph's retries becomes ``failed``; a bug raises.
     """
-    graph_or_question = args[0] if len(args) >= 1 else None
-    pos_question = args[1] if len(args) >= 2 else kwargs.get("question")
-    kw_graph = kwargs.get("graph")
-
-    if isinstance(graph_or_question, str):
-        resolved_question = graph_or_question
-        resolved_graph = kw_graph if kw_graph is not None else build_rag_graph()
-    elif graph_or_question is None and isinstance(pos_question, str):
-        resolved_question = pos_question
-        resolved_graph = kw_graph if kw_graph is not None else build_rag_graph()
-    else:
-        if not isinstance(pos_question, str):
-            msg = "run_rag requires a question string"
-            raise TypeError(msg)
-        resolved_graph = graph_or_question
-        resolved_question = pos_question
-
-    if resolved_graph is None:
-        resolved_graph = build_rag_graph()
-
     try:
-        state = resolved_graph.invoke(
+        state = graph.invoke(
             {
-                "question": resolved_question,
-                "search_query": resolved_question,
+                "question": question,
+                "search_query": question,
                 "retries": 0,
             },
             config=new_delegation_config(),
@@ -112,7 +77,7 @@ def run_rag(*args: Any, **kwargs: Any) -> SpecialistResult[RagReport]:
         if failure_kind(error) is None:
             raise
         return SpecialistResult[RagReport](
-            specialist=RAG_SPECIALIST,
+            specialist="rag",
             status="failed",
             reason=failure_reason(error),
         )
@@ -138,7 +103,7 @@ def run_rag(*args: Any, **kwargs: Any) -> SpecialistResult[RagReport]:
         else None
     )
     return SpecialistResult[RagReport](
-        specialist=RAG_SPECIALIST,
+        specialist="rag",
         status=status,
         reason=reason,
         output=report,
@@ -148,11 +113,12 @@ def run_rag(*args: Any, **kwargs: Any) -> SpecialistResult[RagReport]:
     )
 
 
-RAG_SPECIALIST_SPEC = Specialist[RagInput, RagReport](
-    name=RAG_SPECIALIST,
+RAG_SPECIALIST = Specialist[RagInput, RagReport](
+    name="rag",
     description=DEFAULT_RAG_DESCRIPTION,
     input_schema=RagInput,
     report_schema=RagReport,
     run=run_rag,
     render=render_rag_report,
+    default_target=build_rag_graph,
 )

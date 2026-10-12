@@ -54,10 +54,10 @@ apps -> workflows -> agents (including coordinators/), graphs, subagents -> node
   - **P1:** `ResearchReport` (existing).
   - **P2:** `RagReport` (`answer: str`, `citations: list[str]`, `retrieval_mode`, `grounding_verdict`).
   - **P3:** `CodeReviewReport` (existing).
-  - **P4:** `InterpreterReport` (`answer: str`, `executed_commands: list[str]`, `deliverables: list[str]`).
+  - **P4:** `InterpreterReport` (`answer: str`, `executed_commands: list[str]`, `deliverables: list[Deliverable]`).
   - **P5:** `PersonalContextReport` (`profile_summary: str`, `relevant_facts: list[str]`, `active_preferences: dict[str, str]`, `active_skills: list[str]`).
-- **Lightweight `Specialist[TInput, TReport]` contract (in `schemas/output/specialist_output_schema.py`):** A flat, frozen Pydantic/dataclass descriptor holding:
-  - `name: str` and `description: str`
+- **Lightweight `Specialist[TInput, TReport]` contract (in `workflows/specialist_workflow.py`):** A flat, frozen dataclass descriptor holding:
+  - `name: SpecialistName` and `description: str`
   - `input_schema: type[TInput]` and `report_schema: type[TReport]`
   - `run: Callable[..., SpecialistResult[TReport]]`
   - `as_subagent(...) -> CompiledSubAgent` and `as_tool(...) -> BaseTool`

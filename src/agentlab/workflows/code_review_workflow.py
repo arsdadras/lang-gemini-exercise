@@ -1,6 +1,6 @@
-"""P3 domain workflow & specialist: ``run_code_review`` and ``CODE_REVIEW_SPECIALIST_SPEC``."""
+"""P3 domain workflow & specialist: ``run_code_review`` and ``CODE_REVIEW_SPECIALIST``."""
 
-from typing import Any, overload
+from langgraph.graph.state import CompiledStateGraph
 
 from agentlab.configs.paths_config import DELEGATIONS_APP, checkpoint_db_path
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
@@ -8,14 +8,13 @@ from agentlab.graphs.code_review_parentgraph import build_code_review_graph
 from agentlab.schemas.input.code_review_input_schema import CodeReviewInput
 from agentlab.schemas.output.code_review_output_schema import CodeReviewReport
 from agentlab.schemas.output.specialist_output_schema import (
-    Specialist,
     SpecialistResult,
     SpecialistStatus,
 )
 from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import new_delegation_config, pending_approvals
+from agentlab.workflows.specialist_workflow import Specialist
 
-CODE_REVIEW_SPECIALIST = "code_review"
 DEFAULT_CODE_REVIEW_DESCRIPTION = (
     "Analyzes and reviews source code, identifies bugs, security vulnerabilities, "
     "and performance flaws, generates and executes pytest test suites in an isolated "
@@ -23,7 +22,7 @@ DEFAULT_CODE_REVIEW_DESCRIPTION = (
 )
 
 
-def _default_code_review_graph() -> Any:
+def _default_code_review_graph() -> CompiledStateGraph:
     return build_code_review_graph(
         checkpointer=get_sqlite_checkpointer(checkpoint_db_path(DELEGATIONS_APP))
     )
@@ -57,74 +56,34 @@ def render_outcome(outcome: CodeReviewReport) -> str:
     return "\n".join(parts)
 
 
-@overload
 def run_code_review(
+    graph: CompiledStateGraph,
     code: str,
     *,
     language: str = "python",
-    graph: Any = None,
-) -> SpecialistResult[CodeReviewReport]: ...
-
-
-@overload
-def run_code_review(
-    graph: Any,
-    code: str,
-    /,
-    *,
-    language: str = "python",
-) -> SpecialistResult[CodeReviewReport]: ...
-
-
-def run_code_review(*args: Any, **kwargs: Any) -> SpecialistResult[CodeReviewReport]:
+) -> SpecialistResult[CodeReviewReport]:
     """Review ``code`` with the P3 pipeline on a fresh thread, as a specialist envelope.
 
-    Supports both ``run_code_review(graph, code)`` and ``run_code_review(code, graph=...)``.
     Failing tests are findings, not a failed review: ``ok`` means the review, the tests, and
     their run all happened. A refactor waiting at the approval gate makes it ``partial``.
     """
-    graph_or_code = args[0] if len(args) >= 1 else None
-    pos_code = args[1] if len(args) >= 2 else kwargs.get("code")
-    language = str(kwargs.get("language", "python"))
-    kw_graph = kwargs.get("graph")
-
-    if isinstance(graph_or_code, str):
-        resolved_code = graph_or_code
-        resolved_graph = (
-            kw_graph if kw_graph is not None else _default_code_review_graph()
-        )
-    elif graph_or_code is None and isinstance(pos_code, str):
-        resolved_code = pos_code
-        resolved_graph = (
-            kw_graph if kw_graph is not None else _default_code_review_graph()
-        )
-    else:
-        if not isinstance(pos_code, str):
-            msg = "run_code_review requires a code string"
-            raise TypeError(msg)
-        resolved_graph = graph_or_code
-        resolved_code = pos_code
-
-    if resolved_graph is None:
-        resolved_graph = _default_code_review_graph()
-
     try:
-        state = resolved_graph.invoke(
-            {"code": resolved_code, "language": language, "file_path": None},
+        state = graph.invoke(
+            {"code": code, "language": language, "file_path": None},
             config=new_delegation_config(),
         )
     except Exception as error:
         if failure_kind(error) is None:
             raise
         return SpecialistResult[CodeReviewReport](
-            specialist=CODE_REVIEW_SPECIALIST,
+            specialist="code_review",
             status="failed",
             reason=failure_reason(error),
         )
     review = state.get("review")
     if review is None:
         return SpecialistResult[CodeReviewReport](
-            specialist=CODE_REVIEW_SPECIALIST,
+            specialist="code_review",
             status="failed",
             reason=state.get("error") or "No review was produced.",
         )
@@ -146,18 +105,19 @@ def run_code_review(*args: Any, **kwargs: Any) -> SpecialistResult[CodeReviewRep
     else:
         status, reason = "ok", ""
     return SpecialistResult[CodeReviewReport](
-        specialist=CODE_REVIEW_SPECIALIST,
+        specialist="code_review",
         status=status,
         reason=reason,
         output=outcome,
     )
 
 
-CODE_REVIEW_SPECIALIST_SPEC = Specialist[CodeReviewInput, CodeReviewReport](
-    name=CODE_REVIEW_SPECIALIST,
+CODE_REVIEW_SPECIALIST = Specialist[CodeReviewInput, CodeReviewReport](
+    name="code_review",
     description=DEFAULT_CODE_REVIEW_DESCRIPTION,
     input_schema=CodeReviewInput,
     report_schema=CodeReviewReport,
     run=run_code_review,
     render=render_outcome,
+    default_target=_default_code_review_graph,
 )

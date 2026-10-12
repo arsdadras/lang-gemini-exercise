@@ -38,7 +38,7 @@ workflow, specialist, agent, or graph ([ADR-0033](../../../docs/adr/0033-wave-pa
    - Never wrap `CompiledStateGraph` in a custom `BaseAgent` class that hides `.stream()`,
      `.invoke()`, `.get_state()`, or LangGraph Studio compatibility.
    - Use the flat `Specialist[TInput, TReport]` contract in
-     `schemas/output/specialist_output_schema.py`.
+     `workflows/specialist_workflow.py`.
 4. **Precise LangGraph vs. AgentMiddleware Semantics:**
    - `AgentMiddleware` hooks (`before_model`, `wrap_model_call`, `after_model`, `wrap_tool_call`)
      attach to `create_agent` / `create_deep_agent` hot loops, not directly to `StateGraph`.

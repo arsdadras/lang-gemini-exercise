@@ -1,6 +1,6 @@
 """Typed contracts, grouped by role rather than by construction method:
 
-- ``output/``  Pydantic response contracts (``response_format``, ``*Report``, ``SpecialistResult``, ``Specialist``).
+- ``output/``  Pydantic response contracts (``response_format``, ``*Report``, ``SpecialistResult``).
 - ``input/``   typed inputs a caller passes to a specialist (``*Input``, ``ResearchOptions``).
 - ``state/``   graph-state TypedDicts.
 - ``context/`` runtime context passed via ``context=`` (e.g. user identity).
@@ -39,6 +39,7 @@ from agentlab.schemas.output import (
     MemoryEdits,
     PersonalContextReport,
     Provenance,
+    ProvenanceKind,
     RagGroundingVerdict,
     RagReport,
     RagRetrievalMode,
@@ -46,7 +47,7 @@ from agentlab.schemas.output import (
     ResearchFindings,
     ResearchReport,
     SideEffect,
-    Specialist,
+    SpecialistName,
     SpecialistResult,
     SpecialistStatus,
     TestCase,
@@ -81,6 +82,7 @@ __all__ = [
     "PersonalContextInput",
     "PersonalContextReport",
     "Provenance",
+    "ProvenanceKind",
     "RAGState",
     "RagGroundingVerdict",
     "RagInput",
@@ -92,7 +94,7 @@ __all__ = [
     "ResearchOptions",
     "ResearchReport",
     "SideEffect",
-    "Specialist",
+    "SpecialistName",
     "SpecialistResult",
     "SpecialistStatus",
     "TestCase",

@@ -46,7 +46,7 @@ src/agentlab/
                    Jev model router (model_router)
   prompts/         prompt text by role (agents, subagents, nodes/, middlewares, template/)
   schemas/         typed contracts by role, not construction method: output/ (Pydantic
-                   `*Report` contracts, `SpecialistResult`, `Specialist`), input/ (what a caller
+                   `*Report` contracts, `SpecialistResult`, `SpecialistName`), input/ (what a caller
                    asks of a specialist, e.g. `ResearchOptions`), state/ (graph-state
                    TypedDicts), context/ (runtime context, e.g. `UserContext`)
   data/            persistence adapters (SQLite checkpoints and Rung-0 store)
