@@ -33,35 +33,30 @@ the mentor is the only role and works on `main`.
   **Phases 1-3 code implementation** completed (2026-10-12); **Test suite review & hardening**
   completed (2026-10-14: 393 tests green, 92% coverage across repo, 88 files with 100% complete
   coverage, 0 ruff/mypy/docs errors across 139 source files).
-- **Architectural Review & Refinement Agreements (2026-10-14):**
-  Identified and agreed on 4 foundational architectural refinements during in-depth review:
-  1. *Target & Pre-composition Unification:* In `run_research`, target was the leaf worker `agent`
-     and the graph was built on every call inside `run_research`. Unify with RAG/Code Review: target
-     must be the pre-composed `ResearchGraph` (compiled graph), moving composition to factory time.
-     This unblocks multi-worker attachments (e.g. Researcher + Librarian) without signature ambiguity.
-  2. *Relocate `Specialist` Descriptor:* `class Specialist` in `workflows/specialist_workflow.py`
-     is a category error (Specialist is Particle, Workflow is Wave; forced by `_workflow.py` suffix).
-     Relocate to a dedicated base/core module (`workflows/base.py` or `specialists/descriptor.py`).
-  3. *Eliminate `_resolve_target` Reflection Hack & Introduce `Protocol`:* `_resolve_target` duck-typed
-     via `inspect.signature` to grab the first argument. Replace with explicit engine binding and
-     teach/implement `typing.Protocol` (structural typing) for engine contracts.
-  4. *Unified Capability / Extension Protocol:* Design and implement a typed `Capability` /
-     `Extension` abstraction for `create_deep_agent` and `build_graph` so attachments (subagents,
-     tools, middlewares, subgraphs) are declared polymorphically rather than wired ad-hoc.
-- **NEXT SESSION — Foundational Architectural Refactoring & Teaching (Learner Decision):**
-  Per learner's explicit instruction, do NOT defer architectural improvements to later stages.
-  Apply, verify, and **teach** all 4 architectural refinements in this dedicated session before
-  moving to R2:
-  1. Teach the design rationale and code walkthrough for each of the 4 items (including `Protocol`).
-  2. Implement and test the refactorings across `src/agentlab/` (`workflows/`, `specialists/`, `nodes/research_node.py`, `subagents/`).
-  3. Verify all tests pass (`pytest`, `ruff`, `mypy`, `check_docs`).
-  4. Conclude Topic 2 & 3 of ADR-0033 return-pass curriculum on the newly perfected foundation.
-- **SUBSEQUENT SESSIONS — Remaining Return Pass Stages (On Solidified Foundation):**
-  - **Session R2 (P2 RAG):** Mountain-peak perspective, P2 design card, hybrid retrieval, query rewrite, Jev chunk grading/reranking, per-claim verification, incremental re-index.
-  - **Session R3 (P3 Code Review):** Vertical preventative hardening, deterministic ruff/AST pass, Jev severity/category labeling, LLM explanation.
-  - **Session R4 (P4 Interpreter):** Interpreter hardening, risk label on execute, declared side effects.
-  - **Session P5 Pass:** `personal_context_workflow.py` + Rung-0 memory governance (3-check fail-closed guard, staleness pre-pass, recall ranking, schema compiler).
-  - **Session R5 Close:** Coordinator pre-router on labeled set across all 5 `Specialist` contracts, unified practice scenario, first teach-back.
+- **Foundational Refinements Topics 1-3 Completed (2026-10-14):**
+  1. *Target & Pre-composition Unification:* In `run_research`, target was unified to accept
+     `engine: CompiledStateGraph` with `make_research_graph` providing factory-time composition,
+     while maintaining backward-compatible adaptation for leaf worker agents.
+  2. *Relocated `Specialist` Descriptor:* Moved `Specialist` out of `workflows/specialist_workflow.py`
+     into foundational [`src/agentlab/workflows/base.py`](file:///D:/Repos/lang-gemini-exercise/src/agentlab/workflows/base.py),
+     eliminating the category error and leaving `specialist_workflow.py` as a re-export shim.
+  3. *Eliminated `_resolve_target` Reflection Hack & Introduced `WorkflowRunner` Protocol:*
+     Replaced `inspect.signature` with `WorkflowRunner[TReport](Protocol)` and modern Python 3.12
+     generics (PEP 695), removing runtime reflection overhead and enforcing type safety.
+  4. Git author identity configured globally and locally to `arsdadras` matching the primary GitHub account.
+- **NEXT SESSION — Topic 4 Refinement & Transition to R2:**
+  1. **Topic 4 (Unified Capability / Extension Protocol):** Design, teach, and implement a typed
+     `Capability` / `Extension` protocol for Rung-1 engines (`create_deep_agent` and `build_graph`)
+     so attachments (subagents, tools, middlewares, subgraphs) are declared polymorphically rather
+     than wired ad-hoc.
+  2. Verify all checks (`pytest`, `ruff`, `mypy`, `check_docs`).
+  3. Launch **Session R2 (P2 RAG — Top-Down Return Pass)** from the mountain-peak perspective:
+     P2 design card, hybrid retrieval, query rewrite, Jev chunk grading/reranking, and per-claim verification.
+- **SUBSEQUENT SESSIONS — Remaining Return Pass Stages:**
+  - **Session R3 (P3 Code Review):** Vertical preventative hardening over `code_review_workflow.py`.
+  - **Session R4 (P4 Interpreter):** Vertical preventative hardening over `interpreter_workflow.py`.
+  - **Session P5 Pass:** `personal_context_workflow.py` + Rung-0 memory governance.
+  - **Session R5 Close:** Coordinator pre-router across all 5 `Specialist` contracts, unified practice scenario, first teach-back.
 
 ## Build queue
 
