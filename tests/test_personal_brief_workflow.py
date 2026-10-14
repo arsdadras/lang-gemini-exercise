@@ -7,6 +7,7 @@ from unittest.mock import patch
 from langchain_core.messages import HumanMessage, ToolMessage
 from langgraph.store.memory import InMemoryStore
 
+from agentlab.agents import researcher_agent
 from agentlab.nodes import claim_check_node
 from agentlab.schemas.output.research_output_schema import (
     Citation,
@@ -22,6 +23,7 @@ from agentlab.workflows.personal_brief_workflow import (
     make_brief_researcher_agent,
     run_personal_brief,
 )
+from tests.fakes import ScriptedToolModel, done
 
 
 def test_brief_request_prompt_format() -> None:
@@ -34,6 +36,11 @@ def test_brief_request_prompt_format() -> None:
 def test_make_brief_researcher_agent_compiles(monkeypatch: Any) -> None:
     store = InMemoryStore()
     monkeypatch.setenv("TAVILY_API_KEY", "tvly-test")
+    model = ScriptedToolModel(messages=iter([done()]))
+    monkeypatch.setattr(
+        researcher_agent, "llm_model", SimpleNamespace(get=lambda *_: model)
+    )
+    monkeypatch.setattr(researcher_agent, "make_model_fallback", lambda *_: [])
     agent = make_brief_researcher_agent(store)
     assert agent is not None
 
