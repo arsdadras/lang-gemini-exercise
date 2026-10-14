@@ -1,5 +1,7 @@
 """P3 domain workflow & specialist: ``run_code_review`` and ``CODE_REVIEW_SPECIALIST``."""
 
+from typing import Any
+
 from langgraph.graph.state import CompiledStateGraph
 
 from agentlab.configs.paths_config import DELEGATIONS_APP, checkpoint_db_path
@@ -13,7 +15,7 @@ from agentlab.schemas.output.specialist_output_schema import (
 )
 from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import new_delegation_config, pending_approvals
-from agentlab.workflows.specialist_workflow import Specialist
+from agentlab.workflows.base import Specialist
 
 DEFAULT_CODE_REVIEW_DESCRIPTION = (
     "Analyzes and reviews source code, identifies bugs, security vulnerabilities, "
@@ -112,12 +114,36 @@ def run_code_review(
     )
 
 
-CODE_REVIEW_SPECIALIST = Specialist[CodeReviewInput, CodeReviewReport](
-    name="code_review",
-    description=DEFAULT_CODE_REVIEW_DESCRIPTION,
-    input_schema=CodeReviewInput,
-    report_schema=CodeReviewReport,
-    run=run_code_review,
-    render=render_outcome,
-    default_target=_default_code_review_graph,
-)
+def make_code_review_specialist(
+    engine: CompiledStateGraph | None = None,
+) -> Specialist[CodeReviewInput, CodeReviewReport]:
+    """Create a Code Review Specialist pre-bound to an engine or lazy default."""
+
+    def run_bound(
+        task: CodeReviewInput | str | dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> SpecialistResult[CodeReviewReport]:
+        resolved_engine = engine if engine is not None else _default_code_review_graph()
+        data = task if task is not None else kwargs
+        if isinstance(data, CodeReviewInput):
+            code = data.code
+            language = data.language
+        elif isinstance(data, dict):
+            code = str(data["code"])
+            language = str(data.get("language", "python"))
+        else:
+            code = str(data)
+            language = "python"
+        return run_code_review(resolved_engine, code, language=language)
+
+    return Specialist[CodeReviewInput, CodeReviewReport](
+        name="code_review",
+        description=DEFAULT_CODE_REVIEW_DESCRIPTION,
+        input_schema=CodeReviewInput,
+        report_schema=CodeReviewReport,
+        run=run_bound,
+        render=render_outcome,
+    )
+
+
+CODE_REVIEW_SPECIALIST = make_code_review_specialist()

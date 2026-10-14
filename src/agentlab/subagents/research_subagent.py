@@ -6,8 +6,7 @@ from langgraph.graph.state import CompiledStateGraph
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.workflows.research_workflow import (
     DEFAULT_RESEARCH_DESCRIPTION,
-    RESEARCH_SPECIALIST,
-    make_research_graph,
+    make_research_specialist,
 )
 
 RESEARCHER_SUBAGENT_NAME = "researcher"
@@ -27,14 +26,5 @@ def make_researcher_subagent(
     workflow and return the verified ``ResearchReport`` envelope as text.
     """
     target_engine = graph if graph is not None else agent
-    resolved_engine = (
-        target_engine
-        if target_engine is not None
-        else (make_research_graph(options=options) if options is not None else None)
-    )
-    return RESEARCH_SPECIALIST.as_subagent(
-        resolved_engine,
-        name=name,
-        description=description,
-        options=options,
-    )
+    specialist = make_research_specialist(target_engine, options=options)
+    return specialist.as_subagent(name=name, description=description)

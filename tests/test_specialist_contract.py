@@ -47,6 +47,7 @@ from agentlab.workflows import (
     RAG_SPECIALIST,
     RESEARCH_SPECIALIST,
     Specialist,
+    make_personal_context_specialist,
     run_code_review,
     run_interpreter,
     run_personal_context,
@@ -168,8 +169,9 @@ def test_specialist_as_tool_and_as_subagent_adapt_the_workflow() -> None:
         "/user_profile.md",
         {"content": "- Name: Sara\n- Vegetarian", "encoding": "utf-8"},
     )
-    tool = PERSONAL_CONTEXT_SPECIALIST.as_tool(store=store)
-    subagent = PERSONAL_CONTEXT_SPECIALIST.as_subagent(store=store)
+    specialist = make_personal_context_specialist(store)
+    tool = specialist.as_tool()
+    subagent = specialist.as_subagent()
 
     tool_reply = tool.invoke({"user_id": "sara"})
     subagent_reply = subagent["runnable"].invoke(

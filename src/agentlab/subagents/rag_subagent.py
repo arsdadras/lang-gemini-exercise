@@ -5,7 +5,7 @@ from langgraph.graph.state import CompiledStateGraph
 
 from agentlab.workflows.rag_workflow import (
     DEFAULT_RAG_DESCRIPTION,
-    RAG_SPECIALIST,
+    make_rag_specialist,
 )
 
 DEFAULT_RAG_SUBAGENT_NAME = "rag_subagent"
@@ -19,8 +19,8 @@ def make_rag_subagent(
     description: str = DEFAULT_RAG_SUBAGENT_DESCRIPTION,
 ) -> CompiledSubAgent:
     """Wrap a compiled RAG graph (default: ``build_rag_graph()``) as a ``CompiledSubAgent``."""
-    return RAG_SPECIALIST.as_subagent(
-        graph,
+    specialist = make_rag_specialist(graph)
+    return specialist.as_subagent(
         name=name,
         description=description,
     )

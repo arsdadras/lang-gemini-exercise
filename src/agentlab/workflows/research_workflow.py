@@ -169,12 +169,45 @@ def run_research(
     )
 
 
-RESEARCH_SPECIALIST = Specialist[ResearchInput, ResearchReport](
-    name="research",
-    description=DEFAULT_RESEARCH_DESCRIPTION,
-    input_schema=ResearchInput,
-    report_schema=ResearchReport,
-    run=run_research,
-    render=render_research_report,
-    default_engine=make_research_graph,
-)
+def make_research_specialist(
+    engine: CompiledStateGraph | None = None,
+    *,
+    options: ResearchOptions | None = None,
+) -> Specialist[ResearchInput, ResearchReport]:
+    """Create a Research Specialist pre-bound to an engine or lazy default."""
+
+    def run_bound(
+        task: ResearchInput | str | dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> SpecialistResult[ResearchReport]:
+        resolved_engine = (
+            engine if engine is not None else make_research_graph(options=options)
+        )
+        data = task if task is not None else kwargs
+        if isinstance(data, ResearchInput):
+            return run_research(
+                resolved_engine,
+                data.topic,
+                data.options or options,
+                **kwargs,
+            )
+        if isinstance(data, dict):
+            return run_research(
+                resolved_engine,
+                str(data["topic"]),
+                data.get("options") or options,
+                **kwargs,
+            )
+        return run_research(resolved_engine, str(data), options, **kwargs)
+
+    return Specialist[ResearchInput, ResearchReport](
+        name="research",
+        description=DEFAULT_RESEARCH_DESCRIPTION,
+        input_schema=ResearchInput,
+        report_schema=ResearchReport,
+        run=run_bound,
+        render=render_research_report,
+    )
+
+
+RESEARCH_SPECIALIST = make_research_specialist()

@@ -17,7 +17,7 @@ from agentlab.schemas.output.specialist_output_schema import (
 )
 from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import new_delegation_config
-from agentlab.workflows.specialist_workflow import Specialist
+from agentlab.workflows.base import Specialist
 
 DEFAULT_RAG_DESCRIPTION = (
     "Answers questions using the indexed chunk corpus, falling back "
@@ -113,12 +113,36 @@ def run_rag(
     )
 
 
-RAG_SPECIALIST = Specialist[RagInput, RagReport](
-    name="rag",
-    description=DEFAULT_RAG_DESCRIPTION,
-    input_schema=RagInput,
-    report_schema=RagReport,
-    run=run_rag,
-    render=render_rag_report,
-    default_target=build_rag_graph,
-)
+from typing import Any
+
+
+def make_rag_specialist(
+    engine: CompiledStateGraph | None = None,
+) -> Specialist[RagInput, RagReport]:
+    """Create a RAG Specialist pre-bound to an engine or lazy default."""
+
+    def run_bound(
+        task: RagInput | str | dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> SpecialistResult[RagReport]:
+        resolved_engine = engine if engine is not None else build_rag_graph()
+        data = task if task is not None else kwargs
+        if isinstance(data, RagInput):
+            question = data.question
+        elif isinstance(data, dict):
+            question = str(data["question"])
+        else:
+            question = str(data)
+        return run_rag(resolved_engine, question, **kwargs)
+
+    return Specialist[RagInput, RagReport](
+        name="rag",
+        description=DEFAULT_RAG_DESCRIPTION,
+        input_schema=RagInput,
+        report_schema=RagReport,
+        run=run_bound,
+        render=render_rag_report,
+    )
+
+
+RAG_SPECIALIST = make_rag_specialist()

@@ -1,5 +1,7 @@
 """P5 domain workflow & specialist: ``run_personal_context`` and ``PERSONAL_CONTEXT_SPECIALIST``."""
 
+from typing import Any
+
 from langgraph.store.base import BaseStore
 
 from agentlab.configs.personal_assistant_config import ASSISTANT_STORE_DB_PATH
@@ -13,7 +15,7 @@ from agentlab.tools.user_context_tool import (
     read_user_context,
     render_personal_context,
 )
-from agentlab.workflows.specialist_workflow import Specialist
+from agentlab.workflows.base import Specialist
 
 DEFAULT_PERSONAL_CONTEXT_DESCRIPTION = (
     "Reads a user's long-term memory profile, facts, preferences, and active skills "
@@ -33,12 +35,35 @@ def run_personal_context(
     return read_user_context(store, user_id)
 
 
-PERSONAL_CONTEXT_SPECIALIST = Specialist[PersonalContextInput, PersonalContextReport](
-    name="personal_context",
-    description=DEFAULT_PERSONAL_CONTEXT_DESCRIPTION,
-    input_schema=PersonalContextInput,
-    report_schema=PersonalContextReport,
-    run=run_personal_context,
-    render=render_personal_context,
-    default_target=_default_personal_context_store,
-)
+def make_personal_context_specialist(
+    engine: BaseStore | None = None,
+) -> Specialist[PersonalContextInput, PersonalContextReport]:
+    """Create a Personal Context Specialist pre-bound to a store or lazy default."""
+
+    def run_bound(
+        task: PersonalContextInput | str | dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> SpecialistResult[PersonalContextReport]:
+        resolved_engine = (
+            engine if engine is not None else _default_personal_context_store()
+        )
+        data = task if task is not None else kwargs
+        if isinstance(data, PersonalContextInput):
+            user_id = data.user_id
+        elif isinstance(data, dict):
+            user_id = str(data["user_id"])
+        else:
+            user_id = str(data)
+        return run_personal_context(resolved_engine, user_id)
+
+    return Specialist[PersonalContextInput, PersonalContextReport](
+        name="personal_context",
+        description=DEFAULT_PERSONAL_CONTEXT_DESCRIPTION,
+        input_schema=PersonalContextInput,
+        report_schema=PersonalContextReport,
+        run=run_bound,
+        render=render_personal_context,
+    )
+
+
+PERSONAL_CONTEXT_SPECIALIST = make_personal_context_specialist()

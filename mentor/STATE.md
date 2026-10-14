@@ -33,7 +33,7 @@ the mentor is the only role and works on `main`.
   **Phases 1-3 code implementation** completed (2026-10-12); **Test suite review & hardening**
   completed (2026-10-14: 393 tests green, 92% coverage across repo, 88 files with 100% complete
   coverage, 0 ruff/mypy/docs errors across 139 source files).
-- **Foundational Refinements Topics 1-3 Completed (2026-10-14):**
+- **Foundational Refinements Completed (2026-10-15):**
   1. *Target & Pre-composition Unification:* In `run_research`, target was unified to accept
      `engine: CompiledStateGraph` with `make_research_graph` providing factory-time composition,
      while maintaining backward-compatible adaptation for leaf worker agents.
@@ -41,9 +41,15 @@ the mentor is the only role and works on `main`.
      into foundational [`src/agentlab/workflows/base.py`](file:///D:/Repos/lang-gemini-exercise/src/agentlab/workflows/base.py),
      eliminating the category error and leaving `specialist_workflow.py` as a re-export shim.
   3. *Eliminated `_resolve_target` Reflection Hack & Introduced `WorkflowRunner` Protocol:*
-     Replaced `inspect.signature` with `WorkflowRunner[TReport](Protocol)` and modern Python 3.12
-     generics (PEP 695), removing runtime reflection overhead and enforcing type safety.
-  4. Git author identity configured globally and locally to `arsdadras` matching the primary GitHub account.
+     Replaced `inspect.signature` with `WorkflowRunner[TEngine, TReport](Protocol)` and modern Python 3.12
+     generics (PEP 695).
+  4. *Adopted Option C (Pre-bound Specialist via Factory & Closure Pattern):* Resolved architectural review
+     concerns by rejecting Option B (leaking `TEngine` into `Specialist` generic, which broke Particle polymorphism)
+     and Option A (`engine: Any = None` with duck-typing/keyword sniffing). Implemented immutable
+     `Specialist[TInput, TReport]` initialized via strongly-typed domain factories:
+     `make_research_specialist`, `make_rag_specialist`, `make_code_review_specialist`,
+     `make_interpreter_specialist`, `make_personal_context_specialist`.
+  5. Git author identity configured globally and locally to `arsdadras` matching the primary GitHub account.
 - **NEXT SESSION — Topic 4 Refinement & Transition to R2:**
   1. **Topic 4 (Unified Capability / Extension Protocol):** Design, teach, and implement a typed
      `Capability` / `Extension` protocol for Rung-1 engines (`create_deep_agent` and `build_graph`)

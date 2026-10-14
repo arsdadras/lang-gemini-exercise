@@ -8,7 +8,7 @@ from langgraph.graph.state import CompiledStateGraph
 from agentlab.configs.interpreter_config import DEFAULT_SANDBOX_DIR
 from agentlab.workflows.interpreter_workflow import (
     DEFAULT_INTERPRETER_DESCRIPTION,
-    INTERPRETER_SPECIALIST,
+    make_interpreter_specialist,
 )
 
 DEFAULT_SUBAGENT_NAME = "code_interpreter"
@@ -23,9 +23,8 @@ def make_interpreter_subagent(
     sandbox_dir: Path = DEFAULT_SANDBOX_DIR,
 ) -> CompiledSubAgent:
     """Wrap an interpreter agent as a ``CompiledSubAgent``; the envelope comes back as text."""
-    return INTERPRETER_SPECIALIST.as_subagent(
-        agent,
+    specialist = make_interpreter_specialist(agent, sandbox_dir=sandbox_dir)
+    return specialist.as_subagent(
         name=name,
         description=description,
-        sandbox_dir=sandbox_dir,
     )

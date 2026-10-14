@@ -5,7 +5,7 @@ from langgraph.store.base import BaseStore
 
 from agentlab.workflows.personal_context_workflow import (
     DEFAULT_PERSONAL_CONTEXT_DESCRIPTION,
-    PERSONAL_CONTEXT_SPECIALIST,
+    make_personal_context_specialist,
 )
 
 DEFAULT_PERSONAL_CONTEXT_SUBAGENT_NAME = "personal_context_subagent"
@@ -18,8 +18,8 @@ def make_personal_context_subagent(
     description: str = DEFAULT_PERSONAL_CONTEXT_DESCRIPTION,
 ) -> CompiledSubAgent:
     """Wrap P5's ``run_personal_context`` workflow as a ``CompiledSubAgent``."""
-    return PERSONAL_CONTEXT_SPECIALIST.as_subagent(
-        store,
+    specialist = make_personal_context_specialist(store)
+    return specialist.as_subagent(
         name=name,
         description=description,
     )

@@ -23,7 +23,7 @@ from agentlab.utils.sandbox_util import (
     snapshot_sandbox_deliverables,
 )
 from agentlab.utils.subagent_util import new_delegation_config, pending_approvals
-from agentlab.workflows.specialist_workflow import Specialist
+from agentlab.workflows.base import Specialist
 
 DEFAULT_INTERPRETER_DESCRIPTION = (
     "Executes Python scripts, computational tasks, data processing, and shell commands "
@@ -116,12 +116,37 @@ def run_interpreter(
     )
 
 
-INTERPRETER_SPECIALIST = Specialist[InterpreterInput, InterpreterReport](
-    name="interpreter",
-    description=DEFAULT_INTERPRETER_DESCRIPTION,
-    input_schema=InterpreterInput,
-    report_schema=InterpreterReport,
-    run=run_interpreter,
-    render=render_interpreter_report,
-    default_target=_default_interpreter_agent,
-)
+def make_interpreter_specialist(
+    engine: CompiledStateGraph | None = None,
+    *,
+    sandbox_dir: Path | None = None,
+) -> Specialist[InterpreterInput, InterpreterReport]:
+    """Create an Interpreter Specialist pre-bound to an engine or lazy default."""
+
+    target_sandbox = sandbox_dir if sandbox_dir is not None else DEFAULT_SANDBOX_DIR
+
+    def run_bound(
+        task: InterpreterInput | str | dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> SpecialistResult[InterpreterReport]:
+        resolved_engine = engine if engine is not None else _default_interpreter_agent()
+        data = task if task is not None else kwargs
+        if isinstance(data, InterpreterInput):
+            prompt = data.task
+        elif isinstance(data, dict):
+            prompt = str(data["task"])
+        else:
+            prompt = str(data)
+        return run_interpreter(resolved_engine, prompt, sandbox_dir=target_sandbox)
+
+    return Specialist[InterpreterInput, InterpreterReport](
+        name="interpreter",
+        description=DEFAULT_INTERPRETER_DESCRIPTION,
+        input_schema=InterpreterInput,
+        report_schema=InterpreterReport,
+        run=run_bound,
+        render=render_interpreter_report,
+    )
+
+
+INTERPRETER_SPECIALIST = make_interpreter_specialist()
