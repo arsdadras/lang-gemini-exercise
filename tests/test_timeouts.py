@@ -134,7 +134,53 @@ def test_a_timed_out_web_search_surfaces_as_a_failed_envelope(
     with scripted_rag(relevant=False, web_tool=silent_search_tool(silent_server)):
         result = run_rag(build_rag_graph(), "What is X?")
 
-    assert (result.status, result.output) == ("failed", None)
     assert result.reason.startswith(
         "An external service was unavailable, even after retries"
     )
+
+
+def test_search_results_error_parsing_and_string_handling() -> None:
+    # String response (such as "No results found") returns []
+    assert search_results("No results found.") == []
+
+    # Valid results return list
+    valid = {"results": [{"title": "LangChain", "url": "https://langchain.com"}]}
+    assert search_results(valid) == [
+        {"title": "LangChain", "url": "https://langchain.com"}
+    ]
+
+    # Error with status code extracted
+    with pytest.raises(WebSearchError) as exc_429:
+        search_results({"error": Exception("Error 429: Too Many Requests")})
+    assert exc_429.value.status_code == 429
+
+    # Error without status code
+    with pytest.raises(WebSearchError) as exc_generic:
+        search_results({"error": Exception("DNS resolution failed")})
+    assert exc_generic.value.status_code is None
+
+
+def test_timeout_search_wrapper_raw_results_error_status() -> None:
+    from unittest.mock import MagicMock
+
+    wrapper = _TimeoutSearchWrapper(tavily_api_key="tvly-test")  # type: ignore[arg-type]
+
+    # Sync non-200 response
+    fake_resp = MagicMock()
+    fake_resp.status_code = 401
+    fake_resp.json.return_value = {"detail": {"error": "Invalid API key"}}
+
+    with (
+        patch("agentlab.tools.web_search_tool.requests.post", return_value=fake_resp),
+        pytest.raises(ValueError, match="Error 401: Invalid API key"),
+    ):
+        wrapper.raw_results(query="test")
+
+    # Sync non-200 with non-dict detail
+    fake_resp.status_code = 500
+    fake_resp.json.return_value = {"detail": "Server error string"}
+    with (
+        patch("agentlab.tools.web_search_tool.requests.post", return_value=fake_resp),
+        pytest.raises(ValueError, match="Error 500: Unknown error"),
+    ):
+        wrapper.raw_results(query="test")

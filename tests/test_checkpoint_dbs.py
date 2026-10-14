@@ -115,3 +115,33 @@ def test_the_coordinator_delegates_to_a_worker_interpreter_on_the_delegations_da
     assert seen["worker"] is True
     assert seen["interrupt_tools"] == ()
     assert (state_dir / f"{DELEGATIONS_APP}_checkpoints.db").exists()
+
+
+def test_get_recent_threads_limit_and_empty_db(state_dir: Path) -> None:
+    write_thread("gamma", "thread-1")
+    write_thread("gamma", "thread-2")
+
+    threads = get_recent_threads(checkpoint_db_path("gamma"), limit=1)
+    assert len(threads) == 1
+    assert threads == ["thread-2"]
+
+    # When database exists as a plain file with no tables
+    empty_db = state_dir / "empty.db"
+    empty_db.touch()
+    assert get_recent_threads(empty_db) == []
+
+
+def test_prune_checkpoints_edge_cases(state_dir: Path) -> None:
+    from agentlab.data.sqlite_db_data import prune_checkpoints
+
+    # Invalid keep_latest must raise ValueError
+    with pytest.raises(ValueError, match="keep_latest must be >= 1"):
+        prune_checkpoints(state_dir / "nonexistent.db", keep_latest=0)
+
+    # Non-existent DB returns 0
+    assert prune_checkpoints(state_dir / "missing.db", keep_latest=5) == 0
+
+    # DB with no checkpoints table returns 0
+    empty_db = state_dir / "no_tables.db"
+    empty_db.touch()
+    assert prune_checkpoints(empty_db, keep_latest=5) == 0

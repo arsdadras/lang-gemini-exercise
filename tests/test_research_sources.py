@@ -354,6 +354,71 @@ def test_a_missing_index_goes_back_to_the_model_as_text() -> None:
     assert message.status == "error" and "Build it first" in message.content
 
 
+def test_corpus_search_empty_matches_returns_helpful_message() -> None:
+    class EmptyRetriever:
+        def invoke(self, query: str) -> list[Document]:
+            return []
+
+    tool = make_corpus_search_tool(EmptyRetriever, "this project")  # type: ignore[arg-type]
+    message = call(tool, query="nonexistent query")
+    assert message.status == "success"
+    assert "Nothing in the corpus matches" in message.content
+
+
+def test_corpus_search_transient_failure_and_bug_handling() -> None:
+    import httpx
+
+    def failing_retriever() -> Any:
+        class Failing:
+            def invoke(self, query: str) -> list[Document]:
+                raise httpx.ConnectError("Vector DB connection drop")
+
+        return Failing()
+
+    # Transient external failure is captured as tool error
+    msg = call(
+        make_corpus_search_tool(failing_retriever, "this project"),  # type: ignore[arg-type]
+        query="q",
+    )
+    assert msg.status == "error"
+    assert "The document search failed:" in msg.content
+
+    # Non-transient bug raises through
+    def bug_retriever() -> Any:
+        class Buggy:
+            def invoke(self, query: str) -> list[Document]:
+                raise KeyError("Malformed index metadata")
+
+        return Buggy()
+
+    with pytest.raises(KeyError, match="Malformed index metadata"):
+        call(
+            make_corpus_search_tool(bug_retriever, "this project"),  # type: ignore[arg-type]
+            query="q",
+        )
+
+
+def test_academic_search_missing_key_and_empty_results(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # 1. Missing EXA_API_KEY
+    monkeypatch.delenv("EXA_API_KEY", raising=False)
+    tool = make_academic_search_tool()
+    msg = call(tool, query="transformer architectures")
+    assert msg.status == "error"
+    assert "EXA_API_KEY" in msg.content
+
+    # 2. Empty results from API
+    monkeypatch.setenv("EXA_API_KEY", "test-key")
+    with patch(
+        "agentlab.tools.academic_search_tool.requests.post",
+        return_value=exa_reply(),
+    ):
+        msg_empty = call(tool, query="obscure topic")
+        assert msg_empty.status == "success"
+        assert "No papers found" in msg_empty.content
+
+
 # --- provenance -----------------------------------------------------------------------------
 
 

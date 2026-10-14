@@ -401,3 +401,46 @@ def test_merge_deduplicates_identical_claims_and_combines_their_evidence() -> No
     assert merged.summary == "Same summary."
     assert len(merged.claims) == 1
     assert [e.url for e in merged.claims[0].evidence] == [PAGE_A, PAGE_B]
+
+
+def test_page_window_edge_cases() -> None:
+    from agentlab.nodes.claim_check_node import page_window
+
+    # 1. Short text returns as-is
+    assert page_window("Short text", ["any"], limit=100) == "Short text"
+
+    # 2. Empty passages return prefix
+    long_prefix = "A" * 200
+    assert page_window(long_prefix, [], limit=50) == "A" * 50
+
+    # 3. Whitespace-only passages are ignored
+    assert page_window(long_prefix, ["   ", "\n\t"], limit=50) == "A" * 50
+
+    # 4. Case-insensitive fallback
+    text_mixed = ("x" * 15000) + " THE TARGET PASSAGE " + ("y" * 5000)
+    w_case = page_window(text_mixed, ["the target passage"], limit=4000)
+    assert "THE TARGET PASSAGE" in w_case
+
+    # 5. Anchor prefix fallback (when tail differs)
+    text_anchor = (
+        ("z" * 15000)
+        + " This is a long anchor sentence with some words in it that were slightly edited at the end."
+        + ("w" * 5000)
+    )
+    anchor_passage = (
+        "This is a long anchor sentence with some DIFFERENT words at the tail"
+    )
+    w_anchor = page_window(text_anchor, [anchor_passage], limit=4000)
+    assert "This is a long anchor sentence" in w_anchor
+
+    # 6. Overlapping passage windows merge cleanly
+    text_overlap = (
+        ("a" * 15000)
+        + " [Fact One] "
+        + ("b" * 50)  # gap within _WINDOW_MARGIN
+        + " [Fact Two] "
+        + ("c" * 5000)
+    )
+    w_overlap = page_window(text_overlap, ["[Fact One]", "[Fact Two]"], limit=4000)
+    assert "[Fact One]" in w_overlap
+    assert "[Fact Two]" in w_overlap

@@ -2,6 +2,7 @@
 
 from unittest.mock import MagicMock, patch
 
+import pytest
 from deepagents import create_deep_agent
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langgraph.checkpoint.memory import InMemorySaver
@@ -213,3 +214,63 @@ def test_stream_with_hitl_asks_once_for_an_interrupt_inside_a_subagent():
     assert prompts == 1
     assert result["interrupts"] == []
     assert result["last_message"].content == "Done."
+
+
+def test_tool_output_printing_and_message_count(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    from agentlab.utils.run_with_hitl_util import (
+        _get_messages_count,
+        _print_new_tool_outputs,
+    )
+
+    # 1. Config None handling
+    assert _get_messages_count(None, None) == 0
+    assert _print_new_tool_outputs(None, None, 5) == 5
+
+    # 2. Agent with state
+    mock_agent = MagicMock()
+    tool_msg = ToolMessage(
+        content="Search found 3 items", name="web_search", tool_call_id="c1"
+    )
+    mock_agent.get_state.return_value = MagicMock(
+        values={"messages": [HumanMessage("search"), tool_msg]}
+    )
+    config = {"configurable": {"thread_id": "t1"}}
+
+    assert _get_messages_count(mock_agent, config) == 2
+    count = _print_new_tool_outputs(mock_agent, config, prev_count=1)
+    assert count == 2
+    captured = capsys.readouterr().out
+    assert "[Tool Execution Output - web_search]:" in captured
+    assert "Search found 3 items" in captured
+
+
+def test_resume_pending_with_hitl_resolves_all_interrupts() -> None:
+    from types import SimpleNamespace
+
+    from agentlab.utils.run_with_hitl_util import resume_pending_with_hitl
+
+    fake_interrupt = SimpleNamespace(
+        id="int_1",
+        value={"action_requests": [{"name": "publish_skill", "args": {}}]},
+    )
+    fake_task = SimpleNamespace(interrupts=[fake_interrupt])
+
+    # First get_state has 1 task with interrupt; after invoke it has 0
+    state_paused = SimpleNamespace(tasks=[fake_task], values={"outcome": "pending"})
+    state_resumed = SimpleNamespace(
+        tasks=[], values={"outcome": "Skill published successfully"}
+    )
+
+    mock_graph = MagicMock()
+    mock_graph.get_state.side_effect = [state_paused, state_resumed, state_resumed]
+
+    with patch("builtins.input", return_value="y"):
+        values = resume_pending_with_hitl(
+            mock_graph,
+            config={"configurable": {"thread_id": "skill_1"}},
+        )
+
+    mock_graph.invoke.assert_called_once()
+    assert values == {"outcome": "Skill published successfully"}

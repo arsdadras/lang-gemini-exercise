@@ -148,7 +148,10 @@ def _frontmatter(text: str) -> dict[str, Any]:
     if not text.startswith("---"):
         return {}
     _, block, _ = text.split("---", 2)
-    data = yaml.safe_load(block)
+    try:
+        data = yaml.safe_load(block)
+    except yaml.YAMLError:
+        return {}
     return data if isinstance(data, dict) else {}
 
 

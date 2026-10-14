@@ -30,8 +30,9 @@ the mentor is the only role and works on `main`.
 
 - **Done:** R1 closed (2026-10-11); R1->R2 CI & repo hardening closed (2026-10-11); ADR-0033
   governance, pedagogy, `.agents/skills/` rehabilitation, `.agents/hooks.json` session hook, and
-  **Phases 1-3 code implementation** completed (2026-10-12, 358 tests green, 0 ruff/mypy/docs
-  errors across 139 source files).
+  **Phases 1-3 code implementation** completed (2026-10-12); **Test suite review & hardening**
+  completed (2026-10-14: 393 tests green, 92% coverage across repo, 88 files with 100% complete
+  coverage, 0 ruff/mypy/docs errors across 139 source files).
 - **Architectural Review & Refinement Agreements (2026-10-14):**
   Identified and agreed on 4 foundational architectural refinements during in-depth review:
   1. *Target & Pre-composition Unification:* In `run_research`, target was the leaf worker `agent`
