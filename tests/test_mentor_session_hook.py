@@ -11,8 +11,11 @@ from scripts.mentor_session_hook import (
     build_orientation_message,
     extract_state_section,
     handle_hook,
+    is_consultant_command,
+    load_consultant_checkpoint,
     should_inject,
 )
+from scripts.record_consultant_checkpoint import record_checkpoint
 
 
 def test_should_inject_on_first_invocation_or_mentor_command() -> None:
@@ -22,7 +25,23 @@ def test_should_inject_on_first_invocation_or_mentor_command() -> None:
         should_inject({"invocationNum": 3, "userRequest": "/mentor edame bedim"})
         is True
     )
+    assert (
+        should_inject({"invocationNum": 1, "userRequest": "/reviewer review kon"})
+        is False
+    )
+    assert (
+        should_inject({"invocationNum": 1, "userRequest": "/consultant barresi kon"})
+        is False
+    )
     assert should_inject({}) is True
+
+
+def test_is_consultant_command_detects_triggers() -> None:
+    assert is_consultant_command("/consultant barresi kon") is True
+    assert is_consultant_command("/cansultant barresi kon") is True
+    assert is_consultant_command("lotfan /consultant ro seda kon") is True
+    assert is_consultant_command("/mentor shoroo kon") is False
+    assert is_consultant_command("salam chetori") is False
 
 
 def test_handle_hook_emits_ephemeral_message_from_state(tmp_path: Path) -> None:
@@ -39,6 +58,38 @@ def test_handle_hook_emits_ephemeral_message_from_state(tmp_path: Path) -> None:
     assert "Asl-e Ghorur" in msg
     assert "Phase 1-3 next." in msg
     assert "1. Build workflows." in msg
+
+
+def test_handle_hook_injects_consultant_briefing_on_trigger(tmp_path: Path) -> None:
+    fake_state = tmp_path / "STATE.md"
+    fake_state.write_text(
+        "# Mentor State\n\n## Now & Execution Schedule\n\n- Topic 4 next.\n\n## Build queue\n\n1. Capability protocol.\n",
+        encoding="utf-8",
+    )
+    fake_checkpoint = tmp_path / ".consultant_checkpoint.json"
+    fake_checkpoint.write_text(
+        json.dumps({"last_consulted_commit": "597421e"}),
+        encoding="utf-8",
+    )
+
+    # Test /consultant on turn 5 (should trigger even on later turns)
+    payload = json.dumps({"invocationNum": 5, "userRequest": "/consultant barresi kon"})
+    result = handle_hook(
+        payload, state_path=fake_state, checkpoint_path=fake_checkpoint
+    )
+    assert "ephemeralMessage" in result
+    msg = result["ephemeralMessage"]
+    assert "[CONSULTANT HOOK]" in msg
+    assert "Lead Architectural Consultant" in msg
+    assert "597421e" in msg
+    assert "Asl-e Ghorur" in msg
+
+    # Test /cansultant misspelling trigger
+    payload_misspelled = json.dumps({"invocationNum": 2, "userRequest": "/cansultant"})
+    result_misspelled = handle_hook(
+        payload_misspelled, state_path=fake_state, checkpoint_path=fake_checkpoint
+    )
+    assert "[CONSULTANT HOOK]" in result_misspelled["ephemeralMessage"]
 
 
 def test_handle_hook_stays_quiet_on_later_turns(tmp_path: Path) -> None:
@@ -63,6 +114,16 @@ def test_real_repo_state_and_hooks_json_are_valid() -> None:
     msg = build_orientation_message()
     assert "Specialist[TInput, TReport]" in msg
     assert "workflows/" in msg
+
+
+def test_record_checkpoint_updates_file(tmp_path: Path) -> None:
+    test_cp = tmp_path / "test_checkpoint.json"
+    head = record_checkpoint(checkpoint_path=test_cp, summary="Test summary")
+    assert test_cp.exists()
+    loaded = json.loads(test_cp.read_text(encoding="utf-8"))
+    assert loaded["last_consulted_commit"] == head
+    assert loaded["summary"] == "Test summary"
+    assert load_consultant_checkpoint(test_cp) == head
 
 
 def test_fa_isolate_wraps_with_rlm_and_warns_on_bullets() -> None:

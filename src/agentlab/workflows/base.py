@@ -2,7 +2,7 @@
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any, Protocol, runtime_checkable
 
 from deepagents import CompiledSubAgent
 from langchain_core.tools import BaseTool, StructuredTool
@@ -15,6 +15,7 @@ from agentlab.schemas.output.specialist_output_schema import (
 from agentlab.utils.subagent_util import specialist_subagent
 
 
+@runtime_checkable
 class WorkflowRunner[TEngine, TReport: BaseModel](Protocol):
     """Structural protocol for any domain workflow runner function (ADR-0033).
 

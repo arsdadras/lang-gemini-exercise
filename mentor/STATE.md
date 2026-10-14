@@ -49,7 +49,10 @@ the mentor is the only role and works on `main`.
      `Specialist[TInput, TReport]` initialized via strongly-typed domain factories:
      `make_research_specialist`, `make_rag_specialist`, `make_code_review_specialist`,
      `make_interpreter_specialist`, `make_personal_context_specialist`.
-  5. Git author identity configured globally and locally to `arsdadras` matching the primary GitHub account.
+  5. *Consultant Hook & Skill (`/consultant` / `/cansultant`):* Implemented `scripts/mentor_session_hook.py`
+     detection of consultant commands, diff extraction since last checkpoint (`mentor/.consultant_checkpoint.json`),
+     `scripts/record_consultant_checkpoint.py`, and `.agents/skills/consultant/SKILL.md`.
+  6. Git author identity configured globally and locally to `arsdadras` matching the primary GitHub account.
 - **NEXT SESSION — Topic 4 Refinement & Transition to R2:**
   1. **Topic 4 (Unified Capability / Extension Protocol):** Design, teach, and implement a typed
      `Capability` / `Extension` protocol for Rung-1 engines (`create_deep_agent` and `build_graph`)

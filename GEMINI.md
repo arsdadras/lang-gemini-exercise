@@ -22,6 +22,7 @@ Every new session runs `.agents/hooks.json` (`scripts/mentor_session_hook.py`) o
 4. **[`mentor/ROADMAP.md`](mentor/ROADMAP.md), [`library/teaching/pedagogy.md`](library/teaching/pedagogy.md) & [`mentor/BACKLOG.md`](mentor/BACKLOG.md):** The full curriculum plan (P1–P14, Return Pass R0–R5 with the Top-Down Compressor Balancing rule, D1, Term E) and scheduled/parked engineering items.
 5. **Antigravity Skills in [`.agents/skills/`](.agents/skills/mentor/SKILL.md):**
    - [`mentor`](.agents/skills/mentor/SKILL.md) (`/mentor`): Full session loop (sync, read state, prepare, teach, close).
+   - [`consultant`](.agents/skills/consultant/SKILL.md) (`/consultant`, `/cansultant`): Independent architectural review & critique.
    - [`teach`](.agents/skills/teach/SKILL.md) & [`persian.md`](.agents/skills/teach/persian.md): Teaching craft, active review, and strict Persian bidi isolation (`fa_isolate.py`).
    - [`architecture-duality`](.agents/skills/architecture-duality/SKILL.md): Guide for applying the 4-scale Wave-Particle Duality (`workflows/`, `Specialist[TInput, TReport]`, and Rung-0 seams).
    - [`decision-points`](.agents/skills/decision-points/SKILL.md): Designing and evaluating AI decision points with `decision_model` (Jev).
