@@ -1,5 +1,6 @@
 """End-to-end domain workflows (``run_*``) and ``Specialist`` descriptors (ADR-0033)."""
 
+from agentlab.workflows.base import Specialist, WorkflowRunner
 from agentlab.workflows.code_review_workflow import (
     CODE_REVIEW_SPECIALIST,
     render_outcome,
@@ -30,7 +31,6 @@ from agentlab.workflows.research_workflow import (
     run_research,
     verify_research,
 )
-from agentlab.workflows.specialist_workflow import Specialist
 
 __all__ = [
     "CODE_REVIEW_SPECIALIST",
@@ -39,6 +39,7 @@ __all__ = [
     "RAG_SPECIALIST",
     "RESEARCH_SPECIALIST",
     "Specialist",
+    "WorkflowRunner",
     "brief_request",
     "make_brief_researcher_agent",
     "render_interpreter_report",

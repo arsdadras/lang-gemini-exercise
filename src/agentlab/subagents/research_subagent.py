@@ -3,19 +3,20 @@
 from deepagents import CompiledSubAgent
 from langgraph.graph.state import CompiledStateGraph
 
-from agentlab.agents.researcher_agent import make_researcher_agent
 from agentlab.schemas.input.research_input_schema import ResearchOptions
 from agentlab.workflows.research_workflow import (
     DEFAULT_RESEARCH_DESCRIPTION,
     RESEARCH_SPECIALIST,
+    make_research_graph,
 )
 
 RESEARCHER_SUBAGENT_NAME = "researcher"
 
 
 def make_researcher_subagent(
-    agent: CompiledStateGraph | None = None,
+    graph: CompiledStateGraph | None = None,
     *,
+    agent: CompiledStateGraph | None = None,
     options: ResearchOptions | None = None,
     name: str = RESEARCHER_SUBAGENT_NAME,
     description: str = DEFAULT_RESEARCH_DESCRIPTION,
@@ -25,11 +26,14 @@ def make_researcher_subagent(
     Delegated research runs execute the full R1 plan -> route -> research -> claim-check
     workflow and return the verified ``ResearchReport`` envelope as text.
     """
-    resolved_agent = (
-        agent if agent is not None else make_researcher_agent(options=options)
+    target_engine = graph if graph is not None else agent
+    resolved_engine = (
+        target_engine
+        if target_engine is not None
+        else (make_research_graph(options=options) if options is not None else None)
     )
     return RESEARCH_SPECIALIST.as_subagent(
-        resolved_agent,
+        resolved_engine,
         name=name,
         description=description,
         options=options,

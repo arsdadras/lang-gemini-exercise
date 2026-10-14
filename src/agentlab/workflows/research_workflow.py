@@ -23,7 +23,7 @@ from agentlab.schemas.output.specialist_output_schema import (
 )
 from agentlab.utils.failure_util import failure_kind, failure_reason
 from agentlab.utils.subagent_util import new_delegation_config, pending_approvals
-from agentlab.workflows.specialist_workflow import Specialist
+from agentlab.workflows.base import Specialist
 
 DEFAULT_RESEARCH_DESCRIPTION = (
     "Plans, routes across web/academic/corpus sources, researches sub-questions in "
@@ -65,8 +65,28 @@ def render_research_report(report: ResearchReport) -> str:
     return "\n".join(lines)
 
 
+def make_research_graph(
+    agent: CompiledStateGraph | None = None,
+    *,
+    options: ResearchOptions | None = None,
+    plan_chain: Runnable[Any, ResearchPlan] | None = None,
+    route_decide: Decide | None = None,
+    checkpointer: BaseCheckpointSaver | None = None,
+) -> CompiledStateGraph:
+    """Compile the research graph around an injected or default researcher agent."""
+    resolved_agent = (
+        agent if agent is not None else make_researcher_agent(options=options)
+    )
+    return build_research_graph(
+        resolved_agent,
+        plan_chain=plan_chain,
+        route_decide=route_decide,
+        checkpointer=checkpointer,
+    )
+
+
 def run_research(
-    agent: CompiledStateGraph,
+    engine: CompiledStateGraph,
     topic: str,
     options: ResearchOptions | None = None,
     *,
@@ -77,21 +97,21 @@ def run_research(
 ) -> SpecialistResult[ResearchReport]:
     """Research ``topic`` through the research graph and return the specialist envelope.
 
-    Build the agent with the same ``options`` (``make_researcher_agent(options=...)``): the
-    agent holds the per-run search and read budgets, and the graph holds the plan and the claim
-    cap. Without ``options`` it is one run on the topic, no plan and no cap. With them, the
-    planner splits the topic into sub-questions (R1 topic 2), the router picks each one's sources
-    (R1 topic 3), and each is researched on its own run, in parallel, so every claim is checked
-    against the documents its own run's tools returned (``graphs/research_graph.py``).
+    Accepts either a pre-compiled research graph or a leaf researcher agent. If a leaf
+    agent is passed, compiles the research graph around it at call time.
     """
-    graph = build_research_graph(
-        agent,
-        plan_chain=plan_chain,
-        route_decide=route_decide,
-        checkpointer=checkpointer,
-    )
+    if "check" in getattr(engine, "nodes", {}):
+        graph = engine
+    else:
+        graph = build_research_graph(
+            engine,
+            plan_chain=plan_chain,
+            route_decide=route_decide,
+            checkpointer=checkpointer,
+        )
+    active_checkpointer = checkpointer or getattr(graph, "checkpointer", None)
     invoke_config = config or (
-        new_delegation_config() if checkpointer is not None else None
+        new_delegation_config() if active_checkpointer is not None else None
     )
     try:
         state = (
@@ -156,5 +176,5 @@ RESEARCH_SPECIALIST = Specialist[ResearchInput, ResearchReport](
     report_schema=ResearchReport,
     run=run_research,
     render=render_research_report,
-    default_target=make_researcher_agent,
+    default_engine=make_research_graph,
 )
