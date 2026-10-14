@@ -25,6 +25,14 @@ def test_should_inject_on_first_invocation_or_mentor_command() -> None:
         should_inject({"invocationNum": 3, "userRequest": "/mentor edame bedim"})
         is True
     )
+    assert (
+        should_inject({"invocationNum": 1, "userRequest": "/reviewer review kon"})
+        is False
+    )
+    assert (
+        should_inject({"invocationNum": 1, "userRequest": "/consultant barresi kon"})
+        is False
+    )
     assert should_inject({}) is True
 
 

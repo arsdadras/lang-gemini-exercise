@@ -2,7 +2,7 @@
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any, Protocol, runtime_checkable
 
 from deepagents import CompiledSubAgent
 from langchain_core.tools import BaseTool, StructuredTool
@@ -17,6 +17,7 @@ from agentlab.utils.subagent_util import specialist_subagent
 _ENGINE_KW_KEYS = ("engine", "target", "graph", "store", "agent")
 
 
+@runtime_checkable
 class WorkflowRunner[TReport: BaseModel](Protocol):
     """Structural protocol for any domain workflow runner function.
 

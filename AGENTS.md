@@ -64,7 +64,7 @@ docs/              architecture, ADRs, design cards, and study guides (write-ups
                    projects)
 .github/           CI and Dependabot
 .agents/           Antigravity workspace customizations: `hooks.json` and `skills/` (`/mentor`,
-                   `/consultant`, `/handoff`, `teach`, `decision-points`, `architecture-duality`)
+                   `/consultant`, `/reviewer`, `/handoff`, `teach`, `decision-points`, `architecture-duality`)
 .claude/           Synchronized skill mirrors for compatibility
 examples/          sample inputs (e.g. code to review)
 evals/             live eval-lite scenario sets (real models, run by hand, not by pytest)

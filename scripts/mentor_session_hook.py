@@ -215,10 +215,12 @@ def build_consultant_briefing(
 
 def should_inject(payload: dict[str, Any]) -> bool:
     """Return True on the first turn of a session or when the user invokes `/mentor`."""
+    user_request = str(payload.get("userRequest") or "")
+    if "/reviewer" in user_request.lower() or is_consultant_command(user_request):
+        return False
     invocation_num = payload.get("invocationNum")
     if invocation_num in (None, 1):
         return True
-    user_request = str(payload.get("userRequest") or "")
     return "/mentor" in user_request.lower()
 
 

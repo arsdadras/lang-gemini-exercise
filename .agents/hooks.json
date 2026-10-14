@@ -7,6 +7,11 @@
             "type": "command",
             "command": "uv run python scripts/mentor_session_hook.py",
             "timeout": 10000
+          },
+          {
+            "type": "command",
+            "command": "uv run python scripts/reviewer_session_hook.py",
+            "timeout": 10000
           }
         ]
       }
