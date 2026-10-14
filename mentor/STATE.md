@@ -32,45 +32,52 @@ the mentor is the only role and works on `main`.
   governance, pedagogy, `.agents/skills/` rehabilitation, `.agents/hooks.json` session hook, and
   **Phases 1-3 code implementation** completed (2026-10-12, 358 tests green, 0 ruff/mypy/docs
   errors across 139 source files).
-- **NEXT SESSION — Phase 4, Session R2 (P2 RAG — Top-Down Return Pass):**
-  Teach and execute **R2** in a fresh `/mentor` session from the top-down mountain-peak perspective
-  ([pedagogy](../library/teaching/pedagogy.md#top-down-mountain-peak-perspective-and-the-compressor-balancing-rule-return-pass)):
-  1. Write the P2 design card (`docs/design_cards/P2_rag_agent.md` with point 16, production path,
-     point 17, decision points, and Wave/Particle density).
-  2. Start the lesson from the mountain peak: `workflows/rag_workflow.py` (`run_rag` ->
-     `SpecialistResult[RagReport]`, `RAG_SPECIALIST`) and P2's high Wave density (`StateGraph`
-     stations over `RAGState`).
-  3. Build and teach R2's vertical preventative hardening:
-     - Hybrid search (BM25 + vector + reranker)
-     - Query rewriting and single-request chunk grading/reranking in `Jev`
-     - Per-claim verification with reroutes
-     - Incremental re-indexing (`content_hash`)
-- **SUBSEQUENT SESSIONS — Remaining Return Pass Stages:**
-  - **Session R3 (P3 Code Review):** Vertical preventative hardening over
-    `code_review_workflow.py` (`CodeReviewReport`): deterministic `ruff`/AST pass first, `Jev`
-    decider severity/category labeling second, LLM explanation third.
-  - **Session R4 (P4 Interpreter):** Vertical preventative hardening over
-    `interpreter_workflow.py` (`InterpreterReport`), risk label on `execute` approval, declared
-    side effects.
-  - **Session P5 Pass:** Practical walk-through and verification of `personal_context_workflow.py`
-    (`PersonalContextReport`) + Rung-0 memory governance (B4-C4: 3-check fail-closed guard,
-    staleness pre-pass, recall ranking, schema compiler).
-  - **Session R5 Close:** Coordinator pre-router on a labeled set across all five `Specialist`
-    contracts (`P1`-`P5`), unified practice scenario, and the first teach-back.
+- **Architectural Review & Refinement Agreements (2026-10-14):**
+  Identified and agreed on 4 foundational architectural refinements during in-depth review:
+  1. *Target & Pre-composition Unification:* In `run_research`, target was the leaf worker `agent`
+     and the graph was built on every call inside `run_research`. Unify with RAG/Code Review: target
+     must be the pre-composed `ResearchGraph` (compiled graph), moving composition to factory time.
+     This unblocks multi-worker attachments (e.g. Researcher + Librarian) without signature ambiguity.
+  2. *Relocate `Specialist` Descriptor:* `class Specialist` in `workflows/specialist_workflow.py`
+     is a category error (Specialist is Particle, Workflow is Wave; forced by `_workflow.py` suffix).
+     Relocate to a dedicated base/core module (`workflows/base.py` or `specialists/descriptor.py`).
+  3. *Eliminate `_resolve_target` Reflection Hack & Introduce `Protocol`:* `_resolve_target` duck-typed
+     via `inspect.signature` to grab the first argument. Replace with explicit engine binding and
+     teach/implement `typing.Protocol` (structural typing) for engine contracts.
+  4. *Unified Capability / Extension Protocol:* Design and implement a typed `Capability` /
+     `Extension` abstraction for `create_deep_agent` and `build_graph` so attachments (subagents,
+     tools, middlewares, subgraphs) are declared polymorphically rather than wired ad-hoc.
+- **NEXT SESSION — Foundational Architectural Refactoring & Teaching (Learner Decision):**
+  Per learner's explicit instruction, do NOT defer architectural improvements to later stages.
+  Apply, verify, and **teach** all 4 architectural refinements in this dedicated session before
+  moving to R2:
+  1. Teach the design rationale and code walkthrough for each of the 4 items (including `Protocol`).
+  2. Implement and test the refactorings across `src/agentlab/` (`workflows/`, `specialists/`, `nodes/research_node.py`, `subagents/`).
+  3. Verify all tests pass (`pytest`, `ruff`, `mypy`, `check_docs`).
+  4. Conclude Topic 2 & 3 of ADR-0033 return-pass curriculum on the newly perfected foundation.
+- **SUBSEQUENT SESSIONS — Remaining Return Pass Stages (On Solidified Foundation):**
+  - **Session R2 (P2 RAG):** Mountain-peak perspective, P2 design card, hybrid retrieval, query rewrite, Jev chunk grading/reranking, per-claim verification, incremental re-index.
+  - **Session R3 (P3 Code Review):** Vertical preventative hardening, deterministic ruff/AST pass, Jev severity/category labeling, LLM explanation.
+  - **Session R4 (P4 Interpreter):** Interpreter hardening, risk label on execute, declared side effects.
+  - **Session P5 Pass:** `personal_context_workflow.py` + Rung-0 memory governance (3-check fail-closed guard, staleness pre-pass, recall ranking, schema compiler).
+  - **Session R5 Close:** Coordinator pre-router on labeled set across all 5 `Specialist` contracts, unified practice scenario, first teach-back.
 
 ## Build queue
 
-1. **R2 Session (Next):** Write the P2 design card (points 16-17, Wave/Particle density) and
+1. **Foundational Architectural Refinement & Teaching (Next):** Implement, verify, and teach the 4
+   agreed refinements (pre-composed `ResearchGraph` target in `run_research`, relocate `Specialist`
+   descriptor, eliminate `_resolve_target` via `Protocol`, unified `Capability` protocol).
+2. **R2 Session:** Write the P2 design card (points 16-17, Wave/Particle density) and
    build/teach **R2** over `rag_workflow.py` (`RagReport`).
-2. A live end-to-end run of the research workflow; the depth budgets are provisional until real
+3. A live end-to-end run of the research workflow; the depth budgets are provisional until real
    broad runs measure them (`DEPTH_BUDGETS`).
-3. Grow the claim-check labeled set from 34 to 50 cases (200 before fitting thresholds), fit
+4. Grow the claim-check labeled set from 34 to 50 cases (200 before fitting thresholds), fit
    `SUPPORTS_THRESHOLD` and `CONTRADICTS_THRESHOLD`, and decide whether Jev (91.2%) or Gemini 3.5
    Flash-Lite (34/34, 20 s p95) is primary
    ([EV-2026-10-05-claim-check-jev](research/evidence/EV-2026-10-05-claim-check-jev/README.md),
    [EV-2026-10-05-claim-check-flash-lite](research/evidence/EV-2026-10-05-claim-check-flash-lite/README.md)).
-4. The roadmap v5 renumbering sweep in live files (P6 is the content generator).
-5. The P6 design card, from the learner's details, before P6.
+5. The roadmap v5 renumbering sweep in live files (P6 is the content generator).
+6. The P6 design card, from the learner's details, before P6.
 
 ## Working agreements
 

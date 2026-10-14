@@ -15,6 +15,12 @@ were dropped from this list (the roadmap owns them).
 - **E:** Design cards for P2-P4 with point 16 (production path), each before its R stage
   (DEC-006); P1's is written (DEC-035).
 - **N:** Add point 16 (production path) to the P5 design card.
+- **E:** Architectural refinement of ADR-0033 (learned from return-pass review):
+  - Refactor `run_research` to take pre-composed `ResearchGraph` as target instead of child worker `agent`, moving composition (`build_research_graph`) to factory time. Enables multi-worker graphs (Researcher + Librarian) without signature ambiguity.
+  - Relocate `class Specialist` out of `workflows/specialist_workflow.py` to a dedicated base/core module (`workflows/base.py` or `specialists/`) to eliminate the Wave/Particle category error and restore directory symmetry.
+  - Eliminate `_resolve_target` reflection hack (`inspect.signature`) in `Specialist`; make target parameterization explicit and statically typed via `Specialist[TTarget, TInput, TReport]`.
+  - Explore unified `Capability` / `Extension` protocol for `create_deep_agent` to auto-route attachments (subagents, tools, middlewares, subgraphs) polymorphically.
+
 
 **R1, P1 (remaining nice-to-have)**
 - **N:** Finglish repair on P1's report (Perso-Arabic leaked in a `lab-brief` run).
