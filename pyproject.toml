@@ -59,7 +59,7 @@ dev = [
     "mypy>=1.19.0",
     "pytest>=9.1.1",
     # Exact pin: a ruff release can add lint rules, so each bump is its own reviewed change.
-    "ruff==0.16.10",
+    "ruff==0.17.0",
     "types-PyYAML>=6.0.12",
     "types-requests>=2.32.0",
 ]
