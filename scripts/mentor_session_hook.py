@@ -1,20 +1,26 @@
-"""Antigravity PreInvocation hook that injects the Mentor orientation briefing at session start.
+"""Antigravity PreInvocation hook that injects Mentor or Consultant briefings.
 
-Triggered by `.agents/hooks.json` on `PreInvocation`. Reads the hook payload from `stdin` and emits
-an `ephemeralMessage` on `stdout` when `invocationNum == 1` (the first turn of a new session) or
-when `userRequest` invokes `/mentor`. On later turns without `/mentor`, it emits `{}` so ongoing
-turns are not cluttered.
+Triggered by `.agents/hooks.json` on `PreInvocation`.
+- When `userRequest` invokes `/consultant` or `/cansultant`, emits an `ephemeralMessage`
+  containing recent git changes since the last reviewed commit, project state, and instructions
+  for the Lead Architectural Consultant & Devil's Advocate role.
+- When `invocationNum == 1` or when `userRequest` invokes `/mentor`, emits the standard Mentor
+  orientation briefing.
+- On other turns, emits `{}` to keep ongoing context clean.
 """
 
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
 STATE_PATH = ROOT / "mentor" / "STATE.md"
+CHECKPOINT_PATH = ROOT / "mentor" / ".consultant_checkpoint.json"
+DEFAULT_BASELINE_COMMIT = "597421e"
 
 
 def extract_state_section(
@@ -79,20 +85,131 @@ def build_orientation_message(state_path: Path = STATE_PATH) -> str:
         "`AgentMiddleware`) vs. `Graph` (`graphs/` + `nodes/`, Wave heterogeneous stations over typed `State`).\n"
         "- **Rung 2 (Domain / Project Scale, P1-P5+):** Two faces of one coin: `Workflow` (`run_<project>` "
         "in `workflows/<project>_workflow.py`, sitting *above* `agents/` and `graphs/`) and "
-        "`Specialist[TInput, TReport]` (`workflows/specialist_workflow.py`, adapted in "
-        "`subagents/*_subagent.py`). Every specialist returns a rich Pydantic `*Report` (`ResearchReport`, "
-        "`RagReport`, `CodeReviewReport`, `InterpreterReport`, `PersonalContextReport`)—never `str` or `dict`.\n"
+        "`Specialist[TInput, TReport]` (`workflows/base.py`, adapted in `subagents/*_subagent.py`). "
+        "Every specialist returns a rich Pydantic `*Report` (`ResearchReport`, `RagReport`, `CodeReviewReport`, "
+        "`InterpreterReport`, `PersonalContextReport`)—never `str` or `dict`.\n"
         "- **Rung 3 (Macro Scale):** `Coordinator` (`agents/coordinators/`) vs. `Operation` (macro-workflows).\n"
         "- **Return-Pass Pedagogy (Top-Down Compressor Balancing):** Always start from the mountain peak "
         "(the end-to-end `Workflow` film script + `Specialist` contract + Wave/Particle density). Apply "
         "vertical preventative hardening to tall projects (`P2`-`P4`) and horizontal specialist completion "
         "to `P5`.\n\n"
         "## 3. Workspace Skills (`.agents/skills/`)\n"
-        "- `/mentor` (`.agents/skills/mentor/SKILL.md`), `teach` (`.agents/skills/teach/SKILL.md`), "
-        "`architecture-duality` (`.agents/skills/architecture-duality/SKILL.md`), "
-        "`decision-points` (`.agents/skills/decision-points/SKILL.md`), "
-        "`/handoff` (`.agents/skills/handoff/SKILL.md`).\n\n"
+        "- `/mentor` (`.agents/skills/mentor/SKILL.md`), `/consultant` (`.agents/skills/consultant/SKILL.md`), "
+        "`teach` (`.agents/skills/teach/SKILL.md`), `architecture-duality` (`.agents/skills/architecture-duality/SKILL.md`), "
+        "`decision-points` (`.agents/skills/decision-points/SKILL.md`), `/handoff` (`.agents/skills/handoff/SKILL.md`).\n\n"
         f"## 4. Live State Snapshot (`mentor/STATE.md`)\n{state_excerpt}\n"
+    )
+
+
+def is_consultant_command(user_request: str) -> bool:
+    """Return True if user explicitly invokes the consultant role."""
+    lowered = user_request.lower()
+    return "/consultant" in lowered or "/cansultant" in lowered
+
+
+def load_consultant_checkpoint(checkpoint_path: Path = CHECKPOINT_PATH) -> str:
+    """Read last consulted commit from checkpoint_path or fallback to default."""
+    if checkpoint_path.exists():
+        try:
+            data = json.loads(checkpoint_path.read_text(encoding="utf-8"))
+            if isinstance(data, dict) and data.get("last_consulted_commit"):
+                return str(data["last_consulted_commit"]).strip()
+        except (json.JSONDecodeError, OSError, KeyError):
+            return DEFAULT_BASELINE_COMMIT
+    return DEFAULT_BASELINE_COMMIT
+
+
+def get_git_changes_since(
+    checkpoint_commit: str, root_dir: Path = ROOT
+) -> tuple[list[str], str]:
+    """Retrieve list of commits and diffstat since checkpoint_commit."""
+    try:
+        log_res = subprocess.run(
+            ["git", "log", f"{checkpoint_commit}..HEAD", "--oneline"],
+            cwd=root_dir,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        commits = [c.strip() for c in log_res.stdout.splitlines() if c.strip()]
+    except (subprocess.SubprocessError, OSError):
+        commits = []
+
+    try:
+        diff_res = subprocess.run(
+            ["git", "diff", "--stat", f"{checkpoint_commit}..HEAD"],
+            cwd=root_dir,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        diff_stat = diff_res.stdout.strip()
+    except (subprocess.SubprocessError, OSError):
+        diff_stat = ""
+
+    return commits, diff_stat
+
+
+def build_consultant_briefing(
+    root: Path = ROOT,
+    state_path: Path = STATE_PATH,
+    checkpoint_path: Path = CHECKPOINT_PATH,
+) -> str:
+    """Build the specialized briefing for the Architectural Consultant."""
+    last_commit = load_consultant_checkpoint(checkpoint_path=checkpoint_path)
+    commits, diff_stat = get_git_changes_since(last_commit, root_dir=root)
+
+    commits_text = (
+        "\n".join(f"- `{c}`" for c in commits)
+        if commits
+        else "(No new commits since last checkpoint)"
+    )
+    diff_text = (
+        f"```\n{diff_stat}\n```"
+        if diff_stat
+        else "(No working directory or commit diffs)"
+    )
+
+    state_excerpt = ""
+    if state_path.exists():
+        state_text = state_path.read_text(encoding="utf-8")
+        now_section = extract_state_section(state_text, "## Now")
+        queue_section = extract_state_section(
+            state_text, "## Build queue", max_lines=15
+        )
+        state_excerpt = "\n\n".join(p for p in (now_section, queue_section) if p)
+
+    return (
+        "# [CONSULTANT HOOK] Mode: Lead Architectural Consultant & Devil's Advocate\n\n"
+        "You are acting as the **Lead Architectural Consultant & Devil's Advocate** for `agentlab` "
+        "(`lang-gemini-exercise`). This role was explicitly triggered by the user (`/consultant` / `/cansultant`) "
+        "to critically evaluate recent code and design evolution against the foundational architectural vision.\n\n"
+        "## 1. Non-Negotiable Consultant Principles\n"
+        "- **Asl-e Ghorur (Principle 1):** Zero flattery and zero performative agreement (`tayid-e alaki`). "
+        "Conduct a demanding, uncompromising technical critique. Point out leaky abstractions, reflection hacks, "
+        "untyped shims, fragile shortcuts, and architectural drift.\n"
+        "- **Decide, Don't Ask (Principle 10):** Deliver clear, authoritative architectural verdicts and concrete "
+        "recommendations. Do not ask open questions about what should be done.\n"
+        "- **Communication Language:** Respond in Finglish when the user writes in Finglish. Code, symbols, and "
+        "file links must remain in English.\n\n"
+        "## 2. Changes Since Last Review Checkpoint\n"
+        f"- **Baseline Checkpoint Commit:** `{last_commit}`\n\n"
+        "### Commits Since Checkpoint:\n"
+        f"{commits_text}\n\n"
+        "### Modified Files & Diffstat:\n"
+        f"{diff_text}\n\n"
+        f"## 3. Current Project State (`mentor/STATE.md`)\n{state_excerpt}\n\n"
+        "## 4. Evaluation Mandate & Dimensions\n"
+        "Evaluate the codebase across four critical dimensions:\n"
+        "1. **Architecture & Boundary Fidelity (ADR-0033):** Does `src/agentlab/workflows/` sit properly above `agents/` "
+        "and `graphs/`? Are `Specialist[TInput, TReport]` contracts typed and enforced? Is Rung-0 decoupled?\n"
+        "2. **Code Quality, Type Safety & Smells:** Are there reflection hacks, untyped fallbacks (`*args/**kwargs`), "
+        "or duck-typing crutches? Are errors handled with transient retries and HITL propagation?\n"
+        "3. **Completeness vs. Raw Design:** What parts of the raw agreed design have been realized, what remains "
+        "temporary scaffolding, and what has drifted?\n"
+        "4. **Concrete Strategic Recommendations:** What should be refactored, hardened, or scheduled next?\n\n"
+        "> **Note:** When the consultation is complete, record the new checkpoint commit via:\n"
+        '> `uv run python scripts/record_consultant_checkpoint.py "<summary of review>"`\n'
     )
 
 
@@ -105,7 +222,12 @@ def should_inject(payload: dict[str, Any]) -> bool:
     return "/mentor" in user_request.lower()
 
 
-def handle_hook(raw_stdin: str, state_path: Path = STATE_PATH) -> dict[str, str]:
+def handle_hook(
+    raw_stdin: str,
+    state_path: Path = STATE_PATH,
+    checkpoint_path: Path = CHECKPOINT_PATH,
+    root_dir: Path = ROOT,
+) -> dict[str, str]:
     """Parse `PreInvocation` JSON input and return the hook response dictionary."""
     payload: dict[str, Any] = {}
     if raw_stdin.strip():
@@ -115,6 +237,17 @@ def handle_hook(raw_stdin: str, state_path: Path = STATE_PATH) -> dict[str, str]
                 payload = parsed
         except json.JSONDecodeError:
             payload = {}
+
+    user_request = str(payload.get("userRequest") or "")
+
+    if is_consultant_command(user_request):
+        return {
+            "ephemeralMessage": build_consultant_briefing(
+                root=root_dir,
+                state_path=state_path,
+                checkpoint_path=checkpoint_path,
+            )
+        }
 
     if not should_inject(payload):
         return {}

@@ -43,7 +43,10 @@ the mentor is the only role and works on `main`.
   3. *Eliminated `_resolve_target` Reflection Hack & Introduced `WorkflowRunner` Protocol:*
      Replaced `inspect.signature` with `WorkflowRunner[TReport](Protocol)` and modern Python 3.12
      generics (PEP 695), removing runtime reflection overhead and enforcing type safety.
-  4. Git author identity configured globally and locally to `arsdadras` matching the primary GitHub account.
+  4. *Consultant Hook & Skill (`/consultant` / `/cansultant`):* Implemented `scripts/mentor_session_hook.py`
+     detection of consultant commands, diff extraction since last checkpoint (`mentor/.consultant_checkpoint.json`),
+     `scripts/record_consultant_checkpoint.py`, and `.agents/skills/consultant/SKILL.md` (396 tests green).
+  5. Git author identity configured globally and locally to `arsdadras` matching the primary GitHub account.
 - **NEXT SESSION — Topic 4 Refinement & Transition to R2:**
   1. **Topic 4 (Unified Capability / Extension Protocol):** Design, teach, and implement a typed
      `Capability` / `Extension` protocol for Rung-1 engines (`create_deep_agent` and `build_graph`)
