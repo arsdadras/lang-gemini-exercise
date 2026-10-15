@@ -1,11 +1,18 @@
 """Graph state for the P3 code review and test generation pipeline."""
 
-from typing import NotRequired, TypedDict
+import operator
+from typing import Annotated, NotRequired, TypedDict
 
 from agentlab.schemas.output.code_review_output_schema import (
     CodeReview,
+    CodeReviewReport,
     TestRun,
     TestSuite,
+)
+from agentlab.schemas.output.specialist_output_schema import (
+    Provenance,
+    SideEffect,
+    SpecialistResult,
 )
 
 
@@ -26,3 +33,9 @@ class CodeReviewState(TypedDict):
     refactor_decision: NotRequired[str | None]
     applied_code: NotRequired[str | None]
     error: NotRequired[str | None]
+
+    report: NotRequired[CodeReviewReport | None]
+    problems: NotRequired[Annotated[list[str], operator.add]]
+    provenance: NotRequired[Annotated[list[Provenance], operator.add]]
+    side_effects: NotRequired[Annotated[list[SideEffect], operator.add]]
+    result: NotRequired[SpecialistResult[CodeReviewReport]]

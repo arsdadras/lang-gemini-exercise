@@ -2,7 +2,6 @@
 
 from agentlab.workflows.specialist_workflow import (
     ResultNode,
-    Specialist,
     SpecialistSpec,
     Workflow,
     WorkflowOutputState,
@@ -12,7 +11,6 @@ from agentlab.workflows.specialist_workflow import (
 
 __all__ = [
     "ResultNode",
-    "Specialist",
     "SpecialistSpec",
     "Workflow",
     "WorkflowOutputState",

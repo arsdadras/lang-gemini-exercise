@@ -48,7 +48,6 @@ from agentlab.workflows.research_workflow import (
 )
 from agentlab.workflows.specialist_workflow import (
     ResultNode,
-    Specialist,
     SpecialistSpec,
     Workflow,
     WorkflowOutputState,
@@ -68,7 +67,6 @@ __all__ = [
     "RagWorkflow",
     "ResearchWorkflow",
     "ResultNode",
-    "Specialist",
     "SpecialistSpec",
     "Workflow",
     "WorkflowOutputState",

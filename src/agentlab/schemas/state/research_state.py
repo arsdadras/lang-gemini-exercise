@@ -11,6 +11,10 @@ from agentlab.schemas.output.research_output_schema import (
     SourceKind,
     join_text,
 )
+from agentlab.schemas.output.specialist_output_schema import (
+    Provenance,
+    SpecialistResult,
+)
 
 
 def merge_documents(
@@ -52,6 +56,8 @@ class ResearchState(TypedDict):
     problems: NotRequired[Annotated[list[str], operator.add]]
     """Everything lost on the way, in words: becomes the envelope's ``reason``."""
     report: NotRequired[ResearchReport]
+    provenance: NotRequired[Annotated[list[Provenance], operator.add]]
+    result: NotRequired[SpecialistResult[ResearchReport]]
 
 
 class SubQuestionState(TypedDict):

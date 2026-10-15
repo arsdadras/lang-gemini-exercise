@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import operator
-from abc import ABC, abstractmethod
+from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import (
     Annotated,
@@ -64,7 +64,7 @@ class WorkflowOverallState[TReport: BaseModel](TypedDict):
 
 @dataclass(frozen=True)
 class SpecialistSpec[TInput: BaseModel, TReport: BaseModel]:
-    """Declarative I/O specification (ID card) of a Rung-2 specialist.
+    """Declarative I/O specification (Particle ID card) of a Rung-2 specialist.
 
     Exposes only external input/output contracts—never internal engines or graphs.
     """
@@ -95,11 +95,13 @@ class ResultNode[TInput: BaseModel, TReport: BaseModel]:
         self,
         state: Any,
     ) -> WorkflowOutputState[TReport]:
-        raw_report = state.get("report")
-        raw_problems = state.get("problems") or []
-        problems = [str(p).strip() for p in raw_problems if str(p).strip()]
+        raw_report = state.get("report") if isinstance(state, dict) else None
+        raw_problems = state.get("problems") if isinstance(state, dict) else []
+        problems = [str(p).strip() for p in (raw_problems or []) if str(p).strip()]
         reason = " ".join(dict.fromkeys(problems))
-        side_effects = list(state.get("side_effects") or [])
+        side_effects = (
+            list(state.get("side_effects") or []) if isinstance(state, dict) else []
+        )
         waiting = pending_approvals(state) if isinstance(state, dict) else ""
 
         if raw_report is None:
@@ -128,17 +130,37 @@ class ResultNode[TInput: BaseModel, TReport: BaseModel]:
                 status=ok_status,
                 reason=reason,
                 output=report,
-                provenance=list(state.get("provenance") or []),
+                provenance=list(state.get("provenance") or [])
+                if isinstance(state, dict)
+                else [],
                 side_effects=side_effects,
             )
         }
 
 
-class Workflow[TInput: BaseModel, TReport: BaseModel](ABC):
-    """Active Rung-2 domain workflow that compiles a StateGraph ending in ``ResultNode``."""
+class Workflow[TInput: BaseModel, TReport: BaseModel]:
+    """Rung-2 domain workflow: typed Runnable facade over a compiled domain StateGraph (ADR-0033)."""
 
     spec: SpecialistSpec[TInput, TReport]
-    _compiled_graph: CompiledStateGraph | None = None
+
+    def __init__(
+        self,
+        graph: CompiledStateGraph | Any | None = None,
+    ) -> None:
+        self._graph = graph
+
+    @property
+    def graph(self) -> CompiledStateGraph:
+        """The compiled domain StateGraph wrapped by this workflow."""
+        if self._graph is None:
+            self._graph = self.build_default_graph()
+        return self._graph
+
+    def build_default_graph(self) -> CompiledStateGraph:
+        """Build the default domain StateGraph when none was injected."""
+        raise NotImplementedError(
+            f"{type(self).__name__} must inject a graph or implement build_default_graph."
+        )
 
     @property
     def name(self) -> SpecialistName:
@@ -156,22 +178,6 @@ class Workflow[TInput: BaseModel, TReport: BaseModel](ABC):
     def report_schema(self) -> type[TReport]:
         return self.spec.report_schema
 
-    @property
-    def pack_node(self) -> ResultNode[TInput, TReport]:
-        """Terminal ``ResultNode`` bound to this workflow's ``SpecialistSpec``."""
-        return ResultNode(self.spec)
-
-    @abstractmethod
-    def build_graph(self) -> CompiledStateGraph:
-        """Assemble and compile the workflow's StateGraph ending in ``self.pack_node``."""
-
-    @property
-    def graph(self) -> CompiledStateGraph:
-        """Lazy compiled StateGraph (nothing is built at import time)."""
-        if self._compiled_graph is None:
-            self._compiled_graph = self.build_graph()
-        return self._compiled_graph
-
     def coerce_input(self, inputs: TInput | dict[str, Any] | str | None) -> TInput:
         """Normalize a raw task string, dict, or ``TInput`` model into ``TInput``."""
         if inputs is None:
@@ -183,14 +189,18 @@ class Workflow[TInput: BaseModel, TReport: BaseModel](ABC):
         first_field = next(iter(self.spec.input_schema.model_fields))
         return self.spec.input_schema.model_validate({first_field: str(inputs)})
 
+    def prepare_payload(self, inputs: TInput) -> dict[str, Any]:
+        """Convert validated input model to the dictionary passed to graph.invoke/stream."""
+        return {k: getattr(inputs, k) for k in type(inputs).model_fields}
+
     def invoke(
         self,
         inputs: TInput | dict[str, Any] | str | None = None,
         config: RunnableConfig | None = None,
     ) -> WorkflowOutputState[TReport]:
-        """Validate input, invoke the workflow StateGraph, and guarantee ``{'result': ...}``."""
+        """Validate input, invoke the domain StateGraph, and guarantee ``{'result': ...}``."""
         validated = self.coerce_input(inputs)
-        payload = {k: getattr(validated, k) for k in type(validated).model_fields}
+        payload = self.prepare_payload(validated)
         has_saver = getattr(self.graph, "checkpointer", None) is not None
         invoke_config = config or (new_delegation_config() if has_saver else None)
         try:
@@ -210,8 +220,14 @@ class Workflow[TInput: BaseModel, TReport: BaseModel](ABC):
                 )
             }
 
-        if isinstance(state, dict) and state.get("result") is not None:
-            return {"result": state["result"]}
+        if isinstance(state, dict):
+            if state.get("result") is not None:
+                return {"result": state["result"]}
+            formatted = self.format_state(state)
+            if formatted.get("result") is not None:
+                return {"result": formatted["result"]}
+            if formatted.get("report") is not None or formatted.get("problems"):
+                return ResultNode(self.spec)(formatted)
 
         waiting = pending_approvals(state) if isinstance(state, dict) else ""
         return {
@@ -226,8 +242,28 @@ class Workflow[TInput: BaseModel, TReport: BaseModel](ABC):
             )
         }
 
+    def format_state(self, state: dict[str, Any]) -> dict[str, Any]:
+        """Optional hook for subclasses to adapt raw/mock graph state into workflow channels."""
+        return state
+
+    def stream(
+        self,
+        inputs: TInput | dict[str, Any] | str | None = None,
+        config: RunnableConfig | None = None,
+        **kwargs: Any,
+    ) -> Iterator[dict[str, Any]]:
+        """Stream steps from the underlying domain StateGraph."""
+        validated = self.coerce_input(inputs)
+        payload = self.prepare_payload(validated)
+        has_saver = getattr(self.graph, "checkpointer", None) is not None
+        invoke_config = config or (new_delegation_config() if has_saver else None)
+        if invoke_config is not None:
+            yield from self.graph.stream(payload, config=invoke_config, **kwargs)
+        else:
+            yield from self.graph.stream(payload, **kwargs)
+
     def run(self, *args: Any, **kwargs: Any) -> SpecialistResult[TReport]:
-        """Run the workflow and return the ``SpecialistResult[TReport]`` envelope."""
+        """Backward-compatibility convenience helper returning ``SpecialistResult[TReport]``."""
         if len(args) == 1 and not kwargs:
             return self.invoke(args[0])["result"]
         if args:
@@ -268,12 +304,8 @@ class Workflow[TInput: BaseModel, TReport: BaseModel](ABC):
         )
 
 
-# Alias so existing references to `Specialist` in docs/tests resolve cleanly to `Workflow`
-Specialist = Workflow
-
 __all__ = [
     "ResultNode",
-    "Specialist",
     "SpecialistSpec",
     "Workflow",
     "WorkflowOutputState",

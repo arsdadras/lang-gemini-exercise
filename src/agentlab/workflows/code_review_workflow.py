@@ -2,30 +2,32 @@
 
 from typing import Any
 
-from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
 from agentlab.configs.paths_config import DELEGATIONS_APP, checkpoint_db_path
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
 from agentlab.graphs.code_review_parentgraph import (
+    CODE_REVIEW_SPEC,
+    DEFAULT_CODE_REVIEW_DESCRIPTION,
     CodeReviewGraph,
     build_code_review_graph,
+    format_code_review_report_node,
 )
 from agentlab.schemas.input.code_review_input_schema import CodeReviewInput
 from agentlab.schemas.output.code_review_output_schema import CodeReviewReport
 from agentlab.schemas.output.specialist_output_schema import SpecialistResult
-from agentlab.utils.subagent_util import new_delegation_config, pending_approvals
-from agentlab.workflows.specialist_workflow import (
-    SpecialistSpec,
-    Workflow,
-    WorkflowOverallState,
-)
+from agentlab.workflows.specialist_workflow import Workflow
 
-DEFAULT_CODE_REVIEW_DESCRIPTION = (
-    "Analyzes and reviews source code, identifies bugs, security vulnerabilities, "
-    "and performance flaws, generates and executes pytest test suites in an isolated "
-    "sandbox, and outputs refactored code."
-)
+__all__ = [
+    "CODE_REVIEW_SPECIALIST",
+    "DEFAULT_CODE_REVIEW_DESCRIPTION",
+    "CodeReviewWorkflow",
+    "build_code_review_graph",
+    "code_review_workflow",
+    "make_code_review_specialist",
+    "render_outcome",
+    "run_code_review",
+]
 
 
 def _default_code_review_graph() -> CompiledStateGraph:
@@ -62,78 +64,28 @@ def render_outcome(outcome: CodeReviewReport) -> str:
     return "\n".join(parts)
 
 
-class CodeReviewWorkflowState(WorkflowOverallState[CodeReviewReport]):
-    """Overall state for the Code Review workflow graph."""
-
-    code: str
-    language: str
-
-
 class CodeReviewWorkflow(Workflow[CodeReviewInput, CodeReviewReport]):
-    """Active Rung-2 Code Review domain workflow wrapping ``CodeReviewGraph``."""
+    """Active Rung-2 Code Review domain workflow wrapping ``CodeReviewGraph`` as a Runnable facade."""
 
-    spec = SpecialistSpec(
-        name="code_review",
-        description=DEFAULT_CODE_REVIEW_DESCRIPTION,
-        input_schema=CodeReviewInput,
-        report_schema=CodeReviewReport,
-    )
+    spec = CODE_REVIEW_SPEC
 
     def __init__(
         self,
-        graph: CodeReviewGraph | CompiledStateGraph | Any = None,
+        graph: CodeReviewGraph | CompiledStateGraph | Any | None = None,
     ) -> None:
-        self._graph = graph
+        super().__init__(graph)
 
-    @property
-    def review_graph(self) -> CompiledStateGraph:
-        if self._graph is None:
-            self._graph = _default_code_review_graph()
-        return self._graph
+    def build_default_graph(self) -> CompiledStateGraph:
+        return _default_code_review_graph()
 
     def render(self, report: CodeReviewReport) -> str:
         return render_outcome(report)
 
-    def build_graph(self) -> CompiledStateGraph:
-        def _review_step(state: CodeReviewWorkflowState) -> dict[str, Any]:
-            sub_state = self.review_graph.invoke(
-                {
-                    "code": state["code"],
-                    "language": state.get("language", "python"),
-                    "file_path": None,
-                },
-                config=new_delegation_config(),
-            )
-            review = sub_state.get("review")
-            if review is None:
-                err = sub_state.get("error") or "No review was produced."
-                return {"report": None, "problems": [err]}
-
-            outcome = CodeReviewReport(
-                review=review,
-                tests=sub_state.get("tests"),
-                test_run=sub_state.get("test_run"),
-                applied_code=sub_state.get("applied_code"),
-            )
-            problems = []
-            if waiting := pending_approvals(sub_state):
-                problems.append(
-                    f"The suggested refactor waits for approval ({waiting}); it wasn't applied."
-                )
-            elif outcome.test_run is None or outcome.test_run.status in (
-                "error",
-                "timed_out",
-            ):
-                problems.append("The generated tests didn't run to completion.")
-            return {"report": outcome, "problems": problems}
-
-        graph = StateGraph(CodeReviewWorkflowState)
-        graph.add_node("review_step", _review_step)
-        graph.add_node("pack_result", self.pack_node)
-        graph.add_edge(START, "review_step")
-        graph.add_edge("review_step", "pack_result")
-        graph.add_edge("pack_result", END)
-        return graph.compile()
+    def format_state(self, state: dict[str, Any]) -> dict[str, Any]:
+        """Format raw code review state if returned by an external runner/mock without format_report node."""
+        if state.get("report") is None and state.get("result") is None:
+            return {**state, **format_code_review_report_node(state)}  # type: ignore[arg-type]
+        return state
 
 
 def run_code_review(
@@ -143,7 +95,9 @@ def run_code_review(
     language: str = "python",
 ) -> SpecialistResult[CodeReviewReport]:
     """Review ``code`` with the P3 pipeline on a fresh thread, as a specialist envelope."""
-    return CodeReviewWorkflow(graph).run(code=code, language=language)
+    return CodeReviewWorkflow(graph).invoke({"code": code, "language": language})[
+        "result"
+    ]
 
 
 def make_code_review_specialist(
