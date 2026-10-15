@@ -20,6 +20,13 @@ were dropped from this list (the roadmap owns them).
   - Relocate `class Specialist` out of `workflows/specialist_workflow.py` to a dedicated base/core module (`workflows/base.py` or `specialists/`) to eliminate the Wave/Particle category error and restore directory symmetry.
   - Eliminate `_resolve_target` reflection hack (`inspect.signature`) in `Specialist`; make target parameterization explicit and statically typed via `Specialist[TTarget, TInput, TReport]`.
   - Explore unified `Capability` / `Extension` protocol for `create_deep_agent` to auto-route attachments (subagents, tools, middlewares, subgraphs) polymorphically.
+- **N (Consultant Advisory Proposals — Decisions Reserved for Mentor):**
+  Four architectural simplification proposals recorded for Mentor review before launching R2:
+  1. *Direct Terminal ResultNode in `<project>_graph.py`:* Flatten the outer 2-node graph (`_research_step` -> `pack_result`) by attaching `ResultNode` directly as the terminal node of `<project>_graph.py` (`START -> ... -> pack_result -> END`), letting `Workflow` act as a clean facade rather than an outer graph wrapper.
+  2. *Explicit Factory Signatures over Runtime Inspection:* Replace runtime inspection heuristics in `ResearchWorkflow` (`is_graph` checking `nodes["plan"]` / `nodes["check"]`) with explicit factory methods (`from_graph` vs `from_agent`) or requiring pre-composed `ResearchGraph`.
+  3. *Native LangGraph Runnable Fidelity:* Align the mental model and execution vocabulary strictly with LangGraph's native `Runnable` protocol (`.invoke()`, `.stream()`), treating legacy `.run()` purely as a deprecated backward-compatible helper.
+  4. *Clean Separation of Particle vs Wave:* Maintain clear semantic separation between `SpecialistSpec` (the declarative Particle ID card) and `Workflow` (the active Wave engine), phasing out the legacy alias `Specialist = Workflow` over time.
+
 
 
 **R1, P1 (remaining nice-to-have)**
