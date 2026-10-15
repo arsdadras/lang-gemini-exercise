@@ -1,5 +1,7 @@
 """P1 subagent adapter over ``workflows/research_workflow.py`` (ADR-0033)."""
 
+from typing import Any
+
 from deepagents import CompiledSubAgent
 from langgraph.graph.state import CompiledStateGraph
 
@@ -13,9 +15,9 @@ RESEARCHER_SUBAGENT_NAME = "researcher"
 
 
 def make_researcher_subagent(
-    graph: CompiledStateGraph | None = None,
+    agent: Any = None,
     *,
-    agent: CompiledStateGraph | None = None,
+    graph: CompiledStateGraph | None = None,
     options: ResearchOptions | None = None,
     name: str = RESEARCHER_SUBAGENT_NAME,
     description: str = DEFAULT_RESEARCH_DESCRIPTION,
@@ -25,22 +27,10 @@ def make_researcher_subagent(
     Delegated research runs execute the full R1 plan -> route -> research -> claim-check
     workflow and return the verified ``ResearchReport`` envelope as text.
     """
-    target_engine = graph if graph is not None else agent
-    is_graph = bool(
-        target_engine is not None
-        and (
-            getattr(target_engine, "_is_research_graph", False)
-            or (
-                hasattr(target_engine, "nodes")
-                and isinstance(getattr(target_engine, "nodes", None), dict)
-                and "plan" in getattr(target_engine, "nodes", {})
-                and "check" in getattr(target_engine, "nodes", {})
-            )
-        )
-    )
-    workflow = ResearchWorkflow(
-        graph=target_engine if is_graph else None,
-        agent=target_engine if not is_graph and target_engine is not None else None,
-        options=options,
-    )
+    if graph is not None:
+        workflow = ResearchWorkflow.from_graph(graph, options=options)
+    elif agent is not None:
+        workflow = ResearchWorkflow.from_agent(agent=agent, options=options)
+    else:
+        workflow = ResearchWorkflow(options=options)
     return workflow.as_subagent(name=name, description=description)

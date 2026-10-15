@@ -10,7 +10,6 @@ import pytest
 from langchain_core.messages import HumanMessage
 from langchain_core.tools import BaseTool
 from langgraph.graph import END, START, StateGraph
-from langgraph.graph.state import CompiledStateGraph
 from pydantic import BaseModel
 
 from agentlab.schemas.output.specialist_output_schema import (
@@ -37,7 +36,6 @@ from agentlab.workflows.research_workflow import (
 )
 from agentlab.workflows.specialist_workflow import (
     ResultNode,
-    Specialist,
     SpecialistSpec,
     Workflow,
     WorkflowOverallState,
@@ -68,10 +66,6 @@ class DummyWorkflow(Workflow[DummyInput, DummyReport]):
     def __init__(self, engine_tag: str = "mock_engine") -> None:
         self.engine_tag = engine_tag
 
-    def render(self, report: DummyReport) -> str:
-        return f"RENDERED: {report.summary}"
-
-    def build_graph(self) -> CompiledStateGraph:
         def step(state: DummyWorkflowState) -> dict[str, Any]:
             report = DummyReport(
                 summary=f"result for {state['query']} with {self.engine_tag}"
@@ -86,11 +80,14 @@ class DummyWorkflow(Workflow[DummyInput, DummyReport]):
 
         graph = StateGraph(DummyWorkflowState)
         graph.add_node("step", step)
-        graph.add_node("pack_result", self.pack_node)
+        graph.add_node("pack_result", ResultNode(self.spec))
         graph.add_edge(START, "step")
         graph.add_edge("step", "pack_result")
         graph.add_edge("pack_result", END)
-        return graph.compile()
+        super().__init__(graph.compile())
+
+    def render(self, report: DummyReport) -> str:
+        return f"RENDERED: {report.summary}"
 
 
 def test_specialist_spec_declarative_metadata_and_immutability() -> None:
@@ -177,8 +174,8 @@ def test_result_node_packing_across_outcomes() -> None:
     assert fallback_res.reason == "No research report was produced."
 
 
-def test_workflow_invoke_run_and_subagent_adaptation() -> None:
-    """Verify that Workflow.invoke, .run, .as_subagent, and .as_tool work without keyword bugs."""
+def test_workflow_invoke_stream_run_and_subagent_adaptation() -> None:
+    """Verify that Workflow.invoke, .stream, .run, .as_subagent, and .as_tool work cleanly."""
     wf = DummyWorkflow(engine_tag="engine_999")
 
     # 1. invoke() with string input
@@ -189,12 +186,18 @@ def test_workflow_invoke_run_and_subagent_adaptation() -> None:
         state["result"].output.summary == "result for quantum computing with engine_999"
     )
 
-    # 2. run() with schema
+    # 2. stream() yields steps from underlying StateGraph
+    chunks = list(wf.stream("quantum computing"))
+    assert len(chunks) >= 1
+    # Last chunk should contain either pack_result or step updates
+    assert any("pack_result" in c or "step" in c for c in chunks)
+
+    # 3. run() with schema
     res = wf.run(DummyInput(query="distributed systems"))
     assert res.status == "ok"
     assert res.output.summary == "result for distributed systems with engine_999"
 
-    # 3. as_subagent()
+    # 4. as_subagent()
     subagent = wf.as_subagent(name="custom_subagent", description="Custom desc")
     assert subagent["name"] == "custom_subagent"
     assert subagent["description"] == "Custom desc"
@@ -206,7 +209,7 @@ def test_workflow_invoke_run_and_subagent_adaptation() -> None:
         in reply["messages"][0].content
     )
 
-    # 4. as_tool() invoked with keyword arguments (regression test for TypeError: multiple values for argument)
+    # 5. as_tool() invoked with keyword arguments (regression test for TypeError: multiple values for argument)
     tool = wf.as_tool()
     assert isinstance(tool, BaseTool)
     assert tool.name == "research"
@@ -252,9 +255,6 @@ def test_domain_workflow_classes_subclass_workflow() -> None:
     ]
     for cls in workflow_classes:
         assert issubclass(cls, Workflow), f"{cls} must subclass Workflow"
-        assert issubclass(cls, Specialist), (
-            f"{cls} must subclass Specialist (Specialist = Workflow)"
-        )
         assert isinstance(cls.spec, SpecialistSpec), (
             f"{cls}.spec must be SpecialistSpec"
         )

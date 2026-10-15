@@ -315,6 +315,7 @@ def test_the_graph_is_plan_then_route_then_research_then_check() -> None:
         "route",
         "research",
         "check",
+        "pack_result",
         "__end__",
     }
 

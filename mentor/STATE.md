@@ -34,22 +34,27 @@ the mentor is the only role and works on `main`.
   completed (2026-10-14: 393 tests green, 92% coverage across repo, 88 files with 100% complete
   coverage, 0 ruff/mypy/docs errors across 139 source files).
 - **Foundational Refinements Completed (2026-10-15):**
-  1. *Graph-Native `Workflow` & `ResultNode` Refactor (ADR-0033):* Refactored Rung-2 workflows into
-     graph-native `Workflow[TInput, TReport]` classes (`ResearchWorkflow`, `RagWorkflow`, `CodeReviewWorkflow`,
-     `InterpreterWorkflow`, `PersonalContextWorkflow`) with shared terminal `ResultNode` (LangGraph's `ToolNode`
-     equivalent for specialist envelopes).
-  2. *Declarative `SpecialistSpec[TInput, TReport]`:* Replaced the overloaded `Specialist` with declarative
-     `SpecialistSpec` containing strictly external I/O metadata (`name`, `description`, `input_schema`, `report_schema`)
-     with zero engine/target attributes.
-  3. *Distinct Rung-1 `NewType` Identities:* Defined `ResearcherAgent`, `InterpreterAgent`, `RagGraph`,
+  1. *Unified Graph Architecture & Outer Graph Purge (ADR-0033):* Completely eliminated the outer
+     "graph-in-a-graph" Russian Doll anti-pattern. Each domain project compiles exactly **one unified graph**
+     in `graphs/<project>_graph.py` with terminal `pack_result = ResultNode(spec)` pointing directly to `END`.
+  2. *Workflow as Pure Runnable Facade:* `Workflow[TInput, TReport]` is now a clean Facade over the domain
+     StateGraph, prioritizing LangGraph-native `.invoke()` and `.stream()` while retaining `.run()` as a shim.
+  3. *Elimination of Duck-Typing in `ResearchWorkflow`:* Removed runtime node-sniffing; explicit
+     `ResearchWorkflow.from_graph` and `ResearchWorkflow.from_agent` factories bind dependencies strictly.
+  4. *Clean Wave-Particle Separation:* Purged the `Specialist = Workflow` alias. `SpecialistSpec` is the
+     Particle ID card; `Workflow` is the Wave execution pipeline.
+  5. *Declarative `SpecialistSpec[TInput, TReport]`:* Declarative specification containing strictly
+     external I/O metadata (`name`, `description`, `input_schema`, `report_schema`) with zero engine/target attributes.
+  6. *Distinct Rung-1 `NewType` Identities:* Defined `ResearcherAgent`, `InterpreterAgent`, `RagGraph`,
      `CodeReviewGraph`, and `ResearchGraph` to statically prevent injecting wrong graphs at compile time ("Kolah Ghermezi" fix).
-  4. *Clean Tool & Subagent Adaptation:* Workflow instances own their typed Rung-1 dependencies in `__init__`,
+  7. *Clean Tool & Subagent Adaptation:* Workflow instances own their typed Rung-1 dependencies,
      completely eliminating manual `run_bound` closures, keyword-sniffing reflection hacks, and fixing the
      runtime `TypeError: got multiple values for argument 'topic'` in `.as_tool()`.
-  5. *Consultant Hook & Skill (`/consultant` / `/cansultant`):* Implemented `scripts/mentor_session_hook.py`
+  8. *Consultant Hook & Skill (`/consultant` / `/cansultant`):* Implemented `scripts/mentor_session_hook.py`
      detection of consultant commands, diff extraction since last checkpoint (`mentor/.consultant_checkpoint.json`),
      `scripts/record_consultant_checkpoint.py`, and `.agents/skills/consultant/SKILL.md`.
-  6. Git author identity configured globally and locally to `arsdadras` matching the primary GitHub account.
+  9. *All 5 Verification Gates Green:* 410 unit/integration tests passing (100% green), 0 ruff errors,
+     194 files formatted, 0 mypy errors across 144 source files, 0 check_docs problems.
 - **NEXT SESSION — Topic 4 Refinement & Transition to R2:**
   1. **Topic 4 (Unified Capability / Extension Protocol):** Design, teach, and implement a typed
      `Capability` / `Extension` protocol for Rung-1 engines (`create_deep_agent` and `build_graph`)

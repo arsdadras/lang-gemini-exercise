@@ -36,6 +36,7 @@ from agentlab.schemas.output.research_output_schema import (
     ResearchReport,
     SourceDocument,
 )
+from agentlab.schemas.output.specialist_output_schema import Provenance
 from agentlab.schemas.state.research_state import ResearchState
 from agentlab.utils.failure_util import failure_kind
 
@@ -374,6 +375,22 @@ def make_check_node(
                 + ", ".join(f"{n} {status}" for status, n in sorted(counts.items()))
                 + ")."
             )
-        return {"report": report, "problems": problems}
+        unsupported = unsupported_count(report)
+        if not report.claims:
+            problems.append("The report has no claims.")
+        elif unsupported:
+            problems.append(
+                f"{unsupported} of {len(report.claims)} claims are not supported by the "
+                "pages the agent read."
+            )
+        provenance = [
+            Provenance(
+                kind=report.citation_kinds.get(citation.url, "web"),
+                ref=citation.url,
+                title=citation.title,
+            )
+            for citation in report.citations
+        ]
+        return {"report": report, "problems": problems, "provenance": provenance}
 
     return check

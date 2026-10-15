@@ -7,7 +7,7 @@ translation contract a subagent adapter exists to own, and stays in ``subagents/
 """
 
 import uuid
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from typing import Any
 
 from deepagents import CompiledSubAgent
@@ -33,7 +33,7 @@ def to_subagent_reply(content: str) -> dict[str, Any]:
     return {"messages": [AIMessage(content=content)]}
 
 
-def pending_approvals(state: dict[str, Any]) -> str:
+def pending_approvals(state: Mapping[str, Any]) -> str:
     """Name the actions a finished ``invoke`` left waiting for approval, or ``""``.
 
     A graph that pauses returns normally with an ``__interrupt__`` entry. A boundary that
