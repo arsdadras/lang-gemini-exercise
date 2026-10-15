@@ -1,14 +1,17 @@
 """End-to-end domain workflows (``run_*``) and ``Specialist`` descriptors (ADR-0033)."""
 
-from agentlab.workflows.base import Specialist, WorkflowRunner
 from agentlab.workflows.code_review_workflow import (
     CODE_REVIEW_SPECIALIST,
+    CodeReviewWorkflow,
+    code_review_workflow,
     make_code_review_specialist,
     render_outcome,
     run_code_review,
 )
 from agentlab.workflows.interpreter_workflow import (
     INTERPRETER_SPECIALIST,
+    InterpreterWorkflow,
+    interpreter_workflow,
     make_interpreter_specialist,
     render_interpreter_report,
     run_interpreter,
@@ -20,22 +23,37 @@ from agentlab.workflows.personal_brief_workflow import (
 )
 from agentlab.workflows.personal_context_workflow import (
     PERSONAL_CONTEXT_SPECIALIST,
+    PersonalContextWorkflow,
     make_personal_context_specialist,
+    personal_context_workflow,
     run_personal_context,
 )
 from agentlab.workflows.rag_workflow import (
     RAG_SPECIALIST,
+    RagWorkflow,
     make_rag_specialist,
+    rag_workflow,
     render_rag_report,
     run_rag,
 )
 from agentlab.workflows.research_workflow import (
     RESEARCH_SPECIALIST,
+    ResearchWorkflow,
     make_research_graph,
     make_research_specialist,
     render_research_report,
+    research_workflow,
     run_research,
     verify_research,
+)
+from agentlab.workflows.specialist_workflow import (
+    ResultNode,
+    Specialist,
+    SpecialistSpec,
+    Workflow,
+    WorkflowOutputState,
+    WorkflowOverallState,
+    WorkflowRunner,
 )
 
 __all__ = [
@@ -44,9 +62,21 @@ __all__ = [
     "PERSONAL_CONTEXT_SPECIALIST",
     "RAG_SPECIALIST",
     "RESEARCH_SPECIALIST",
+    "CodeReviewWorkflow",
+    "InterpreterWorkflow",
+    "PersonalContextWorkflow",
+    "RagWorkflow",
+    "ResearchWorkflow",
+    "ResultNode",
     "Specialist",
+    "SpecialistSpec",
+    "Workflow",
+    "WorkflowOutputState",
+    "WorkflowOverallState",
     "WorkflowRunner",
     "brief_request",
+    "code_review_workflow",
+    "interpreter_workflow",
     "make_brief_researcher_agent",
     "make_code_review_specialist",
     "make_interpreter_specialist",
@@ -54,10 +84,13 @@ __all__ = [
     "make_rag_specialist",
     "make_research_graph",
     "make_research_specialist",
+    "personal_context_workflow",
+    "rag_workflow",
     "render_interpreter_report",
     "render_outcome",
     "render_rag_report",
     "render_research_report",
+    "research_workflow",
     "run_code_review",
     "run_interpreter",
     "run_personal_brief",

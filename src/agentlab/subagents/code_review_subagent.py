@@ -5,7 +5,7 @@ from langgraph.graph.state import CompiledStateGraph
 
 from agentlab.workflows.code_review_workflow import (
     DEFAULT_CODE_REVIEW_DESCRIPTION,
-    make_code_review_specialist,
+    CodeReviewWorkflow,
 )
 
 DEFAULT_CODE_REVIEW_NAME = "code_review_subagent"
@@ -18,8 +18,7 @@ def make_code_review_subagent(
     description: str = DEFAULT_CODE_REVIEW_DESCRIPTION,
 ) -> CompiledSubAgent:
     """Wrap the compiled review pipeline as a ``CompiledSubAgent``."""
-    specialist = make_code_review_specialist(graph)
-    return specialist.as_subagent(
+    return CodeReviewWorkflow(graph).as_subagent(
         name=name,
         description=description,
     )

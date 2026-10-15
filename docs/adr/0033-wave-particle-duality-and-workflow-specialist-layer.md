@@ -56,12 +56,10 @@ apps -> workflows -> agents (including coordinators/), graphs, subagents -> node
   - **P3:** `CodeReviewReport` (existing).
   - **P4:** `InterpreterReport` (`answer: str`, `executed_commands: list[str]`, `deliverables: list[Deliverable]`).
   - **P5:** `PersonalContextReport` (`profile_summary: str`, `relevant_facts: list[str]`, `active_preferences: dict[str, str]`, `active_skills: list[str]`).
-- **Lightweight `Specialist[TInput, TReport]` contract (in `workflows/specialist_workflow.py`):** A flat, frozen dataclass descriptor holding:
-  - `name: SpecialistName` and `description: str`
-  - `input_schema: type[TInput]` and `report_schema: type[TReport]`
-  - `run: Callable[..., SpecialistResult[TReport]]`
-  - `as_subagent(...) -> CompiledSubAgent` and `as_tool(...) -> BaseTool`
-  It does **not** wrap `CompiledStateGraph` in a heavy custom OOP class (`BaseAgent`), preserving LangGraph Studio, native streaming, checkpointers, and [ADR-0006](0006-remove-agent-registry.md).
+- **Declarative `SpecialistSpec[TInput, TReport]`, Reusable `ResultNode`, and Graph-Native `Workflow[TInput, TReport]` (in `workflows/specialist_workflow.py`):**
+  - **`SpecialistSpec[TInput, TReport]`:** A flat, frozen dataclass holding declarative I/O metadata (`name: SpecialistName`, `description: str`, `input_schema: type[TInput]`, `report_schema: type[TReport]`) without any internal engine or graph attributes.
+  - **`ResultNode[TInput, TReport]`:** A reusable terminal graph node (like LangGraph's `ToolNode`) bound to `SpecialistSpec` that inspects `WorkflowOverallState` (`report`, `problems`, `provenance`, `side_effects`) and writes `{"result": SpecialistResult[TReport]}` into `WorkflowOutputState`.
+  - **`Workflow[TInput, TReport]`:** Active domain workflow base class owning its typed dependencies in `__init__`, compiling a native `StateGraph` ending in `self.pack_node`, and providing `invoke()`, `run()`, `as_subagent()`, and `as_tool()` without fragile engine introspection or keyword reflection. (`Specialist = Workflow` alias provides seamless backward compatibility).
 
 ### 4. Phased Implementation Before R2 Teaching
 

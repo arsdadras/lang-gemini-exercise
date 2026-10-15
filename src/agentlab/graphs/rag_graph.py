@@ -1,11 +1,13 @@
 """Graph assembly for the P2 RAG agent: retrieve -> grade -> (rewrite loop | generate | web search)."""
 
-from typing import Literal
+from typing import Literal, NewType
 
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
+
+RagGraph = NewType("RagGraph", CompiledStateGraph)
 
 from agentlab.configs.rag_config import MAX_RETRIES
 from agentlab.nodes.rag_node import (
@@ -39,7 +41,7 @@ def route_after_web_search(state: RAGState) -> Literal["generate_from_web", "__e
 
 def build_rag_graph(
     checkpointer: BaseCheckpointSaver | None = None,
-) -> CompiledStateGraph:
+) -> RagGraph:
     """Compile the RAG graph (defaults to an in-memory checkpointer)."""
     graph = StateGraph(RAGState)
     # The two nodes whose external call has no retry of its own: embeddings and web search.
@@ -59,6 +61,8 @@ def build_rag_graph(
     graph.add_conditional_edges("web_search", route_after_web_search)
     graph.add_edge("generate_from_web", END)
     graph.add_edge("check_hallucination", END)
-    return graph.compile(
+    compiled = graph.compile(
         checkpointer=checkpointer if checkpointer is not None else InMemorySaver(),
     )
+    setattr(compiled, "_is_rag_graph", True)  # noqa: B010
+    return RagGraph(compiled)

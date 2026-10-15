@@ -1,11 +1,14 @@
 """P4 Sandbox / Interpreter agent: writes, runs, and verifies scripts in an isolated workspace."""
 
 from collections.abc import Sequence
+from typing import NewType
 
 from deepagents.backends import LocalShellBackend
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph.state import CompiledStateGraph
 from pydantic import BaseModel
+
+InterpreterAgent = NewType("InterpreterAgent", CompiledStateGraph)
 
 from agentlab.configs.interpreter_config import DEFAULT_INTERRUPT_TOOLS
 from agentlab.configs.paths_config import checkpoint_db_path
@@ -26,7 +29,7 @@ def make_interpreter_agent(
     interrupt_tools: Sequence[str] = DEFAULT_INTERRUPT_TOOLS,
     response_format: type[BaseModel] | None = None,
     worker: bool = False,
-) -> CompiledStateGraph:
+) -> InterpreterAgent:
     """Build the interpreter agent.
 
     Args:
@@ -40,7 +43,7 @@ def make_interpreter_agent(
         worker: Build the prompt for a delegated run, whose reply goes to a coordinator
             agent: English, no user-facing persona. Default: the chat prompt for a person.
     """
-    return create_deep_agent(
+    agent = create_deep_agent(
         model=llm_model.get(tier),
         system_prompt=(
             build_interpreter_worker_prompt()
@@ -55,3 +58,5 @@ def make_interpreter_agent(
         interrupt_on={tool: True for tool in interrupt_tools} or None,
         response_format=response_format,
     )
+    setattr(agent, "_is_interpreter_agent", True)  # noqa: B010
+    return InterpreterAgent(agent)

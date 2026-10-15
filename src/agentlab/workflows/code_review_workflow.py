@@ -1,21 +1,25 @@
-"""P3 domain workflow & specialist: ``run_code_review`` and ``CODE_REVIEW_SPECIALIST``."""
+"""P3 domain workflow & specialist: ``CodeReviewWorkflow``, ``run_code_review``, and ``CODE_REVIEW_SPECIALIST``."""
 
 from typing import Any
 
+from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
 from agentlab.configs.paths_config import DELEGATIONS_APP, checkpoint_db_path
 from agentlab.data.sqlite_db_data import get_sqlite_checkpointer
-from agentlab.graphs.code_review_parentgraph import build_code_review_graph
+from agentlab.graphs.code_review_parentgraph import (
+    CodeReviewGraph,
+    build_code_review_graph,
+)
 from agentlab.schemas.input.code_review_input_schema import CodeReviewInput
 from agentlab.schemas.output.code_review_output_schema import CodeReviewReport
-from agentlab.schemas.output.specialist_output_schema import (
-    SpecialistResult,
-    SpecialistStatus,
-)
-from agentlab.utils.failure_util import failure_kind, failure_reason
+from agentlab.schemas.output.specialist_output_schema import SpecialistResult
 from agentlab.utils.subagent_util import new_delegation_config, pending_approvals
-from agentlab.workflows.base import Specialist
+from agentlab.workflows.specialist_workflow import (
+    SpecialistSpec,
+    Workflow,
+    WorkflowOverallState,
+)
 
 DEFAULT_CODE_REVIEW_DESCRIPTION = (
     "Analyzes and reviews source code, identifies bugs, security vulnerabilities, "
@@ -58,92 +62,96 @@ def render_outcome(outcome: CodeReviewReport) -> str:
     return "\n".join(parts)
 
 
-def run_code_review(
-    graph: CompiledStateGraph,
-    code: str,
-    *,
-    language: str = "python",
-) -> SpecialistResult[CodeReviewReport]:
-    """Review ``code`` with the P3 pipeline on a fresh thread, as a specialist envelope.
+class CodeReviewWorkflowState(WorkflowOverallState[CodeReviewReport]):
+    """Overall state for the Code Review workflow graph."""
 
-    Failing tests are findings, not a failed review: ``ok`` means the review, the tests, and
-    their run all happened. A refactor waiting at the approval gate makes it ``partial``.
-    """
-    try:
-        state = graph.invoke(
-            {"code": code, "language": language, "file_path": None},
-            config=new_delegation_config(),
-        )
-    except Exception as error:
-        if failure_kind(error) is None:
-            raise
-        return SpecialistResult[CodeReviewReport](
-            specialist="code_review",
-            status="failed",
-            reason=failure_reason(error),
-        )
-    review = state.get("review")
-    if review is None:
-        return SpecialistResult[CodeReviewReport](
-            specialist="code_review",
-            status="failed",
-            reason=state.get("error") or "No review was produced.",
-        )
-    outcome = CodeReviewReport(
-        review=review,
-        tests=state.get("tests"),
-        test_run=state.get("test_run"),
-        applied_code=state.get("applied_code"),
-    )
-    execution = outcome.test_run
-    status: SpecialistStatus
-    if waiting := pending_approvals(state):
-        status, reason = (
-            "partial",
-            f"The suggested refactor waits for approval ({waiting}); it wasn't applied.",
-        )
-    elif execution is None or execution.status in ("error", "timed_out"):
-        status, reason = "partial", "The generated tests didn't run to completion."
-    else:
-        status, reason = "ok", ""
-    return SpecialistResult[CodeReviewReport](
-        specialist="code_review",
-        status=status,
-        reason=reason,
-        output=outcome,
-    )
+    code: str
+    language: str
 
 
-def make_code_review_specialist(
-    engine: CompiledStateGraph | None = None,
-) -> Specialist[CodeReviewInput, CodeReviewReport]:
-    """Create a Code Review Specialist pre-bound to an engine or lazy default."""
+class CodeReviewWorkflow(Workflow[CodeReviewInput, CodeReviewReport]):
+    """Active Rung-2 Code Review domain workflow wrapping ``CodeReviewGraph``."""
 
-    def run_bound(
-        task: CodeReviewInput | str | dict[str, Any] | None = None,
-        **kwargs: Any,
-    ) -> SpecialistResult[CodeReviewReport]:
-        resolved_engine = engine if engine is not None else _default_code_review_graph()
-        data = task if task is not None else kwargs
-        if isinstance(data, CodeReviewInput):
-            code = data.code
-            language = data.language
-        elif isinstance(data, dict):
-            code = str(data["code"])
-            language = str(data.get("language", "python"))
-        else:
-            code = str(data)
-            language = "python"
-        return run_code_review(resolved_engine, code, language=language)
-
-    return Specialist[CodeReviewInput, CodeReviewReport](
+    spec = SpecialistSpec(
         name="code_review",
         description=DEFAULT_CODE_REVIEW_DESCRIPTION,
         input_schema=CodeReviewInput,
         report_schema=CodeReviewReport,
-        run=run_bound,
-        render=render_outcome,
     )
 
+    def __init__(
+        self,
+        graph: CodeReviewGraph | CompiledStateGraph | Any = None,
+    ) -> None:
+        self._graph = graph
 
-CODE_REVIEW_SPECIALIST = make_code_review_specialist()
+    @property
+    def review_graph(self) -> CompiledStateGraph:
+        if self._graph is None:
+            self._graph = _default_code_review_graph()
+        return self._graph
+
+    def render(self, report: CodeReviewReport) -> str:
+        return render_outcome(report)
+
+    def build_graph(self) -> CompiledStateGraph:
+        def _review_step(state: CodeReviewWorkflowState) -> dict[str, Any]:
+            sub_state = self.review_graph.invoke(
+                {
+                    "code": state["code"],
+                    "language": state.get("language", "python"),
+                    "file_path": None,
+                },
+                config=new_delegation_config(),
+            )
+            review = sub_state.get("review")
+            if review is None:
+                err = sub_state.get("error") or "No review was produced."
+                return {"report": None, "problems": [err]}
+
+            outcome = CodeReviewReport(
+                review=review,
+                tests=sub_state.get("tests"),
+                test_run=sub_state.get("test_run"),
+                applied_code=sub_state.get("applied_code"),
+            )
+            problems = []
+            if waiting := pending_approvals(sub_state):
+                problems.append(
+                    f"The suggested refactor waits for approval ({waiting}); it wasn't applied."
+                )
+            elif outcome.test_run is None or outcome.test_run.status in (
+                "error",
+                "timed_out",
+            ):
+                problems.append("The generated tests didn't run to completion.")
+            return {"report": outcome, "problems": problems}
+
+        graph = StateGraph(CodeReviewWorkflowState)
+        graph.add_node("review_step", _review_step)
+        graph.add_node("pack_result", self.pack_node)
+        graph.add_edge(START, "review_step")
+        graph.add_edge("review_step", "pack_result")
+        graph.add_edge("pack_result", END)
+        return graph.compile()
+
+
+def run_code_review(
+    graph: CodeReviewGraph | CompiledStateGraph | Any,
+    code: str,
+    *,
+    language: str = "python",
+) -> SpecialistResult[CodeReviewReport]:
+    """Review ``code`` with the P3 pipeline on a fresh thread, as a specialist envelope."""
+    return CodeReviewWorkflow(graph).run(code=code, language=language)
+
+
+def make_code_review_specialist(
+    engine: CodeReviewGraph | CompiledStateGraph | Any = None,
+) -> CodeReviewWorkflow:
+    """Create a Code Review Workflow bound to an engine or lazy default."""
+    return CodeReviewWorkflow(engine)
+
+
+CODE_REVIEW_SPECIALIST = CodeReviewWorkflow()
+code_review_workflow = CODE_REVIEW_SPECIALIST

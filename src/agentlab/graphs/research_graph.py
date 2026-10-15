@@ -10,13 +10,16 @@ and one in ``check`` takes the LLM path inside the claim check (a cascade, ``dec
 so neither node fails on its decider.
 """
 
-from typing import Any
+from typing import Any, NewType
 
 from langchain_core.runnables import Runnable
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
+ResearchGraph = NewType("ResearchGraph", CompiledStateGraph)
+
+from agentlab.agents.researcher_agent import ResearcherAgent
 from agentlab.nodes.claim_check_node import Decide, make_check_node
 from agentlab.nodes.research_node import (
     RESEARCH_NODE,
@@ -30,14 +33,14 @@ from agentlab.schemas.state.research_state import ResearchState
 
 
 def build_research_graph(
-    agent: CompiledStateGraph,
+    agent: ResearcherAgent | CompiledStateGraph | Any,
     *,
     plan_chain: Runnable[Any, ResearchPlan] | None = None,
     decide: Decide | None = None,
     verdict_chain: Runnable[Any, ClaimVerdict] | None = None,
     route_decide: Decide | None = None,
     checkpointer: BaseCheckpointSaver | None = None,
-) -> CompiledStateGraph:
+) -> ResearchGraph:
     """Compile the research graph around an injected P1 agent.
 
     Args:
@@ -62,4 +65,6 @@ def build_research_graph(
     graph.add_conditional_edges("route", fan_out, [RESEARCH_NODE])
     graph.add_edge(RESEARCH_NODE, "check")
     graph.add_edge("check", END)
-    return graph.compile(checkpointer=checkpointer)
+    compiled = graph.compile(checkpointer=checkpointer)
+    setattr(compiled, "_is_research_graph", True)  # noqa: B010
+    return ResearchGraph(compiled)

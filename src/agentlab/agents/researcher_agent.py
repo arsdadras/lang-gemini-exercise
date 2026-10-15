@@ -16,7 +16,7 @@ approval gate, and claim check must cover. A deep agent would add filesystem too
 
 from collections.abc import Sequence
 from functools import partial
-from typing import Any
+from typing import Any, NewType
 
 from langchain.agents import create_agent
 from langchain.agents.middleware import AgentMiddleware, ToolCallLimitMiddleware
@@ -24,6 +24,8 @@ from langchain_core.tools import BaseTool
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.store.base import BaseStore
+
+ResearcherAgent = NewType("ResearcherAgent", CompiledStateGraph)
 
 from agentlab.configs.paths_config import checkpoint_db_path
 from agentlab.configs.research_config import CORPUS_RESULTS, DEPTH_BUDGETS
@@ -60,7 +62,7 @@ def make_researcher_agent(
     store: BaseStore | None = None,
     context_schema: type[Any] | None = None,
     options: ResearchOptions | None = None,
-) -> CompiledStateGraph:
+) -> ResearcherAgent:
     """Build the researcher.
 
     Every ``web_search`` call pauses for human approval, which is why the agent
@@ -160,4 +162,5 @@ def make_researcher_agent(
         store=store,
         context_schema=context_schema,
     )
-    return agent
+    setattr(agent, "_is_researcher_agent", True)  # noqa: B010
+    return ResearcherAgent(agent)

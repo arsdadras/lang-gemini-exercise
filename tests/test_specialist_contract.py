@@ -26,6 +26,7 @@ from agentlab.schemas.output.personal_context_output_schema import (
 from agentlab.schemas.output.rag_output_schema import RagReport
 from agentlab.schemas.output.research_output_schema import (
     Citation,
+    Claim,
     DraftClaim,
     Evidence,
     ResearchDraft,
@@ -46,7 +47,9 @@ from agentlab.workflows import (
     PERSONAL_CONTEXT_SPECIALIST,
     RAG_SPECIALIST,
     RESEARCH_SPECIALIST,
-    Specialist,
+    ResearchWorkflow,
+    SpecialistSpec,
+    Workflow,
     make_personal_context_specialist,
     run_code_review,
     run_interpreter,
@@ -139,7 +142,7 @@ def test_the_output_type_is_validated() -> None:
 
 
 def test_every_domain_specialist_exposes_a_frozen_typed_descriptor() -> None:
-    specs: list[Specialist[Any, Any]] = [
+    specs: list[Workflow[Any, Any]] = [
         RESEARCH_SPECIALIST,
         RAG_SPECIALIST,
         CODE_REVIEW_SPECIALIST,
@@ -160,6 +163,38 @@ def test_every_domain_specialist_exposes_a_frozen_typed_descriptor() -> None:
         InterpreterReport,
         PersonalContextReport,
     ]
+    for spec in specs:
+        assert isinstance(spec, Workflow)
+        assert isinstance(spec.spec, SpecialistSpec)
+        assert not hasattr(spec.spec, "engine")
+        assert not hasattr(spec.spec, "target")
+
+
+def test_specialist_as_tool_handles_kwargs_without_type_error() -> None:
+    """Regression test: calling as_tool().invoke with dict kwargs must not fail with TypeError."""
+    mock_graph = Returns(
+        {
+            "report": ResearchReport(
+                topic="AI",
+                summary="AI summary.",
+                claims=[
+                    Claim(
+                        text="AI is advancing.",
+                        evidence=[],
+                        status="supported",
+                    )
+                ],
+                citations=[],
+                confidence=0.9,
+            ),
+            "problems": [],
+        }
+    )
+    workflow = ResearchWorkflow(graph=mock_graph)
+    tool = workflow.as_tool()
+    reply = tool.invoke({"topic": "AI"})
+    assert "[research] status: ok" in reply
+    assert "AI summary." in reply
 
 
 def test_specialist_as_tool_and_as_subagent_adapt_the_workflow() -> None:

@@ -1,7 +1,9 @@
-"""P5 domain workflow & specialist: ``run_personal_context`` and ``PERSONAL_CONTEXT_SPECIALIST``."""
+"""P5 domain workflow & specialist: ``PersonalContextWorkflow``, ``run_personal_context``, and ``PERSONAL_CONTEXT_SPECIALIST``."""
 
 from typing import Any
 
+from langgraph.graph import END, START, StateGraph
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.store.base import BaseStore
 
 from agentlab.configs.personal_assistant_config import ASSISTANT_STORE_DB_PATH
@@ -15,7 +17,11 @@ from agentlab.tools.user_context_tool import (
     read_user_context,
     render_personal_context,
 )
-from agentlab.workflows.base import Specialist
+from agentlab.workflows.specialist_workflow import (
+    SpecialistSpec,
+    Workflow,
+    WorkflowOverallState,
+)
 
 DEFAULT_PERSONAL_CONTEXT_DESCRIPTION = (
     "Reads a user's long-term memory profile, facts, preferences, and active skills "
@@ -27,43 +33,69 @@ def _default_personal_context_store() -> BaseStore:
     return get_sqlite_store(ASSISTANT_STORE_DB_PATH)
 
 
-def run_personal_context(
-    store: BaseStore,
-    user_id: str,
-) -> SpecialistResult[PersonalContextReport]:
-    """Load ``user_id``'s stored context from ``store`` as a ``SpecialistResult[PersonalContextReport]``."""
-    return read_user_context(store, user_id)
+class PersonalContextWorkflowState(WorkflowOverallState[PersonalContextReport]):
+    """Overall state for the Personal Context workflow graph."""
+
+    user_id: str
 
 
-def make_personal_context_specialist(
-    engine: BaseStore | None = None,
-) -> Specialist[PersonalContextInput, PersonalContextReport]:
-    """Create a Personal Context Specialist pre-bound to a store or lazy default."""
+class PersonalContextWorkflow(Workflow[PersonalContextInput, PersonalContextReport]):
+    """Active Rung-2 Personal Context domain workflow wrapping user store."""
 
-    def run_bound(
-        task: PersonalContextInput | str | dict[str, Any] | None = None,
-        **kwargs: Any,
-    ) -> SpecialistResult[PersonalContextReport]:
-        resolved_engine = (
-            engine if engine is not None else _default_personal_context_store()
-        )
-        data = task if task is not None else kwargs
-        if isinstance(data, PersonalContextInput):
-            user_id = data.user_id
-        elif isinstance(data, dict):
-            user_id = str(data["user_id"])
-        else:
-            user_id = str(data)
-        return run_personal_context(resolved_engine, user_id)
-
-    return Specialist[PersonalContextInput, PersonalContextReport](
+    spec = SpecialistSpec(
         name="personal_context",
         description=DEFAULT_PERSONAL_CONTEXT_DESCRIPTION,
         input_schema=PersonalContextInput,
         report_schema=PersonalContextReport,
-        run=run_bound,
-        render=render_personal_context,
     )
 
+    def __init__(
+        self,
+        store: BaseStore | Any = None,
+    ) -> None:
+        self._store = store
 
-PERSONAL_CONTEXT_SPECIALIST = make_personal_context_specialist()
+    @property
+    def store(self) -> BaseStore:
+        if self._store is None:
+            self._store = _default_personal_context_store()
+        return self._store
+
+    def render(self, report: PersonalContextReport) -> str:
+        return render_personal_context(report)
+
+    def build_graph(self) -> CompiledStateGraph:
+        def _load_context_step(state: PersonalContextWorkflowState) -> dict[str, Any]:
+            res = read_user_context(self.store, state["user_id"])
+            return {
+                "report": res.output,
+                "problems": [res.reason] if res.reason else [],
+                "provenance": res.provenance,
+            }
+
+        graph = StateGraph(PersonalContextWorkflowState)
+        graph.add_node("load_context", _load_context_step)
+        graph.add_node("pack_result", self.pack_node)
+        graph.add_edge(START, "load_context")
+        graph.add_edge("load_context", "pack_result")
+        graph.add_edge("pack_result", END)
+        return graph.compile()
+
+
+def run_personal_context(
+    store: BaseStore | Any,
+    user_id: str,
+) -> SpecialistResult[PersonalContextReport]:
+    """Load ``user_id``'s stored context from ``store`` as a ``SpecialistResult[PersonalContextReport]``."""
+    return PersonalContextWorkflow(store).run(user_id=user_id)
+
+
+def make_personal_context_specialist(
+    engine: BaseStore | Any = None,
+) -> PersonalContextWorkflow:
+    """Create a Personal Context Workflow bound to a store or lazy default."""
+    return PersonalContextWorkflow(engine)
+
+
+PERSONAL_CONTEXT_SPECIALIST = PersonalContextWorkflow()
+personal_context_workflow = PERSONAL_CONTEXT_SPECIALIST

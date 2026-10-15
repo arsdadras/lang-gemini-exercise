@@ -1,9 +1,13 @@
 """Parent Graph Assembly for P3 Code Review & Test Generation using Pure Subgraphs."""
 
+from typing import NewType
+
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
+
+CodeReviewGraph = NewType("CodeReviewGraph", CompiledStateGraph)
 
 from agentlab.graphs.refactor_subgraph import build_refactor_subgraph
 from agentlab.graphs.reviewer_subgraph import build_reviewer_subgraph
@@ -33,7 +37,7 @@ def route_after_test_gen(state: CodeReviewState) -> str:
 
 def build_code_review_graph(
     checkpointer: BaseCheckpointSaver | None = None,
-) -> CompiledStateGraph:
+) -> CodeReviewGraph:
     """Build and compile the top-level Code Review pipeline by composing 3 subgraphs."""
     workflow = StateGraph(CodeReviewState)
 
@@ -64,4 +68,6 @@ def build_code_review_graph(
 
     # 3. Compile with checkpointer
     saver = checkpointer if checkpointer is not None else InMemorySaver()
-    return workflow.compile(checkpointer=saver)
+    compiled = workflow.compile(checkpointer=saver)
+    setattr(compiled, "_is_code_review_graph", True)  # noqa: B010
+    return CodeReviewGraph(compiled)

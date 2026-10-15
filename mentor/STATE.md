@@ -34,21 +34,18 @@ the mentor is the only role and works on `main`.
   completed (2026-10-14: 393 tests green, 92% coverage across repo, 88 files with 100% complete
   coverage, 0 ruff/mypy/docs errors across 139 source files).
 - **Foundational Refinements Completed (2026-10-15):**
-  1. *Target & Pre-composition Unification:* In `run_research`, target was unified to accept
-     `engine: CompiledStateGraph` with `make_research_graph` providing factory-time composition,
-     while maintaining backward-compatible adaptation for leaf worker agents.
-  2. *Relocated `Specialist` Descriptor:* Moved `Specialist` out of `workflows/specialist_workflow.py`
-     into foundational [`src/agentlab/workflows/base.py`](file:///D:/Repos/lang-gemini-exercise/src/agentlab/workflows/base.py),
-     eliminating the category error and leaving `specialist_workflow.py` as a re-export shim.
-  3. *Eliminated `_resolve_target` Reflection Hack & Introduced `WorkflowRunner` Protocol:*
-     Replaced `inspect.signature` with `WorkflowRunner[TEngine, TReport](Protocol)` and modern Python 3.12
-     generics (PEP 695).
-  4. *Adopted Option C (Pre-bound Specialist via Factory & Closure Pattern):* Resolved architectural review
-     concerns by rejecting Option B (leaking `TEngine` into `Specialist` generic, which broke Particle polymorphism)
-     and Option A (`engine: Any = None` with duck-typing/keyword sniffing). Implemented immutable
-     `Specialist[TInput, TReport]` initialized via strongly-typed domain factories:
-     `make_research_specialist`, `make_rag_specialist`, `make_code_review_specialist`,
-     `make_interpreter_specialist`, `make_personal_context_specialist`.
+  1. *Graph-Native `Workflow` & `ResultNode` Refactor (ADR-0033):* Refactored Rung-2 workflows into
+     graph-native `Workflow[TInput, TReport]` classes (`ResearchWorkflow`, `RagWorkflow`, `CodeReviewWorkflow`,
+     `InterpreterWorkflow`, `PersonalContextWorkflow`) with shared terminal `ResultNode` (LangGraph's `ToolNode`
+     equivalent for specialist envelopes).
+  2. *Declarative `SpecialistSpec[TInput, TReport]`:* Replaced the overloaded `Specialist` with declarative
+     `SpecialistSpec` containing strictly external I/O metadata (`name`, `description`, `input_schema`, `report_schema`)
+     with zero engine/target attributes.
+  3. *Distinct Rung-1 `NewType` Identities:* Defined `ResearcherAgent`, `InterpreterAgent`, `RagGraph`,
+     `CodeReviewGraph`, and `ResearchGraph` to statically prevent injecting wrong graphs at compile time ("Kolah Ghermezi" fix).
+  4. *Clean Tool & Subagent Adaptation:* Workflow instances own their typed Rung-1 dependencies in `__init__`,
+     completely eliminating manual `run_bound` closures, keyword-sniffing reflection hacks, and fixing the
+     runtime `TypeError: got multiple values for argument 'topic'` in `.as_tool()`.
   5. *Consultant Hook & Skill (`/consultant` / `/cansultant`):* Implemented `scripts/mentor_session_hook.py`
      detection of consultant commands, diff extraction since last checkpoint (`mentor/.consultant_checkpoint.json`),
      `scripts/record_consultant_checkpoint.py`, and `.agents/skills/consultant/SKILL.md`.

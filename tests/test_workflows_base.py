@@ -1,23 +1,48 @@
-"""Unit tests for `agentlab.workflows.base` and Option C pre-bound Specialist pattern."""
+"""Unit tests for ``agentlab.workflows.specialist_workflow`` and graph-native ``Workflow`` (ADR-0033)."""
 
 from __future__ import annotations
 
+import dataclasses
 import inspect
 from typing import Any
-from unittest.mock import MagicMock
 
+import pytest
 from langchain_core.messages import HumanMessage
 from langchain_core.tools import BaseTool
+from langgraph.graph import END, START, StateGraph
+from langgraph.graph.state import CompiledStateGraph
 from pydantic import BaseModel
 
-from agentlab.schemas.output.specialist_output_schema import SpecialistResult
-from agentlab.workflows.base import Specialist, WorkflowRunner
-from agentlab.workflows.code_review_workflow import run_code_review
-from agentlab.workflows.interpreter_workflow import run_interpreter
+from agentlab.schemas.output.specialist_output_schema import (
+    Provenance,
+    SideEffect,
+)
+from agentlab.workflows.code_review_workflow import (
+    CodeReviewWorkflow,
+    run_code_review,
+)
+from agentlab.workflows.interpreter_workflow import (
+    InterpreterWorkflow,
+    run_interpreter,
+)
 from agentlab.workflows.personal_brief_workflow import run_personal_brief
-from agentlab.workflows.personal_context_workflow import run_personal_context
-from agentlab.workflows.rag_workflow import run_rag
-from agentlab.workflows.research_workflow import run_research
+from agentlab.workflows.personal_context_workflow import (
+    PersonalContextWorkflow,
+    run_personal_context,
+)
+from agentlab.workflows.rag_workflow import RagWorkflow, run_rag
+from agentlab.workflows.research_workflow import (
+    ResearchWorkflow,
+    run_research,
+)
+from agentlab.workflows.specialist_workflow import (
+    ResultNode,
+    Specialist,
+    SpecialistSpec,
+    Workflow,
+    WorkflowOverallState,
+    WorkflowRunner,
+)
 
 
 class DummyInput(BaseModel):
@@ -28,22 +53,170 @@ class DummyReport(BaseModel):
     summary: str
 
 
-def dummy_runner(
-    engine: Any,
-    query: str,
-    *,
-    extra_flag: bool = False,
-) -> SpecialistResult[DummyReport]:
-    report = DummyReport(
-        summary=f"result for {query} with {engine} (extra={extra_flag})"
+class DummyWorkflowState(WorkflowOverallState[DummyReport]):
+    query: str
+
+
+class DummyWorkflow(Workflow[DummyInput, DummyReport]):
+    spec = SpecialistSpec(
+        name="research",
+        description="A dummy research specialist.",
+        input_schema=DummyInput,
+        report_schema=DummyReport,
     )
-    return SpecialistResult[DummyReport](
-        specialist="research", status="ok", output=report
+
+    def __init__(self, engine_tag: str = "mock_engine") -> None:
+        self.engine_tag = engine_tag
+
+    def render(self, report: DummyReport) -> str:
+        return f"RENDERED: {report.summary}"
+
+    def build_graph(self) -> CompiledStateGraph:
+        def step(state: DummyWorkflowState) -> dict[str, Any]:
+            report = DummyReport(
+                summary=f"result for {state['query']} with {self.engine_tag}"
+            )
+            return {
+                "report": report,
+                "problems": [],
+                "provenance": [
+                    Provenance(kind="web", ref="https://example.com/source")
+                ],
+            }
+
+        graph = StateGraph(DummyWorkflowState)
+        graph.add_node("step", step)
+        graph.add_node("pack_result", self.pack_node)
+        graph.add_edge(START, "step")
+        graph.add_edge("step", "pack_result")
+        graph.add_edge("pack_result", END)
+        return graph.compile()
+
+
+def test_specialist_spec_declarative_metadata_and_immutability() -> None:
+    """Verify that SpecialistSpec holds metadata only, without engine/target, and is frozen."""
+    spec = SpecialistSpec[DummyInput, DummyReport](
+        name="research",
+        description="Conducts research.",
+        input_schema=DummyInput,
+        report_schema=DummyReport,
     )
+    assert spec.name == "research"
+    assert spec.description == "Conducts research."
+    assert spec.input_schema is DummyInput
+    assert spec.report_schema is DummyReport
+
+    # Must NOT have engine or target attributes
+    assert not hasattr(spec, "engine")
+    assert not hasattr(spec, "target")
+    assert not hasattr(spec, "graph")
+    assert not hasattr(spec, "agent")
+    assert not hasattr(spec, "store")
+
+    # Must be frozen
+    with pytest.raises(dataclasses.FrozenInstanceError):
+        spec.name = "rag"  # type: ignore[misc]
+
+
+def test_result_node_packing_across_outcomes() -> None:
+    """Verify ResultNode packs ok, partial, and failed envelopes correctly."""
+    spec = SpecialistSpec[DummyInput, DummyReport](
+        name="research",
+        description="Conducts research.",
+        input_schema=DummyInput,
+        report_schema=DummyReport,
+    )
+    packer = ResultNode(spec)
+
+    # 1. OK outcome: report present, no problems
+    ok_res = packer(
+        {
+            "report": DummyReport(summary="All good."),
+            "problems": [],
+            "provenance": [Provenance(kind="web", ref="https://a.example")],
+            "side_effects": [SideEffect(action="created", target="out.txt")],
+        }
+    )["result"]
+    assert ok_res.status == "ok"
+    assert ok_res.reason == ""
+    assert ok_res.output == DummyReport(summary="All good.")
+    assert len(ok_res.provenance) == 1
+    assert len(ok_res.side_effects) == 1
+
+    # 2. Partial outcome: report present, problems non-empty
+    partial_res = packer(
+        {
+            "report": DummyReport(summary="Partial good."),
+            "problems": ["Missing one citation", "Low confidence"],
+        }
+    )["result"]
+    assert partial_res.status == "partial"
+    assert "Missing one citation Low confidence" in partial_res.reason
+    assert partial_res.output == DummyReport(summary="Partial good.")
+
+    # 3. Failed outcome: report is None, problems non-empty
+    failed_res = packer(
+        {
+            "report": None,
+            "problems": ["Search failed", "Timeout"],
+        }
+    )["result"]
+    assert failed_res.status == "failed"
+    assert "Search failed Timeout" in failed_res.reason
+    assert failed_res.output is None
+    assert failed_res.provenance == []
+
+    # 4. Failed outcome with fallback reason: report is None, problems empty
+    fallback_res = packer(
+        {
+            "report": None,
+            "problems": [],
+        }
+    )["result"]
+    assert fallback_res.status == "failed"
+    assert fallback_res.reason == "No research report was produced."
+
+
+def test_workflow_invoke_run_and_subagent_adaptation() -> None:
+    """Verify that Workflow.invoke, .run, .as_subagent, and .as_tool work without keyword bugs."""
+    wf = DummyWorkflow(engine_tag="engine_999")
+
+    # 1. invoke() with string input
+    state = wf.invoke("quantum computing")
+    assert "result" in state
+    assert state["result"].status == "ok"
+    assert (
+        state["result"].output.summary == "result for quantum computing with engine_999"
+    )
+
+    # 2. run() with schema
+    res = wf.run(DummyInput(query="distributed systems"))
+    assert res.status == "ok"
+    assert res.output.summary == "result for distributed systems with engine_999"
+
+    # 3. as_subagent()
+    subagent = wf.as_subagent(name="custom_subagent", description="Custom desc")
+    assert subagent["name"] == "custom_subagent"
+    assert subagent["description"] == "Custom desc"
+    reply = subagent["runnable"].invoke(
+        {"messages": [HumanMessage(content="superconductors")]}
+    )
+    assert (
+        "RENDERED: result for superconductors with engine_999"
+        in reply["messages"][0].content
+    )
+
+    # 4. as_tool() invoked with keyword arguments (regression test for TypeError: multiple values for argument)
+    tool = wf.as_tool()
+    assert isinstance(tool, BaseTool)
+    assert tool.name == "research"
+    assert tool.args_schema == DummyInput
+    tool_out = tool.invoke({"query": "neural networks"})
+    assert "RENDERED: result for neural networks with engine_999" in tool_out
 
 
 def test_workflow_runner_protocol_conformance() -> None:
-    """Verify that all domain workflow runners conform to WorkflowRunner and accept engine first."""
+    """Verify that domain workflow runners conform to WorkflowRunner protocol."""
     runners = [
         run_research,
         run_rag,
@@ -51,7 +224,6 @@ def test_workflow_runner_protocol_conformance() -> None:
         run_interpreter,
         run_personal_context,
         run_personal_brief,
-        dummy_runner,
     ]
     for runner in runners:
         assert isinstance(runner, WorkflowRunner), (
@@ -59,114 +231,30 @@ def test_workflow_runner_protocol_conformance() -> None:
         )
         sig = inspect.signature(runner)
         first_param = next(iter(sig.parameters.values()))
-        assert first_param.name in ("engine", "graph", "agent", "store"), (
-            f"{runner.__name__} first param '{first_param.name}' must be an engine parameter"
+        assert first_param.name in (
+            "engine",
+            "graph",
+            "agent",
+            "store",
+        ), (
+            f"{runner.__name__} first param '{first_param.name}' must be an engine/graph/agent/store parameter"
         )
 
 
-def test_specialist_prebound_factory_pattern() -> None:
-    """Verify that Specialist executes pre-bound callable cleanly without keyword sniffing."""
-    mock_engine = "engine_123"
-
-    def run_bound(
-        task: DummyInput | str | dict[str, Any] | None = None,
-        **kwargs: Any,
-    ) -> SpecialistResult[DummyReport]:
-        data = task if task is not None else kwargs
-        if isinstance(data, DummyInput):
-            query = data.query
-        elif isinstance(data, dict):
-            query = str(data["query"])
-        else:
-            query = str(data)
-        extra_kwargs = {k: v for k, v in kwargs.items() if k != "query"}
-        return dummy_runner(mock_engine, query, **extra_kwargs)
-
-    spec = Specialist[DummyInput, DummyReport](
-        name="research",
-        description="A dummy specialist.",
-        input_schema=DummyInput,
-        report_schema=DummyReport,
-        run=run_bound,
-        render=lambda r: f"RENDERED: {r.summary}",
-    )
-
-    # 1. Direct run with schema
-    res = spec.run(DummyInput(query="test"))
-    assert res.output is not None
-    assert "result for test with engine_123" in res.output.summary
-
-    # 2. Direct run with kwargs
-    res2 = spec.run(query="test2")
-    assert res2.output is not None
-    assert "result for test2 with engine_123" in res2.output.summary
-
-
-def test_specialist_as_subagent_and_as_tool() -> None:
-    """Verify adaptation to CompiledSubAgent dictionary and StructuredTool."""
-    mock_engine = "mock_engine"
-
-    def run_bound(
-        task: DummyInput | str | dict[str, Any] | None = None,
-        **kwargs: Any,
-    ) -> SpecialistResult[DummyReport]:
-        data = task if task is not None else kwargs
-        if isinstance(data, DummyInput):
-            query = data.query
-        elif isinstance(data, dict):
-            query = str(data["query"])
-        else:
-            query = str(data)
-        extra_flag = kwargs.get("extra_flag", False)
-        return dummy_runner(mock_engine, query, extra_flag=extra_flag)
-
-    spec = Specialist[DummyInput, DummyReport](
-        name="research",
-        description="Conducts research.",
-        input_schema=DummyInput,
-        report_schema=DummyReport,
-        run=run_bound,
-        render=lambda r: f"RENDERED: {r.summary}",
-    )
-
-    # Subagent adaptation
-    subagent = spec.as_subagent(
-        name="custom_subagent", description="Custom desc", extra_flag=True
-    )
-    assert subagent["name"] == "custom_subagent"
-    assert subagent["description"] == "Custom desc"
-    reply = subagent["runnable"].invoke(
-        {"messages": [HumanMessage(content="quantum computing")]}
-    )
-    assert "messages" in reply
-    assert (
-        "RENDERED: result for quantum computing with mock_engine (extra=True)"
-        in reply["messages"][0].content
-    )
-
-    # Tool adaptation
-    tool = spec.as_tool(extra_flag=False)
-    assert isinstance(tool, BaseTool)
-    assert tool.name == "research"
-    assert tool.args_schema == DummyInput
-    tool_out = tool.invoke({"query": "neural networks"})
-    assert (
-        "RENDERED: result for neural networks with mock_engine (extra=False)"
-        in tool_out
-    )
-
-
-def test_make_research_graph_and_precompiled_engine_detection() -> None:
-    """Verify make_research_graph compiles the graph around an agent, and run_research detects it."""
-    # Pre-compiled graph simulation (has 'check' in nodes)
-    precompiled = MagicMock()
-    precompiled.nodes = {"check": MagicMock(), "research": MagicMock()}
-    precompiled.invoke.return_value = {
-        "final_report": None,
-        "drafts": [],
-        "citations": [],
-    }
-
-    result = run_research(precompiled, topic="test topic")
-    assert result.status == "failed"
-    assert precompiled.invoke.called
+def test_domain_workflow_classes_subclass_workflow() -> None:
+    """Verify that all domain workflow classes inherit from Workflow."""
+    workflow_classes = [
+        ResearchWorkflow,
+        RagWorkflow,
+        CodeReviewWorkflow,
+        InterpreterWorkflow,
+        PersonalContextWorkflow,
+    ]
+    for cls in workflow_classes:
+        assert issubclass(cls, Workflow), f"{cls} must subclass Workflow"
+        assert issubclass(cls, Specialist), (
+            f"{cls} must subclass Specialist (Specialist = Workflow)"
+        )
+        assert isinstance(cls.spec, SpecialistSpec), (
+            f"{cls}.spec must be SpecialistSpec"
+        )
