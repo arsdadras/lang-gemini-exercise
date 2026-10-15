@@ -39,6 +39,7 @@ out/
 gen/
 *.log
 last_threads.txt
+part*.txt
 .chroma_index/
 *.db
 *.db-shm
