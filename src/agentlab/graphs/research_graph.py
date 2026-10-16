@@ -73,7 +73,6 @@ def build_research_graph(
     graph.add_edge("check", "pack_result")
     graph.add_edge("pack_result", END)
     compiled = graph.compile(checkpointer=checkpointer)
-    setattr(compiled, "_is_research_graph", True)  # noqa: B010
     return ResearchGraph(compiled)
 
 

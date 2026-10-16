@@ -35,7 +35,7 @@ from agentlab.tools import research_source_tool
 from agentlab.tools.academic_search_tool import make_academic_search_tool
 from agentlab.tools.corpus_search_tool import make_corpus_search_tool
 from agentlab.tools.research_source_tool import documents_read, research_sources
-from agentlab.workflows.research_workflow import run_research
+from agentlab.workflows.research_workflow import make_research_graph, run_research
 from tests.fakes import ScriptedToolModel, done, tool_turn
 
 PAPER = "https://arxiv.org/abs/2309.15217"
@@ -477,7 +477,7 @@ def test_the_envelope_names_each_sources_kind() -> None:
     with patch.object(
         claim_check_node, "decision_model", SimpleNamespace(decide=supports_everything)
     ):
-        result = run_research(agent, "topic")
+        result = run_research(make_research_graph(agent), "topic")
 
     assert [(p.kind, p.ref) for p in result.provenance] == [("academic", PAPER)]
 

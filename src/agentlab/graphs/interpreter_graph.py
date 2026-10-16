@@ -132,5 +132,4 @@ def build_interpreter_graph(
     graph.add_edge("pack_result", END)
 
     compiled = graph.compile(checkpointer=checkpointer)
-    setattr(compiled, "_is_interpreter_graph", True)  # noqa: B010
     return InterpreterGraph(compiled)

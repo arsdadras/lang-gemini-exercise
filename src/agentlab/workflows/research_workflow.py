@@ -35,7 +35,6 @@ __all__ = [
     "make_research_graph",
     "make_research_specialist",
     "render_research_report",
-    "research_workflow",
     "run_research",
     "verify_research",
 ]
@@ -126,30 +125,14 @@ class ResearchWorkflow(Workflow[ResearchInput, ResearchReport]):
 
 
 def run_research(
-    engine: ResearchGraph | ResearcherAgent | CompiledStateGraph | Any,
+    graph: ResearchGraph | CompiledStateGraph | Any,
     topic: str,
     options: ResearchOptions | None = None,
     *,
-    plan_chain: Runnable[Any, ResearchPlan] | None = None,
-    route_decide: Decide | None = None,
-    decide: Decide | None = None,
-    verdict_chain: Runnable[Any, ClaimVerdict] | None = None,
-    checkpointer: BaseCheckpointSaver | None = None,
     config: RunnableConfig | None = None,
 ) -> SpecialistResult[ResearchReport]:
-    """Research ``topic`` through the research workflow and return the specialist envelope."""
-    if getattr(engine, "_is_research_graph", False):
-        workflow = ResearchWorkflow.from_graph(engine, options=options)
-    else:
-        workflow = ResearchWorkflow.from_agent(
-            agent=engine,
-            options=options,
-            plan_chain=plan_chain,
-            route_decide=route_decide,
-            decide=decide,
-            verdict_chain=verdict_chain,
-            checkpointer=checkpointer,
-        )
+    """Research ``topic`` through the pre-composed research graph and return the specialist envelope."""
+    workflow = ResearchWorkflow.from_graph(graph, options=options)
     return workflow.invoke(
         {"topic": topic, "options": options},
         config=config,
@@ -157,17 +140,17 @@ def run_research(
 
 
 def make_research_specialist(
-    engine: ResearchGraph | ResearcherAgent | CompiledStateGraph | Any = None,
+    graph: ResearchGraph | CompiledStateGraph | Any = None,
     *,
+    agent: ResearcherAgent | CompiledStateGraph | Any = None,
     options: ResearchOptions | None = None,
 ) -> ResearchWorkflow:
-    """Create a Research Workflow bound to an engine or lazy default."""
-    if engine is None:
-        return ResearchWorkflow(options=options)
-    if getattr(engine, "_is_research_graph", False):
-        return ResearchWorkflow.from_graph(engine, options=options)
-    return ResearchWorkflow.from_agent(engine, options=options)
+    """Create a Research Workflow bound to a graph, agent, or lazy default."""
+    if graph is not None:
+        return ResearchWorkflow.from_graph(graph, options=options)
+    if agent is not None:
+        return ResearchWorkflow.from_agent(agent, options=options)
+    return ResearchWorkflow(options=options)
 
 
 RESEARCH_SPECIALIST = make_research_specialist()
-research_workflow = RESEARCH_SPECIALIST

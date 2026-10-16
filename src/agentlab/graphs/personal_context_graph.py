@@ -60,5 +60,4 @@ def build_personal_context_graph(
     graph.add_edge("pack_result", END)
 
     compiled = graph.compile(checkpointer=checkpointer)
-    setattr(compiled, "_is_personal_context_graph", True)  # noqa: B010
     return PersonalContextGraph(compiled)

@@ -158,5 +158,4 @@ def build_rag_graph(
     compiled = graph.compile(
         checkpointer=checkpointer if checkpointer is not None else InMemorySaver(),
     )
-    setattr(compiled, "_is_rag_graph", True)  # noqa: B010
     return RagGraph(compiled)

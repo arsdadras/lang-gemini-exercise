@@ -10,7 +10,6 @@ from agentlab.graphs.rag_graph import (
     RAG_SPEC,
     RagGraph,
     build_rag_graph,
-    format_rag_report_node,
 )
 from agentlab.schemas.input.rag_input_schema import RagInput
 from agentlab.schemas.output.rag_output_schema import RagReport
@@ -23,7 +22,6 @@ __all__ = [
     "RagWorkflow",
     "build_rag_graph",
     "make_rag_specialist",
-    "rag_workflow",
     "render_rag_report",
     "run_rag",
 ]
@@ -61,12 +59,6 @@ class RagWorkflow(Workflow[RagInput, RagReport]):
             "retries": 0,
         }
 
-    def format_state(self, state: dict[str, Any]) -> dict[str, Any]:
-        """Format raw RAG state if returned by an external runner/mock without format_report node."""
-        if state.get("report") is None and state.get("result") is None:
-            return {**state, **format_rag_report_node(state)}  # type: ignore[arg-type]
-        return state
-
 
 def run_rag(
     graph: RagGraph | CompiledStateGraph | Any,
@@ -84,4 +76,3 @@ def make_rag_specialist(
 
 
 RAG_SPECIALIST = RagWorkflow()
-rag_workflow = RAG_SPECIALIST
