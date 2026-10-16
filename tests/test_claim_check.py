@@ -28,7 +28,7 @@ from agentlab.schemas.output.research_output_schema import (
 )
 from agentlab.tools.read_page_tool import READ_PAGE_TOOL_NAME
 from agentlab.tools.research_source_tool import documents_read
-from agentlab.workflows.research_workflow import run_research
+from agentlab.workflows.research_workflow import make_research_graph, run_research
 from tests.fakes import scripted_decider
 from tests.test_specialist_contract import Returns, rejected
 
@@ -282,7 +282,7 @@ def run(claims_draft: ResearchDraft, pages: dict[str, str], response: Any) -> An
         "structured_response": claims_draft,
     }
     with patch.object(claim_check_node, "decision_model", registry(response)):
-        return run_research(Returns(state), "topic")
+        return run_research(make_research_graph(Returns(state)), "topic")
 
 
 def test_a_report_whose_claims_are_all_supported_is_ok_with_sources() -> None:
@@ -327,7 +327,7 @@ def test_a_check_that_hits_an_outage_fails_the_envelope_instead_of_crashing() ->
         raise rejected(503)
 
     with patch.object(claim_check_node, "check_pair_group", boom):
-        result = run_research(Returns(state), "topic")
+        result = run_research(make_research_graph(Returns(state)), "topic")
 
     assert result.status == "failed" and "unavailable" in result.reason
 

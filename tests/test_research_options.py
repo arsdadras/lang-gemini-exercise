@@ -27,7 +27,7 @@ from agentlab.tools.read_page_tool import (
     make_read_page_tool,
 )
 from agentlab.tools.web_search_tool import make_web_search_tool
-from agentlab.workflows.research_workflow import run_research
+from agentlab.workflows.research_workflow import make_research_graph, run_research
 
 STANDARD = ResearchOptions(depth="standard")
 
@@ -194,7 +194,10 @@ def supports_everything(_page: str, questions: dict[str, Any], **_: Any) -> Any:
 def research(agent: ByQuestion, *questions: str) -> Any:
     registry = SimpleNamespace(decide=supports_everything)
     with patch.object(claim_check_node, "decision_model", registry):
-        return run_research(agent, "topic", STANDARD, plan_chain=planner(*questions))
+        graph = make_research_graph(
+            agent, options=STANDARD, plan_chain=planner(*questions)
+        )
+        return run_research(graph, "topic", STANDARD)
 
 
 def test_each_sub_question_gets_its_own_run_and_claims_are_checked_against_its_pages() -> (
@@ -255,7 +258,10 @@ def test_the_claim_cap_keeps_supported_claims_before_unsupported_ones() -> None:
 
     registry = SimpleNamespace(decide=supports_strong_only)
     with patch.object(claim_check_node, "decision_model", registry):
-        result = run_research(agent, "topic", STANDARD, plan_chain=planner("Q1", "Q2"))
+        graph = make_research_graph(
+            agent, options=STANDARD, plan_chain=planner("Q1", "Q2")
+        )
+        result = run_research(graph, "topic", STANDARD)
 
     texts = [c.text for c in result.output.claims]
     assert len(texts) == cap
@@ -296,9 +302,10 @@ def test_a_planner_outage_fails_the_envelope() -> None:
     def down(_input: Any) -> Any:
         raise TimeoutError("planner timed out")
 
-    result = run_research(
-        ByQuestion({}), "topic", STANDARD, plan_chain=RunnableLambda(down)
+    graph = make_research_graph(
+        ByQuestion({}), options=STANDARD, plan_chain=RunnableLambda(down)
     )
+    result = run_research(graph, "topic", STANDARD)
 
     assert result.status == "failed" and result.output is None
 

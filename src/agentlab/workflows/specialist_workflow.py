@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import operator
-from collections.abc import Iterator
+from collections.abc import AsyncIterator, Iterator
 from dataclasses import dataclass
 from typing import (
     Annotated,
@@ -16,7 +16,7 @@ from typing import (
 )
 
 from deepagents import CompiledSubAgent
-from langchain_core.runnables import RunnableConfig
+from langchain_core.runnables import Runnable, RunnableConfig
 from langchain_core.tools import BaseTool, StructuredTool
 from langgraph.graph.state import CompiledStateGraph
 from pydantic import BaseModel
@@ -138,7 +138,9 @@ class ResultNode[TInput: BaseModel, TReport: BaseModel]:
         }
 
 
-class Workflow[TInput: BaseModel, TReport: BaseModel]:
+class Workflow[TInput: BaseModel, TReport: BaseModel](
+    Runnable[TInput, WorkflowOutputState[TReport]]
+):
     """Rung-2 domain workflow: typed Runnable facade over a compiled domain StateGraph (ADR-0033)."""
 
     spec: SpecialistSpec[TInput, TReport]
@@ -147,6 +149,7 @@ class Workflow[TInput: BaseModel, TReport: BaseModel]:
         self,
         graph: CompiledStateGraph | Any | None = None,
     ) -> None:
+        super().__init__()
         self._graph = graph
 
     @property
@@ -163,7 +166,7 @@ class Workflow[TInput: BaseModel, TReport: BaseModel]:
         )
 
     @property
-    def name(self) -> SpecialistName:
+    def name(self) -> SpecialistName:  # type: ignore[override]
         return self.spec.name
 
     @property
@@ -195,19 +198,20 @@ class Workflow[TInput: BaseModel, TReport: BaseModel]:
 
     def invoke(
         self,
-        inputs: TInput | dict[str, Any] | str | None = None,
+        input: TInput | dict[str, Any] | str | None = None,
         config: RunnableConfig | None = None,
+        **kwargs: Any,
     ) -> WorkflowOutputState[TReport]:
         """Validate input, invoke the domain StateGraph, and guarantee ``{'result': ...}``."""
-        validated = self.coerce_input(inputs)
+        validated = self.coerce_input(input)
         payload = self.prepare_payload(validated)
         has_saver = getattr(self.graph, "checkpointer", None) is not None
         invoke_config = config or (new_delegation_config() if has_saver else None)
         try:
             state: dict[str, Any] = (
-                self.graph.invoke(payload, config=invoke_config)
+                self.graph.invoke(payload, config=invoke_config, **kwargs)
                 if invoke_config is not None
-                else self.graph.invoke(payload)
+                else self.graph.invoke(payload, **kwargs)
             )
         except Exception as error:
             if failure_kind(error) is None:
@@ -220,14 +224,8 @@ class Workflow[TInput: BaseModel, TReport: BaseModel]:
                 )
             }
 
-        if isinstance(state, dict):
-            if state.get("result") is not None:
-                return {"result": state["result"]}
-            formatted = self.format_state(state)
-            if formatted.get("result") is not None:
-                return {"result": formatted["result"]}
-            if formatted.get("report") is not None or formatted.get("problems"):
-                return ResultNode(self.spec)(formatted)
+        if isinstance(state, dict) and state.get("result") is not None:
+            return {"result": state["result"]}
 
         waiting = pending_approvals(state) if isinstance(state, dict) else ""
         return {
@@ -242,18 +240,58 @@ class Workflow[TInput: BaseModel, TReport: BaseModel]:
             )
         }
 
-    def format_state(self, state: dict[str, Any]) -> dict[str, Any]:
-        """Optional hook for subclasses to adapt raw/mock graph state into workflow channels."""
-        return state
-
-    def stream(
+    async def ainvoke(
         self,
-        inputs: TInput | dict[str, Any] | str | None = None,
+        input: TInput | dict[str, Any] | str | None = None,
+        config: RunnableConfig | None = None,
+        **kwargs: Any,
+    ) -> WorkflowOutputState[TReport]:
+        """Validate input, asynchronously invoke the domain StateGraph, and guarantee ``{'result': ...}``."""
+        validated = self.coerce_input(input)
+        payload = self.prepare_payload(validated)
+        has_saver = getattr(self.graph, "checkpointer", None) is not None
+        invoke_config = config or (new_delegation_config() if has_saver else None)
+        try:
+            state: dict[str, Any] = (
+                await self.graph.ainvoke(payload, config=invoke_config, **kwargs)
+                if invoke_config is not None
+                else await self.graph.ainvoke(payload, **kwargs)
+            )
+        except Exception as error:
+            if failure_kind(error) is None:
+                raise
+            return {
+                "result": SpecialistResult[TReport](
+                    specialist=self.spec.name,
+                    status="failed",
+                    reason=failure_reason(error),
+                )
+            }
+
+        if isinstance(state, dict) and state.get("result") is not None:
+            return {"result": state["result"]}
+
+        waiting = pending_approvals(state) if isinstance(state, dict) else ""
+        return {
+            "result": SpecialistResult[TReport](
+                specialist=self.spec.name,
+                status="partial" if waiting else "failed",
+                reason=(
+                    f"Stopped before finishing: waiting for approval of {waiting}."
+                    if waiting
+                    else f"No {self.spec.name} report was produced."
+                ),
+            )
+        }
+
+    def stream(  # type: ignore[override]
+        self,
+        input: TInput | dict[str, Any] | str | None = None,
         config: RunnableConfig | None = None,
         **kwargs: Any,
     ) -> Iterator[dict[str, Any]]:
         """Stream steps from the underlying domain StateGraph."""
-        validated = self.coerce_input(inputs)
+        validated = self.coerce_input(input)
         payload = self.prepare_payload(validated)
         has_saver = getattr(self.graph, "checkpointer", None) is not None
         invoke_config = config or (new_delegation_config() if has_saver else None)
@@ -262,15 +300,25 @@ class Workflow[TInput: BaseModel, TReport: BaseModel]:
         else:
             yield from self.graph.stream(payload, **kwargs)
 
-    def run(self, *args: Any, **kwargs: Any) -> SpecialistResult[TReport]:
-        """Backward-compatibility convenience helper returning ``SpecialistResult[TReport]``."""
-        if len(args) == 1 and not kwargs:
-            return self.invoke(args[0])["result"]
-        if args:
-            field_names = list(self.spec.input_schema.model_fields)
-            merged = {**dict(zip(field_names, args, strict=False)), **kwargs}
-            return self.invoke(merged)["result"]
-        return self.invoke(kwargs)["result"]
+    async def astream(  # type: ignore[override]
+        self,
+        input: TInput | dict[str, Any] | str | None = None,
+        config: RunnableConfig | None = None,
+        **kwargs: Any,
+    ) -> AsyncIterator[dict[str, Any]]:
+        """Asynchronously stream steps from the underlying domain StateGraph."""
+        validated = self.coerce_input(input)
+        payload = self.prepare_payload(validated)
+        has_saver = getattr(self.graph, "checkpointer", None) is not None
+        invoke_config = config or (new_delegation_config() if has_saver else None)
+        if invoke_config is not None:
+            async for chunk in self.graph.astream(
+                payload, config=invoke_config, **kwargs
+            ):
+                yield chunk
+        else:
+            async for chunk in self.graph.astream(payload, **kwargs):
+                yield chunk
 
     def render(self, report: TReport) -> str:
         """Render ``TReport`` as text for a coordinator or tool caller."""
@@ -290,17 +338,28 @@ class Workflow[TInput: BaseModel, TReport: BaseModel]:
             render=self.render,
         )
 
-    def as_tool(self) -> BaseTool:
+    def as_tool(
+        self,
+        args_schema: type[BaseModel] | None = None,
+        *,
+        name: str | None = None,
+        description: str | None = None,
+        arg_types: dict[str, type] | None = None,
+    ) -> BaseTool:
         """Expose this bound workflow as a typed ``BaseTool`` (no engine parameter needed)."""
 
         def invoke_tool(**tool_args: Any) -> str:
             return self.invoke(tool_args)["result"].to_text(render=self.render)
 
+        target_schema = args_schema or self.spec.input_schema
+        target_name = name or self.spec.name
+        target_desc = description or self.spec.description
+
         return StructuredTool.from_function(
             func=invoke_tool,
-            name=self.spec.name,
-            description=self.spec.description,
-            args_schema=self.spec.input_schema,
+            name=target_name,
+            description=target_desc,
+            args_schema=target_schema,
         )
 
 

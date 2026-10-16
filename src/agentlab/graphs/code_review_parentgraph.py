@@ -115,5 +115,4 @@ def build_code_review_graph(
     # 3. Compile with checkpointer
     saver = checkpointer if checkpointer is not None else InMemorySaver()
     compiled = workflow.compile(checkpointer=saver)
-    setattr(compiled, "_is_code_review_graph", True)  # noqa: B010
     return CodeReviewGraph(compiled)

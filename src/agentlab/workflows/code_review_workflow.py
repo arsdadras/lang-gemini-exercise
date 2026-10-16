@@ -11,7 +11,6 @@ from agentlab.graphs.code_review_parentgraph import (
     DEFAULT_CODE_REVIEW_DESCRIPTION,
     CodeReviewGraph,
     build_code_review_graph,
-    format_code_review_report_node,
 )
 from agentlab.schemas.input.code_review_input_schema import CodeReviewInput
 from agentlab.schemas.output.code_review_output_schema import CodeReviewReport
@@ -23,7 +22,6 @@ __all__ = [
     "DEFAULT_CODE_REVIEW_DESCRIPTION",
     "CodeReviewWorkflow",
     "build_code_review_graph",
-    "code_review_workflow",
     "make_code_review_specialist",
     "render_outcome",
     "run_code_review",
@@ -81,12 +79,6 @@ class CodeReviewWorkflow(Workflow[CodeReviewInput, CodeReviewReport]):
     def render(self, report: CodeReviewReport) -> str:
         return render_outcome(report)
 
-    def format_state(self, state: dict[str, Any]) -> dict[str, Any]:
-        """Format raw code review state if returned by an external runner/mock without format_report node."""
-        if state.get("report") is None and state.get("result") is None:
-            return {**state, **format_code_review_report_node(state)}  # type: ignore[arg-type]
-        return state
-
 
 def run_code_review(
     graph: CodeReviewGraph | CompiledStateGraph | Any,
@@ -108,4 +100,3 @@ def make_code_review_specialist(
 
 
 CODE_REVIEW_SPECIALIST = CodeReviewWorkflow()
-code_review_workflow = CODE_REVIEW_SPECIALIST

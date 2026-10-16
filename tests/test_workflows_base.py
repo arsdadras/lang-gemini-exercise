@@ -192,8 +192,9 @@ def test_workflow_invoke_stream_run_and_subagent_adaptation() -> None:
     # Last chunk should contain either pack_result or step updates
     assert any("pack_result" in c or "step" in c for c in chunks)
 
-    # 3. run() with schema
-    res = wf.run(DummyInput(query="distributed systems"))
+    # 3. invoke() with schema
+    out = wf.invoke(DummyInput(query="distributed systems"))
+    res = out["result"]
     assert res.status == "ok"
     assert res.output.summary == "result for distributed systems with engine_999"
 

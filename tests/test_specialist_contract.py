@@ -16,6 +16,8 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.store.memory import InMemoryStore
 from langgraph.types import Command, Interrupt
 
+from agentlab.graphs.interpreter_graph import build_interpreter_graph
+from agentlab.graphs.personal_context_graph import build_personal_context_graph
 from agentlab.graphs.research_graph import build_research_graph
 from agentlab.nodes import code_review_node, rag_node
 from agentlab.schemas.output import code_review_output_schema as review_schemas
@@ -48,6 +50,7 @@ from agentlab.workflows import (
     RAG_SPECIALIST,
     RESEARCH_SPECIALIST,
     ResearchWorkflow,
+    ResultNode,
     SpecialistSpec,
     Workflow,
     make_personal_context_specialist,
@@ -62,9 +65,15 @@ from agentlab.workflows import (
 class Returns:
     """A graph or agent stand-in: ``invoke`` returns a fixed final state and records its input."""
 
-    def __init__(self, state: dict[str, Any], effect: Any = None) -> None:
+    def __init__(
+        self,
+        state: dict[str, Any],
+        effect: Any = None,
+        spec: SpecialistSpec[Any, Any] | None = None,
+    ) -> None:
         self.state = state
         self.effect = effect
+        self.spec = spec
         self.inputs: list[Any] = []
 
     def invoke(
@@ -75,7 +84,30 @@ class Returns:
         self.inputs.append(payload)
         if self.effect:
             self.effect()
-        return self.state
+        res = dict(self.state)
+        if "result" in res:
+            return res
+        if self.spec is not None:
+            res.update(ResultNode(self.spec)(res))
+            return res
+        if "answer" in res and "answer_source" in res:
+            from agentlab.graphs.rag_graph import RAG_SPEC, format_rag_report_node
+
+            formatted = {**res, **format_rag_report_node(res)}
+            res.update(ResultNode(RAG_SPEC)(formatted))
+        elif "review" in res or "tests" in res or "error" in res:
+            from agentlab.graphs.code_review_parentgraph import (
+                CODE_REVIEW_SPEC,
+                format_code_review_report_node,
+            )
+
+            formatted = {**res, **format_code_review_report_node(res)}
+            res.update(ResultNode(CODE_REVIEW_SPEC)(formatted))
+        elif "report" in res:
+            from agentlab.graphs.research_graph import RESEARCH_SPEC
+
+            res.update(ResultNode(RESEARCH_SPEC)(res))
+        return res
 
 
 class Raises:
@@ -579,7 +611,11 @@ def test_files_the_interpreter_writes_become_side_effects(tmp_path: Path) -> Non
         ),
     )
 
-    result = run_interpreter(agent, "compute", sandbox_dir=tmp_path)
+    result = run_interpreter(
+        build_interpreter_graph(agent, sandbox_dir=tmp_path),
+        "compute",
+        sandbox_dir=tmp_path,
+    )
 
     assert result.status == "ok"
     assert result.output is not None
@@ -606,7 +642,11 @@ def test_an_deliverable_changed_in_place_is_a_modified_side_effect(
         effect=lambda: report.write_text("v2, longer", encoding="utf-8"),
     )
 
-    result = run_interpreter(agent, "update the report", sandbox_dir=tmp_path)
+    result = run_interpreter(
+        build_interpreter_graph(agent, sandbox_dir=tmp_path),
+        "update the report",
+        sandbox_dir=tmp_path,
+    )
 
     assert [(effect.action, effect.target) for effect in result.side_effects] == [
         ("modified", "deliverables/report.md"),
@@ -633,7 +673,11 @@ def test_files_written_before_a_failure_are_still_reported(tmp_path: Path) -> No
         ),
     )
 
-    result = run_interpreter(agent, "compute", sandbox_dir=tmp_path)
+    result = run_interpreter(
+        build_interpreter_graph(agent, sandbox_dir=tmp_path),
+        "compute",
+        sandbox_dir=tmp_path,
+    )
 
     assert result.status == "failed" and result.output is None
     assert [(effect.action, effect.target) for effect in result.side_effects] == [
@@ -652,7 +696,8 @@ def test_user_context_is_ok_even_when_empty_and_cites_memory_files() -> None:
         {"content": "- Diet: Vegetarian", "encoding": "utf-8"},
     )
 
-    sara = run_personal_context(store, "sara")
+    sara = run_personal_context(build_personal_context_graph(store), "sara")
+
     nobody = read_user_context(store, "nobody")
 
     assert sara.status == "ok"

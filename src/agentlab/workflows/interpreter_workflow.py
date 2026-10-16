@@ -1,5 +1,7 @@
 """P4 domain workflow & specialist: ``InterpreterWorkflow``, ``run_interpreter``, and ``INTERPRETER_SPECIALIST``."""
 
+from __future__ import annotations
+
 from pathlib import Path
 from typing import Any
 
@@ -23,7 +25,6 @@ __all__ = [
     "INTERPRETER_SPECIALIST",
     "InterpreterWorkflow",
     "build_interpreter_graph",
-    "interpreter_workflow",
     "make_interpreter_specialist",
     "render_interpreter_report",
     "run_interpreter",
@@ -54,35 +55,57 @@ class InterpreterWorkflow(Workflow[InterpreterInput, InterpreterReport]):
     def build_default_graph(self) -> CompiledStateGraph:
         return build_interpreter_graph(agent=self._agent, sandbox_dir=self.sandbox_dir)
 
+    @classmethod
+    def from_graph(
+        cls,
+        graph: InterpreterGraph | CompiledStateGraph | Any,
+        *,
+        sandbox_dir: Path = DEFAULT_SANDBOX_DIR,
+    ) -> InterpreterWorkflow:
+        return cls(graph=graph, sandbox_dir=sandbox_dir)
+
+    @classmethod
+    def from_agent(
+        cls,
+        agent: InterpreterAgent | CompiledStateGraph | Any,
+        *,
+        sandbox_dir: Path = DEFAULT_SANDBOX_DIR,
+    ) -> InterpreterWorkflow:
+        return cls(
+            graph=build_interpreter_graph(agent=agent, sandbox_dir=sandbox_dir),
+            agent=agent,
+            sandbox_dir=sandbox_dir,
+        )
+
     def render(self, report: InterpreterReport) -> str:
         return render_interpreter_report(report)
 
 
 def run_interpreter(
-    agent: InterpreterAgent | CompiledStateGraph | Any,
+    graph: InterpreterGraph | CompiledStateGraph | Any,
     task: str,
     *,
     sandbox_dir: Path = DEFAULT_SANDBOX_DIR,
 ) -> SpecialistResult[InterpreterReport]:
-    """Run ``task`` with a P4 interpreter agent on a fresh thread; files it wrote become side effects."""
-    if getattr(agent, "_is_interpreter_graph", False):
-        workflow = InterpreterWorkflow(graph=agent, sandbox_dir=sandbox_dir)
-    else:
-        workflow = InterpreterWorkflow(agent=agent, sandbox_dir=sandbox_dir)
-    return workflow.invoke(task)["result"]
+    """Run ``task`` through the pre-composed interpreter graph and return the specialist envelope."""
+    return InterpreterWorkflow(graph=graph, sandbox_dir=sandbox_dir).invoke(task)[
+        "result"
+    ]
 
 
 def make_interpreter_specialist(
-    engine: InterpreterAgent | CompiledStateGraph | Any = None,
+    graph: InterpreterGraph | CompiledStateGraph | Any = None,
     *,
+    agent: InterpreterAgent | CompiledStateGraph | Any = None,
     sandbox_dir: Path | None = None,
 ) -> InterpreterWorkflow:
-    """Create an Interpreter Workflow bound to an engine or lazy default."""
+    """Create an Interpreter Workflow bound to a graph, agent, or lazy default."""
     target_sandbox = sandbox_dir if sandbox_dir is not None else DEFAULT_SANDBOX_DIR
-    if getattr(engine, "_is_interpreter_graph", False):
-        return InterpreterWorkflow(graph=engine, sandbox_dir=target_sandbox)
-    return InterpreterWorkflow(agent=engine, sandbox_dir=target_sandbox)
+    if graph is not None:
+        return InterpreterWorkflow.from_graph(graph, sandbox_dir=target_sandbox)
+    if agent is not None:
+        return InterpreterWorkflow.from_agent(agent, sandbox_dir=target_sandbox)
+    return InterpreterWorkflow(sandbox_dir=target_sandbox)
 
 
-INTERPRETER_SPECIALIST = InterpreterWorkflow()
-interpreter_workflow = INTERPRETER_SPECIALIST
+INTERPRETER_SPECIALIST = make_interpreter_specialist()

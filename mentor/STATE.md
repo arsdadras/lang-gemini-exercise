@@ -53,7 +53,18 @@ the mentor is the only role and works on `main`.
   8. *Consultant Hook & Skill (`/consultant` / `/cansultant`):* Implemented `scripts/mentor_session_hook.py`
      detection of consultant commands, diff extraction since last checkpoint (`mentor/.consultant_checkpoint.json`),
      `scripts/record_consultant_checkpoint.py`, and `.agents/skills/consultant/SKILL.md`.
-  9. *All 5 Verification Gates Green:* 410 unit/integration tests passing (100% green), 0 ruff errors,
+  9. *Pure LangGraph Runnable Standard & Legacy Shim Purge (2026-10-16):*
+     - Eliminated legacy `Workflow.run()` helper method across `specialist_workflow.py`, internal callers,
+       domain runners, tools, and test suites in favor of native LangGraph/LangChain `.invoke()` and `.stream()`.
+     - Purged monkey-patching (`setattr(compiled, "_is_*_graph", True)`) and `getattr` duck-typing checks
+       across all domain graphs and workflows, enforcing strict compile-time factory typing.
+     - Made `Workflow[TInput, TReport]` inherit directly from `langchain_core.runnables.Runnable`, enabling
+       seamless LCEL piping (`|`), batching, and async delegation (`ainvoke`, `astream`).
+     - Removed `format_state` defensive fallback hacks from `specialist_workflow.py`, `rag_workflow.py`, and
+       `code_review_workflow.py`, ensuring terminal `ResultNode` (`pack_result`) exclusively owns envelope packing.
+     - Purged redundant lowercase singleton aliases (`research_workflow`, etc.), standardizing exclusively on
+       canonical uppercase descriptors (`RESEARCH_SPECIALIST`, etc.) and typed workflow classes.
+  10. *All 5 Verification Gates Green:* 410 unit/integration tests passing (100% green), 0 ruff errors,
      194 files formatted, 0 mypy errors across 144 source files, 0 check_docs problems.
 - **NEXT SESSION — Topic 4 Refinement & Transition to R2:**
   1. **Topic 4 (Unified Capability / Extension Protocol):** Design, teach, and implement a typed

@@ -527,8 +527,10 @@ def test_render_outcome_and_workflow_helpers() -> None:
 
     # Specialist and default graph construction
     assert CODE_REVIEW_SPECIALIST.name == "code_review"
-    assert callable(CODE_REVIEW_SPECIALIST.run)
+    assert callable(CODE_REVIEW_SPECIALIST.invoke)
+    assert callable(CODE_REVIEW_SPECIALIST.stream)
     default_graph = _default_code_review_graph()
+
     assert default_graph is not None
 
     # run_code_review with transient error
